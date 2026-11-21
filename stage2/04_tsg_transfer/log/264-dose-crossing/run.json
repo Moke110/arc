@@ -1,0 +1,3818 @@
+{
+  "assessment_sampling_seed": 22617,
+  "bootstrap_draws": 4000,
+  "bootstrap_seed": 264,
+  "development_counts": [
+    {
+      "dose_counts": {
+        "0.2": 0,
+        "1.0": 837,
+        "10.0": 837
+      },
+      "held_dose_um": 0.2,
+      "n_parents": 275,
+      "n_profiles": 1674,
+      "profile_sha256": "6a7e19c5228ed3059a7132556021df67a3738495393db84bbdfd03d8be133175",
+      "role": "train"
+    },
+    {
+      "dose_counts": {
+        "0.2": 0,
+        "1.0": 49,
+        "10.0": 49
+      },
+      "held_dose_um": 0.2,
+      "n_parents": 16,
+      "n_profiles": 98,
+      "profile_sha256": "b8264fbeff8b136d0696fdddf2b2b6a392db8634388f4168b5991329cb1cb68d",
+      "role": "selection"
+    },
+    {
+      "dose_counts": {
+        "0.2": 47,
+        "1.0": 0,
+        "10.0": 0
+      },
+      "held_dose_um": 0.2,
+      "n_parents": 15,
+      "n_profiles": 47,
+      "profile_sha256": "4d081f9dadd7f8497957f9fe3fc3f629e805a03a48d56eae897fc010ca36364e",
+      "role": "assessment"
+    },
+    {
+      "dose_counts": {
+        "0.2": 0,
+        "1.0": 47,
+        "10.0": 47
+      },
+      "held_dose_um": 0.2,
+      "n_parents": 15,
+      "n_profiles": 94,
+      "profile_sha256": "a41cfd88711f1430ba2abb51f86993440210e989675702d04c8758478aa6dd66",
+      "role": "excluded_held_parent"
+    },
+    {
+      "dose_counts": {
+        "0.2": 886,
+        "1.0": 0,
+        "10.0": 0
+      },
+      "held_dose_um": 0.2,
+      "n_parents": 291,
+      "n_profiles": 886,
+      "profile_sha256": "3981f6207275e3affe08e7df17f39f0cf6c2ef7cd413030a67752b5a8bdb3de1",
+      "role": "excluded_held_dose"
+    },
+    {
+      "dose_counts": {
+        "0.2": 0,
+        "1.0": 0,
+        "10.0": 0
+      },
+      "held_dose_um": 0.2,
+      "n_parents": 0,
+      "n_profiles": 0,
+      "profile_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "role": "excluded_incomplete_or_unbalanced"
+    },
+    {
+      "dose_counts": {
+        "0.2": 837,
+        "1.0": 0,
+        "10.0": 837
+      },
+      "held_dose_um": 1.0,
+      "n_parents": 275,
+      "n_profiles": 1674,
+      "profile_sha256": "58576d4dd66da444ee6a75fb78c1210f22ae023a6906a277dfd9fc6c462f6bd0",
+      "role": "train"
+    },
+    {
+      "dose_counts": {
+        "0.2": 49,
+        "1.0": 0,
+        "10.0": 49
+      },
+      "held_dose_um": 1.0,
+      "n_parents": 16,
+      "n_profiles": 98,
+      "profile_sha256": "0e16cb405ac2a4ad932533c4ff14dbc26a2cdbdbe3685701404fc333f994154f",
+      "role": "selection"
+    },
+    {
+      "dose_counts": {
+        "0.2": 0,
+        "1.0": 47,
+        "10.0": 0
+      },
+      "held_dose_um": 1.0,
+      "n_parents": 15,
+      "n_profiles": 47,
+      "profile_sha256": "c31e9c33bf652c7423c832f2248935942f81688dcec3321442730647f7e22c39",
+      "role": "assessment"
+    },
+    {
+      "dose_counts": {
+        "0.2": 47,
+        "1.0": 0,
+        "10.0": 47
+      },
+      "held_dose_um": 1.0,
+      "n_parents": 15,
+      "n_profiles": 94,
+      "profile_sha256": "fe773a4f3ed84416012a71cf608f8c18780e5310f9bd31bc488025ed72cd9951",
+      "role": "excluded_held_parent"
+    },
+    {
+      "dose_counts": {
+        "0.2": 0,
+        "1.0": 886,
+        "10.0": 0
+      },
+      "held_dose_um": 1.0,
+      "n_parents": 291,
+      "n_profiles": 886,
+      "profile_sha256": "f12cb1bdb1bbee20f78336036038c189d40483f6f552573592f26cf8ae48f705",
+      "role": "excluded_held_dose"
+    },
+    {
+      "dose_counts": {
+        "0.2": 0,
+        "1.0": 0,
+        "10.0": 0
+      },
+      "held_dose_um": 1.0,
+      "n_parents": 0,
+      "n_profiles": 0,
+      "profile_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "role": "excluded_incomplete_or_unbalanced"
+    },
+    {
+      "dose_counts": {
+        "0.2": 837,
+        "1.0": 837,
+        "10.0": 0
+      },
+      "held_dose_um": 10.0,
+      "n_parents": 275,
+      "n_profiles": 1674,
+      "profile_sha256": "5b629c13064aad095e01c85b2b4f6346d0e9caa51bcded7260f9b254d655e5ad",
+      "role": "train"
+    },
+    {
+      "dose_counts": {
+        "0.2": 49,
+        "1.0": 49,
+        "10.0": 0
+      },
+      "held_dose_um": 10.0,
+      "n_parents": 16,
+      "n_profiles": 98,
+      "profile_sha256": "b8d5acc48ee594d5444296de0521ec8668c25ad1d2396001832e860279cd69d4",
+      "role": "selection"
+    },
+    {
+      "dose_counts": {
+        "0.2": 0,
+        "1.0": 0,
+        "10.0": 47
+      },
+      "held_dose_um": 10.0,
+      "n_parents": 15,
+      "n_profiles": 47,
+      "profile_sha256": "08f11914d13fdeb33aa8a1d5eef5cff1cc757fb31a3c45d5645d74a3c5b8123b",
+      "role": "assessment"
+    },
+    {
+      "dose_counts": {
+        "0.2": 47,
+        "1.0": 47,
+        "10.0": 0
+      },
+      "held_dose_um": 10.0,
+      "n_parents": 15,
+      "n_profiles": 94,
+      "profile_sha256": "2325e16bf01d7f12b5bf3231e9990375efbf5712e0a218727357abf162c5b0c9",
+      "role": "excluded_held_parent"
+    },
+    {
+      "dose_counts": {
+        "0.2": 0,
+        "1.0": 0,
+        "10.0": 886
+      },
+      "held_dose_um": 10.0,
+      "n_parents": 291,
+      "n_profiles": 886,
+      "profile_sha256": "c454e7b327b85123eb6ce64d316efa639871ddf4d41751a89879527b8e2d0e8d",
+      "role": "excluded_held_dose"
+    },
+    {
+      "dose_counts": {
+        "0.2": 0,
+        "1.0": 0,
+        "10.0": 0
+      },
+      "held_dose_um": 10.0,
+      "n_parents": 0,
+      "n_profiles": 0,
+      "profile_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "role": "excluded_incomplete_or_unbalanced"
+    }
+  ],
+  "epochs": 20,
+  "fits": [
+    {
+      "arm": "random",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.22351430450456036,
+        "rmse": 0.45451043129547913
+      },
+      "dose_bridge": {},
+      "held_dose_um": 0.2,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 6557.786003304212,
+          "mse": 0.4119891225202691,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.04182897228872412,
+          "rmse": 0.6373872414753892,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 4737.208774361559,
+          "mse": 0.3208306659464331,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.08294875345282618,
+          "rmse": 0.5571760757166008,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 2992.2530171931003,
+          "mse": 0.28060443672992,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.10779892102672065,
+          "rmse": 0.5172775809005068,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 2600.7737256851105,
+          "mse": 0.26267232790155903,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.12467800945892792,
+          "rmse": 0.49974695435834304,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 2406.3478195937873,
+          "mse": 0.24605938699713528,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.14500388206005785,
+          "rmse": 0.48247563194281584,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 2260.8626173741786,
+          "mse": 0.23838859550536998,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.16475799417942164,
+          "rmse": 0.47411442590183084,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 2180.3444873805256,
+          "mse": 0.23225831695705992,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.17979039152410986,
+          "rmse": 0.4663768982759185,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 2122.755924712515,
+          "mse": 0.23277927779647492,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19029115360571894,
+          "rmse": 0.4653411550790718,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 2075.4372923200417,
+          "mse": 0.22505582916967698,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1918276916094504,
+          "rmse": 0.4586344333633968,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 2030.435312359991,
+          "mse": 0.22722226980828295,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19261480198366,
+          "rmse": 0.4603664521484539,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 1997.9317631328406,
+          "mse": 0.22708679983055985,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19044652467642503,
+          "rmse": 0.45958517508418967,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 1984.2839125037335,
+          "mse": 0.22440732004356537,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2085156531068806,
+          "rmse": 0.45504491013022297,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 1939.169387507467,
+          "mse": 0.22784608528053948,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.18825927489138544,
+          "rmse": 0.45987411711305304,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 1942.907917273372,
+          "mse": 0.22255212357825296,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19814808855482108,
+          "rmse": 0.4547835783269555,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 1927.3034775892324,
+          "mse": 0.23490811177605206,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.17716243764257716,
+          "rmse": 0.4660234993233646,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 1916.1394804267472,
+          "mse": 0.22558097123179174,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.195814615694433,
+          "rmse": 0.45713337348749383,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 1910.5945101319817,
+          "mse": 0.21887276222625493,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20568616780875806,
+          "rmse": 0.44965556836772724,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 1884.2250655708633,
+          "mse": 0.21871230477706385,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.22134508716745974,
+          "rmse": 0.44813153962137325,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 1883.8000800384557,
+          "mse": 0.21927546304262308,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.23066417336779688,
+          "rmse": 0.4466929321910267,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1868.1039554864844,
+          "mse": 0.21932423945434718,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20537917817239226,
+          "rmse": 0.45013897935093095,
+          "updates": 540
+        }
+      ],
+      "seed": 42,
+      "selected": {
+        "epoch": 19,
+        "loss": 1883.8000800384557,
+        "mse": 0.21927546304262308,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.23066417336779688,
+        "rmse": 0.4466929321910267,
+        "updates": 513
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.5,
+        "std": 0.5
+      },
+      "updates": 540
+    },
+    {
+      "arm": "transfer",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.23387993316693773,
+        "rmse": 0.4547277882534791
+      },
+      "dose_bridge": {
+        "absolute_tolerance": 1e-06,
+        "bias_shift": 0.9067109476975055,
+        "checks": [
+          {
+            "dose_um": 0.05,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.07602566480636597
+          },
+          {
+            "dose_um": 0.2,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.052354488521814346
+          },
+          {
+            "dose_um": 0.5,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.055996235460042953
+          },
+          {
+            "dose_um": 1.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05778520554304123
+          },
+          {
+            "dose_um": 5.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.0648590624332428
+          },
+          {
+            "dose_um": 10.0,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.09984640032052994
+          }
+        ],
+        "held_dose_um": 0.2,
+        "relative_tolerance": 1e-06,
+        "source_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.25296587747347354,
+          "std": 0.8304365127448269
+        },
+        "target_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": 0.5,
+          "std": 0.5
+        },
+        "weight_scale": 0.602092986431147
+      },
+      "held_dose_um": 0.2,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 23109.690230174732,
+          "mse": 0.7703716803334606,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.06762294526451114,
+          "rmse": 0.8733083019475153,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 8859.414776545698,
+          "mse": 0.5698661168879955,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07176566312413502,
+          "rmse": 0.7517065984213898,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 7339.900896990741,
+          "mse": 0.4927364758730643,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07504666525568154,
+          "rmse": 0.6983983487445325,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 6236.1518677195345,
+          "mse": 0.4367152669976941,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.08035986102098408,
+          "rmse": 0.6564293192597953,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 5317.548207418608,
+          "mse": 0.3973355837827252,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.08698619330307411,
+          "rmse": 0.6248593028639101,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 4550.9900733646955,
+          "mse": 0.36147027217065586,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.09386860905208899,
+          "rmse": 0.5946725258957273,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 3919.9302685371863,
+          "mse": 0.3378219402097677,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1069194730925571,
+          "rmse": 0.5736534384354206,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 3427.0813592069894,
+          "mse": 0.3101352107376313,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.11893988515774037,
+          "rmse": 0.548229152036894,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 3070.5825539501193,
+          "mse": 0.29010295214556675,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1266161588235499,
+          "rmse": 0.5292468910076045,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 2800.947238789949,
+          "mse": 0.2732540534709728,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.14168616315276594,
+          "rmse": 0.5125509839621375,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 2601.447445303166,
+          "mse": 0.25955370764471447,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.15469365345268557,
+          "rmse": 0.49776441372330227,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 2459.973677148671,
+          "mse": 0.2517713316393206,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.16957859276358228,
+          "rmse": 0.489153207793773,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 2329.0056260267324,
+          "mse": 0.2456062713839736,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.17425593741845516,
+          "rmse": 0.48225326558489956,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 2266.866810642548,
+          "mse": 0.23768289992283634,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.18277302939102608,
+          "rmse": 0.47358086074719474,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 2196.817787671744,
+          "mse": 0.2315989752747143,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20294989093817944,
+          "rmse": 0.46611302112969294,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 2143.1696686921296,
+          "mse": 0.2302912281617642,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20030145964162535,
+          "rmse": 0.4650700239573007,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 2099.222797425702,
+          "mse": 0.22838779550740962,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20812505364764372,
+          "rmse": 0.4618773019701873,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 2059.6252566830944,
+          "mse": 0.22764617374855128,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21082809768846197,
+          "rmse": 0.46074460474992873,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 2033.6831410543607,
+          "mse": 0.22737440099849177,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21186888552262834,
+          "rmse": 0.45970805062211895,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1999.2871327098267,
+          "mse": 0.22170030186351802,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21672691982040404,
+          "rmse": 0.4539040433623562,
+          "updates": 540
+        }
+      ],
+      "seed": 42,
+      "selected": {
+        "epoch": 20,
+        "loss": 1999.2871327098267,
+        "mse": 0.22170030186351802,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.21672691982040404,
+        "rmse": 0.4539040433623562,
+        "updates": 540
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.5,
+        "std": 0.5
+      },
+      "updates": 540
+    },
+    {
+      "arm": "random",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.21171566773517084,
+        "rmse": 0.4540849450338898
+      },
+      "dose_bridge": {},
+      "held_dose_um": 0.2,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 6525.018884875299,
+          "mse": 0.4145245547132049,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.043048251418701444,
+          "rmse": 0.6395469196854092,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 3955.8693704730435,
+          "mse": 0.31357351133075045,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.08225156120306537,
+          "rmse": 0.5508867559083221,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 2948.4429020123953,
+          "mse": 0.28185939580756536,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.12572779217764005,
+          "rmse": 0.5164512024040062,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 2558.4088821684586,
+          "mse": 0.25188261089775493,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.14570673621567465,
+          "rmse": 0.48772259378722116,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 2353.2025777983126,
+          "mse": 0.24446459126269598,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1690004759269103,
+          "rmse": 0.47920814289141606,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 2237.0515804678166,
+          "mse": 0.24135134321640933,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.18107346166400337,
+          "rmse": 0.47484574388463185,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 2150.7010283658155,
+          "mse": 0.2367858591258101,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.18196592223221586,
+          "rmse": 0.470522993815262,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 2085.7937924693847,
+          "mse": 0.2317032941437983,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19401176358749583,
+          "rmse": 0.4640160054193656,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 2027.260338494997,
+          "mse": 0.22674881678346806,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20885589610306443,
+          "rmse": 0.4581703751473401,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 2003.714635486671,
+          "mse": 0.22308841281339806,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19825713080911483,
+          "rmse": 0.4559627888244404,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 1971.8991713803016,
+          "mse": 0.22145154686257143,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2173484695813404,
+          "rmse": 0.4519945932713561,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 1957.0610415733274,
+          "mse": 0.22497860084087065,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21703046048422198,
+          "rmse": 0.4554084931894753,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 1939.8751365087367,
+          "mse": 0.21925052376668086,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.23335259370688888,
+          "rmse": 0.44819287068774016,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 1924.0873002538829,
+          "mse": 0.22615869099655062,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21547368441195766,
+          "rmse": 0.4567275329123845,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 1907.8623408564815,
+          "mse": 0.22334365816407387,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.23098634225551723,
+          "rmse": 0.45138552065555587,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 1886.0448413698477,
+          "mse": 0.22575219886735867,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.23635400464837114,
+          "rmse": 0.45303512770386983,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 1893.373288390457,
+          "mse": 0.22262665311870128,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2322970938965508,
+          "rmse": 0.4510145710537701,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 1863.6666654999253,
+          "mse": 0.2232560516955483,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.22284641414429726,
+          "rmse": 0.4515381226744717,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 1860.7964188041367,
+          "mse": 0.21996301798200274,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.22106049751364082,
+          "rmse": 0.44912722531951565,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1863.9150647308095,
+          "mse": 0.2157422615022982,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.24634097733109048,
+          "rmse": 0.4425707689440164,
+          "updates": 540
+        }
+      ],
+      "seed": 17,
+      "selected": {
+        "epoch": 20,
+        "loss": 1863.9150647308095,
+        "mse": 0.2157422615022982,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.24634097733109048,
+        "rmse": 0.4425707689440164,
+        "updates": 540
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.5,
+        "std": 0.5
+      },
+      "updates": 540
+    },
+    {
+      "arm": "transfer",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.23794281420302912,
+        "rmse": 0.4545664341192344
+      },
+      "dose_bridge": {
+        "absolute_tolerance": 1e-06,
+        "bias_shift": 0.9067109476975055,
+        "checks": [
+          {
+            "dose_um": 0.05,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.07602566480636597
+          },
+          {
+            "dose_um": 0.2,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.052354488521814346
+          },
+          {
+            "dose_um": 0.5,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.055996235460042953
+          },
+          {
+            "dose_um": 1.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05778520554304123
+          },
+          {
+            "dose_um": 5.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.0648590624332428
+          },
+          {
+            "dose_um": 10.0,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.09984640032052994
+          }
+        ],
+        "held_dose_um": 0.2,
+        "relative_tolerance": 1e-06,
+        "source_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.25296587747347354,
+          "std": 0.8304365127448269
+        },
+        "target_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": 0.5,
+          "std": 0.5
+        },
+        "weight_scale": 0.602092986431147
+      },
+      "held_dose_um": 0.2,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 21945.776041666668,
+          "mse": 0.7833297831876864,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.06743536012947621,
+          "rmse": 0.8804532057818779,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 8862.816186902628,
+          "mse": 0.569783506230943,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07285837744994011,
+          "rmse": 0.7515257952972936,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 7375.729684699821,
+          "mse": 0.48990932736279624,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07583185264769118,
+          "rmse": 0.696226875837887,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 6211.820205159797,
+          "mse": 0.4347579264550852,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.0817518988057057,
+          "rmse": 0.6547504521677288,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 5271.381673760454,
+          "mse": 0.39184876854026857,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.08784099727311107,
+          "rmse": 0.6202399444996538,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 4502.000266017025,
+          "mse": 0.35632085158586,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.09618522482570498,
+          "rmse": 0.5906556236797962,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 3860.9816704935783,
+          "mse": 0.3309742578336226,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.10587170582710496,
+          "rmse": 0.5679728428731257,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 3367.97768723865,
+          "mse": 0.30850308043486496,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.11863117714984714,
+          "rmse": 0.5468927462855402,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 3015.0647786458335,
+          "mse": 0.28630506423503527,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.13503758893643272,
+          "rmse": 0.525610542596753,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 2759.3469095355435,
+          "mse": 0.2708708362923406,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.14452350231002964,
+          "rmse": 0.5096307623983825,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 2563.1750135341995,
+          "mse": 0.25788983326996945,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.16226765597968368,
+          "rmse": 0.49503069247804776,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 2433.69597520908,
+          "mse": 0.25631579225635254,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1674785787516176,
+          "rmse": 0.4932700215931721,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 2319.656623357228,
+          "mse": 0.24486750117740574,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.18148046976006366,
+          "rmse": 0.4806317487783799,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 2236.481877006795,
+          "mse": 0.23829644818662557,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.18886840674048783,
+          "rmse": 0.4732553396176685,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 2171.5459626082734,
+          "mse": 0.23138291860899873,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20651786741725084,
+          "rmse": 0.46533183823386753,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 2116.9567593992683,
+          "mse": 0.22940965687485007,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2126405958953229,
+          "rmse": 0.4624133104552932,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 2079.069323103345,
+          "mse": 0.22603643312807217,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2120220391923271,
+          "rmse": 0.4590795330103661,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 2036.7738178576762,
+          "mse": 0.22571583624456393,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.22001342669167034,
+          "rmse": 0.4584828297534603,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 2009.8983079917114,
+          "mse": 0.22458567404296903,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21696076269780296,
+          "rmse": 0.4566168772126857,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1997.1229407015383,
+          "mse": 0.22153515976567914,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.23549671569690284,
+          "rmse": 0.45190148874548974,
+          "updates": 540
+        }
+      ],
+      "seed": 17,
+      "selected": {
+        "epoch": 20,
+        "loss": 1997.1229407015383,
+        "mse": 0.22153515976567914,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.23549671569690284,
+        "rmse": 0.45190148874548974,
+        "updates": 540
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.5,
+        "std": 0.5
+      },
+      "updates": 540
+    },
+    {
+      "arm": "random",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.2166647254766899,
+        "rmse": 0.45135708997127716
+      },
+      "dose_bridge": {},
+      "held_dose_um": 1.0,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 6460.288262115442,
+          "mse": 0.4165758725867386,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.045944399900393944,
+          "rmse": 0.6412482835447084,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 11131.688485896431,
+          "mse": 0.3214256560890166,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.09222858782706392,
+          "rmse": 0.5575302711683445,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 2926.8977631235066,
+          "mse": 0.28351654149104366,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.11814564295782176,
+          "rmse": 0.5198653486490606,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 2550.742740535394,
+          "mse": 0.2651433372802838,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.13625518923697327,
+          "rmse": 0.5015982412476815,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 2351.124460965502,
+          "mse": 0.2529506881154951,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.15133382977148005,
+          "rmse": 0.4891584161002147,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 2211.7105221400834,
+          "mse": 0.24527487953629776,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.16963442307991583,
+          "rmse": 0.48106672937113637,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 2144.9215903151135,
+          "mse": 0.23435839204646233,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.18619280791535947,
+          "rmse": 0.46848380932702327,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 2082.4850750448027,
+          "mse": 0.23793616155811628,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1932758979166727,
+          "rmse": 0.4707694987596053,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 2027.4358583949372,
+          "mse": 0.23183340001076047,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19301101675529597,
+          "rmse": 0.4657048510206467,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 1986.7608238593937,
+          "mse": 0.2323600297804334,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19900138791828073,
+          "rmse": 0.4653711875041297,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 1957.4838102971923,
+          "mse": 0.2301385233085938,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1951689776607204,
+          "rmse": 0.4627203946006513,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 1931.699204749104,
+          "mse": 0.23003634763733602,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20468216163132766,
+          "rmse": 0.4616929525462258,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 1891.0340700138142,
+          "mse": 0.23081460613514412,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19792848569724686,
+          "rmse": 0.46196425578393535,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 1899.4088716677868,
+          "mse": 0.23113349315039167,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20091969888993616,
+          "rmse": 0.4628280080768292,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 1881.4105179398148,
+          "mse": 0.23163377987128214,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20120234731587383,
+          "rmse": 0.4618429747715035,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 1865.7128532892773,
+          "mse": 0.22917746642655776,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20421039089825027,
+          "rmse": 0.46091388856658116,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 1856.4796415303913,
+          "mse": 0.22395971532822853,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21157846469514635,
+          "rmse": 0.45491437231493664,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 1837.5907199727449,
+          "mse": 0.22262528725808023,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2241107294143266,
+          "rmse": 0.45239873848553114,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 1831.743167562724,
+          "mse": 0.22131417437813508,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2205878754237065,
+          "rmse": 0.4503277243026784,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1817.3179825175478,
+          "mse": 0.2204873644799258,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2184342427155207,
+          "rmse": 0.4514445193085852,
+          "updates": 540
+        }
+      ],
+      "seed": 42,
+      "selected": {
+        "epoch": 18,
+        "loss": 1837.5907199727449,
+        "mse": 0.22262528725808023,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.2241107294143266,
+        "rmse": 0.45239873848553114,
+        "updates": 486
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.15051500106773663,
+        "std": 0.8494849989322631
+      },
+      "updates": 540
+    },
+    {
+      "arm": "transfer",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.20106243710795219,
+        "rmse": 0.4637447596203225
+      },
+      "dose_bridge": {
+        "absolute_tolerance": 1e-06,
+        "bias_shift": 0.48586601425748016,
+        "checks": [
+          {
+            "dose_um": 0.05,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.10405859351158142
+          },
+          {
+            "dose_um": 0.2,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05905957147479057
+          },
+          {
+            "dose_um": 0.5,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.055996235460042953
+          },
+          {
+            "dose_um": 1.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05978531762957573
+          },
+          {
+            "dose_um": 5.0,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.11436478793621063
+          },
+          {
+            "dose_um": 10.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.0785614550113678
+          }
+        ],
+        "held_dose_um": 1.0,
+        "relative_tolerance": 1e-06,
+        "source_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.25296587747347354,
+          "std": 0.8304365127448269
+        },
+        "target_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": 0.15051500106773663,
+          "std": 0.8494849989322631
+        },
+        "weight_scale": 1.0229379198711719
+      },
+      "held_dose_um": 1.0,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 19016.685418533452,
+          "mse": 0.7817590019308195,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.0635315768944428,
+          "rmse": 0.879253605858564,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 8666.198607377539,
+          "mse": 0.5672103121681571,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.0672825012261472,
+          "rmse": 0.749737233638919,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 7191.743662261051,
+          "mse": 0.49222848989411666,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07079618964452357,
+          "rmse": 0.6980442485248459,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 6097.621341099164,
+          "mse": 0.437525876059816,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07646141097334586,
+          "rmse": 0.6572824539224291,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 5158.135215987157,
+          "mse": 0.3986931974891453,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.08301487509895883,
+          "rmse": 0.6263636842696321,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 4376.5761205383815,
+          "mse": 0.36314092942178944,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.0914765072349365,
+          "rmse": 0.596686123091612,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 3760.182195993877,
+          "mse": 0.3377178292412107,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.10502964467493367,
+          "rmse": 0.5745310550904119,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 3273.3820681190264,
+          "mse": 0.3122888854828742,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.11727705035063311,
+          "rmse": 0.5508899253244876,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 2927.8140610999103,
+          "mse": 0.2909411529046627,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.12711647444362145,
+          "rmse": 0.5304041022888801,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 2671.083453507691,
+          "mse": 0.2754592927762441,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1405333768978933,
+          "rmse": 0.5149889468300172,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 2489.5645756328404,
+          "mse": 0.2614881925082293,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.15390246585289552,
+          "rmse": 0.49958980853275814,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 2345.784199522103,
+          "mse": 0.25637413455189645,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.16133180710059938,
+          "rmse": 0.49398956078066225,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 2228.4143413511797,
+          "mse": 0.2487331107926448,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.16976885426477448,
+          "rmse": 0.4854592356800662,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 2169.425760248656,
+          "mse": 0.2425613069411196,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.17524269517760654,
+          "rmse": 0.478473739347783,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 2103.4290504592295,
+          "mse": 0.23859370122043314,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1897161942220837,
+          "rmse": 0.4735160130086223,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 2049.788038101105,
+          "mse": 0.23520996931533783,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1923667883165473,
+          "rmse": 0.4698094542958484,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 2008.8219576052868,
+          "mse": 0.2334695100662117,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19762573126774907,
+          "rmse": 0.4670262036272011,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 1971.7324673779121,
+          "mse": 0.23245088715884515,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19882719118608166,
+          "rmse": 0.4653693883601381,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 1946.4534260192652,
+          "mse": 0.23404540688390543,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1945911575792072,
+          "rmse": 0.466515911489251,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1913.7799677512694,
+          "mse": 0.22944454310219986,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1995765180784995,
+          "rmse": 0.46187230331895496,
+          "updates": 540
+        }
+      ],
+      "seed": 42,
+      "selected": {
+        "epoch": 20,
+        "loss": 1913.7799677512694,
+        "mse": 0.22944454310219986,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.1995765180784995,
+        "rmse": 0.46187230331895496,
+        "updates": 540
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.15051500106773663,
+        "std": 0.8494849989322631
+      },
+      "updates": 540
+    },
+    {
+      "arm": "random",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.2120353640232587,
+        "rmse": 0.4510435059272071
+      },
+      "dose_bridge": {},
+      "held_dose_um": 1.0,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 6437.92869343638,
+          "mse": 0.419676926740952,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.04692349926528826,
+          "rmse": 0.6437185108001733,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 3932.694771132019,
+          "mse": 0.3174236832375775,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.08528415398547579,
+          "rmse": 0.5550317251344434,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 2882.177085666816,
+          "mse": 0.2836679926595067,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.11818079235839371,
+          "rmse": 0.519570085134514,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 2495.8911441998953,
+          "mse": 0.2615337288064639,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.13935595721893446,
+          "rmse": 0.49735871062869474,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 2294.3561337925626,
+          "mse": 0.2502003434051079,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1641527696396106,
+          "rmse": 0.485799816516832,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 2179.8259198588707,
+          "mse": 0.24349124030726593,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.16717192421616456,
+          "rmse": 0.4789959657208323,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 2090.116780307273,
+          "mse": 0.23950426195110594,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1732340822642039,
+          "rmse": 0.4744211598472916,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 2025.6876435091847,
+          "mse": 0.23491948988084452,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.18149380017941136,
+          "rmse": 0.46833360197279467,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 1975.609830029122,
+          "mse": 0.2278637931357518,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2015487102414471,
+          "rmse": 0.46001601466823083,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 1948.874026937724,
+          "mse": 0.22381472076335204,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1967489065484303,
+          "rmse": 0.4573139554764588,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 1922.055015354316,
+          "mse": 0.22274543948523584,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20799167680848862,
+          "rmse": 0.4547929778938712,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 1912.103363948626,
+          "mse": 0.23028833174129337,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21265194285610198,
+          "rmse": 0.46040122170311654,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 1885.0382002781512,
+          "mse": 0.21950115319819016,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21645819409717007,
+          "rmse": 0.44979209202068143,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 1863.2626976459826,
+          "mse": 0.2273526238871154,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20994755068093468,
+          "rmse": 0.45954339776250863,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 1855.6356325138142,
+          "mse": 0.233940747440271,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20626293015095504,
+          "rmse": 0.46381238925239326,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 1835.5466871546446,
+          "mse": 0.22777642244156174,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2138291983807355,
+          "rmse": 0.45743577685988945,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 1826.7056568287037,
+          "mse": 0.2265686183356567,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2171217812522716,
+          "rmse": 0.4571450154337402,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 1809.7943268369177,
+          "mse": 0.2236537913114545,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21426609002245817,
+          "rmse": 0.4529730655698287,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 1805.059836329525,
+          "mse": 0.2246814161038363,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21064705285870236,
+          "rmse": 0.45523071001919085,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1814.054692750336,
+          "mse": 0.21981242267980114,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.22458229642719607,
+          "rmse": 0.4486612296342577,
+          "updates": 540
+        }
+      ],
+      "seed": 17,
+      "selected": {
+        "epoch": 20,
+        "loss": 1814.054692750336,
+        "mse": 0.21981242267980114,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.22458229642719607,
+        "rmse": 0.4486612296342577,
+        "updates": 540
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.15051500106773663,
+        "std": 0.8494849989322631
+      },
+      "updates": 540
+    },
+    {
+      "arm": "transfer",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.21995226528566328,
+        "rmse": 0.4560300324871364
+      },
+      "dose_bridge": {
+        "absolute_tolerance": 1e-06,
+        "bias_shift": 0.48586601425748016,
+        "checks": [
+          {
+            "dose_um": 0.05,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.10405859351158142
+          },
+          {
+            "dose_um": 0.2,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05905957147479057
+          },
+          {
+            "dose_um": 0.5,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.055996235460042953
+          },
+          {
+            "dose_um": 1.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05978531762957573
+          },
+          {
+            "dose_um": 5.0,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.11436478793621063
+          },
+          {
+            "dose_um": 10.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.0785614550113678
+          }
+        ],
+        "held_dose_um": 1.0,
+        "relative_tolerance": 1e-06,
+        "source_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.25296587747347354,
+          "std": 0.8304365127448269
+        },
+        "target_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": 0.15051500106773663,
+          "std": 0.8494849989322631
+        },
+        "weight_scale": 1.0229379198711719
+      },
+      "held_dose_um": 1.0,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 25548.148232153526,
+          "mse": 0.779249931218863,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.06321361699047232,
+          "rmse": 0.8777396380586739,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 9008.375046669653,
+          "mse": 0.5692131207456109,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.06742299067312181,
+          "rmse": 0.751066994077234,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 7402.510024641577,
+          "mse": 0.4902297043228744,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07125598617237289,
+          "rmse": 0.6966422958925147,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 6233.5964055032855,
+          "mse": 0.4365553176033506,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07732967586695035,
+          "rmse": 0.6564601482319671,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 5306.7182459677415,
+          "mse": 0.3941705212580947,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.083641712113353,
+          "rmse": 0.6225742201296731,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 4517.219695060484,
+          "mse": 0.35975479750454376,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.09309011648481735,
+          "rmse": 0.593979668441742,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 3853.924728849313,
+          "mse": 0.33450958051135116,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.10262273361209939,
+          "rmse": 0.5716322145176658,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 3354.4314282780765,
+          "mse": 0.30955946428117703,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.11655982712697813,
+          "rmse": 0.5484116510811677,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 2991.543044588187,
+          "mse": 0.2882406116879773,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.13309631886754203,
+          "rmse": 0.5278875596883958,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 2730.3404842909945,
+          "mse": 0.2727563626331435,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1412591237363556,
+          "rmse": 0.5119635133875032,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 2534.3132455477153,
+          "mse": 0.26112785800418964,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1567882013328858,
+          "rmse": 0.49906472554847625,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 2402.4401111671145,
+          "mse": 0.25942959512079056,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.16246120419596455,
+          "rmse": 0.4968862601900714,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 2281.884707287933,
+          "mse": 0.2469361865071427,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1766619652812764,
+          "rmse": 0.4831218126349318,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 2193.3434478139934,
+          "mse": 0.24005477248667584,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.18446979658432505,
+          "rmse": 0.47517966267475764,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 2133.441878780242,
+          "mse": 0.23464463480707518,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1981004680011345,
+          "rmse": 0.4688971647245934,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 2076.196388235514,
+          "mse": 0.23256548964267923,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2008711871509362,
+          "rmse": 0.4662752093114436,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 2025.515653001792,
+          "mse": 0.2293172394644498,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20370509299177292,
+          "rmse": 0.4625449573161531,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 1993.0954837776285,
+          "mse": 0.22771186656666187,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2102196881794271,
+          "rmse": 0.4606261189068935,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 1965.654596727524,
+          "mse": 0.22653388279972242,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20875517895981194,
+          "rmse": 0.4584179794288067,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1956.4823927064665,
+          "mse": 0.22527897836201052,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2173847434133963,
+          "rmse": 0.4569491697461669,
+          "updates": 540
+        }
+      ],
+      "seed": 17,
+      "selected": {
+        "epoch": 20,
+        "loss": 1956.4823927064665,
+        "mse": 0.22527897836201052,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.2173847434133963,
+        "rmse": 0.4569491697461669,
+        "updates": 540
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.15051500106773663,
+        "std": 0.8494849989322631
+      },
+      "updates": 540
+    },
+    {
+      "arm": "random",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.2348045203006569,
+        "rmse": 0.46581275984703335
+      },
+      "dose_bridge": {},
+      "held_dose_um": 10.0,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 6488.3166839344385,
+          "mse": 0.42830973368558833,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.04923265143397008,
+          "rmse": 0.6499992076317087,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 120164.51427741375,
+          "mse": 0.33375588309324206,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.08633536593245242,
+          "rmse": 0.567164611066324,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 2900.0264966957884,
+          "mse": 0.29671183481844593,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.11376549305357382,
+          "rmse": 0.5303131302722582,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 2512.8575828853045,
+          "mse": 0.27720240073511626,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1352353056516689,
+          "rmse": 0.5107942395376339,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 2301.642681964979,
+          "mse": 0.26646501460067124,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.15413897276981275,
+          "rmse": 0.49975172842750554,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 2162.8370925739246,
+          "mse": 0.25663623073440167,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1758751529203828,
+          "rmse": 0.48947552377326525,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 2091.4416792674733,
+          "mse": 0.24638525302743455,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19650469650471425,
+          "rmse": 0.47685408768744336,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 2022.8071563246715,
+          "mse": 0.2535687391821225,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20775968725799884,
+          "rmse": 0.48200859923575434,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 1981.1288794149493,
+          "mse": 0.24453086213319916,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20924842988477776,
+          "rmse": 0.47467887972079503,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 1939.5771531044654,
+          "mse": 0.24358542143582823,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21456607237154363,
+          "rmse": 0.47350891955001045,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 1917.3531656025987,
+          "mse": 0.24120861802974372,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.22151739208080548,
+          "rmse": 0.4692539698118683,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 1887.3059429136797,
+          "mse": 0.24427802139951438,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21869793953215683,
+          "rmse": 0.47290519153888655,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 1853.2243118559588,
+          "mse": 0.2412945640235846,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21891303709328241,
+          "rmse": 0.46932479335279664,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 1863.1948353027926,
+          "mse": 0.241614801182815,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2223075319660188,
+          "rmse": 0.4696199487930721,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 1844.4916414650538,
+          "mse": 0.23994642663563506,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.24202557542930273,
+          "rmse": 0.4659176962613177,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 1823.8775411626343,
+          "mse": 0.24032981969629658,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.22351787055825062,
+          "rmse": 0.4683970242663053,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 1831.8551525630974,
+          "mse": 0.23794654622443115,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2252777820316543,
+          "rmse": 0.465552990092188,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 1807.6631279401881,
+          "mse": 0.23551630856274472,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2402875004038869,
+          "rmse": 0.46135287991785573,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 1807.993726431825,
+          "mse": 0.23617875460864873,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2464669752371342,
+          "rmse": 0.4612040911404186,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1787.779011023372,
+          "mse": 0.23715704201356588,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2343932061864181,
+          "rmse": 0.46420361935465976,
+          "updates": 540
+        }
+      ],
+      "seed": 42,
+      "selected": {
+        "epoch": 19,
+        "loss": 1807.993726431825,
+        "mse": 0.23617875460864873,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.2464669752371342,
+        "rmse": 0.4612040911404186,
+        "updates": 513
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.3494849989322634,
+        "std": 0.34948499893226337
+      },
+      "updates": 540
+    },
+    {
+      "arm": "transfer",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.20751629998561263,
+        "rmse": 0.4801453434528449
+      },
+      "dose_bridge": {
+        "absolute_tolerance": 1e-06,
+        "bias_shift": -0.11622697217366679,
+        "checks": [
+          {
+            "dose_um": 0.05,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05927293375134468
+          },
+          {
+            "dose_um": 0.2,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05084843188524246
+          },
+          {
+            "dose_um": 0.5,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.1014833003282547
+          },
+          {
+            "dose_um": 1.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.057849474251270294
+          },
+          {
+            "dose_um": 5.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05910208076238632
+          },
+          {
+            "dose_um": 10.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.0785614550113678
+          }
+        ],
+        "held_dose_um": 10.0,
+        "relative_tolerance": 1e-06,
+        "source_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.25296587747347354,
+          "std": 0.8304365127448269
+        },
+        "target_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.3494849989322634,
+          "std": 0.34948499893226337
+        },
+        "weight_scale": 0.42084493344002527
+      },
+      "held_dose_um": 10.0,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 17128.880749701315,
+          "mse": 0.7969716237368776,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.06519377230881818,
+          "rmse": 0.8879533065722411,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 8562.343572655316,
+          "mse": 0.580756773865757,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.06808560132629354,
+          "rmse": 0.758630718994602,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 7145.159157519414,
+          "mse": 0.5065942722496531,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.06919952953404307,
+          "rmse": 0.7079095130513989,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 6060.500457362605,
+          "mse": 0.4545952187881563,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07356646222548441,
+          "rmse": 0.6695607398641171,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 5124.6706312537335,
+          "mse": 0.41466890196201756,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07967135370231815,
+          "rmse": 0.6381814270223356,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 4349.222243223567,
+          "mse": 0.3786992949683136,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.08745079822290966,
+          "rmse": 0.6083776780128215,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 3735.812593339307,
+          "mse": 0.3522843166231363,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.09796594451104687,
+          "rmse": 0.585677357758173,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 3245.8439623469235,
+          "mse": 0.32745306846915906,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.11248887559995913,
+          "rmse": 0.5625944679953787,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 2903.136791087963,
+          "mse": 0.30883792656970255,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.11936742078832635,
+          "rmse": 0.5452186584621205,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 2641.9097782258063,
+          "mse": 0.2910608283095116,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.13687861995223588,
+          "rmse": 0.5274853991765165,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 2463.7108628285546,
+          "mse": 0.27740449394292543,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1505839018243431,
+          "rmse": 0.5129327714619698,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 2323.5684993839604,
+          "mse": 0.27155033477557916,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.15739980418367588,
+          "rmse": 0.5067869699681731,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 2203.3479047659052,
+          "mse": 0.2673904236734391,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.16325741128687882,
+          "rmse": 0.5018277276029838,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 2146.7149942596325,
+          "mse": 0.2590632145573907,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.17350307902503787,
+          "rmse": 0.49263260182113666,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 2079.0573640046296,
+          "mse": 0.2551714571557926,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.18844150666569776,
+          "rmse": 0.4877236775466932,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 2018.3265347315562,
+          "mse": 0.2527653484584976,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.18825219708328975,
+          "rmse": 0.48554588944285526,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 1987.1307298667114,
+          "mse": 0.2503690092190153,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19203154490282265,
+          "rmse": 0.4823467350409202,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 1950.1578297677718,
+          "mse": 0.24889710248290317,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19607200470759195,
+          "rmse": 0.48010849170102654,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 1925.9473146281362,
+          "mse": 0.24995597059386662,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19806833560392673,
+          "rmse": 0.48055728718936924,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1885.3567684998507,
+          "mse": 0.2443286226820999,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2032403632076703,
+          "rmse": 0.4751144228411245,
+          "updates": 540
+        }
+      ],
+      "seed": 42,
+      "selected": {
+        "epoch": 20,
+        "loss": 1885.3567684998507,
+        "mse": 0.2443286226820999,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.2032403632076703,
+        "rmse": 0.4751144228411245,
+        "updates": 540
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.3494849989322634,
+        "std": 0.34948499893226337
+      },
+      "updates": 540
+    },
+    {
+      "arm": "random",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.20067469436850718,
+        "rmse": 0.4696214085771596
+      },
+      "dose_bridge": {},
+      "held_dose_um": 10.0,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 6471.46609916368,
+          "mse": 0.4295407083907592,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.050520086465193084,
+          "rmse": 0.6508866301471834,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 3854.389558598417,
+          "mse": 0.33102589018858186,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07994826508221078,
+          "rmse": 0.5657421208175202,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 2866.3134578946388,
+          "mse": 0.29914340211467977,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1118956681799059,
+          "rmse": 0.5326225761465353,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 2479.521991907482,
+          "mse": 0.2719764364804684,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1377255164784335,
+          "rmse": 0.5053862546185772,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 2265.8127683505077,
+          "mse": 0.264408715545975,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1649105292118922,
+          "rmse": 0.4969027240966172,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 2148.0940043496116,
+          "mse": 0.2581224028732763,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.17418097846321656,
+          "rmse": 0.4902496208442234,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 2056.8129433617087,
+          "mse": 0.2482257761985528,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1969591689673213,
+          "rmse": 0.4787599979744114,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 1988.6385563676076,
+          "mse": 0.2469017117548153,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1969428528334644,
+          "rmse": 0.4767289198129482,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 1945.5118272569443,
+          "mse": 0.24186268714239342,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.21714928216038618,
+          "rmse": 0.4702494343718946,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 1917.0430807571684,
+          "mse": 0.23665353243414347,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2159217024901912,
+          "rmse": 0.46608881643757505,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 1900.4538227113203,
+          "mse": 0.2350905389839486,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2263900879303995,
+          "rmse": 0.4628071409496191,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 1882.1118508251195,
+          "mse": 0.2440189521311731,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2342013274966787,
+          "rmse": 0.46975650008091746,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 1852.59113416592,
+          "mse": 0.23350686207898694,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.23886964626163218,
+          "rmse": 0.4601702162667563,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 1835.7536810689217,
+          "mse": 0.2451536036925339,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.22264708242903822,
+          "rmse": 0.4726414792940962,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 1834.9038768481182,
+          "mse": 0.24493678664269214,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.23557853068802986,
+          "rmse": 0.4704038331290741,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 1801.8320639187575,
+          "mse": 0.24230419841365294,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.24145158507424783,
+          "rmse": 0.4675538694429046,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 1808.5840928819443,
+          "mse": 0.24089998424226416,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.23938129866552416,
+          "rmse": 0.4669173152164804,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 1794.8427687705346,
+          "mse": 0.2391591336591516,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2493898528092591,
+          "rmse": 0.46388816339424366,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 1776.018385510006,
+          "mse": 0.24164200423233717,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.22965783909741308,
+          "rmse": 0.46907758971608615,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1799.909017510454,
+          "mse": 0.23479892105369937,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.26271924840812494,
+          "rmse": 0.45843984501841717,
+          "updates": 540
+        }
+      ],
+      "seed": 17,
+      "selected": {
+        "epoch": 20,
+        "loss": 1799.909017510454,
+        "mse": 0.23479892105369937,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.26271924840812494,
+        "rmse": 0.45843984501841717,
+        "updates": 540
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.3494849989322634,
+        "std": 0.34948499893226337
+      },
+      "updates": 540
+    },
+    {
+      "arm": "transfer",
+      "assessment": {
+        "n_parents": 15,
+        "n_pcc_parents": 15,
+        "n_pcc_profiles": 47,
+        "n_profiles": 47,
+        "pcc": 0.21500163164110928,
+        "rmse": 0.47825296268934525
+      },
+      "dose_bridge": {
+        "absolute_tolerance": 1e-06,
+        "bias_shift": -0.11622697217366679,
+        "checks": [
+          {
+            "dose_um": 0.05,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05927293375134468
+          },
+          {
+            "dose_um": 0.2,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05084843188524246
+          },
+          {
+            "dose_um": 0.5,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.1014833003282547
+          },
+          {
+            "dose_um": 1.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.057849474251270294
+          },
+          {
+            "dose_um": 5.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05910208076238632
+          },
+          {
+            "dose_um": 10.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.0785614550113678
+          }
+        ],
+        "held_dose_um": 10.0,
+        "relative_tolerance": 1e-06,
+        "source_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.25296587747347354,
+          "std": 0.8304365127448269
+        },
+        "target_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.3494849989322634,
+          "std": 0.34948499893226337
+        },
+        "weight_scale": 0.42084493344002527
+      },
+      "held_dose_um": 10.0,
+      "history": [
+        {
+          "epoch": 1,
+          "loss": 21364.757065785543,
+          "mse": 0.7883090220696795,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.0652888272368061,
+          "rmse": 0.8830716645299722,
+          "updates": 27
+        },
+        {
+          "epoch": 2,
+          "loss": 8753.74172547043,
+          "mse": 0.5846049362588106,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.06925780586732584,
+          "rmse": 0.7610574030432695,
+          "updates": 54
+        },
+        {
+          "epoch": 3,
+          "loss": 7283.185325194146,
+          "mse": 0.5052523384350882,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.06955440021297878,
+          "rmse": 0.7069570034122724,
+          "updates": 81
+        },
+        {
+          "epoch": 4,
+          "loss": 6145.023066476255,
+          "mse": 0.45151089327376404,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.07421686113665818,
+          "rmse": 0.6671412321150609,
+          "updates": 108
+        },
+        {
+          "epoch": 5,
+          "loss": 5207.36122311828,
+          "mse": 0.41183326046253466,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.08024448854342081,
+          "rmse": 0.6357639415234453,
+          "updates": 135
+        },
+        {
+          "epoch": 6,
+          "loss": 4422.7916013291515,
+          "mse": 0.3771192274591048,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.08735467626387333,
+          "rmse": 0.6074522179211789,
+          "updates": 162
+        },
+        {
+          "epoch": 7,
+          "loss": 3776.588943025687,
+          "mse": 0.3508908990121636,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.09735063603561939,
+          "rmse": 0.5845390441079545,
+          "updates": 189
+        },
+        {
+          "epoch": 8,
+          "loss": 3295.744632989845,
+          "mse": 0.32442515192975785,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1099497183145122,
+          "rmse": 0.560165610667013,
+          "updates": 216
+        },
+        {
+          "epoch": 9,
+          "loss": 2941.566060894564,
+          "mse": 0.30684083837289616,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.12337554903255779,
+          "rmse": 0.5435368262681257,
+          "updates": 243
+        },
+        {
+          "epoch": 10,
+          "loss": 2690.3820681190264,
+          "mse": 0.2894429384714033,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1328131026614937,
+          "rmse": 0.5263652550510975,
+          "updates": 270
+        },
+        {
+          "epoch": 11,
+          "loss": 2498.5826706242533,
+          "mse": 0.2805119790417599,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.14630814342141024,
+          "rmse": 0.5160359755651427,
+          "updates": 297
+        },
+        {
+          "epoch": 12,
+          "loss": 2365.572659983572,
+          "mse": 0.2777374009659023,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.15235454997830855,
+          "rmse": 0.5129106929781694,
+          "updates": 324
+        },
+        {
+          "epoch": 13,
+          "loss": 2246.5607965576464,
+          "mse": 0.26402101889297896,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1682666438509413,
+          "rmse": 0.498089858261786,
+          "updates": 351
+        },
+        {
+          "epoch": 14,
+          "loss": 2162.758668888142,
+          "mse": 0.2574081536332391,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.1783701166652119,
+          "rmse": 0.490204388868644,
+          "updates": 378
+        },
+        {
+          "epoch": 15,
+          "loss": 2106.5423037074374,
+          "mse": 0.2538370959242418,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.188044930927788,
+          "rmse": 0.48611465732106024,
+          "updates": 405
+        },
+        {
+          "epoch": 16,
+          "loss": 2038.1058491076762,
+          "mse": 0.24962956088733904,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.19776747922629118,
+          "rmse": 0.48099561468208946,
+          "updates": 432
+        },
+        {
+          "epoch": 17,
+          "loss": 2000.5817558990443,
+          "mse": 0.24651592371449738,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2006742444527515,
+          "rmse": 0.47733503336131483,
+          "updates": 459
+        },
+        {
+          "epoch": 18,
+          "loss": 1966.089630236335,
+          "mse": 0.2451129194459774,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2109429688126264,
+          "rmse": 0.4757223545003641,
+          "updates": 486
+        },
+        {
+          "epoch": 19,
+          "loss": 1931.2679141465053,
+          "mse": 0.2441599608008991,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.20606166965854417,
+          "rmse": 0.47434976549363306,
+          "updates": 513
+        },
+        {
+          "epoch": 20,
+          "loss": 1928.265679836843,
+          "mse": 0.2439279256920489,
+          "n_parents": 16,
+          "n_pcc_parents": 16,
+          "n_pcc_profiles": 98,
+          "n_profiles": 98,
+          "pcc": 0.2101518803505651,
+          "rmse": 0.4737348365403806,
+          "updates": 540
+        }
+      ],
+      "seed": 17,
+      "selected": {
+        "epoch": 18,
+        "loss": 1966.089630236335,
+        "mse": 0.2451129194459774,
+        "n_parents": 16,
+        "n_pcc_parents": 16,
+        "n_pcc_profiles": 98,
+        "n_profiles": 98,
+        "pcc": 0.2109429688126264,
+        "rmse": 0.4757223545003641,
+        "updates": 486
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.3494849989322634,
+        "std": 0.34948499893226337
+      },
+      "updates": 540
+    }
+  ],
+  "learning_rate": 0.0001,
+  "outer_fold": 0,
+  "outer_scenario": "cold-drug",
+  "outer_split_seed": 226,
+  "schema": "stage2-opt-264-dose-crossing-v1",
+  "seeds": [
+    42,
+    17
+  ],
+  "selection": "earliest maximum parent-equal Delta PCC",
+  "tables_sha256": {
+    "parent_pairs.csv": "a6c23a10615b8d1ad44348a696a757dca78a8dcd48a9787ab22253ccaa6ab820",
+    "summary.csv": "935df4f304eeef1d4ab4fe0ab77732a3ecc00b3df297582cd769f94d3ec8452b"
+  },
+  "tenv_manifest_sha256": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e",
+  "winner_sha256": "76c9f5846e06932309ece2801d204511b0b278314b6f3afb25d99708d5fd1b0e"
+}
