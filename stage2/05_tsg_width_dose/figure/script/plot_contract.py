@@ -27,6 +27,6 @@ def read_rows(directory, name):
 
 def write_rows(directory, name, rows):
     with (directory / f'{name}.csv').open('w', newline='', encoding='utf-8') as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator='\n')
         writer.writeheader()
         writer.writerows(rows)
