@@ -92,3 +92,10 @@ systemd cap and shared GPU lease. The scope recorded all 12 fits and
 terminal status 0. A separate metadata replay reproduced every role
 digest and observed count. All 90 parent-dose-seed rows reconciled
 with the per-fit assessment and reported paired means.
+
+The review replay used the shared canonical Delta vector scorer. It restored
+the same checkpoint epochs and reproduced the paired summary CSV byte for
+byte. The largest absolute numeric differences were `1.11e-16` in the fit
+receipt and `1.00e-15` in the parent-pair CSV. The replay took 2:03.46 at
+2,191,588 KiB peak RSS. Its run receipt SHA-256 was
+`d7915fdc7476aa9fe14bb6aa2a79085ef68d4761fbf090d5d72225ac812228ff`.

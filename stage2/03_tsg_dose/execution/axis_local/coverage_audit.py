@@ -73,8 +73,7 @@ def summarize_scores(scores, seed, draws):
 
 def nearest_similarity(fingerprints, training_parents):
     values = fingerprints.to_numpy(dtype=np.float32)
-    training_parents = sorted(training_parents)
-    train_rows = fingerprints.index.get_indexer(training_parents)
+    train_rows = fingerprints.index.get_indexer(sorted(set(training_parents)))
     if (len(train_rows) < 2 or (train_rows < 0).any()
             or not np.isin(values, [0, 1]).all() or (values.sum(axis=1) == 0).any()):
         raise ValueError("Need binary, nonempty ECFP4 vectors and at least two known training parents")

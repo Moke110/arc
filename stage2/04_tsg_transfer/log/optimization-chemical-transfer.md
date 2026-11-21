@@ -102,3 +102,9 @@ Run date 2026-11-21, capped CUDA wall time 60.84 s, peak RSS 2,204,276 KiB.
 Report SHA-256 `6e16ea6e999cc340920979b5676e46ecbca1a960fe44f4cb82f24d07d92b6ee4`.
 The report records training curves, role and manifest digests, input
 identities, exact reload checks and similarity denominators.
+
+The review replay used the shared canonical Delta vector scorer. It kept the
+same selected epochs and exact checkpoint reload checks, with a largest
+absolute numeric difference of `1.67e-16` across the JSON. The capped replay
+took 69.12 seconds at 2,210,232 KiB peak RSS and produced SHA-256
+`a60af09543fd76273e34da0ae2cfae3973741e881ac1d0c530e7c93e91fc1df4`.
