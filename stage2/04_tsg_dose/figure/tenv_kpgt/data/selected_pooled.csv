@@ -1,0 +1,2 @@
+source,scenario,seed,method,n_samples,constant_truth_count,constant_prediction_count,nonfinite_count,pcc,undefined_pcc_count,spearman,undefined_spearman_count,rmse,undefined_rmse_count,r2,undefined_r2_count
+tenv,cold-drug,42,selected-procedure,4206,0,0,0,0.29639447023525956,0,0.30582601730358866,0,0.4140709917501019,0,-0.034960951530836754,0

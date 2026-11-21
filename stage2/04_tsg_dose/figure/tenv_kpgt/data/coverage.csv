@@ -1,0 +1,7 @@
+fold,n_population_samples,n_held_parents,n_test_parents,n_test_samples,n_train_samples,n_validation_samples,test_population_fraction,test_scope,scenario,held_dose_um,n_excluded_held_parent,n_excluded_held_dose
+0,4206,153,153,1407,2511,288,0.33452211126961484,all dose samples for held parents,cold-drug,,,
+1,4206,153,153,1404,2523,279,0.3338088445078459,all dose samples for held parents,cold-drug,,,
+2,4206,153,153,1395,2529,282,0.33166904422253923,all dose samples for held parents,cold-drug,,,
+0,4206,153,153,469,1674,192,0.11150737042320495,held-parent × held-dose intersections only,cold-drug-dose,0.2,938.0,933.0
+1,4206,153,153,468,1682,186,0.11126961483594865,held-parent × held-dose intersections only,cold-drug-dose,1.0,936.0,934.0
+2,4206,153,153,465,1686,188,0.11055634807417974,held-parent × held-dose intersections only,cold-drug-dose,10.0,930.0,937.0
