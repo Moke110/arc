@@ -4,9 +4,10 @@
   "bootstrap_draws": 4000,
   "split_seed": 226,
   "published_fit_seed": 42,
+  "nearest_fit_parent": "exclude-self-parent-by-identity",
   "tables_sha256": {
-    "condition_coverage.csv": "9aa79f841b2a022f386de64dffd29887056f3ba31dc7be6fb323f61206e8e078",
-    "coverage.csv": "fd69814859e1652038d2bd330ac464423ab0040977b1a09ce0d48d6bc1273226",
+    "condition_coverage.csv": "ea30de8a627dccc358d6f8fcb31b77d54e45b899476e9f8b8010b4eac0eac227",
+    "coverage.csv": "55b3036f213a26d929d64f6233bc3b4be0ec4702219362ced54f1338c4bbdd58",
     "development_joint_support.csv": "5926c537d0b6bdac5f3c465c13210e49de44f48b9aa53b5b3dd5f556ab35255f",
     "development_similarity.csv": "bc81a42af77f5d9861c5669528e741eae1e5bad33906c54429e4edf217186815",
     "published_domain_gap.csv": "f00ccc1c49b457eea12c18be594df0e87eac0817c113467dc3df49dcb7cdddc5",

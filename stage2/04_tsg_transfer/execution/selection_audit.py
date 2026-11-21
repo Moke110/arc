@@ -1,7 +1,5 @@
 """Audit preserved validation evidence and compare bounded development selection rules."""
 import argparse
-import hashlib
-import json
 from pathlib import Path
 import sys
 
@@ -10,7 +8,8 @@ import pandas as pd
 STEP = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(STEP / 'output/api'))
 
-from tsg_transfer import development, fit, tenv, transfer
+from tsg_transfer import fit, tenv, transfer
+import development
 
 
 def audit(data, experiment):
@@ -52,14 +51,6 @@ def run(args):
         return transfer.initialize_from_tahoe(source_fit, recipient, winner['transform'], transform,
                                              source_doses + tenv.DOSES, held_dose=tenv.DOSES[args.fold])
 
-    identity = {}
-    for role, indices in split.items():
-        rows = data.obs.iloc[indices]
-        identity[role] = dict(n_profiles=len(rows), n_parents=int(rows.drug_parent_inchikey.nunique()),
-                              ordered_profile_sha256=hashlib.sha256(
-                                  json.dumps(list(rows.index), separators=(',', ':')).encode()).hexdigest(),
-                              doses_um=sorted(rows.dose_um.unique()))
-
     results = []
     for seed in args.seeds:
         for lr in args.learning_rates:
@@ -75,7 +66,7 @@ def run(args):
         fold=args.fold, held_dose_um=tenv.DOSES[args.fold], epochs=args.epochs,
         split_sha256=fit.sha256(args.experiment / 'tenv-split' / 'manifest.json'),
         winner_sha256=winner['checkpoint_sha256'], learning_rates=args.learning_rates,
-        seeds=args.seeds, identities=identity, results=results,
+        seeds=args.seeds, identities=development.role_identities(data, split), results=results,
     ))
 
 

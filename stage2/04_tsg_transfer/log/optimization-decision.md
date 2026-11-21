@@ -113,16 +113,26 @@ for chemical perturbations and provide no tenv effect estimate.
 1. Freeze a new parent-disjoint development split inside Step 03 fold 0
    cold-drug-dose development (1 and 10 µM). Keep the original validation
    parents for selection and reserve 30 new assessment parents from the
-   frozen training role by a published hash ordering. Require both doses
-   for each selected assessment parent. All 275 eligible frozen training
-   parents currently cover both doses. Report coverage by dose and Tanimoto
-   band. Freeze the actual identities before training. The
-   formal test parents, held dose, and excluded strips stay outside this run.
+   frozen training role. Among parents with both doses, sort the exact
+   parent InChIKey strings by ascending SHA-256 of their UTF-8 bytes, with
+   the original string as a tie break, and take the first 30. The compact
+   JSON array of those keys in hash order (UTF-8 with no spaces or trailing
+   newline) has SHA-256
+   `a62350f10f1dbadf9509d7ff0abdf1966af4a283d7b27aec407be16bedc72c9c`.
+   All 275 frozen fit parents qualify. The resulting fit, selection and
+   assessment roles have 245, 31 and 30 parents respectively. Their counts
+   are 1,492, 192 and 182 profiles,
+   split equally across 1 and 10 µM within each role. Preserve frozen row
+   ordering and report Tanimoto coverage before starting fits. The formal
+   test parents, held dose and excluded strips stay outside this run.
+   [Frozen tenv split receipt](optimization-selection.md)
 2. Run random, full transfer and chemical-only at `1e-4` with fresh Adam,
-   the same 64-profile batch protocol, seeds 42, 17 and 2026, and matched
-   checkpoints at budget caps of 540 and 2,160 optimizer updates. Evaluate
-   validation at common update steps and retain the earliest maximum
-   parent-equal Δ PCC state within each budget. Log the minimum-MSE state
+   the same 64-profile batch protocol, and seeds 42, 17 and 2026. The 1,492
+   fit profiles yield 24 updates per epoch, including the final 20-profile
+   batch. Use 23 and 90 complete epochs (552 and 2,160 updates) so selection
+   uses native epoch boundaries. The first cap approximates the 540-update
+   pilot. Evaluate validation after each complete epoch and retain the
+   earliest maximum parent-equal Δ PCC state within each budget. Log the minimum-MSE state
    as a secondary comparison from the same trajectories. Evaluate both
    only after locking their choices. The 2,160-update comparison is
    primary, with nine fits under a single capped GPU lease scheduled

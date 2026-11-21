@@ -73,12 +73,16 @@ def summarize_scores(scores, seed, draws):
 
 def nearest_similarity(fingerprints, training_parents):
     values = fingerprints.to_numpy(dtype=np.float32)
-    train = fingerprints.loc[sorted(training_parents)].to_numpy(dtype=np.float32)
-    if not len(train) or not np.isin(values, [0, 1]).all() or np.any(values.sum(axis=1) == 0):
-        raise ValueError("Need binary, nonempty ECFP4 vectors and at least one training parent")
+    train_rows = fingerprints.index.get_indexer(sorted(set(training_parents)))
+    if (len(train_rows) < 2 or (train_rows < 0).any()
+            or not np.isin(values, [0, 1]).all() or (values.sum(axis=1) == 0).any()):
+        raise ValueError("Need binary, nonempty ECFP4 vectors and at least two known training parents")
+    train = values[train_rows]
     intersection = values @ train.T
     union = values.sum(axis=1)[:, None] + train.sum(axis=1) - intersection
-    return pd.Series((intersection / union).max(axis=1), index=fingerprints.index)
+    similarities = intersection / union
+    similarities[train_rows, np.arange(len(train_rows))] = -np.inf
+    return pd.Series(similarities.max(axis=1), index=fingerprints.index)
 
 
 def inspect_coverage(rows):
@@ -252,7 +256,8 @@ def main():
                      for path in sorted(args.output.glob("*.csv"))}
     (args.output / "run.json").write_text(json.dumps(
         dict(schema="stage2-map-261-coverage-audit-v1", bootstrap_seed=args.seed,
-             bootstrap_draws=args.draws, split_seed=226, published_fit_seed=42, tables_sha256=table_digests), indent=2) + "\n")
+             bootstrap_draws=args.draws, split_seed=226, published_fit_seed=42,
+             nearest_fit_parent="exclude-self-parent-by-identity", tables_sha256=table_digests), indent=2) + "\n")
 
 
 if __name__ == "__main__":

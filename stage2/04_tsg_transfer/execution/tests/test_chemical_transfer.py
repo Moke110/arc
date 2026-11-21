@@ -6,8 +6,9 @@ import unittest
 import torch
 from torch import nn
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'output/api'))
-from tsg_transfer.chemical import initialize_chemical
+from chemical_handoff import initialize_chemical
 
 
 class ChemicalTransferTest(unittest.TestCase):
