@@ -1,8 +1,8 @@
 {
-  "candidate_receipt_sha256": "4e38903072fe055680ee1225d7bb76bfb5c79e3ffdf344d5474b0d03e452a986",
+  "candidate_receipt_sha256": "7f0252493829c4defd17755224759ed24a01c7c35ed0106e59f4d1747df04831",
   "files": {
     "README.md": "fa46ae53d3eb058513430af5bebe51ea3c5c40e5b1bf51dde5f22519f8a20d05",
-    "figure/data/axis_segments.csv": "47d2fbe25413994a3d494c68ec5a1395028ece409ef15cbf7cca1c1a9d1f7871",
+    "figure/data/axis_segments.csv": "a194fdfaa9f48394d632117e2a2fe10e29d570a2f69114c0205d2a706cb56c6c",
     "figure/data/curves.csv": "0df9142ac4b49f8224e065e9cef8a8b6f2d1faccde7826768e4ba157a3b91e19",
     "figure/data/dose.csv": "a0a5f1cdde9c19ddc01e27a30b181d9d6daf512729c8f04b7418bb8cb30f44dd",
     "figure/data/paired.csv": "b0c98aaebfd36c272b100a314784a3a733c7e93b1091b3c73e2b2707f7b6d47e",
@@ -19,7 +19,7 @@
   "formal_acceptance_sha256": "8b3fc43388b99269c562840d8d3dcf69442b6f732ee994501d4c3ddac46edbae",
   "fresh_csv_only_replay": "PASS",
   "inputs_sha256": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e",
-  "renderer_sha256": "03b0e77601877fc3196ef67e604475841b70997eb4204a88151f715331ba2872",
+  "renderer_sha256": "223feccf854ba40d4e1ba303fbd13c9e57f84c849d60b658e4b18f9e437287b4",
   "representations_sha256": "bc10c6af897b1b0d939a685aa198e03b22a3392e3891b721f70cc49f1f028678",
   "schema": "tsg-drug-emb-report-acceptance-v1",
   "status": "PASS",

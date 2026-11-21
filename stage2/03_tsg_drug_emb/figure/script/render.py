@@ -1,5 +1,6 @@
 """Render the tenv cold-drug figures using only plotted CSV data."""
 import argparse
+import csv
 import json
 import math
 from pathlib import Path
@@ -61,7 +62,10 @@ def prepare_axes(data):
         if segments[-1]["upper"] > 0 and all(value >= 0 for value in plotted if math.isfinite(value)):
             row["segments"] = json.dumps([base["linear_segment"](
                 0., segments[-1]["upper"], show_zero=True)])
-    base["write_rows"](data / "axis_segments.csv", axes)
+    with (data / "axis_segments.csv").open("x", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(axes[0]), lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(axes)
 
 
 def overall(base, tables, axes, output):
