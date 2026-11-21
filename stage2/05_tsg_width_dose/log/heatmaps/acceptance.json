@@ -1,0 +1,21 @@
+{
+  "predecessor_receipt": "../281-acceptance/acceptance.json",
+  "csv_only_replay": "byte-identical",
+  "source_tables": {
+    "data/metrics_balloon.csv": "78d2ad68c0c2b7eb2161939fbdea0ca22ed81b233ba9cdbd489b5e04d195a9c0",
+    "data/metrics_per_dose_ballone.csv": "50c3331d2e2dd4829e17d4366702d30c312fb1fcd2484aa5b5c43f019c483bca"
+  },
+  "scripts": {
+    "heatmaps/render_heatmaps.py": "5a640d0613c3bbade41f58db708426e1b3da5592ad48074716b47b83d2fd0314",
+    "script/render.py": "023ecc4a8b266fcd1b9d0e6b20e72ea8629721cdaef070368f6183ca8640b9f7",
+    "script/plot_contract.py": "79196af1f5946289bfe60b34d0c62024c9851b1677191fa28e8b1237f8463fa5"
+  },
+  "figures": {
+    "metrics_heatmap.png": "e50efc3584311f9f099c643292b2771016cbeb8ca1a6b9662672d8c9eaf822f9",
+    "metrics_per_dose_heatmap.png": "147e265be6679e6ab8ee8ded83295627050e4c485ed5815285a191c32158af12"
+  },
+  "replaces": {
+    "metrics_balloon.png": "metrics_heatmap.png",
+    "metrics_per_dose_ballone.png": "metrics_per_dose_heatmap.png"
+  }
+}
