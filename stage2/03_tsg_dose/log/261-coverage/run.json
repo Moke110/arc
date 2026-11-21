@@ -1,0 +1,17 @@
+{
+  "schema": "stage2-map-261-coverage-audit-v1",
+  "bootstrap_seed": 261,
+  "bootstrap_draws": 4000,
+  "split_seed": 226,
+  "published_fit_seed": 42,
+  "tables_sha256": {
+    "condition_coverage.csv": "9aa79f841b2a022f386de64dffd29887056f3ba31dc7be6fb323f61206e8e078",
+    "coverage.csv": "fd69814859e1652038d2bd330ac464423ab0040977b1a09ce0d48d6bc1273226",
+    "development_joint_support.csv": "5926c537d0b6bdac5f3c465c13210e49de44f48b9aa53b5b3dd5f556ab35255f",
+    "development_similarity.csv": "bc81a42af77f5d9861c5669528e741eae1e5bad33906c54429e4edf217186815",
+    "published_domain_gap.csv": "f00ccc1c49b457eea12c18be594df0e87eac0817c113467dc3df49dcb7cdddc5",
+    "published_parent.csv": "11985e0387e57e0218a672ceecb70204acf1f9a84435294cafa0a6235d9bf8b8",
+    "published_scores.csv": "350a2a8dc96a545be42683ae191624f1845a4efb31fee0a8df8e0994d181b307",
+    "replicate_counts.csv": "04fa8daa4017ba43e4d67c48d066acc0490c4cc9b6e0224c1c4f0604942f4080"
+  }
+}
