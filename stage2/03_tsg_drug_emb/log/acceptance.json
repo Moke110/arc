@@ -1,0 +1,27 @@
+{
+  "candidate_receipt_sha256": "7f0252493829c4defd17755224759ed24a01c7c35ed0106e59f4d1747df04831",
+  "files": {
+    "README.md": "fa46ae53d3eb058513430af5bebe51ea3c5c40e5b1bf51dde5f22519f8a20d05",
+    "figure/data/axis_segments.csv": "a194fdfaa9f48394d632117e2a2fe10e29d570a2f69114c0205d2a706cb56c6c",
+    "figure/data/curves.csv": "0df9142ac4b49f8224e065e9cef8a8b6f2d1faccde7826768e4ba157a3b91e19",
+    "figure/data/dose.csv": "a0a5f1cdde9c19ddc01e27a30b181d9d6daf512729c8f04b7418bb8cb30f44dd",
+    "figure/data/paired.csv": "b0c98aaebfd36c272b100a314784a3a733c7e93b1091b3c73e2b2707f7b6d47e",
+    "figure/data/paired_parents.csv": "bdb8e3538630d6d3bc11db945b92bfb280bcb5634ed5fe8c2668c7a118a5774a",
+    "figure/data/parent_pcc.csv": "aa0bfb092242ab5b3059d16ec2e8bd8cfbae647ef3ccfa06274260eadfc484a5",
+    "figure/data/pooled.csv": "c1cc62e051f455c263e3e8d6f0f0cf7d9c8a41d0ded8dba689f2390f3274441e",
+    "figure/data/runs.csv": "6109462d23e79108f5d74888bb3725e1b7b5379a982854f8909c2a72a862b31e",
+    "figure/data/summary.csv": "a58bc30a9a6cea8cb11f5b2fe056055ea4c93f9969d2fe7c3dd49214d5e7a279",
+    "figure/learning_curves.png": "262e9a06d9d3555097314d2b6bcf1c720ff606d9f33126fe9aeb65170db6ae1a",
+    "figure/metrics.png": "4f5dc6940704db42291457a5b1fd6786482bde727c3ba12835e81b87cb1cfb85",
+    "figure/metrics_cold_drug_dose.png": "fb00a51036df856bb67192c668f1e7cce0969ccea4b8dd0b4dc21a206fd225aa",
+    "log/run_inventory.json": "d04febdfd41051499cda85f95bfc2c6ddfb5c53bd52a86b1d107161721deaf0e"
+  },
+  "formal_acceptance_sha256": "8b3fc43388b99269c562840d8d3dcf69442b6f732ee994501d4c3ddac46edbae",
+  "fresh_csv_only_replay": "PASS",
+  "inputs_sha256": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e",
+  "renderer_sha256": "223feccf854ba40d4e1ba303fbd13c9e57f84c849d60b658e4b18f9e437287b4",
+  "representations_sha256": "bc10c6af897b1b0d939a685aa198e03b22a3392e3891b721f70cc49f1f028678",
+  "schema": "tsg-drug-emb-report-acceptance-v1",
+  "status": "PASS",
+  "visual_review": "Reviewed all three actual PNGs. Checked four test metric panels, eight learning panels, all fold and representation legends, readable axes, sole gray Mean_cell reference, and no clipped marks or labels."
+}
