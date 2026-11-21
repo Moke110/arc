@@ -17,6 +17,7 @@ from publish_axis_local_report import (
 STEP = Path(__file__).resolve().parents[2]
 AXIS_LOCAL_ARCHIVE = Path('execution/historical/report_axis_local')
 PRESENTATION_RECEIPT = Path('log/baselines-gray-acceptance.json')
+KPGT_PRESENTATION_RECEIPT = Path('log/275-kpgt-formal/acceptance.json')
 CHECKS = ('check_paths.sh', 'check_tracked.sh', 'verify_all.sh')
 HEALTH_SCHEMA = 'tsg-dose-round1-axis-local-health-v1'
 SUCCESSOR_SCHEMA = 'tsg-dose-round1-baselines-report-v1'
@@ -218,6 +219,17 @@ def verify_baseline_presentation(step, active):
     expected = {'script/render.py', *successor_data,
                 *(name.removeprefix('round1_') for name in PNG_NAMES)}
     files = receipt.get('files', {})
+    published = step / KPGT_PRESENTATION_RECEIPT
+    active_files = files.copy()
+    if published.is_symlink():
+        raise ValueError('unsafe tenv KPGT presentation receipt')
+    if published.exists():
+        successor = read(published)
+        if (successor.get('schema') != 'tsg-dose-tenv-kpgt-report-v1'
+                or successor.get('status') != 'passed'
+                or successor.get('visual_inspection') is not True or not successor.get('files')):
+            raise ValueError('invalid tenv KPGT presentation receipt')
+        active_files.update({f'tenv_kpgt/{name}': value for name, value in successor['files'].items()})
     if (receipt.get('schema') != 'tsg-dose-baselines-gray-v2'
             or receipt.get('csv_only_replay_byte_identical') is not True
             or receipt.get('visual_inspection') is not True
@@ -225,7 +237,7 @@ def verify_baseline_presentation(step, active):
             or receipt.get('predecessor_report_archive') != str(AXIS_LOCAL_ARCHIVE)
             or set(files) != expected
             or any(files[name] != value for name, value in successor_data.items())
-            or not installed_tree_matches(active, files)):
+            or not installed_tree_matches(active, active_files)):
         raise ValueError('accepted baseline presentation bytes changed')
 
 

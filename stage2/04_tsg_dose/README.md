@@ -58,6 +58,77 @@ Run both commands under `execution/capped.sh /usr/bin/time -v` with the resource
 monitoring described below. Use `execution/axis_local/formal.py` for formal
 planning, execution and scientific acceptance.
 
+## tenv KPGT dose comparison
+
+[ADR 0080](../../docs/adr/0080-tenv-kpgt-dose-round1.md) fixes the accepted
+2304-dimensional float32 Step 03 KPGT representation for all 459 tenv drug
+parents. The comparison uses the exact ADR0078 tenv splits, G_5000 axis and
+matched vehicles. It measures dose-method performance with KPGT held fixed.
+A representation effect would require a matched ECFP4 comparison under the
+same protocol.
+
+The comparison trains 42 TranSiGen models and six KPGT_MLP models from
+scratch with seed 42, and evaluates six Mean_cell baselines. KPGT_MLP uses
+only the KPGT vector, with the same 128-unit ReLU hidden layer and 5000-gene
+linear output as ECFP4_MLP. Each cold-drug fold freezes the validation Δ
+Pearson choice among the seven TranSiGen methods before test evaluation.
+Cold-drug-dose compares the seven fixed methods on the held-parent and
+held-dose intersections, excluding both strips. The baselines use the same
+test rows and remain outside selection.
+
+Build the [tenv-only inputs](log/274-kpgt-smoke/README.md) before running the
+formal matrix. The planner prints all 54 coordinates without opening data.
+
+```bash
+D=stage2/04_tsg_dose
+W="$D/execution/checkpoints/tenv-kpgt-v1"
+SRC=pert_model/TranSiGen/source
+python "$D/execution/kpgt/formal.py" plan
+```
+
+Run dated WSL RAM and GPU samples every 10 seconds under the repository
+limits. Each sample contains an ISO timestamp, `MemTotal`, `MemAvailable`
+and `SwapFree` from `/proc/meminfo`, and the GPU used MiB, free MiB and
+utilization percentage. Keep the sampler running through both jobs. Run the
+drivers singly. Save `Id`, `InvocationID`, `MemoryMax`, `MemorySwapMax` and
+`ActiveEnterTimestamp` from the exact active systemd scope printed by
+`capped.sh`. The following helper captures these values from inside the scope.
+
+```bash
+run_capped() {
+  local name=$1
+  shift
+  "$D/execution/capped.sh" bash -c '
+    set -euo pipefail
+    work=$1
+    name=$2
+    shift 2
+    unit=$(awk -F/ '"'"'$NF ~ /\.scope$/ {print $NF}'"'"' /proc/self/cgroup)
+    systemctl --user show "$unit" -p Id,InvocationID,MemoryMax,MemorySwapMax,ActiveEnterTimestamp \
+      > "$work/$name-cap-actual.txt"
+    exec /usr/bin/time -v -o "$work/$name-driver.time" "$@"
+  ' bash "$W" "$name" "$@" > "$W/$name-driver.log" 2>&1
+}
+run_capped formal python "$D/execution/kpgt/formal.py" run \
+  --inputs "$W/inputs" --source "$SRC" --candidate "$W/formal" --device cuda
+run_capped baseline python "$D/execution/kpgt/baseline.py" \
+  --inputs "$W/inputs" --candidate "$W/baselines" --device cuda
+```
+
+The publisher verifies the candidate with exact replay receipts, split and
+control parity, serial resource evidence and the sealed predecessor reports.
+It compares all Mean_cell predictions with the independent Step 02 reference
+and rerenders the three PNGs in a CSV-only directory. Inspect each PNG before
+writing the visual acceptance receipt.
+
+```bash
+python "$D/execution/kpgt/publish.py" prepare --inputs "$W/inputs" \
+  --source "$SRC" --formal "$W/formal" --baselines "$W/baselines" --resources "$W" \
+  --monitor "$MONITOR" --candidate "$W/report-candidate" --receipt "$W/report-candidate.json"
+python "$D/execution/kpgt/publish.py" accept --candidate "$W/report-candidate" \
+  --receipt "$W/report-candidate.json" --acceptance "$W/acceptance.json" --visual-inspection
+```
+
 ## Historical run protocol
 
 [ADR0076](../../docs/adr/0076-dose-input-round1-exploration-boundary.md) and
