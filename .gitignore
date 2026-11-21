@@ -203,11 +203,14 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2/04_tsg_dose/figure/data/*.csv
 !/stage2/04_tsg_dose/execution/historical/report_126/data/*.csv
 
-/stage2/05_tsg_transfer/execution/checkpoints/
-!/stage2/05_tsg_transfer/output/
-/stage2/05_tsg_transfer/output/*
-!/stage2/05_tsg_transfer/output/api/
-!/stage2/05_tsg_transfer/output/api/**
-/stage2/05_tsg_transfer/output/api/**/__pycache__/
-/stage2/05_tsg_transfer/output/api/**/*.py[cod]
-!/stage2/05_tsg_transfer/figure/data/*.csv
+/stage2/05_tsg_width_dose/execution/checkpoints/
+!/stage2/05_tsg_width_dose/figure/data/*.csv
+
+/stage2/06_tsg_transfer/execution/checkpoints/
+!/stage2/06_tsg_transfer/output/
+/stage2/06_tsg_transfer/output/*
+!/stage2/06_tsg_transfer/output/api/
+!/stage2/06_tsg_transfer/output/api/**
+/stage2/06_tsg_transfer/output/api/**/__pycache__/
+/stage2/06_tsg_transfer/output/api/**/*.py[cod]
+!/stage2/06_tsg_transfer/figure/data/*.csv

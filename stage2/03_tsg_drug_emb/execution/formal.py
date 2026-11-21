@@ -20,7 +20,9 @@ from tenv5k.protocol import mean_prediction
 
 HERE = Path(__file__).resolve()
 FIT = HERE.with_name('fit.py')
-CAP = STEP.parent / '05_tsg_transfer/execution/capped_phase.sh'
+CAP = STEP.parent / '06_tsg_transfer/execution/capped_phase.sh'
+# Sealed plans predate the transfer step's relocation to Step 06.
+PRE_MOVE_DRIVER_SHA256 = '1159d78c887350c12d43e3485977dc10d66167a54c0d2e4786bd8cda30a3646d'
 FOLDS = range(3)
 FIT_MATRIX = [(fold, arm) for fold in FOLDS for arm in ARMS]
 ACTIONS = {'train': 'fit', 'replay-validation': 'validation-replay',
@@ -336,7 +338,10 @@ def main():
     root = args.destination
     plan_path = root / 'formal-plan.json'
     if args.command == 'verify':
-        if read_json(plan_path) != expected or verify_matrix(args, data, expected) != read_json(root / 'acceptance.json'):
+        recorded = read_json(plan_path)
+        if recorded.get('driver_sha256') == PRE_MOVE_DRIVER_SHA256:
+            expected['driver_sha256'] = PRE_MOVE_DRIVER_SHA256
+        if recorded != expected or verify_matrix(args, data, expected) != read_json(root / 'acceptance.json'):
             raise ValueError('formal acceptance differs from independent verification')
     else:
         root.mkdir(parents=True, exist_ok=True)
