@@ -65,3 +65,18 @@ the formal receipts and held-out identities, writes the plotted CSVs and
 verifies byte-exact rendering in two fresh processes. Review the three actual
 PNGs and run the offline path, tracking and integrity gates before accepting
 the report.
+
+Inspect the actual candidate PNGs at readable scale before publication. Run
+`execution/report_publication.py verify-candidate` and then `publish` in the
+report ticket worktree with `--candidate`, `--inputs`, `--representations` and
+`--matrix`. Pass the observed figure review to `publish --visual-review`.
+Publication seals the report inventory, verifies the installed files through
+fresh CSV-only rendering and preserves existing records in `log/`. Run the
+repository offline health gates and `verify-published` with the final payload
+locations before deployment.
+
+Install the validated feature freeze under `output/representations/`. Keep the
+full registered formal matrix, checkpoints and replays together under
+`execution/checkpoints/formal/` so the report receipt can resolve its original
+acceptance digest. These are checkout-local payloads. The report's README,
+plotted CSVs, three PNGs, acceptance receipt and run inventory are tracked.
