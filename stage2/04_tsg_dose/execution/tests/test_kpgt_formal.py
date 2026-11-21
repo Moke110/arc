@@ -1,5 +1,6 @@
 """Public tenv KPGT formal planner contract."""
 
+from hashlib import sha256
 import json
 from pathlib import Path
 import subprocess
@@ -85,6 +86,67 @@ class FigureReplayTest(unittest.TestCase):
                 'pooled.csv has an incomplete or duplicate plot grid', result.stderr
             )
             self.assertFalse((root / 'figures').exists())
+
+
+class PublicationAcceptanceTest(unittest.TestCase):
+    def test_accept_rejects_formal_plan_changed_after_preparation(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            inputs = root / 'inputs'
+            formal = root / 'formal'
+            inputs.mkdir()
+            formal.mkdir()
+            manifest = inputs / 'manifest.json'
+            plan = formal / 'formal_plan.json'
+            manifest.write_bytes(b'frozen input identity')
+            plan.write_bytes(b'locked formal plan')
+            receipt = root / 'candidate.json'
+            receipt.write_text(
+                json.dumps(
+                    dict(
+                        schema='tsg-dose-tenv-kpgt-report-v1',
+                        status='candidate-verified',
+                        input_manifest_sha256=sha256(manifest.read_bytes()).hexdigest(),
+                        formal_plan_sha256=sha256(plan.read_bytes()).hexdigest(),
+                    )
+                )
+            )
+            plan.write_bytes(b'changed formal plan')
+            acceptance = root / 'acceptance.json'
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(DRIVER.with_name('publish.py')),
+                    'accept',
+                    '--candidate',
+                    str(root / 'report'),
+                    '--receipt',
+                    str(receipt),
+                    '--acceptance',
+                    str(acceptance),
+                    '--visual-inspection',
+                    '--inputs',
+                    str(inputs),
+                    '--formal',
+                    str(formal),
+                    '--source',
+                    str(root / 'source'),
+                    '--baselines',
+                    str(root / 'baselines'),
+                    '--resources',
+                    str(root / 'resources'),
+                    '--monitor',
+                    str(root / 'monitor.log'),
+                ],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(
+                'sealed input generation or formal plan changed after preparation',
+                result.stderr,
+            )
+            self.assertFalse(acceptance.exists())
 
 
 if __name__ == '__main__':

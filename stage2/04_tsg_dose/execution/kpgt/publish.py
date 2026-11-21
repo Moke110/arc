@@ -22,7 +22,6 @@ from formal import (
     read_json,
     sha256,
     verify,
-    write_json,
 )
 from baseline import (
     MLP,
@@ -50,6 +49,7 @@ from install_axis_local_report import (
     safe_tree,
     successor_files,
     verify_baseline_presentation,
+    write_atomic,
 )
 from publish_baselines import verify_mean_cell
 from release_resources import samples, verify_window
@@ -363,76 +363,120 @@ def reproduce(candidate):
         )
 
 
+def source_anchors(args):
+    return dict(
+        input_manifest_sha256=sha256(args.inputs / 'manifest.json'),
+        formal_plan_sha256=sha256(args.formal / 'formal_plan.json'),
+    )
+
+
+def verified_science(args):
+    tables, origins, baselines = scientific_tables(args)
+    evidence = dict(
+        source='tenv',
+        representation='KPGT',
+        formal_fits=len(origins),
+        kpgt_mlp_fits=sum(row['origin']['method'] == MLP for row in baselines),
+        mean_cell_evaluations=sum(row['origin']['method'] != MLP for row in baselines),
+        **source_anchors(args),
+        origins=origins,
+        baselines=baselines,
+        resources=report_resources(args, tables['fit_resources']),
+        historical_receipts=predecessor_inventory(STEP),
+    )
+    return tables, evidence
+
+
+def write_tables(tables, destination):
+    destination.mkdir()
+    for name, rows in sorted(tables.items()):
+        frame = (
+            pd.concat(rows, ignore_index=True)
+            if isinstance(rows[0], pd.DataFrame)
+            else pd.DataFrame(rows)
+        )
+        frame.to_csv(destination / f'{name}.csv', index=False)
+
+
+def candidate_receipt(candidate, science, figures):
+    return dict(
+        science,
+        schema=SCHEMA,
+        status='candidate-verified',
+        csv_only_replay=True,
+        figures=figures,
+        files=safe_tree(candidate),
+    )
+
+
 def prepare(args):
     if args.candidate.exists() or args.receipt.exists():
         raise FileExistsError('publication requires a fresh candidate and receipt')
-    history = predecessor_inventory(STEP)
     with candidate_lock(args.formal), candidate_lock(args.baselines):
-        tables, origins, baselines = scientific_tables(args)
-        resources = report_resources(args, tables['fit_resources'])
+        tables, science = verified_science(args)
     args.candidate.parent.mkdir(parents=True, exist_ok=True)
     with TemporaryDirectory(
         prefix='.tenv-kpgt-', dir=args.candidate.parent
     ) as temporary:
         candidate = Path(temporary)
-        (candidate / 'data').mkdir()
+        write_tables(tables, candidate / 'data')
         (candidate / 'script').mkdir()
-        for name, rows in sorted(tables.items()):
-            frame = (
-                pd.concat(rows, ignore_index=True)
-                if isinstance(rows[0], pd.DataFrame)
-                else pd.DataFrame(rows)
-            )
-            frame.to_csv(candidate / 'data' / f'{name}.csv', index=False)
         shutil.copyfile(RENDERER, candidate / 'script/render.py')
         figures = render_subprocess(
             candidate / 'script/render.py', candidate / 'data', candidate
         )
-        if reproduce(candidate) != figures or predecessor_inventory(STEP) != history:
+        if (
+            reproduce(candidate) != figures
+            or predecessor_inventory(STEP) != science['historical_receipts']
+        ):
             raise ValueError('CSV-only render replay or predecessor inventory changed')
-        evidence = dict(
-            schema=SCHEMA,
-            status='candidate-verified',
-            source='tenv',
-            representation='KPGT',
-            formal_fits=len(origins),
-            kpgt_mlp_fits=sum(row['origin']['method'] == MLP for row in baselines),
-            mean_cell_evaluations=sum(
-                row['origin']['method'] != MLP for row in baselines
-            ),
-            input_manifest_sha256=sha256(args.inputs / 'manifest.json'),
-            formal_plan_sha256=sha256(args.formal / 'formal_plan.json'),
-            origins=origins,
-            baselines=baselines,
-            resources=resources,
-            historical_receipts=history,
-            csv_only_replay=True,
-            figures=figures,
-            files=safe_tree(candidate),
-        )
+        evidence = candidate_receipt(candidate, science, figures)
         candidate.rename(args.candidate)
-    write_json(args.receipt, evidence)
+    write_atomic(args.receipt, evidence)
 
 
-def accept(candidate, receipt_path, acceptance_path):
-    receipt = read_json(receipt_path)
-    if (
-        receipt['schema'] != SCHEMA
-        or receipt['status'] != 'candidate-verified'
-        or safe_tree(candidate) != receipt['files']
-        or reproduce(candidate) != receipt['figures']
-        or predecessor_inventory(STEP) != receipt['historical_receipts']
+def accept(args):
+    receipt_digest = sha256(args.receipt)
+    receipt = read_json(args.receipt)
+    if receipt.get('schema') != SCHEMA or receipt.get('status') != 'candidate-verified':
+        raise ValueError('candidate verification receipt is required')
+    if any(
+        receipt.get(name) != digest for name, digest in source_anchors(args).items()
     ):
-        raise ValueError('scientific or CSV-only publication evidence changed')
-    result = dict(
-        receipt,
-        status='passed',
-        visual_inspection=True,
-        candidate_receipt_sha256=sha256(receipt_path),
-    )
-    if acceptance_path.exists():
-        raise FileExistsError('acceptance path already exists')
-    write_json(acceptance_path, result)
+        raise ValueError(
+            'sealed input generation or formal plan changed after preparation'
+        )
+    if safe_tree(args.candidate) != receipt['files']:
+        raise ValueError('candidate files changed after preparation')
+    with candidate_lock(args.formal), candidate_lock(args.baselines):
+        tables, science = verified_science(args)
+        with TemporaryDirectory(prefix='arc-tenv-kpgt-science-') as temporary:
+            data = Path(temporary) / 'data'
+            write_tables(tables, data)
+            if safe_tree(data) != safe_tree(args.candidate / 'data'):
+                raise ValueError(
+                    'candidate CSVs differ from the reverified scientific tables'
+                )
+        figures = reproduce(args.candidate)
+        if candidate_receipt(args.candidate, science, figures) != receipt:
+            raise ValueError(
+                'scientific, resource or CSV-only publication evidence changed'
+            )
+        if sha256(args.receipt) != receipt_digest:
+            raise ValueError('candidate receipt changed during acceptance')
+        result = dict(
+            receipt,
+            status='passed',
+            visual_inspection=True,
+            candidate_receipt_sha256=receipt_digest,
+        )
+        if args.acceptance.is_symlink():
+            raise ValueError('unsafe acceptance path')
+        if args.acceptance.exists():
+            if read_json(args.acceptance) != result:
+                raise ValueError('existing acceptance differs from reverified evidence')
+        else:
+            write_atomic(args.acceptance, result)
 
 
 def main():
@@ -440,23 +484,28 @@ def main():
     actions = parser.add_subparsers(dest='action', required=True)
     for action in ('prepare', 'accept'):
         command = actions.add_parser(action)
-        for name in ('candidate', 'receipt'):
+        for name in (
+            'candidate',
+            'receipt',
+            'inputs',
+            'source',
+            'formal',
+            'baselines',
+            'resources',
+            'monitor',
+        ):
             command.add_argument(f'--{name}', type=Path, required=True)
-    command = actions.choices['prepare']
-    for name in ('inputs', 'source', 'formal', 'baselines', 'resources', 'monitor'):
-        command.add_argument(f'--{name}', type=Path, required=True)
-    command.add_argument('--device', default='cuda')
+        command.add_argument('--device', default='cuda')
     command = actions.choices['accept']
     command.add_argument('--acceptance', type=Path, required=True)
     command.add_argument('--visual-inspection', action='store_true', required=True)
     args = parser.parse_args()
+    for name in ('inputs', 'source', 'formal', 'baselines', 'candidate'):
+        setattr(args, name, getattr(args, name).resolve())
     if args.action == 'prepare':
-        for name in ('inputs', 'source', 'formal', 'baselines'):
-            setattr(args, name, getattr(args, name).resolve())
-        args.candidate = args.candidate.resolve()
         prepare(args)
     else:
-        accept(args.candidate, args.receipt, args.acceptance)
+        accept(args)
 
 
 if __name__ == '__main__':

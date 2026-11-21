@@ -110,23 +110,33 @@ run_capped() {
   ' bash "$W" "$name" "$@" > "$W/$name-driver.log" 2>&1
 }
 run_capped formal python "$D/execution/kpgt/formal.py" run \
-  --inputs "$W/inputs" --source "$SRC" --candidate "$W/formal" --device cuda
+  --inputs "$W/inputs" --source "$SRC" --candidate "$W/formal" --device cuda &&
 run_capped baseline python "$D/execution/kpgt/baseline.py" \
   --inputs "$W/inputs" --candidate "$W/baselines" --device cuda
 ```
 
-The publisher verifies the candidate with exact replay receipts, split and
-control parity, serial resource evidence and the sealed predecessor reports.
-It compares all Mean_cell predictions with the independent Step 02 reference
-and rerenders the three PNGs in a CSV-only directory. Inspect each PNG before
-writing the visual acceptance receipt.
+A child process can commit a fit or replay before the driver seals that
+phase's result and timing. If an interruption leaves those receipts incomplete,
+or telemetry has a gap in the acceptance window, retain the entire attempt
+with its scope, timing and monitor logs. Use a fresh full candidate in a
+separate directory with new scope and timing evidence.
+
+The publisher checks exact replay receipts, split and control parity, serial
+resource evidence and the sealed predecessor reports during both preparation
+and acceptance. It compares all Mean_cell predictions with the independent
+Step 02 reference and rerenders the three PNGs in a CSV-only directory.
+Inspect each PNG before writing the visual acceptance receipt. Keep the
+frozen inputs, run candidates, timing and monitor snapshot on the materialized
+checkout outside temporary worktrees.
 
 ```bash
 python "$D/execution/kpgt/publish.py" prepare --inputs "$W/inputs" \
   --source "$SRC" --formal "$W/formal" --baselines "$W/baselines" --resources "$W" \
   --monitor "$MONITOR" --candidate "$W/report-candidate" --receipt "$W/report-candidate.json"
-python "$D/execution/kpgt/publish.py" accept --candidate "$W/report-candidate" \
-  --receipt "$W/report-candidate.json" --acceptance "$W/acceptance.json" --visual-inspection
+python "$D/execution/kpgt/publish.py" accept --inputs "$W/inputs" \
+  --source "$SRC" --formal "$W/formal" --baselines "$W/baselines" --resources "$W" \
+  --monitor "$MONITOR" --candidate "$W/report-candidate" --receipt "$W/report-candidate.json" \
+  --acceptance "$W/acceptance.json" --visual-inspection
 ```
 
 ## Historical run protocol
