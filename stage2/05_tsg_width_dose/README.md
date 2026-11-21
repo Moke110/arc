@@ -123,11 +123,25 @@ python "$STEP/figure/script/render.py" --data "$STEP/figure/data" --output "$REP
 
 - [learning_curves.png](figure/learning_curves.png) shows training loss and validation MSE from the Step 04 recipe
   for the three folds at each width and dose encoding.
-- [metrics_balloon.png](figure/metrics_balloon.png) shows one panel per Δ metric. Color and text report
-  the equal-fold mean. Diameter increases with the mean's z-score against
-  all 48 individual fold scores for that metric.
+- [metrics_heatmap.png](figure/metrics_heatmap.png) shows the equal-fold
+  mean for each width and dose encoding in one panel per Δ metric.
 - [metrics_bar.png](figure/metrics_bar.png) shows the same means as bars, with individual fold dots
   and sample standard deviation error bars.
-- [metrics_per_dose_ballone.png](figure/metrics_per_dose_ballone.png) shows sample-equal means at each held
-  concentration. Each held concentration occurs in one fold, so the
+- [metrics_per_dose_heatmap.png](figure/metrics_per_dose_heatmap.png) shows sample-equal means at each held
+  concentration. Each panel row is one concentration and each panel's vertical
+  axis follows the width order in the overall heatmap. Each held concentration occurs in one fold, so the
   concentration and fold effects cannot be disentangled by these panels.
+
+Each heatmap cell displays its mean to three decimal places. Blue indicates
+higher PCC, Spearman, and R² or lower RMSE. Red indicates poorer scores. White
+marks the midpoint of the displayed metric range. The held-dose heatmap shares
+one scale per metric across all widths and concentrations.
+
+Reproduce the current heatmaps from the published metric CSVs:
+
+```bash
+python stage2/05_tsg_width_dose/figure/heatmaps/render_heatmaps.py --output "$(mktemp -d)"
+```
+
+The [heatmap acceptance record](log/heatmaps/acceptance.json) maps the sealed
+balloon figures to their successors and records the CSV-only replay hashes.
