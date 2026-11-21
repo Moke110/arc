@@ -53,7 +53,8 @@ def summarize(scores):
                 n_profiles=len(scores), n_pcc_profiles=int(scores.pcc.notna().sum()))
 
 
-def run_fit(data, source, roles, *, learning_rate, seed, epochs, initialize=None, device='cuda'):
+def run_fit(data, source, roles, *, learning_rate, seed, epochs, initialize=None, device='cuda',
+            assessment_evaluator=evaluate):
     """Train to a common budget, independently assess both validation-selected epochs."""
     train, selection, assessment = (np.asarray(roles[name], dtype=int)
                                     for name in ('train', 'selection', 'assessment'))
@@ -96,7 +97,7 @@ def run_fit(data, source, roles, *, learning_rate, seed, epochs, initialize=None
     result = {}
     for criterion, (_, selected, state) in chosen.items():
         model.load_state_dict(state)
-        scores = evaluate(native, model, data, assessment)
+        scores = assessment_evaluator(native, model, data, assessment)
         result[criterion] = dict(selected=selected, assessment=summarize(scores), scores=scores)
     return dict(history=history, selected=result, transform=transform)
 
