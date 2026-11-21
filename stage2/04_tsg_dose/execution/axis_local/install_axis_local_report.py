@@ -18,7 +18,11 @@ STEP = Path(__file__).resolve().parents[2]
 AXIS_LOCAL_ARCHIVE = Path('execution/historical/report_axis_local')
 GRAY_ARCHIVE = Path('execution/historical/report_baselines_gray')
 PRESENTATION_RECEIPT = Path('log/baselines-gray-acceptance.json')
-KPGT_PRESENTATION_RECEIPT = Path('log/275-kpgt-formal/acceptance.json')
+KPGT_ACCEPTANCE = Path('log/275-kpgt-formal/acceptance.json')
+KPGT_PRESENTATION = Path('log/275-kpgt-formal/bar-presentation.json')
+KPGT_PRESENTATION_FILES = {
+    'data/held_parents.csv', 'metrics.png', 'metrics_cold_drug_dose.png', 'script/render.py',
+}
 CHECKS = ('check_paths.sh', 'check_tracked.sh', 'verify_all.sh')
 HEALTH_SCHEMA = 'tsg-dose-round1-axis-local-health-v1'
 SUCCESSOR_SCHEMA = 'tsg-dose-round1-baselines-report-v1'
@@ -220,7 +224,7 @@ def verify_baseline_presentation(step, active):
     expected = {'script/render.py', *successor_data,
                 *(name.removeprefix('round1_') for name in PNG_NAMES)}
     files = receipt.get('files', {})
-    published = step / KPGT_PRESENTATION_RECEIPT
+    published = step / KPGT_ACCEPTANCE
     gray = step / GRAY_ARCHIVE
     active_files = files.copy()
     if published.is_symlink():
@@ -236,7 +240,17 @@ def verify_baseline_presentation(step, active):
                 or successor.get('visual_inspection') is not True or not successor.get('files')):
             raise ValueError('invalid tenv KPGT presentation receipt')
         if gray.exists():
-            active_files = successor['files']
+            active_files = successor['files'].copy()
+            presentation = step / KPGT_PRESENTATION
+            if presentation.is_symlink():
+                raise ValueError('unsafe tenv KPGT figure presentation receipt')
+            if presentation.exists():
+                figures = read(presentation)
+                if (figures.get('schema') != 'tsg-dose-tenv-kpgt-bar-presentation-v1'
+                        or figures.get('acceptance_sha256') != digest(published)
+                        or set(figures.get('files', {})) != KPGT_PRESENTATION_FILES):
+                    raise ValueError('invalid tenv KPGT figure presentation receipt')
+                active_files.update(figures['files'])
         else:
             active_files.update({f'tenv_kpgt/{name}': value for name, value in successor['files'].items()})
     if (receipt.get('schema') != 'tsg-dose-baselines-gray-v2'

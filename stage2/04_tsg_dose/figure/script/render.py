@@ -78,7 +78,18 @@ def numeric(value):
 def load(data):
     keys = {(scenario, method) for scenario in SCENARIOS for method in METHODS}
     folds = ('0', '1', '2')
-    pooled = index(read(data, 'pooled'), ('scenario', 'method'), keys, 'pooled')
+    spreads = index(
+        read(data, 'fold_spread'), ('scenario', 'method', 'metric'),
+        {(*key, metric) for key in keys for metric in METRICS}, 'fold_spread',
+    )
+    parents = {}
+    for row in read(data, 'held_parents'):
+        group = parents.setdefault((row['fold'], row['method']), {})
+        if row['drug_parent'] in group:
+            raise ValueError('held_parents.csv has duplicate parent points')
+        group[row['drug_parent']] = row
+    if set(parents) != {(fold, method) for fold in folds for method in METHODS}:
+        raise ValueError('held_parents.csv has an incomplete plot grid')
     dots = index(
         read(data, 'folds'),
         ('scenario', 'method', 'fold'),
@@ -106,7 +117,7 @@ def load(data):
         )
     if set(learning) != {key for key in dots if key[1] != 'Mean_cell'}:
         raise ValueError('learning.csv has an incomplete curve grid')
-    return pooled, dots, coverage, learning
+    return spreads, dots, coverage, parents, learning
 
 
 def save(figure, output, name):
@@ -128,7 +139,21 @@ def methods_axis(axis, *, labels):
     axis.spines[['top', 'right']].set_visible(False)
 
 
-def overall(output, pooled, dots):
+def bar_dots(axis, pos, color, mean, sd, values, offsets, size):
+    if math.isfinite(mean):
+        axis.bar(pos, mean, width=0.67, color=color, alpha=0.3)
+    if math.isfinite(sd):
+        axis.errorbar(
+            pos, mean, yerr=sd, fmt='none', color='#303030', capsize=3,
+            lw=1.25, zorder=5,
+        )
+    axis.scatter(
+        pos + offsets, values, color=color, s=size, edgecolor='white',
+        linewidth=0.3, zorder=4,
+    )
+
+
+def overall(output, spreads, dots):
     figure, axes = plt.subplots(2, 4, figsize=(17, 7.4), layout='constrained')
     figure.suptitle('tenv dose methods with frozen KPGT', fontsize=16)
     for use_labels, scenario, panels in zip(
@@ -136,54 +161,49 @@ def overall(output, pooled, dots):
     ):
         for axis, (metric, label) in zip(panels, METRICS.items(), strict=True):
             for pos, (method, color) in enumerate(zip(METHODS, COLORS, strict=True)):
-                for fold, dx in zip(('0', '1', '2'), (-0.19, 0.0, 0.19), strict=True):
-                    axis.scatter(
-                        pos + dx,
-                        numeric(dots[scenario, method, fold][metric]),
-                        marker='o',
-                        s=16,
-                        color=color,
-                        alpha=0.6,
-                    )
-                axis.scatter(
-                    pos,
-                    numeric(pooled[scenario, method][metric]),
-                    marker='D',
-                    s=27,
-                    color=color,
-                    edgecolor='white',
-                    linewidth=0.5,
+                spread = spreads[scenario, method, metric]
+                values = [numeric(dots[scenario, method, fold][metric]) for fold in ('0', '1', '2')]
+                bar_dots(
+                    axis, pos, color, numeric(spread['mean']), numeric(spread['sd']),
+                    values, np.array([-.16, 0, .16]), 20,
                 )
             axis.set_title(f'{scenario}  ·  {label}', fontsize=10)
             methods_axis(axis, labels=use_labels)
     figure.supxlabel(
-        'Diamonds show pooled sample-equal scores. Circles show individual folds.',
+        'Bars show equal-fold means ± sample SD. Each dot is one outer test fold.',
         fontsize=10,
     )
     save(figure, output, FIGURES[0])
 
 
-def held_doses(output, dots, coverage):
+def held_doses(output, parents, coverage):
     figure, axes = plt.subplots(
         4, 3, figsize=(15, 10), layout='constrained', sharey='row'
     )
     figure.suptitle('tenv cold-drug-dose test by held concentration', fontsize=16)
-    scenario = 'cold-drug-dose'
     for level, ((metric, label), panels) in enumerate(
         zip(METRICS.items(), axes, strict=True)
     ):
         panels[0].set_ylabel(label)
         for fold, axis in enumerate(panels):
-            meta = coverage[scenario, str(fold)]
-            values = [
-                numeric(dots[scenario, method, str(fold)][metric]) for method in METHODS
-            ]
-            axis.scatter(range(len(METHODS)), values, color=COLORS, s=32)
+            meta = coverage['cold-drug-dose', str(fold)]
+            for pos, (method, color) in enumerate(zip(METHODS, COLORS, strict=True)):
+                by_parent = parents[str(fold), method]
+                values = np.array([numeric(row[metric]) for row in by_parent.values()])
+                offsets = np.random.default_rng(fold).uniform(-0.25, 0.25, len(values))
+                finite = values[np.isfinite(values)]
+                mean = finite.mean() if len(finite) else float('nan')
+                sd = finite.std(ddof=1) if len(finite) > 1 else float('nan')
+                bar_dots(axis, pos, color, mean, sd, values, offsets, 8)
             methods_axis(axis, labels=level == len(METRICS) - 1)
             if level == 0:
                 axis.set_title(
-                    f'{float(meta["held_dose_um"]):g} µM  ·  n = {meta["n_test_samples"]}'
+                    f'{float(meta["held_dose_um"]):g} µM  ·  {meta["n_test_samples"]} test profiles'
                 )
+    figure.supxlabel(
+        'Each dot averages profiles for one held-out parent. Bars show equal-parent means ± sample SD.',
+        fontsize=10,
+    )
     save(figure, output, FIGURES[1])
 
 
@@ -224,10 +244,10 @@ def curves(output, learning):
 
 
 def render(data, output):
-    pooled, dots, coverage, learning = load(data)
+    spreads, dots, coverage, parents, learning = load(data)
     output.mkdir(exist_ok=True)
-    overall(output, pooled, dots)
-    held_doses(output, dots, coverage)
+    overall(output, spreads, dots)
+    held_doses(output, parents, coverage)
     curves(output, learning)
 
 

@@ -35,6 +35,12 @@ descriptive scores on the held-parent and held-dose intersections.
 - [Training and validation curves](figure/learning_curves.png) and [locked choices](figure/data/selection.csv)
 - [Formal run and publication evidence](log/275-kpgt-formal/README.md)
 
+The overall metrics figure uses an equal-fold mean, a dot for each outer
+test fold and sample SD error bars. Each held concentration is tested in one
+fold. The held-dose figure uses an equal-parent mean, a dot for each held-out
+parent's mean across profiles and sample SD error bars across those parents.
+The sample-pooled scientific tables keep their original weighting.
+
 Reproduce the figures using only the report's CSVs and renderer with
 `python figure/script/render.py --output <new-directory>` from this step.
 
