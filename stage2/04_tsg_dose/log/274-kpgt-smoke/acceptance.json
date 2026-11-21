@@ -1,0 +1,289 @@
+{
+  "formal_fits": 0,
+  "input_manifest_sha256": "23b5017ad6f3de3fe8b941119595e15c71b4b15c7961d4f4c741db6bddd5eb86",
+  "records": [
+    {
+      "configuration": {
+        "adaptations": [
+          "5000 gene interface",
+          "shared splits and fixed validation treated-expression MSE",
+          "x1-only native sampled forward for inference",
+          "native float32 computation and CPU normal sampling",
+          "initial Adam learning rate 1e-4",
+          "frozen KPGT2304 input",
+          "random response-model initialization"
+        ],
+        "backend": {
+          "cudnn_benchmark": false,
+          "cudnn_deterministic": true,
+          "cudnn_enabled": false,
+          "policy": "author train_TranSiGen setup_seed CUDA"
+        },
+        "batch_size": 64,
+        "beta": 0.1,
+        "compute_dtype": "float32",
+        "config_script": "src/train_TranSiGen.py",
+        "config_script_sha256": "4446df722b2dcd9633ae30253ee077d6836ee86862ddd72ecfa1460060c19eb5",
+        "decoder": [
+          800
+        ],
+        "device": "cuda",
+        "dose_input": false,
+        "dropout": 0.1,
+        "encoder": [
+          1200
+        ],
+        "execution_binding": {
+          "attempt_nonce": "24f898420df6f3ccb93a138a583af84ba4267f42971519a9405e05b3435e453d",
+          "registration_sha256": "7b8c229e1406c54a9c5699c2302437bad44cee1b6bff50c1a7e44200cbe3346c"
+        },
+        "features_dim": 2304,
+        "features_embed_dim": [
+          400
+        ],
+        "fold": 0,
+        "inference_seed": 100042,
+        "init_w": true,
+        "initialization": "native selective Xavier; unchanged no-dose constructor order",
+        "initialization_dtype": "float32",
+        "initialization_model": "random",
+        "learning_rate": 0.0001,
+        "max_epochs": 2,
+        "method": "no-dose",
+        "method_identity": "tsg-tenv-kpgt-no-dose-f32-v1",
+        "molecule_feature": "KPGT",
+        "n_genes": 5000,
+        "n_latent": 100,
+        "native_source_sha256": "c328864a040a3c1a1e69b040f31a27572513b1974a93d722e3ff00d4cdd940c7",
+        "noise_dtype": "native float32 CPU",
+        "patience": 50,
+        "prediction": "native forward(x1,features)[3]",
+        "prediction_dtype": "float32",
+        "representation_width": 2304,
+        "runtime_identity": {
+          "03_tsg_drug_emb/output/api/tsg_drug_emb/representations.py": "3e142437337ec1e1cbb6188f2273012bb1d6b4b1af969a21e68a488cf5205322",
+          "04_tsg_dose/output/api/tsg_dose/shared.py": "1c2bbf4ae9447a66c330b9edde294182de7c02d6c50267f9dd5bda9b11d3bed7",
+          "04_tsg_dose/output/api/tsg_kpgt/inputs.py": "14fc7ec9ecfbd82bb29ab4fc48943c6569b0db9b72ce55d97757f5ee3c870bc4",
+          "04_tsg_dose/output/api/tsg_kpgt/learner.py": "68584dde9ecd5a0d13523c592c27cc87d61677c7f8a07f50839f5fb2b3391d09",
+          "04_tsg_dose/output/api/tsg_kpgt/matrix.py": "32a012dfacb2d75268e90ffdf9db70badb26edcd4b2c66a9637b087bc95b3c0d",
+          "04_tsg_dose/output/api/tsg_kpgt/model.py": "f080b6e84a1b260ac28676b65ab1b609eb26c00517547b0fed2e06378625ae4f",
+          "04_tsg_dose/output/api/tsg_round1/model.py": "826c75c07ecf8e85dc8905c745d54d889f4b7ca44a55fdd4c9de0901f9fb5d55",
+          "round1/historical/model.py": "d9b12cd05106cd3f7d57894d2344b462508f7ad5a3be09afa7812e59ac5919ac",
+          "round1/inputs.py": "ebf90bf2819d25f2265e4e2ed8aa5dfc5fa434b25e4dbd804f64420313d044ec",
+          "round1/learner.py": "d50d6683c893e1b20d1fbf35cfc95093aa05113407aac07714bb626bfd802da0",
+          "round1/matrix.py": "982f59e5292364da982b7e303a920a19e9bcf02085216839cb6f3c02bf896419",
+          "round1/model.py": "826c75c07ecf8e85dc8905c745d54d889f4b7ca44a55fdd4c9de0901f9fb5d55",
+          "round1/protocol.py": "2eace0cf720f96e41df19e3ff54fd3324917fb4ddf63c5bd0030c0feeece4bc6",
+          "round1/shared/attempt_identity.py": "58d13fa2b0426941bc29c4772c64e36eb9bb965a2bf26d95b31d872a1bf20641",
+          "round1/shared/inputs.py": "9515073399f84930aff457283dca44d0b08e1236975a9a2bbaa18a23d9e9d39f",
+          "round1/shared/learning.py": "02d294c10761e29a673d8864580278fd534aa8e71a5c6d3853ff846b4b820a3d",
+          "round1/shared/model_transigen.py": "50befe527f8ff1e8eae254b1a3e180ca342eac5b0bbbdd802966c69d55af11da",
+          "round1/shared/native_import.py": "a80972f0104ce990f224690f9688bdb4015e4f02c6cbe4bb08e231dacea4787e",
+          "round1/shared/protocol.py": "ccc4d447fa695011b31bbf3f5b8a4c007b12db9b7a6e62849655fc633e6b4d28"
+        },
+        "scenario": "cold-drug",
+        "scheduler": null,
+        "seed": 42,
+        "singleton_train": "skip singleton as upstream",
+        "singleton_train_batch": "skip singleton as upstream",
+        "smoke_rows": 8,
+        "source": "tenv",
+        "train_order": [
+          1,
+          2,
+          23,
+          24,
+          26,
+          45,
+          46,
+          48
+        ],
+        "transform": null,
+        "upstream_commit": "e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a",
+        "validation_order": [
+          5,
+          27,
+          49,
+          71,
+          93,
+          115,
+          159,
+          181
+        ],
+        "validation_seed": 22617,
+        "weight_decay": 1e-05
+      },
+      "fit_sha256": "a9d8dbbeba047b53eed1a2aa0fcb2b36fdbcb29715e917dc421bdfae9515657c",
+      "scenario": "cold-drug",
+      "terminal": {
+        "best_epoch": 2,
+        "elapsed_seconds": 1.522540122969076,
+        "epochs": 2,
+        "parameter_count": 21685400,
+        "peak_rss_kib": 1707160,
+        "replay": "exact fresh-process native sampled prediction",
+        "replay_pid": 2311560,
+        "smoke": true,
+        "status": "complete",
+        "test_evaluation_process_token": "437b27a6da1496e2f3b62956e114fd0f739e1e8dc98640defe5509140a1171ff",
+        "test_replay": {
+          "attempt_nonce": "24f898420df6f3ccb93a138a583af84ba4267f42971519a9405e05b3435e453d",
+          "pid": 2311560,
+          "process_token": "26b5923ce02d77b5ce7ea7fa8c301891d5f09aca945963563d7c7b43a14272b8"
+        },
+        "test_selection_sha256": null,
+        "training_pid": 2311460,
+        "training_process_token": "8f5b2469ddf38533b8bd6d757b0742b037b17c6e906021b192fc8cd6c90904ed",
+        "validation_mse": 0.5469362139701843,
+        "validation_replay": {
+          "attempt_nonce": "24f898420df6f3ccb93a138a583af84ba4267f42971519a9405e05b3435e453d",
+          "pid": 2311485,
+          "process_token": "d219c346064d907ccca08b784f95671a39f4ce5ce8001a7866adb68212143ea8"
+        },
+        "weights_updated": true
+      }
+    },
+    {
+      "configuration": {
+        "adaptations": [
+          "5000 gene interface",
+          "shared splits and fixed validation treated-expression MSE",
+          "x1-only native sampled forward for inference",
+          "native float32 computation and CPU normal sampling",
+          "initial Adam learning rate 1e-4",
+          "frozen KPGT2304 input",
+          "random response-model initialization"
+        ],
+        "backend": {
+          "cudnn_benchmark": false,
+          "cudnn_deterministic": true,
+          "cudnn_enabled": false,
+          "policy": "author train_TranSiGen setup_seed CUDA"
+        },
+        "batch_size": 64,
+        "beta": 0.1,
+        "compute_dtype": "float32",
+        "config_script": "src/train_TranSiGen.py",
+        "config_script_sha256": "4446df722b2dcd9633ae30253ee077d6836ee86862ddd72ecfa1460060c19eb5",
+        "decoder": [
+          800
+        ],
+        "device": "cuda",
+        "dose_input": false,
+        "dropout": 0.1,
+        "encoder": [
+          1200
+        ],
+        "execution_binding": {
+          "attempt_nonce": "c83e3cd653e5e9a175913c2769371ff64d6271eca895ea5a0c3f7815acbc4557",
+          "registration_sha256": "c66712b7276c2901f3a0124042c8e2d0034deee2a15424d8b4ed1b4d52b217fd"
+        },
+        "features_dim": 2304,
+        "features_embed_dim": [
+          400
+        ],
+        "fold": 0,
+        "inference_seed": 100042,
+        "init_w": true,
+        "initialization": "native selective Xavier; unchanged no-dose constructor order",
+        "initialization_dtype": "float32",
+        "initialization_model": "random",
+        "learning_rate": 0.0001,
+        "max_epochs": 2,
+        "method": "no-dose",
+        "method_identity": "tsg-tenv-kpgt-no-dose-f32-v1",
+        "molecule_feature": "KPGT",
+        "n_genes": 5000,
+        "n_latent": 100,
+        "native_source_sha256": "c328864a040a3c1a1e69b040f31a27572513b1974a93d722e3ff00d4cdd940c7",
+        "noise_dtype": "native float32 CPU",
+        "patience": 50,
+        "prediction": "native forward(x1,features)[3]",
+        "prediction_dtype": "float32",
+        "representation_width": 2304,
+        "runtime_identity": {
+          "03_tsg_drug_emb/output/api/tsg_drug_emb/representations.py": "3e142437337ec1e1cbb6188f2273012bb1d6b4b1af969a21e68a488cf5205322",
+          "04_tsg_dose/output/api/tsg_dose/shared.py": "1c2bbf4ae9447a66c330b9edde294182de7c02d6c50267f9dd5bda9b11d3bed7",
+          "04_tsg_dose/output/api/tsg_kpgt/inputs.py": "14fc7ec9ecfbd82bb29ab4fc48943c6569b0db9b72ce55d97757f5ee3c870bc4",
+          "04_tsg_dose/output/api/tsg_kpgt/learner.py": "68584dde9ecd5a0d13523c592c27cc87d61677c7f8a07f50839f5fb2b3391d09",
+          "04_tsg_dose/output/api/tsg_kpgt/matrix.py": "32a012dfacb2d75268e90ffdf9db70badb26edcd4b2c66a9637b087bc95b3c0d",
+          "04_tsg_dose/output/api/tsg_kpgt/model.py": "f080b6e84a1b260ac28676b65ab1b609eb26c00517547b0fed2e06378625ae4f",
+          "04_tsg_dose/output/api/tsg_round1/model.py": "826c75c07ecf8e85dc8905c745d54d889f4b7ca44a55fdd4c9de0901f9fb5d55",
+          "round1/historical/model.py": "d9b12cd05106cd3f7d57894d2344b462508f7ad5a3be09afa7812e59ac5919ac",
+          "round1/inputs.py": "ebf90bf2819d25f2265e4e2ed8aa5dfc5fa434b25e4dbd804f64420313d044ec",
+          "round1/learner.py": "d50d6683c893e1b20d1fbf35cfc95093aa05113407aac07714bb626bfd802da0",
+          "round1/matrix.py": "982f59e5292364da982b7e303a920a19e9bcf02085216839cb6f3c02bf896419",
+          "round1/model.py": "826c75c07ecf8e85dc8905c745d54d889f4b7ca44a55fdd4c9de0901f9fb5d55",
+          "round1/protocol.py": "2eace0cf720f96e41df19e3ff54fd3324917fb4ddf63c5bd0030c0feeece4bc6",
+          "round1/shared/attempt_identity.py": "58d13fa2b0426941bc29c4772c64e36eb9bb965a2bf26d95b31d872a1bf20641",
+          "round1/shared/inputs.py": "9515073399f84930aff457283dca44d0b08e1236975a9a2bbaa18a23d9e9d39f",
+          "round1/shared/learning.py": "02d294c10761e29a673d8864580278fd534aa8e71a5c6d3853ff846b4b820a3d",
+          "round1/shared/model_transigen.py": "50befe527f8ff1e8eae254b1a3e180ca342eac5b0bbbdd802966c69d55af11da",
+          "round1/shared/native_import.py": "a80972f0104ce990f224690f9688bdb4015e4f02c6cbe4bb08e231dacea4787e",
+          "round1/shared/protocol.py": "ccc4d447fa695011b31bbf3f5b8a4c007b12db9b7a6e62849655fc633e6b4d28"
+        },
+        "scenario": "cold-drug-dose",
+        "scheduler": null,
+        "seed": 42,
+        "singleton_train": "skip singleton as upstream",
+        "singleton_train_batch": "skip singleton as upstream",
+        "smoke_rows": 8,
+        "source": "tenv",
+        "train_order": [
+          1,
+          2,
+          4,
+          6,
+          23,
+          24,
+          26,
+          28
+        ],
+        "transform": null,
+        "upstream_commit": "e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a",
+        "validation_order": [
+          5,
+          27,
+          71,
+          93,
+          137,
+          159,
+          546,
+          568
+        ],
+        "validation_seed": 22617,
+        "weight_decay": 1e-05
+      },
+      "fit_sha256": "2beb8f3a5e8ee3fd6a14805dee5e3d9ef33ac60aa533e4c61821b188767c985f",
+      "scenario": "cold-drug-dose",
+      "terminal": {
+        "best_epoch": 2,
+        "elapsed_seconds": 1.5109293470159173,
+        "epochs": 2,
+        "parameter_count": 21685400,
+        "peak_rss_kib": 1706880,
+        "replay": "exact fresh-process native sampled prediction",
+        "replay_pid": 2311684,
+        "smoke": true,
+        "status": "complete",
+        "test_evaluation_process_token": "0ad5a6effa455b6cb230dd492f966ba200af0eeef3dd6fedc9b0b1cba3d88bc7",
+        "test_replay": {
+          "attempt_nonce": "c83e3cd653e5e9a175913c2769371ff64d6271eca895ea5a0c3f7815acbc4557",
+          "pid": 2311684,
+          "process_token": "981c2110bae8e9c09c8a0565256fb51c63b2a0d0fc9bd80d1152880d4dd4a3e1"
+        },
+        "test_selection_sha256": null,
+        "training_pid": 2311597,
+        "training_process_token": "454ee9125d7729337f757eec8c7b86cbe9c0b8741740fa3dc9cecd920e91b81b",
+        "validation_mse": 0.5648104548454285,
+        "validation_replay": {
+          "attempt_nonce": "c83e3cd653e5e9a175913c2769371ff64d6271eca895ea5a0c3f7815acbc4557",
+          "pid": 2311623,
+          "process_token": "661983bfc3765b256502064082ba06700726a349fc03d0bdb3f4fcb4c8e42bf5"
+        },
+        "weights_updated": true
+      }
+    }
+  ],
+  "schema": "tsg-dose-tenv-kpgt-smoke-v1"
+}
