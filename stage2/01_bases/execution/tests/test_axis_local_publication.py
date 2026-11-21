@@ -109,7 +109,7 @@ class FuturePreparationTests(unittest.TestCase):
     def test_both_future_entrypoints_reject_historical_generation_before_writing(self):
         import json
         repo = Path(__file__).resolve().parents[4]
-        for step in ('02_models_tenv-5k', '03_tsg_dose'):
+        for step in ('02_models_tenv-5k', '04_tsg_dose'):
             path = repo / 'stage2' / step / 'execution/axis_local/prepare.py'
             spec = importlib.util.spec_from_file_location('future_' + step, path)
             module = importlib.util.module_from_spec(spec)
@@ -122,6 +122,37 @@ class FuturePreparationTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'schema'):
                     module.prepare(old, root / 'new-inputs')
                 self.assertFalse((root / 'new-inputs').exists())
+
+
+class HistoricalPreservationTests(unittest.TestCase):
+    def test_verify_accepts_original_receipt_after_dose_step_move(self):
+        import hashlib
+        import json
+        import subprocess
+        import sys
+
+        script = Path(__file__).resolve().parents[1] / 'publish_axis_local.py'
+        payload = b'frozen product'
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / 'stage2/04_tsg_dose/log/science.json'
+            target.parent.mkdir(parents=True)
+            target.write_bytes(payload)
+            record = root / 'preservation.json'
+            old_name = '/'.join(('stage2', '03_tsg_dose', 'log', 'science.json'))
+            record.write_text(json.dumps({old_name: {
+                'bytes': len(payload), 'sha256': hashlib.sha256(payload).hexdigest(),
+            }}))
+            command = [sys.executable, str(script), 'verify-preservation',
+                       '--root', str(root), '--record', str(record)]
+            process = subprocess.run(command, capture_output=True, text=True)
+            self.assertEqual(process.returncode, 0, process.stderr)
+            self.assertEqual(json.loads(process.stdout), {'status': 'PASS', 'files': 1})
+            target.write_bytes(b'altered product')
+            process = subprocess.run(command, capture_output=True, text=True)
+            self.assertNotEqual(process.returncode, 0)
+            self.assertIn(f'protected scientific byte changed: {old_name}', process.stderr)
+
 
 if __name__ == '__main__':
     unittest.main()

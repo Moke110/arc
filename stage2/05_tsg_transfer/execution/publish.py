@@ -1,4 +1,4 @@
-"""Verify the complete formal matrix and prepare its Stage 2 Step 04 report."""
+"""Verify the complete formal matrix and prepare its Stage 2 Step 05 report."""
 import argparse
 import csv
 from math import isfinite
@@ -232,7 +232,7 @@ def main():
             staged.rename(args.report)
         else:
             verify_report_files(staged, args.report)
-    print(f'{args.action}: verified complete formal Stage 2 Step 04 report')
+    print(f'{args.action}: verified complete formal Stage 2 Step 05 report')
 
 
 if __name__ == '__main__':

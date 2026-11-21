@@ -1,5 +1,7 @@
 # TranSiGen Tahoe-to-tenv transfer
 
+[Path migration and sealed evidence](../04_tsg_dose/log/step-path-migration.md).
+
 [Specification #255](https://github.com/Moke110/arc/issues/255) evaluates
 Tahoe pretraining and tenv fine-tuning across three tenv cold-drug-dose
 folds. The study compares tenv-only training, direct Tahoe-only prediction
@@ -13,7 +15,7 @@ See the [paired fold scores and equal-fold comparison](log/summary.md),
 
 ## Protocol
 
-All paths reuse the Step 03 32-dimensional Latent embedding and axis-local
+All paths reuse the Step 04 32-dimensional Latent embedding and axis-local
 `G_5000` expression from [ADR 0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md).
 Tahoe keeps replicates of each parent, cell line and dose condition together.
 Each validation parent, cell line and dose has independent training coverage.
@@ -21,7 +23,7 @@ Three Tahoe fits restore the strict minimum treated-expression validation MSE.
 The lowest fold MSE selects one immutable checkpoint, with equal MSE broken
 by the earlier fold ID. Tahoe selection uses Tahoe data only.
 
-The tenv folds reuse the Step 03 cold-drug-dose split with held doses 0.2,
+The tenv folds reuse the Step 04 cold-drug-dose split with held doses 0.2,
 1 and 10 µM. The held parent × held dose intersection is the test set.
 Both off-intersection held strips are excluded from fit and validation.
 Both tenv-trained paths use a fresh Adam optimizer at 1e−5, the same train-only
@@ -41,16 +43,16 @@ is the effect of tenv adaptation from the same Tahoe checkpoint.
 
 ## Reproduction
 
-Use the repository's `arc` environment. Set `PAIR` to the verified Step 03
+Use the repository's `arc` environment. Set `PAIR` to the verified Step 04
 input freeze, `SOURCE` to the pinned native TranSiGen checkout, `CANDIDATE`
 to a new candidate directory and `EVIDENCE` to the resource evidence root.
-Recover the input freeze using Step 03's documented preparation entry point.
+Recover the input freeze using Step 04's documented preparation entry point.
 The runner shares a workstation lease at `/tmp/arc-stage2-transfer-run/gpu.lock` across evidence directories. The following commands run
 single-job capped scopes, capture wall time and peak RSS, and sample WSL
 memory and GPU resources every 10 seconds.
 
 ```bash
-STEP=stage2/04_tsg_transfer
+STEP=stage2/05_tsg_transfer
 CAP="$STEP/execution/capped_phase.sh"
 TAHOE="$CANDIDATE/tahoe"
 tenv_args=(--inputs "$PAIR/tenv" --candidate "$CANDIDATE")
@@ -109,11 +111,11 @@ the frozen test identities across paths, source-only selection and formal
 resource evidence. The plot renderer reads only the two panel CSVs. Run
 `script/check_paths.sh`, `script/check_tracked.sh` and
 `script/verify_all.sh` on the data-owning checkout before release.
-Run the offline manifest scan outside formal training under the Step 03 cap
+Run the offline manifest scan outside formal training under the Step 04 cap
 and record its resource use.
 
 ```bash
-stage2/03_tsg_dose/execution/capped.sh /usr/bin/time -v bash script/verify_all.sh
+stage2/04_tsg_dose/execution/capped.sh /usr/bin/time -v bash script/verify_all.sh
 ```
 
 Preserve the candidate and phase evidence under the ignored recovery path

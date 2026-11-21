@@ -25,7 +25,7 @@ def preservation(root):
     """Stream every protected scientific, frozen experiment and sealed-log byte."""
     paths = [root / STEP / 'output' / name for name in PROTECTED]
     paths += [root / STEP / name for name in ('figure', 'log')]
-    for step in ('02_models_tenv-5k', '03_tsg_dose'):
+    for step in ('02_models_tenv-5k', '04_tsg_dose'):
         paths += [root / 'stage2' / step / name for name in
                   ('output', 'figure', 'log', 'execution/checkpoints')]
     records = {}
@@ -100,7 +100,11 @@ def main():
     elif args.action == 'verify-preservation':
         before = release.read_json(args.record)
         for name, record in before.items():
-            path = args.root / name
+            relative = Path(name)
+            if relative.parts[:2] == ('stage2', '03_tsg_dose'):
+                # ADR 0079 moved the payload while keeping the receipt keys.
+                relative = Path('stage2/04_tsg_dose', *relative.parts[2:])
+            path = args.root / relative
             if not path.is_file() or path.stat().st_size != record['bytes'] or release.sha256(path) != record['sha256']:
                 raise ValueError(f'protected scientific byte changed: {name}')
         print(json.dumps({'status': 'PASS', 'files': len(before)}))

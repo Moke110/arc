@@ -114,7 +114,7 @@ class CsvOnlyRoundTrip(unittest.TestCase):
         from install_axis_local_report import CHECKS, HEALTH_SCHEMA, digest, install, recover, safe_tree
 
         repo = root / 'test-checkout'
-        step = repo / 'stage2/03_tsg_dose'
+        step = repo / 'stage2/04_tsg_dose'
         active = step / 'figure'
         active.mkdir(parents=True)
         for number in range(19):
