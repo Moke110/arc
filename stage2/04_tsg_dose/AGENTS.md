@@ -3,7 +3,12 @@
 Read [README.md](README.md), [Stage 2 routing](../AGENTS.md) and
 [ADR0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md) before changes.
 
-**Active execution.** Use `execution/axis_local/formal.py` and
+**tenv KPGT successor.** Follow [ADR0080](../../docs/adr/0080-tenv-kpgt-dose-round1.md).
+Prepare with `execution/kpgt/prepare.py` from the sealed Step 04 tenv input
+freeze and Step 03 representations. Verify with `execution/kpgt/smoke.py`
+under the same caps and resource monitoring as the predecessor.
+
+**ADR0078 execution.** Use `execution/axis_local/formal.py` and
 `output/api/tsg_round1` for the 84-fit axis-local comparison. Keep Tahoe and
 tenv independent. Lock cold-drug selections on validation results before
 outer testing. Cold-drug-dose compares fixed methods. Run formal fits singly
