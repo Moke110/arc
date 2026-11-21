@@ -1,0 +1,122 @@
+{
+  "arms": {
+    "E3FP": {
+      "rows": 352,
+      "sha256": "214853c189940af9340fbc4b39c4d1e569d2e352d86d8541e58ed3e516a07ed1",
+      "width": 1024
+    },
+    "ECFP4C": {
+      "rows": 352,
+      "sha256": "c49e6d86337dbd34d5b5f7e62bf5960f7b430489559abe2668b7f5952aab0747",
+      "width": 2048
+    },
+    "ECFP6C": {
+      "rows": 352,
+      "sha256": "f2b31fa5de37f264011c90f1c4025df8e6cb18e16f67be4a53a7385558528ebd",
+      "width": 2048
+    },
+    "FCFP4C": {
+      "rows": 352,
+      "sha256": "5bfb5ee5614372a14f2475bb230870d76cc5844561ffd092f79e9454b8cd0c9e",
+      "width": 2048
+    },
+    "FCFP6C": {
+      "rows": 352,
+      "sha256": "94aa8c648ac5482ade5d0a779add1324e8ac39ddcc8900fac05be236990d8b1a",
+      "width": 2048
+    },
+    "KPGT": {
+      "rows": 352,
+      "sha256": "88b5a71bb643b78454459d4ac11e408b84119f7e1468cf15d26115d70d3cd149",
+      "width": 2304
+    },
+    "UniMol": {
+      "rows": 352,
+      "sha256": "f99acc0356b8ccfeeb6ee665e68c39b8fea2c2d927367549dbc9457307ec58a2",
+      "width": 512
+    }
+  },
+  "cold_drug_folds": [
+    {
+      "covered": 210,
+      "fold": 0,
+      "parents": 210,
+      "partition": "train",
+      "rows": 39442
+    },
+    {
+      "covered": 24,
+      "fold": 0,
+      "parents": 24,
+      "partition": "validation",
+      "rows": 4250
+    },
+    {
+      "covered": 118,
+      "fold": 0,
+      "parents": 118,
+      "partition": "test",
+      "rows": 21626
+    },
+    {
+      "covered": 211,
+      "fold": 1,
+      "parents": 211,
+      "partition": "train",
+      "rows": 39826
+    },
+    {
+      "covered": 24,
+      "fold": 1,
+      "parents": 24,
+      "partition": "validation",
+      "rows": 3948
+    },
+    {
+      "covered": 117,
+      "fold": 1,
+      "parents": 117,
+      "partition": "test",
+      "rows": 21544
+    },
+    {
+      "covered": 211,
+      "fold": 2,
+      "parents": 211,
+      "partition": "train",
+      "rows": 39024
+    },
+    {
+      "covered": 24,
+      "fold": 2,
+      "parents": 24,
+      "partition": "validation",
+      "rows": 4146
+    },
+    {
+      "covered": 117,
+      "fold": 2,
+      "parents": 117,
+      "partition": "test",
+      "rows": 22148
+    }
+  ],
+  "duplicate_parents": [],
+  "e3fp_conformer_counts": {
+    "1": 14,
+    "2": 13,
+    "3": 325
+  },
+  "extraction_elapsed": "28:29.22",
+  "extraction_log_sha256": "70f1c03759ca22e2577887b215970f7e00b58ecf09fe53068fe4bbd2817446b7",
+  "extraction_peak_rss_kib": 1993064,
+  "freeze_manifest_sha256": "4d00b23d6dcf0ddfbba4f60725b7f32701103a475f278e1db94eeebb968fbeac",
+  "input_manifest_sha256": "aace570ca8d066cebc7152ba989b7653f1aa794d1b39bbe96014834524082b1d",
+  "invalid_or_structurally_mismatched_parents": [],
+  "missing_parents": [],
+  "pair_sha256": "eab35931bfc4dd56837647eaf932a0d6c07bf5ebf8bd97f168ad296a2027e2bc",
+  "parents": 352,
+  "source": "tahoe_bulk",
+  "status": "PASS",
+  "treated_profiles": 65318
+}
