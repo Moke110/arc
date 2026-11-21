@@ -29,11 +29,15 @@ historical descriptions.
   across eligible Tahoe fold-dose cells. Each Tahoe cell in this construction
   contains only one parent. The tenv data have no natural independent-batch
   repeat pairs. Residual PCC remains positive after subtracting the
-  train-only Mean_cell from both prediction and observation, and Tahoe still
-  scores higher in the observed validation cells. Residuals can include dose
-  and other effects shared across parents. Repeat agreement is a measurement
-  diagnostic, and the experiments leave the contribution of shared controls
-  to the domain gap unidentified.
+  train-only Mean_cell vectors from both prediction and observation.
+  Cold-drug-dose residual PCC spans 0.1402–0.2474 in tenv and
+  0.3969–0.4621 in Tahoe across validation fold-dose cells. This
+  transformation cancels the shared control before computing PCC. The
+  coverage audit computes paired differences between PCC scores on
+  published outer rows. Residuals can include dose and other effects
+  shared across parents. Repeat agreement is a measurement diagnostic,
+  and the experiments leave the contribution of shared controls to the
+  domain gap unidentified.
   [Control and residual audit](../../03_tsg_dose/log/262-control-reliability/README.md)
 - Published Step 04 full transfer gains +0.0363, +0.0060 and −0.0274 Δ PCC
   across the three outer folds, for +0.0050 with equal fold weights.
