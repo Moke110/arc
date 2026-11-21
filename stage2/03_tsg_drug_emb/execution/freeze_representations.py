@@ -1,4 +1,4 @@
-"""Extract and verify the full seven-arm tenv parent representation freeze."""
+"""Extract and verify the full seven-arm source-local parent representation freeze."""
 import argparse
 from concurrent.futures import ProcessPoolExecutor
 from importlib.metadata import version
@@ -131,8 +131,8 @@ def freeze(args):
     kpgt_digest = sha256(kpgt_script)
     inputs = Inputs(args.inputs)
     coverage = fold_coverage(inputs)
-    if inputs.source != "tenv" or sha256(args.kpgt_weights) != KPGT_BASE_SHA256:
-        raise ValueError("requires accepted tenv inputs and the frozen KPGT base checkpoint")
+    if sha256(args.kpgt_weights) != KPGT_BASE_SHA256:
+        raise ValueError("requires the frozen KPGT base checkpoint")
     directory = args.output.resolve()
     directory.mkdir(parents=True)
     parents = inputs.parents[PARENT_COLUMNS].reset_index(drop=True)
@@ -177,6 +177,8 @@ def freeze(args):
                     provenance=provenance, dtype="float32", feature_scaling="native",
                     files={path.name: sha256(path) for path in sorted(directory.iterdir())},
                     extraction_sha256=execution_digest, kpgt_extraction_sha256=kpgt_digest)
+    if inputs.source != "tenv":
+        manifest["source"] = inputs.source
     write_json(directory / "manifest.json", manifest)
     RepresentationInputs(inputs, directory)
 

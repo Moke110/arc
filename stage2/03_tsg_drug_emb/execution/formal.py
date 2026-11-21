@@ -1,4 +1,4 @@
-"""Register, run, resume and verify the 21 tenv cold-drug fits."""
+"""Register, run, resume and verify the 21 source-local cold-drug fits."""
 import argparse
 from collections import Counter
 import fcntl
@@ -11,9 +11,10 @@ import tempfile
 import numpy as np
 import pandas as pd
 
-from fit import (ARMS, DOSE, MAX_EPOCHS, PARTITIONS, PATIENCE, SPLIT_SEED, STEP,
-                 TRAINING_SEED, WIDTHS, Inputs, RepresentationInputs, dose,
-                 phase_directory, read_json, runtime_identity, score_test, seal,
+from fit import (ARMS, MAX_EPOCHS, PARTITIONS, PATIENCE, SPLIT_SEED, STEP,
+                 TENV_FIT_SHA256, TENV_INPUT_SHA256, TENV_REPRESENTATION_READER_SHA256,
+                 TRAINING_SEED, WIDTHS, RepresentationInputs, dose,
+                 phase_directory, read_json, runtime_identity, score_test, seal, verified_inputs,
                  sha256, summary, verify_phase, write_json)
 from tenv5k.protocol import mean_prediction
 
@@ -39,16 +40,6 @@ def validate_fit_grid(records):
         for key in ('order', 'transform', 'downstream_sha256', 'rng_sha256'):
             if any(record[key] != group[0][key] for record in group):
                 raise ValueError(f'fold {fold} differs by representation arm: {key}')
-
-
-def verified_inputs(path):
-    approval = read_json(DOSE / 'log/247-axis-local-smoke.json')
-    if sha256(path.parent / 'manifest.json') != approval['pair_sha256']:
-        raise ValueError('tenv inputs are outside the approved prepared pair')
-    pair = read_json(path.parent / 'manifest.json')
-    if sha256(path / 'manifest.json') != pair['sources']['tenv']:
-        raise ValueError('tenv prepared input digest mismatch')
-    return Inputs(path)
 
 
 def plan(args):
@@ -139,11 +130,14 @@ def validate_fit(path, fold, arm, expected, rows, transform):
     architecture = dict(features_dim=WIDTHS[arm], features_embed_dim=[400], method='film',
                         film_dimensions=[1, 32, 800], learning_rate=1e-4, weight_decay=1e-5,
                         batch_size=64, molecule_feature=arm, transform=transform)
+    representation_reader = (TENV_REPRESENTATION_READER_SHA256
+                             if expected['fit_sha256'] == TENV_FIT_SHA256
+                             else sha256(STEP / 'output/api/tsg_drug_emb/representations.py'))
+    runtime = dict(runtime_identity(), training=expected['fit_sha256'],
+                   representations=representation_reader)
     if (any(config[key] != value for key, value in checks.items())
             or any(config['architecture'][key] != value for key, value in architecture.items())
-            or config['runtime']['training'] != expected['fit_sha256']
-            or config['runtime'] != dict(runtime_identity(), training=expected['fit_sha256'],
-                                         representations=sha256(STEP / 'output/api/tsg_drug_emb/representations.py'))):
+            or config['runtime'] != runtime):
         raise ValueError(f'formal fit configuration mismatch: {path}')
     init = fit['initialization']
     if init['tensors']['feat_embeddings.0.weight']['shape'] != [400, WIDTHS[arm]]:
@@ -206,7 +200,7 @@ def score_rows(directory, data, rows):
 
 
 def mean_cell(args):
-    data = verified_inputs(args.inputs)
+    data, _, _ = verified_inputs(args.inputs)
     train = data.rows('cold-drug', args.fold, 'train')
     test = data.rows('cold-drug', args.fold, 'test')
     _, first, inverse = np.unique(data.obs.iloc[test].cell_line, return_index=True, return_inverse=True)
@@ -333,14 +327,15 @@ def main():
         mean_cell(args)
         return
     expected = plan(args)
-    data = verified_inputs(args.inputs)
+    data, _, _ = verified_inputs(args.inputs)
     RepresentationInputs(data, args.representations)
     root = args.destination
     plan_path = root / 'formal-plan.json'
     if args.command == 'verify':
         recorded = read_json(plan_path)
-        if recorded.get('driver_sha256') == PRE_MOVE_DRIVER_SHA256:
-            expected['driver_sha256'] = PRE_MOVE_DRIVER_SHA256
+        if (expected['inputs_sha256'] == TENV_INPUT_SHA256
+                and recorded.get('driver_sha256') == PRE_MOVE_DRIVER_SHA256):
+            expected.update(driver_sha256=PRE_MOVE_DRIVER_SHA256, fit_sha256=TENV_FIT_SHA256)
         if recorded != expected or verify_matrix(args, data, expected) != read_json(root / 'acceptance.json'):
             raise ValueError('formal acceptance differs from independent verification')
     else:

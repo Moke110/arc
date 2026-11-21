@@ -1,4 +1,4 @@
-"""Fit and independently replay a registered tenv cold-drug representation arm."""
+"""Fit and independently replay a registered source-local cold-drug representation arm."""
 import argparse
 from contextlib import contextmanager
 import hashlib
@@ -33,6 +33,11 @@ PARTITIONS = ('train', 'validation', 'test')
 FIRST_LAYER = frozenset(('feat_embeddings.0.weight', 'feat_embeddings.0.bias'))
 VALIDATION_SEED = 22617
 TEST_SEED = TRAINING_SEED + 100000
+# Hashes of the published tenv runtime at 107bda7. The source-local
+# compatibility layer did not change the numerical fit or replay operations.
+TENV_INPUT_SHA256 = 'e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e'
+TENV_FIT_SHA256 = '44e68d3d3cfa7c6381598855d1b19d26bfe54acc119c60c13c7f114dd73e805c'
+TENV_REPRESENTATION_READER_SHA256 = '3e142437337ec1e1cbb6188f2273012bb1d6b4b1af969a21e68a488cf5205322'
 PATIENCE = 50
 MAX_EPOCHS = 1000
 PHASE_FILES = {
@@ -153,16 +158,21 @@ def verify_phase(directory, phase):
     return receipt
 
 
-def load_arm(args):
+def verified_inputs(path):
     approved = read_json(DOSE / 'log/247-axis-local-smoke.json')
-    if sha256(args.inputs.parent / 'manifest.json') != approved['pair_sha256']:
+    pair_path = path.parent / 'manifest.json'
+    if sha256(pair_path) != approved['pair_sha256']:
         raise ValueError('inputs are outside the accepted axis-local pair')
-    pair = read_json(args.inputs.parent / 'manifest.json')
-    input_digest = sha256(args.inputs / 'manifest.json')
-    if input_digest != pair['sources']['tenv']:
-        raise ValueError('prepared tenv input digest differs from the accepted pair')
+    pair = read_json(pair_path)
+    input_digest = sha256(path / 'manifest.json')
+    source = read_json(path / 'config.json')['source']
+    if input_digest != pair['sources'].get(source):
+        raise ValueError(f'prepared {source} input digest differs from the accepted pair')
+    return Inputs(path), input_digest, approved['pair_sha256']
 
-    data = Inputs(args.inputs)
+
+def load_arm(args):
+    data, input_digest, pair_digest = verified_inputs(args.inputs)
     representations = RepresentationInputs(data, args.representations)
     rows = {partition: data.rows('cold-drug', args.fold, partition) for partition in PARTITIONS}
     parents = {partition: set(data.obs.iloc[part].drug_parent_inchikey)
@@ -184,7 +194,7 @@ def load_arm(args):
     ] + ['native-width representation with no normalization']
     config = dict(arm=args.arm, width=representations.width(args.arm), scenario='cold-drug',
                   fold=args.fold, seed=TRAINING_SEED, split_seed=SPLIT_SEED, device=args.device,
-                  inputs_sha256=input_digest, pair_sha256=approved['pair_sha256'],
+                  inputs_sha256=input_digest, pair_sha256=pair_digest,
                   representations_sha256=sha256(args.representations / 'manifest.json'),
                   order={key: value.tolist() for key, value in rows.items()},
                   max_epochs=args.smoke_epochs or MAX_EPOCHS, smoke_rows=args.smoke_rows,
@@ -248,6 +258,11 @@ def train(args, data, rows, config, adapter):
 
 
 def load_checkpoint(args, config, adapter, fit):
+    historical_runtime = dict(config['runtime'], training=TENV_FIT_SHA256,
+                              representations=TENV_REPRESENTATION_READER_SHA256)
+    if (config['inputs_sha256'] == TENV_INPUT_SHA256
+            and fit['config']['runtime'] == historical_runtime):
+        config = dict(config, runtime=historical_runtime)
     if fit['config'] != config:
         raise ValueError('current inputs, runtime or fold differ from the sealed fit')
     history = pd.read_csv(args.run / 'fit/learning_curve.csv', float_precision='round_trip')
