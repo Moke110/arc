@@ -35,3 +35,14 @@ three plots, acceptance rechecked the source fits, controls, resource window
 and all CSV digests and reproduced byte-identical PNGs in 9.30 seconds.
 The installed successor and both sealed predecessor inventories matched
 their receipts.
+
+The [bar presentation receipt](bar-presentation.json) binds the two redrawn
+metrics figures, the active CSV-only renderer and the held-parent dot table
+to the original scientific acceptance. The learning curve PNG retains its
+original acceptance hash. From the repository root, reproduce the held-parent
+table by running `execution/kpgt/held_parent_metrics.py` under Step 04 with
+`--run-root` pointing to the accepted `retry/` directory, `--acceptance` pointing
+to the original acceptance above, and `--output` pointing to a fresh CSV.
+Reproduce the original accepted figure hashes with
+`python execution/kpgt/render.py --data figure/data --output <new-directory>`
+from the Step 04 directory.
