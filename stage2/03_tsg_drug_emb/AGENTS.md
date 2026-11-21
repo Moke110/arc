@@ -38,3 +38,14 @@ extractor writes `coverage_gaps.json` instead of a manifest if it cannot
 cover the complete frozen roster. Verify through
 `tsg_drug_emb.representations.RepresentationInputs` before passing the
 candidate to training.
+
+## Report preparation
+
+After `execution/formal.py verify` passes, run `execution/publish_report.py`
+with the formal matrix, frozen tenv inputs and representation candidate as
+`--matrix`, `--inputs` and `--representations`. Give it a fresh `--destination`
+and wrap the command with the same capped launcher. The report builder checks
+the formal receipts and held-out identities, writes the plotted CSVs and
+verifies byte-exact rendering in two fresh processes. Review the three actual
+PNGs and run the offline path, tracking and integrity gates before accepting
+the report.
