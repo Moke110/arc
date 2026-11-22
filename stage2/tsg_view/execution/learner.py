@@ -55,7 +55,7 @@ if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
 from inputs import Inputs  # noqa: E402
-from views import SOURCES, VIEWS, bind, repo_root, sha256  # noqa: E402
+from views import SOURCES, VIEWS, bind, read_json, repo_root, sha256, write_json  # noqa: E402
 
 RUN_SCHEMA = "tsg-view-run-v1"
 VALIDATION_SCHEMA = "tsg-view-validation-v1"
@@ -77,14 +77,6 @@ TRUTH_KINDS = ("primary", "condition_mean")
 
 class ScientificFailure(ValueError):
     """A numerical or exact-replay failure that cannot be resumed."""
-
-
-def write_json(path, value):
-    Path(path).write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n")
-
-
-def read_json(path):
-    return json.loads(Path(path).read_text())
 
 
 def api(root):
@@ -183,10 +175,11 @@ class TruthBlock:
         self.population = pd.read_csv(self.directory / "population.csv")
         if "profile_id" not in self.population.columns:
             raise ScientificFailure(f"truth population misses profile_id: {self.directory}")
-        parent_column = "drug_parent" if "drug_parent" in self.population.columns else "parent"
-        if parent_column not in self.population.columns:
-            raise ScientificFailure(f"truth population misses its parent column: {self.directory}")
-        self.population = self.population.rename(columns={parent_column: "drug_parent"})
+        # The frozen product emits the canonical ``drug_parent`` column; no other
+        # spelling is this product's truth, so it is refused rather than renamed.
+        if "drug_parent" not in self.population.columns:
+            raise ScientificFailure(
+                f"truth population misses its drug_parent column: {self.directory}")
         if self.population["profile_id"].astype(str).duplicated().any():
             raise ScientificFailure(f"truth population repeats a profile_id: {self.directory}")
         for name in ("cell_line", "dose_um"):
@@ -231,16 +224,11 @@ class TruthBlock:
             self._positions = self.population["drug_parent"].map(
                 dict(zip(self.parents["drug_parent_inchikey"],
                          range(len(self.parents))))).to_numpy(dtype=int)
-        elif "members" in self.population.columns:
-            self.members = self.population["members"].astype(str).map(_split_members)
         else:
-            for alternate in ("member_profile_ids", "member_ids"):
-                if alternate in self.population.columns:
-                    self.members = self.population[alternate].astype(str).map(_split_members)
-                    break
-            else:
+            if "members" not in self.population.columns:
                 raise ScientificFailure(
                     f"condition-mean truth misses its members column: {self.directory}")
+            self.members = self.population["members"].astype(str).map(_split_members)
         if kind == "condition_mean" and "count" in self.population.columns and not (
                 self.population["count"].astype(int).eq(
                     [len(items) for items in self.members]).all()):

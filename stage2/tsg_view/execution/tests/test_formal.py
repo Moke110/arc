@@ -608,5 +608,77 @@ class ProbeRunTest(unittest.TestCase):
             moved.rename(self.root / "truth")
 
 
+class TruthBlockColumnTest(unittest.TestCase):
+    """The truth block reads only the columns truth.py emits.
+
+    The emitter publishes ``drug_parent`` (primary) and ``members`` (condition-mean). The
+    block used to accept two undocumented spellings of each; a truth product written under
+    a different name is not the frozen product, so it must fail closed instead of being
+    silently reinterpreted.
+    """
+
+    def _block(self, root, columns, kind, value):
+        import hashlib
+        directory = Path(root) / kind
+        directory.mkdir(parents=True)
+        frame = pd.DataFrame([value], columns=columns)
+        frame.to_csv(directory / "population.csv", index=False)
+        rng = np.random.default_rng(0)
+        delta = rng.standard_normal((1, SIZE)).astype(np.float32)
+        np.save(directory / "delta.npy", delta)
+        if kind == "primary":
+            np.save(directory / "control.npy", delta)
+            pd.DataFrame({"drug_parent_inchikey": ["PARENT"]}).to_csv(
+                directory / "parents.csv", index=False)
+            np.save(directory / "morgan.npy",
+                    np.zeros((1, 2048), dtype=np.uint8))
+        population_sha = hashlib.sha256(
+            (directory / "population.csv").read_bytes()).hexdigest()
+        _write_json(directory / "manifest.json", {
+            "schema": matrix.TRUTH_SCHEMA, "source": "tenv", "kind": kind, "fold": 0,
+            "rows": 1, "outputs": {"population.csv": {"sha256": population_sha},
+                                   "delta.npy": {"sha256": hashlib.sha256(
+                                       (directory / "delta.npy").read_bytes()).hexdigest()}}})
+        return directory
+
+    def _primary(self, root, parent_column):
+        return self._block(
+            root, ["profile_id", "cell_line", parent_column, "dose_um"], "primary",
+            {"profile_id": "p0", "cell_line": "line", parent_column: "PARENT",
+             "dose_um": 1.0})
+
+    def test_canonical_primary_columns_are_accepted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = self._primary(tmp, "drug_parent")
+            block = learner.TruthBlock(directory, "tenv", 0, "primary")
+            self.assertEqual(block.population["drug_parent"].tolist(), ["PARENT"])
+
+    def test_an_alternate_parent_spelling_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = self._primary(tmp, "parent")
+            with self.assertRaisesRegex(learner.ScientificFailure, "drug_parent"):
+                learner.TruthBlock(directory, "tenv", 0, "primary")
+
+    def test_an_alternate_members_spelling_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = self._block(
+                tmp, ["profile_id", "cell_line", "drug_parent", "dose_um",
+                      "member_profile_ids"], "condition_mean",
+                {"profile_id": "c0", "cell_line": "line", "drug_parent": "PARENT",
+                 "dose_um": 1.0, "member_profile_ids": "p0"})
+            with self.assertRaisesRegex(learner.ScientificFailure, "members"):
+                learner.TruthBlock(directory, "tenv", 0, "condition_mean")
+
+    def test_the_canonical_members_column_is_accepted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = self._block(
+                tmp, ["profile_id", "cell_line", "drug_parent", "dose_um", "members"],
+                "condition_mean",
+                {"profile_id": "c0", "cell_line": "line", "drug_parent": "PARENT",
+                 "dose_um": 1.0, "members": "p0"})
+            block = learner.TruthBlock(directory, "tenv", 0, "condition_mean")
+            self.assertEqual(block.members.tolist(), [["p0"]])
+
+
 if __name__ == "__main__":
     unittest.main()

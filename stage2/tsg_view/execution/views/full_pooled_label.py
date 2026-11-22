@@ -26,22 +26,20 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from common import RELEASED, released_conditions, released_histogram
+
 from . import (BATCH, CONTROL_RULE, RECIPE, SOURCES, HarnessError, condition_table,
                merge_profile_id, relative, sha256, write_json)
 
 # Released-population expectations (reconnaissance notes-bases-views §0/§5); asserted only
 # for a non-fixture build so a corpus/release drift fails closed instead of publishing a
 # differently shaped label transport.
-EXPECTED_ROWS = {"tenv": 4478, "tahoe_bulk": 66718}
-EXPECTED_TREATED = {"tenv": 4206, "tahoe_bulk": 65318}
-EXPECTED_VEHICLE = {"tenv": 272, "tahoe_bulk": 1400}
-EXPECTED_CONDITIONS = {"tenv": 1377, "tahoe_bulk": 52777}
-EXPECTED_MEMBER_HISTOGRAM = {
-    "tenv": {"1": 0, "2": 0, "3": 1320, "4": 48, "5": 0, "6": 9},
-    "tahoe_bulk": {"1": 43036, "2": 7941, "3": 1400, "4": 350, "5": 0, "6": 0, "7": 0,
-                   "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 0, "15": 0,
-                   "16": 50},
-}
+EXPECTED_ROWS = {source: value["rows"] for source, value in RELEASED.items()}
+EXPECTED_TREATED = {source: value["treated"] for source, value in RELEASED.items()}
+EXPECTED_VEHICLE = {source: value["vehicle"] for source, value in RELEASED.items()}
+EXPECTED_CONDITIONS = released_conditions()
+EXPECTED_MEMBER_HISTOGRAM = {source: released_histogram(source)
+                            for source in released_conditions()}
 VEHICLE_RULE = ("vehicle row: the full view's exact X - control (a vehicle row has no "
                 "condition)")
 TRANSFER = ("treated row delta = the delta layer of the merge row whose "
@@ -144,13 +142,9 @@ def _merge_members(merge_path, merge):
     return list(zip(table["profile_id"], table["member_profile_id"]))
 
 
-def _condition_identities(context, conditions):
-    return _condition_identities_by_source(conditions, context.source)
-
-
 def _route_conditions(context, conditions, merge_obs):
     """Prove the merge rows are exactly the canonical condition rows, then route them."""
-    identities = _condition_identities(context, conditions)
+    identities = _condition_identities_by_source(conditions, context.source)
     observed = list(merge_obs["profile_id"])
     if observed != identities:
         raise HarnessError(
@@ -162,8 +156,9 @@ def _route_conditions(context, conditions, merge_obs):
 def _condition_membership(context, conditions, merge_path, merge):
     """Reconcile the label projection's membership to the merge member table."""
     expected = []
-    for identity, condition in zip(_condition_identities(context, conditions),
-                                   conditions.itertuples()):
+    for identity, condition in zip(
+            _condition_identities_by_source(conditions, context.source),
+            conditions.itertuples()):
         for member in condition.profile_ids:
             expected.append((identity, str(member)))
     observed = _merge_members(merge_path, merge)

@@ -22,7 +22,6 @@ this module calls ``bases.view.library_totals`` and ``bases.view.log1p_cp10k``.
 from __future__ import annotations
 
 import hashlib
-import json
 import os
 import platform
 import sys
@@ -32,6 +31,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+import common as shared
+from common import relative, sha256, write_json
 
 SCHEMA = "tsg-view-product-v1"
 VIEWS = ("full", "merge", "solo", "solo-deepest", "full-pooled-label")
@@ -86,16 +88,19 @@ _MODULES = {}
 
 
 def repo_root(explicit=None):
-    """The checkout that owns the pinned inputs and payloads."""
-    if explicit is not None:
-        root = Path(explicit).resolve()
-        if not (root / "stage2/01_bases/output/api/bases/view.py").is_file():
-            raise HarnessError(f"repo root does not carry the Bases API: {root}")
-        return root
-    for path in Path(__file__).resolve().parents:
-        if (path / ".git").exists():
-            return path
-    raise HarnessError("cannot locate the repository root; pass --repo-root")
+    """The checkout that owns the pinned inputs and payloads (one finder, in ``common``).
+
+    The Bases-API assertion is this package's own precondition: a root without the pinned
+    Step 01 implementation cannot yield a view product, so it fails closed early.
+    """
+    try:
+        root = shared.repo_root(explicit)
+    except ValueError as error:
+        raise HarnessError(str(error)) from error
+    if explicit is not None and not (
+            root / "stage2/01_bases/output/api/bases/view.py").is_file():
+        raise HarnessError(f"repo root does not carry the Bases API: {root}")
+    return root
 
 
 def bind(root):
@@ -122,32 +127,9 @@ def modules():
     return _MODULES
 
 
-def relative(path, root):
-    """Repo-relative posix path, else the bare file name (never an absolute path)."""
-    try:
-        return Path(path).absolute().relative_to(Path(root).absolute()).as_posix()
-    except ValueError:
-        return Path(path).name
-
-
-def sha256(path):
-    digest = hashlib.sha256()
-    with Path(path).open("rb") as handle:
-        for block in iter(lambda: handle.read(8 * 1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
-def write_json(path, value):
-    """The repository's canonical deterministic JSON form (no binding required)."""
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
-    return path
-
-
 def read_json(path):
-    return modules()["release"].read_json(path)
+    """Canonical JSON reader (the Bases implementation calls the same ``json.loads``)."""
+    return shared.read_json(path)
 
 
 def environment():
@@ -706,8 +688,12 @@ def member_table(conditions, profile_id=None):
 def pooled_condition_counts(reader, genes, row_to_condition, conditions):
     """Sum member retained integer counts per condition in one bounded corpus pass.
 
-    ``float64`` accumulation is exact for at most 16 addends of small integer counts and
-    keeps the accumulator at 1.06 GB for 52,777 x 5,000, instead of a 2.1 GB int64 array.
+    ``float64`` and ``int64`` are both 8 bytes, so the single-pass ``52,777 x 5,000``
+    accumulator is about 2.11 GB whichever dtype it uses; the dtype is chosen for exact
+    summation semantics, not for size. Exactness holds because at most 16 small integer
+    counts are added into each cell (well below ``2**53``), so a ``float64`` sum equals the
+    integer sum. A gene-block two-pass would lower the peak to about 1.06 GB but would
+    stream the corpus twice; this build accepts the single-pass footprint under the cap.
     """
     totals = np.zeros((len(conditions), len(genes)), dtype=np.float64)
     for start, block in reader.batches(BATCH):

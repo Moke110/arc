@@ -40,6 +40,7 @@ from views import (BATCH, CONTROL_RULE, RECIPE, SIZE, SOURCES, HarnessError,  # 
                    bind, condition_table, environment, merge_profile_id,
                    pooled_condition_blocks, pooled_condition_counts, pooled_control,
                    relative, repo_root, sha256, vehicle_group_sums, write_json)
+from common import released_conditions, replicated_conditions  # noqa: E402
 from inputs import (read_sealed_splits, sealed_binding, sealed_reference)  # noqa: E402
 
 SCHEMA = "tsg-view-truth-v1"
@@ -61,8 +62,8 @@ DIAGNOSTIC_COLUMNS = ("source", "condition_key", "condition_index", "cell_line",
 # Frozen released-population expectations: a released-input change must fail closed here
 # rather than publish a silently different truth population (plan C3).
 EXPECTED_TEST_COUNTS = {"tenv": (469, 468, 465), "tahoe_bulk": (6643, 6650, 7950)}
-EXPECTED_CONDITIONS = {"tenv": 1377, "tahoe_bulk": 52777}
-EXPECTED_REPLICATED = {"tenv": 1377, "tahoe_bulk": 9741}
+EXPECTED_CONDITIONS = released_conditions()
+EXPECTED_REPLICATED = replicated_conditions()
 
 # ADR 0082 Context reference values (the study's pre-registered sanity check).
 ADR_REFERENCE = {
