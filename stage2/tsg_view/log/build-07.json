@@ -1339,5 +1339,236 @@
       "paired_vs_full_solo_deepest.csv is byte-identical to phase B-tenv because solo-deepest is a tenv-only sensitivity arm; Tahoe has no solo-deepest run",
       "Tahoe Delta values are not comparable in level to the tenv ones (different truth product and profile population); the cross-source comparison is the within-source paired contrast"
     ]
+  },
+  "merger_verification": {
+    "date": "2026-11-22",
+    "role": "merger",
+    "dev_rev": "57814e42e57851a7d8e5bd8cd334f06954415888",
+    "dev_rev_short": "57814e4",
+    "merge_commit": "57814e4",
+    "merge_message": "Merge Stage 2 tsg_view 07: complete report tables, figure suites and CSV-only reproduction",
+    "pre_merge_scope": {
+      "command": "git -C /home/chang/arc diff --name-only dev..impl/tsg-view-07",
+      "files": 30,
+      "verdict": "exactly the ticket-07 allowlist: execution/{report,render}.py, figure/script/render.py, execution/tests/{test_report,test_render}.py, .gitignore (one figure/data re-include line), log/build-07.json and the generated report CSVs / figure data CSVs / 7 PNGs / render_status.json / report_manifest.json; nothing else"
+    },
+    "commands": {
+      "merge": "cd /home/chang/arc && git merge --no-ff impl/tsg-view-07 -m \"Merge Stage 2 tsg_view 07: complete report tables, figure suites and CSV-only reproduction\"",
+      "tests": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+      "report": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/execution/report.py --runs stage2/tsg_view/output/runs --truth stage2/tsg_view/output/truth --report stage2/tsg_view/output/report --figure-data stage2/tsg_view/figure/data",
+      "render": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/figure/script/render.py --data stage2/tsg_view/figure/data --output stage2/tsg_view/figure --suite all",
+      "csv_only_replay": "scratch tree /tmp/tsg07-replay-dev holds only the 8 figure/data CSVs plus the renderer source (no runs/matrices/checkpoints/truth); MPLCONFIGDIR=<tree>/mpl python -I <renderer> --data <data> --output <out> --suite all",
+      "health": [
+        "cd /home/chang/arc && bash script/check_paths.sh",
+        "cd /home/chang/arc && bash script/check_tracked.sh"
+      ]
+    },
+    "tests": {
+      "suite": "execution/tests/test_*.py",
+      "ran": 119,
+      "result": "OK",
+      "runtime_seconds": 88.893,
+      "errors": 0,
+      "failures": 0
+    },
+    "report_tables": {
+      "baseline_mean_cell.csv": {
+        "rows": 24,
+        "sha256": "2855975f2231d72fef47f16a8b5efc28a299b9aa48178ab51459a729e15fd03d"
+      },
+      "diagnostics_beside_scores.csv": {
+        "rows": 8,
+        "sha256": "1b366ab96ea862ad48f7d54faf43c0c518937f28a6842830b8c6482cc856d860"
+      },
+      "fold_spread.csv": {
+        "rows": 120,
+        "sha256": "516449f45c62053b054b271bf1ac72286265cf2c6d75a76d1b2f25dc700319d5"
+      },
+      "learning_curves.csv": {
+        "rows": 4843,
+        "sha256": "179439293b629ddc5a0c03d927f17c707632a9b3d2b4d30295b797ae8fcd1d18"
+      },
+      "metrics_condition_mean.csv": {
+        "rows": 45,
+        "sha256": "a8e2db633b06514728e4af3d884b56331a546d1c00a8001abe688ec0f04485f6"
+      },
+      "metrics_per_dose.csv": {
+        "rows": 180,
+        "sha256": "da96fe09aac0223447c4a73e39b1f364ce3e814e3738e4fa452ffa14e9b56390"
+      },
+      "metrics_primary.csv": {
+        "rows": 45,
+        "sha256": "c5036160a3aeb3daefbe7864ae8a4e03b918cab5a77e323b8d6d25ec0a777fa7"
+      },
+      "paired_vs_full.csv": {
+        "rows": 20,
+        "sha256": "6714f82608de1f9fb7e5ba1c44c208776b46762ae04d57ada661e416edcc4b61"
+      },
+      "paired_vs_full_solo_deepest.csv": {
+        "rows": 4,
+        "sha256": "66faa2d2ad828526b30f77efbb4209b9e65a5d1e8975400338394fe2075235e7"
+      },
+      "run_status.csv": {
+        "rows": 45,
+        "sha256": "c0bfee18c1362f3dc880d759a995cb1d2d93b51cde6eb7de95edeb8e85b0e090"
+      },
+      "seed_spread.csv": {
+        "rows": 64,
+        "sha256": "6c2fcbd96bc701f153c03d15974262e89b30cfdfbe748c56046915ebbb497ab7"
+      }
+    },
+    "figure_data": {
+      "learning_curves.csv": {
+        "rows": 4843,
+        "sha256": "179439293b629ddc5a0c03d927f17c707632a9b3d2b4d30295b797ae8fcd1d18"
+      },
+      "learning_curves_mean.csv": {
+        "rows": 997,
+        "sha256": "1556c274a29f4d932ed02dd4e714f880389c050df0cfd0de18f0abefffcf5032"
+      },
+      "metrics_bars.csv": {
+        "rows": 32,
+        "sha256": "b9ff2099e09a7ea2bb87800b24d2f24007c36223c7bc45114633e77157849b25"
+      },
+      "metrics_baseline.csv": {
+        "rows": 8,
+        "sha256": "600242dafa71130d45909b08d3a2a3dc3f2fa10452c3392112dd753676ce26c4"
+      },
+      "metrics_per_dose_bars.csv": {
+        "rows": 96,
+        "sha256": "2edd8bca29ad4edd3b6ca180de8d1b37d06d91d24998338867367e3023febfa6"
+      },
+      "metrics_per_dose_points.csv": {
+        "rows": 180,
+        "sha256": "4646dc50ecf9aefface09b32e20d1b736c3334bd951fb33f0a1ff4511ebf795b"
+      },
+      "metrics_points.csv": {
+        "rows": 180,
+        "sha256": "372dc6d55bb911ffa2f36231f52419e50a162319f2cc59591705ea627450e7a0"
+      },
+      "views_effect.csv": {
+        "rows": 24,
+        "sha256": "3c184d6e21a6081c5bdacc3eccb5dacff4a3f1667521a5ebabfb562ab08805ec"
+      }
+    },
+    "figures": {
+      "learning_curves_tahoe_bulk.png": {
+        "bytes": 111944,
+        "sha256": "b3f66712bd937f13cac3b472eab0aead0d16f7742e05f0d1e71080da2ada04a6"
+      },
+      "learning_curves_tenv.png": {
+        "bytes": 219515,
+        "sha256": "30592793904ff3dbf0f398b035445ad043602aaa1ba2a0fc0b451fe1487fa011"
+      },
+      "metrics_per_dose_tahoe_bulk.png": {
+        "bytes": 173106,
+        "sha256": "f8f26adc99027c44b7e1e4d7c051e9e04b1e4c4deb048b7464e3b47c291d74fb"
+      },
+      "metrics_per_dose_tenv.png": {
+        "bytes": 280645,
+        "sha256": "9e735e561fe532e1a1914a2249427c3a7275a9e19dd1aeac481310cd244028a5"
+      },
+      "metrics_tahoe_bulk.png": {
+        "bytes": 101645,
+        "sha256": "3328c1fc94510a2941b367ff964b28a24437b44a5e7837e7300321d519172490"
+      },
+      "metrics_tenv.png": {
+        "bytes": 152352,
+        "sha256": "163e9f3729bf989a28b8c9ddae8b3814ef5ccf7259c1fe275f6d9746db6d3ca7"
+      },
+      "views_effect.png": {
+        "bytes": 101415,
+        "sha256": "629335b1d52fed2886d3898fecdaabb020b94da1730efbed8fc3a7260fe5ccf6"
+      }
+    },
+    "figure_count": 7,
+    "report_manifest": {
+      "sha256": "d88da7e0daf22a45c1184cd93c220021461c2c6c1c66201f6970a68170698cab",
+      "complete_origins": 45,
+      "pending_origins": 0,
+      "sources": [
+        "tenv",
+        "tahoe_bulk"
+      ]
+    },
+    "run_status": {
+      "rows": 45,
+      "complete": 45,
+      "pending": 0
+    },
+    "tenv_png_stability": {
+      "frozen": {
+        "learning_curves_tenv.png": "3059279390",
+        "metrics_tenv.png": "163e9f3729",
+        "metrics_per_dose_tenv.png": "9e735e561f"
+      },
+      "observed": {
+        "learning_curves_tenv.png": "3059279390",
+        "metrics_per_dose_tenv.png": "9e735e561f",
+        "metrics_tenv.png": "163e9f3729"
+      },
+      "byte_identical": true,
+      "method": "sha256sum of all 28 tracked deliverables before and after the dev report+render runs -> zero diffs, so the accepted tenv panels were not overwritten"
+    },
+    "tahoe_and_cross_expected": {
+      "learning_curves_tahoe_bulk.png": [
+        "b3f66712bd",
+        "b3f66712bd"
+      ],
+      "metrics_tahoe_bulk.png": [
+        "3328c1fc94",
+        "3328c1fc94"
+      ],
+      "metrics_per_dose_tahoe_bulk.png": [
+        "f8f26adc99",
+        "f8f26adc99"
+      ],
+      "views_effect.png": [
+        "629335b1d5",
+        "629335b1d5"
+      ]
+    },
+    "render_status": {
+      "path": "stage2/tsg_view/figure/render_status.json",
+      "sha256": "d40bc19ee3cb299d7206e90df53edbc5bdcbaf610819cf1d31f25a94dd129b56",
+      "digest_prefix": "d40bc19ee3",
+      "suite": "all",
+      "pending": {},
+      "figures_pinned": 7
+    },
+    "csv_only_replay": {
+      "result": "all 7 PNGs byte-identical (sha256) to the accepted dev PNGs and to each other",
+      "strict_variant": "tree with data/ (8 CSVs) + a byte copy of execution/render.py only: python -I, isolated MPLCONFIGDIR -> 7/7 byte-identical, render_status.json also identical",
+      "documented_variant": "tree with figure/data/ + figure/script/render.py + execution/render.py (the wrapper's documented import): python -I, isolated MPLCONFIGDIR -> 7/7 byte-identical",
+      "wrapper_note": "figure/script/render.py is a thin wrapper that imports execution/render.py (stated in its docstring); a tree holding only the wrapper raises ModuleNotFoundError('render'). The data guarantee is unaffected: no run directory, matrix, checkpoint or truth product is read in either variant.",
+      "digests": {
+        "learning_curves_tahoe_bulk.png": "b3f66712bd937f13cac3b472eab0aead0d16f7742e05f0d1e71080da2ada04a6",
+        "learning_curves_tenv.png": "30592793904ff3dbf0f398b035445ad043602aaa1ba2a0fc0b451fe1487fa011",
+        "metrics_per_dose_tahoe_bulk.png": "f8f26adc99027c44b7e1e4d7c051e9e04b1e4c4deb048b7464e3b47c291d74fb",
+        "metrics_per_dose_tenv.png": "9e735e561fe532e1a1914a2249427c3a7275a9e19dd1aeac481310cd244028a5",
+        "metrics_tahoe_bulk.png": "3328c1fc94510a2941b367ff964b28a24437b44a5e7837e7300321d519172490",
+        "metrics_tenv.png": "163e9f3729bf989a28b8c9ddae8b3814ef5ccf7259c1fe275f6d9746db6d3ca7",
+        "views_effect.png": "629335b1d52fed2886d3898fecdaabb020b94da1730efbed8fc3a7260fe5ccf6"
+      }
+    },
+    "tree_state": {
+      "tracked_changes_after_runs": "none beyond this log entry: the regenerated 11 report CSVs, 8 figure/data CSVs, 7 PNGs, render_status.json and report_manifest.json are byte-identical to the merged commit, so git status listed 0 paths before this append",
+      "payloads": "no run/truth payload was added, moved or deleted; the pre-existing stage2/tsg_view/output/runs and output/truth payloads were read only"
+    },
+    "health": {
+      "check_paths.sh": {
+        "exit": 0,
+        "result": "PASS - every extracted path literal resolves; stage2 retired-step-path audit PASS"
+      },
+      "check_tracked.sh": {
+        "exit": 0,
+        "result": "PASS - all scanned executable files are tracked (or documented expected-ignored)"
+      }
+    },
+    "notes": [
+      "the row counts and digests above equal the phase_b_all block exactly, which is the intended result: the merger re-ran the same commands on dev against the canonical main-checkout runs/truth and got the same bytes",
+      "no feature code was edited to pass a gate",
+      "ticket 08 must consume output/report/*.csv, figure/data/*.csv and figure/*.png at these digests; the tenv PNG digests are frozen"
+    ]
   }
 }
