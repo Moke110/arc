@@ -1,0 +1,109 @@
+# Stage 2 historical replay
+
+The original ADR 0082 study is preserved in [tsg_view](tsg_view/README.md).
+Its 45-fit report, original recipes, and release and fit receipts keep their
+original identities. The snapshots below reproduce the checkout paths used
+by the seals.
+
+| Original path | Current payload location |
+| --- | --- |
+| `stage2/01_bases` | `stage2/01_bases`, recovery and shared external derivation kernels |
+| `stage2/02_models_tenv-5k` | `stage2/04_models_tenv-5k` |
+| `stage2/03_tsg_drug_emb` | `stage2/05_tsg_drug_emb` |
+| `stage2/03_tsg_drug_emb/output/representations` | `stage2/util/output/representations` |
+| `stage2/04_tsg_dose` | `stage2/06_tsg_dose` |
+| `stage2/05_tsg_width_dose` | `stage2/07_tsg_width_dose` |
+| `stage2/06_tsg_transfer` | `stage2/08_tsg_transfer` |
+| `stage2/tsg_view` | `stage2/03_view/03.1_hvg-deg_views/historical/tsg_view` |
+
+## Move the materialized checkout once
+
+Run the helper from the candidate checkout before merging it into the
+materialized checkout. Store the plan outside Git. It records ignored Stage 2
+files under the mapping by inode, size and modification time. Quiesce Stage 2
+writers while making and applying the plan.
+
+```sh
+CANDIDATE=/path/to/migrated/checkout
+MATERIALIZED=/path/to/materialized/checkout
+PLAN=/path/to/stage2-payload-migration.json
+export PYTHONDONTWRITEBYTECODE=1
+python "$CANDIDATE/script/migrate_stage2_payloads.py" plan \
+  --root "$MATERIALIZED" --plan "$PLAN"
+```
+
+Before switching the materialized checkout, `link-active` can expose existing
+payloads at the new names in the candidate checkout for read-only validation.
+Use `--target "$CANDIDATE"` with the same root and plan. Expose required
+external sources read-only and verify them against their source manifests.
+Write candidate outputs to separate directories.
+
+After the Git merge, run the helper with `apply`. It preflights collisions,
+unplanned files and identity drift before renaming anything. It retains file
+identities and rolls back the current batch on an error. Keep the plan for
+replay or use `reverse` before restoring the old Git layout. Publish new
+corpus, view and input artifacts to their versioned paths separately.
+
+If an apply or reverse is interrupted, quiesce writers and rerun the same command
+with the original plan. The inode checks recognize already-completed renames.
+
+## Replay with the original code
+
+Use commit `4080ce9187906ae9b0193e26414f125de45fd09d` for the original five
+consumer steps. Use commit `212d3e0` for the ADR 0082 study and its Steps 01–06
+inventory, which predates the later gene-axis presentation update. Both
+commits use the original path names.
+
+```sh
+SNAPSHOT=/path/to/replay/worktree
+git -C "$MATERIALIZED" worktree add --detach "$SNAPSHOT" 212d3e0
+python "$CANDIDATE/script/migrate_stage2_payloads.py" copy-snapshot \
+  --root "$MATERIALIZED" --plan "$PLAN" --target "$SNAPSHOT" \
+  --paths-from /path/to/receipt-and-baseline-payloads.txt
+```
+
+Copies use the original names and independent file storage. Build the paths
+list by intersecting the migration plan with the sealed receipt inventory and
+the original baseline inventory. Space is checked before copying. Follow the
+snapshot's owning AGENTS.md and write results to separate candidate paths. The ADR 0082
+receipt uses the original compact `.scratch/tsg-view/research/baseline`
+inventory and planning ref. Supply those with `--baseline` and `--refs`, or
+place the original inventory in the snapshot. Verify any external sources the
+historical workflow names against their manifests.
+
+### Verify the deployed ADR 0082 artifacts
+
+The sealed receipt and its health transcripts both pin
+`85b8cd3f5974737400589166c6c04dbf76752c74`. The deployed snapshot `212d3e0`
+contains that receipt and the original study artifacts. Its historical final
+receipt wrapper requires the old health commit to equal the current Git HEAD.
+The aggregate Steps 01–06 check also resolves the live `dev` ref, which now
+includes the migration. Use the original binary verifier in partial mode and
+check the frozen file inventory directly against the detached snapshot. Current
+layout health is verified separately in the materialized migrated checkout.
+
+Run the two verification commands serially under the repository's resource cap.
+Set `EVIDENCE` to a separate existing directory for outputs.
+
+```sh
+BASE="$SNAPSHOT/.scratch/tsg-view/research/baseline"
+SEALED="$SNAPSHOT/stage2/tsg_view/log/acceptance"
+CAP="$CANDIDATE/stage2/01_bases/execution/capped.sh"
+export PYTHONDONTWRITEBYTECODE=1
+cd "$SNAPSHOT"
+"$CAP" python stage2/tsg_view/execution/acceptance.py receipt \
+  --root "$SNAPSHOT" --phase partial --verify-binary \
+  --baseline "$BASE/steps01-06-per-path.sha256" --refs "$BASE/refs.txt" \
+  --preregistration "$SEALED/pre_registration.md" --health-dir "$SEALED/health" \
+  --timestamp "$(jq -r .generated_at "$SEALED/receipt.json")" \
+  --output "$EVIDENCE/adr0082-replayed.json"
+"$CAP" sha256sum --check --strict "$BASE/steps01-06-per-path.sha256" \
+  > "$EVIDENCE/steps01-06-sha256.log"
+```
+
+Check for 45 complete origins, zero pending origins, exact validation and test
+replay evidence, and byte-identical CSV-only figures. Compare the replay's
+inventory, plan and plan manifest digests, input manifest digest,
+pre-registration digest, report script digests, and combined Steps 01–06 digest
+with the original receipt. The [migration acceptance record](../log/layout-acceptance.json)
+contains the comparison and the current layout's offline checks.

@@ -1,0 +1,7 @@
+!output/
+output/*
+!output/api/
+!output/api/**
+output/api/**/__pycache__/
+output/api/**/*.py[cod]
+execution/checkpoints/

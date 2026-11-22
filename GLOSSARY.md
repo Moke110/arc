@@ -314,15 +314,23 @@ The historical proposal for a Stage 2 stage after setup: choose which model(s) t
 
 ### Stage 2 dataset corpus
 
-**Bases**:
+**Bases (historical layout)**:
 The shipped Stage 2 foundation at `stage2/01_bases/`: frozen gene identity, raw counts, the integer corpus, the model-facing views and the released gene axes, plus disease and cardiotox DEGs, the per-disease fusion and the single public reader/metric API. It publishes `raw_counts`, `corpus`, `disease-deg`, `disease-fusion`, `gene-axis`, `gene-identity`, `palette`, `tenv-hvg`, `view-5k`, `api` and `fold_n_seed`. The retired measured truth, successor envelope and training corpora are not part of it; model setup and benchmark experiments are outside its scope.
 
 **Raw-count preparation**:
 Counts derived from immutable source expression before normalization or treated-well selection. Current bases retains tenv on its native gene axis and Tahoe projected onto the frozen CM gene axis, with controls retained.
 
-**Corpus** (`output/corpus/`):
-The integer raw-count substrate on the frozen CM gene axis: one row per treated or vehicle profile, with identity, dose, role and matched-control group, and with no normalization, no delta and no gene subsetting. Every gene-axis view and every model view is built from it; the former normalized-corpus meaning is retired.
-_Avoid_: training corpus (the retired normalized collection), dataset corpus (the ADR 0033 native-axis per-source release)
+**Corpus**:
+A source-preserving collection of verified raw integer expression counts at the finest published observation granularity. It retains native gene coverage and observation identity, dose, role and control-match status. Unmatched observations remain available. Normalized expression and Delta are properties of derived views.
+_Avoid_: training set, normalized corpus
+
+**Prediction gene axis**:
+An ordered subset of the fixed 18,164-gene CM gene axis. All sources used in the shared prediction workflow cover the complete CM gene axis.
+_Avoid_: corpus gene universe
+
+**HVG-DEG**:
+The Stage 2 axis selection method combining tenv highly variable genes with disease DEG evidence to select the four ordered prediction gene axes.
+_Avoid_: view recipe
 
 **Dataset corpus**:
 The information-maximal h5ad substrate between a raw downloaded dataset and a model's training input: one file per source dataset, raw counts in `X`, the source's **native** gene axis, every raw well including vehicle controls and technical blanks, and no model-facing filter, no integer encoding and no Δ. The historical five-source release comprised `dtoxs_primary`, `dtoxs_ipsc`, `sctox`, `tenv` and `tahoe`; its tracked evidence is retained in Git history.
@@ -416,7 +424,7 @@ Combining member profiles by summing their retained integer counts and normalizi
 _Avoid_: averaged profile, mean expression, pseudobulk (unqualified — a tenv well is already a pseudobulk)
 
 **Full view** (`{source}-full-5k-view`):
-The view that preserves every corpus profile under the axis-local 5k recipe; it is the digest-equal alias of the accepted 01 expression release, not a re-derivative.
+The 5k view that preserves one profile per eligible corpus observation. The historical ADR 0082 full view was a digest-equal alias of the accepted ADR 0077 expression release.
 _Avoid_: baseline view, original view, raw view
 
 **Merged view** (`{source}-merge-5k-view`):
@@ -424,7 +432,7 @@ One replicate-pooled profile per condition, with its control pooled from the uni
 _Avoid_: mean view, deduplicated view, collapsed view
 
 **Solo view** (`{source}-solo-5k-view`):
-One treated profile per condition, drawn once per source by a seed frozen before any fit and independent of folds; its control is unchanged from the full view.
+One treated profile per condition, drawn once per source by a seed frozen before any fit and independent of folds; its control follows the matching full-view generation.
 _Avoid_: singleton view, single-replicate view, subsampled view
 
 **Pooled-label view** (`{source}-full-pooled-label-5k-view`):
@@ -903,7 +911,7 @@ A View whose expression columns follow an ordered subset of original frozen gene
 _Avoid_: corpus (for a view), subset matrix
 
 **Axis-local normalization**:
-Per-profile CP10K followed by natural log1p, with the library total calculated only from raw counts on that profile's declared gene axis. Matched-control expression is the mean of individually normalized vehicle profiles; full-axis normalization instead uses the complete frozen gene axis as its denominator.
+CP10K followed by natural log1p, using the raw-count total on the declared prediction gene axis. For a pooled profile, the denominator is calculated after raw-count summation. In the new Stage 2 view generation this applies independently to treated counts and to the deduplicated union of matched vehicle counts. Historical ADR 0077 full views averaged individually normalized vehicle profiles.
 _Avoid_: re-normalizing log expression, full-axis normalization (for this denominator)
 
 **Raw-count release** (`raw_counts/`):

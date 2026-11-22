@@ -181,10 +181,12 @@ The four finalised screens are rerunnable from the 項 sources with the shared `
 
 Per-workflow rows are isolated `du -sb` values that each include their own hard-linked `input/` copies; the `stage1/` total above counts the shared 5.57 GB UniMol array once, which is why the five rows sum to more than it.
 
-## Stage 2 — the two active steps (2026-11-17, ADR 0062 / 0074)
+## Stage 2 — published products and early comparison payloads
 
-`stage2/01_bases/` owns the foundation and `stage2/02_models_tenv-5k/` owns
-the accepted single-dose native-model comparison. The previous `02_models_tenv`
+The [Stage 2 routing](../stage2/AGENTS.md) lists the active raw-first steps. The
+[replay map](../stage2/03_view/03.1_hvg-deg_views/historical/README.md) locates
+sealed historical data. `stage2/01_bases/` holds the prior foundation release,
+and `stage2/04_models_tenv-5k/` holds the accepted single-dose comparison. The previous `02_models_tenv`
 step is retired after verified successor acceptance; its complete tracked and
 ignored tree is retained in the archive listed below. Historical ADRs and sealed
 records retain their original paths and scientific identities.
@@ -279,14 +281,14 @@ Source/corpus/HVG/four-axis and historical downstream bytes remain unchanged.
 Old measurements stay in sealed receipts; recovery views outside formal output
 are temporary reconstruction evidence, not live model inputs.
 
-### `stage2/02_models_tenv-5k/` — accepted three-fold comparison (#226/#231)
+### `stage2/04_models_tenv-5k/` — accepted three-fold comparison (#226/#231)
 
 Canonical ignored payloads preserve the accepted complete 54-run matrix and new
 18-slot Mean release. Sizes below are regular-file byte sums, excluding directory
 metadata. The complete candidate duplicates published runs to retain registrations,
 plan, resources and replay evidence; it is required for no-training matrix replay.
 
-| path under `stage2/02_models_tenv-5k/` | files | bytes | contents / reconstruction |
+| path under `stage2/04_models_tenv-5k/` | files | bytes | contents / reconstruction |
 |---|---:|---:|---|
 | `output/inputs/` | 12 | 98,265,302 | 1,402 treated wells, 459 parents, 192 unique controls, 5,000 genes, exact three-fold splits/Morgan/manifest; `execution/prepare.py --view ../01_bases/output/view-5k --candidate <empty>` |
 | `output/means/` | 62 | 142,776,780 | 18 baseline slots, 15 applicable and three cold-drug Mean_drug N/A; `execution/means.py --inputs output/inputs --candidate <empty>` |

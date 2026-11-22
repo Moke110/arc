@@ -1,0 +1,29 @@
+{
+  "axis_size": 18164,
+  "checks": [
+    "full-axis HGNC roundtrip",
+    "source-specific FAM153B Tahoe/tenv"
+  ],
+  "fam153b_gene_index": 5091,
+  "gene_index": "0-based frozen row order",
+  "genes_sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+  "inputs": {
+    "gene_crosswalk.csv": {
+      "sha256": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+    },
+    "genes.csv": {
+      "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+    },
+    "hgnc_complete_set.txt": {
+      "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+    },
+    "tahoe_mapping.csv": {
+      "sha256": "73cf97fcf5f30c4cc0ccc9d110e7919f010b91291882b23cd3bb7dd120af03a9"
+    },
+    "tenv_mapping.csv": {
+      "sha256": "f1c3abfb92ce453e2c997a8276af20b0302cf250537fef2e69c6305a1d5202e6"
+    }
+  },
+  "schema_version": 1,
+  "source_evidence_rows": 202688
+}

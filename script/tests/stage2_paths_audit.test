@@ -65,7 +65,7 @@ for old in 03_tsg_dose 04_tsg_transfer 02_models_tenv 02_dataset_corpus evaluati
   printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
   if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
 done
-printf 'p = "stage2/01_bases/output/x"\nq = "stage2/02_models_tenv-5k/output/x"\nr = "stage2/04_tsg_dose/output/x"\ns = "stage2/06_tsg_transfer/output/x"\nt = "stage2/03_tsg_drug_emb/output/x"\n' >"$tmp/current.py"
+printf 'p = "stage2/01_corpus/output/x"\nq = "stage2/04_models_tenv-5k/output/x"\nr = "stage2/06_tsg_dose/output/x"\ns = "stage2/08_tsg_transfer/output/x"\nt = "stage2/05_tsg_drug_emb/output/x"\n' >"$tmp/current.py"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "active roots/external source must pass"
 # An active-root prefix must not exempt a longer retired-looking sibling name.
@@ -85,36 +85,22 @@ run_root() {
   STAGE2_PATH_AUDIT_ROOT="$1" STAGE2_PATH_AUDIT_FILES="$2" bash "$audit"
 }
 fixture_root="$tmp/layout/stage2"
-mkdir -p "$fixture_root/05_tsg_width_dose" "$fixture_root/01_bases" "$fixture_root/02_models_tenv-5k" "$fixture_root/04_tsg_dose" "$fixture_root/06_tsg_transfer"
-printf 'bases\n' >"$fixture_root/AGENTS.md"
-printf 'bases\n' >"$fixture_root/01_bases/AGENTS.md"
-printf 'bases\n' >"$fixture_root/01_bases/README.md"
-printf 'successor\n' >"$fixture_root/02_models_tenv-5k/AGENTS.md"
-printf 'successor\n' >"$fixture_root/02_models_tenv-5k/README.md"
-mkdir -p "$fixture_root/03_tsg_drug_emb"
-printf 'representation comparison\n' >"$fixture_root/03_tsg_drug_emb/AGENTS.md"
-printf 'representation comparison\n' >"$fixture_root/03_tsg_drug_emb/README.md"
-printf 'dose comparison\n' >"$fixture_root/04_tsg_dose/AGENTS.md"
-printf 'dose comparison\n' >"$fixture_root/04_tsg_dose/README.md"
-printf 'width and dose comparison\n' >"$fixture_root/05_tsg_width_dose/AGENTS.md"
-printf 'width and dose comparison\n' >"$fixture_root/05_tsg_width_dose/README.md"
-printf 'transfer comparison\n' >"$fixture_root/06_tsg_transfer/AGENTS.md"
-printf 'transfer comparison\n' >"$fixture_root/06_tsg_transfer/README.md"
-# The non-numbered ADR 0082 study step carries its own routing skeleton.
-mkdir -p "$fixture_root/tsg_view"
-printf 'view-variant study\n' >"$fixture_root/tsg_view/AGENTS.md"
-printf 'view-variant study\n' >"$fixture_root/tsg_view/README.md"
+for step in util 01_corpus 02_axis_view 03_view 04_models_tenv-5k 05_tsg_drug_emb 06_tsg_dose 07_tsg_width_dose 08_tsg_transfer 01_bases; do
+  mkdir -p "$fixture_root/$step"
+  printf '%s\n' "$step" >"$fixture_root/$step/AGENTS.md"
+  printf '%s\n' "$step" >"$fixture_root/$step/README.md"
+done
+printf 'Stage 2\n' >"$fixture_root/AGENTS.md"
 run_root "$fixture_root" "$tmp/list_clean" >/dev/null \
-  || fail "the accepted active steps must coexist with routing"
-# The study root requires both owning routing files too.
+  || fail "the accepted active and replay roots must coexist with routing"
 for routing in AGENTS.md README.md; do
-  mv "$fixture_root/tsg_view/$routing" "$tmp/view-routing.off"
+  mv "$fixture_root/03_view/$routing" "$tmp/view-routing.off"
   if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
-    fail "the study step without $routing must fail the layout guard"
+    fail "the view step without $routing must fail the layout guard"
   fi
-  printf '%s\n' "$out" | grep -q "missing step routing: .*tsg_view/$routing" \
-    || fail "the missing study routing file must be named in the failure"
-  mv "$tmp/view-routing.off" "$fixture_root/tsg_view/$routing"
+  printf '%s\n' "$out" | grep -q "missing step routing: .*03_view/$routing" \
+    || fail "the missing view routing file must be named in the failure"
+  mv "$tmp/view-routing.off" "$fixture_root/03_view/$routing"
 done
 
 # The retired old comparison is rejected.
@@ -126,22 +112,22 @@ printf '%s\n' "$out" | grep -q 'unexpected Stage 2 entry: .*02_models_tenv' \
   || fail "the retired root must be named in the failure"
 rmdir "$fixture_root/02_models_tenv"
 # An active root without its routing skeleton is rejected.
-mv "$fixture_root/02_models_tenv-5k/README.md" "$tmp/successor-README.off"
+mv "$fixture_root/04_models_tenv-5k/README.md" "$tmp/successor-README.off"
 if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
   fail "the active comparison without README.md must fail the layout guard"
 fi
-printf '%s\n' "$out" | grep -q 'missing step routing: .*02_models_tenv-5k/README.md' \
+printf '%s\n' "$out" | grep -q 'missing step routing: .*04_models_tenv-5k/README.md' \
   || fail "the missing successor routing file must be named in the failure"
-mv "$tmp/successor-README.off" "$fixture_root/02_models_tenv-5k/README.md"
+mv "$tmp/successor-README.off" "$fixture_root/04_models_tenv-5k/README.md"
 # The registered dose comparison requires both owning routing files too.
 for routing in AGENTS.md README.md; do
-  mv "$fixture_root/04_tsg_dose/$routing" "$tmp/dose-routing.off"
+  mv "$fixture_root/06_tsg_dose/$routing" "$tmp/dose-routing.off"
   if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
     fail "the active dose comparison without $routing must fail the layout guard"
   fi
-  printf '%s\n' "$out" | grep -q "missing step routing: .*04_tsg_dose/$routing" \
+  printf '%s\n' "$out" | grep -q "missing step routing: .*06_tsg_dose/$routing" \
     || fail "the missing dose routing file must be named in the failure"
-  mv "$tmp/dose-routing.off" "$fixture_root/04_tsg_dose/$routing"
+  mv "$tmp/dose-routing.off" "$fixture_root/06_tsg_dose/$routing"
 done
 printf 'notes\n' >"$fixture_root/notes.md"
 if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then

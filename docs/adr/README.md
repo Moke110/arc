@@ -115,3 +115,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0081](0081-transigen-width-and-dose-comparison.md) | Compare TranSiGen width and dose encoding on the frozen tenv cold-drug-dose folds |
 
 | [0082](0082-view-variants-tenv-tahoe-replicate-structure.md) | Test whether within-condition replicate structure explains the tenv–Tahoe gap with eight expression view variants (*study step `stage2/tsg_view`*) |
+| [0083](0083-stage2-corpus-axis-view-boundaries.md) | Stage 2 corpus, prediction axes and expression view publication |
