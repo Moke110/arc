@@ -1,0 +1,730 @@
+{
+  "base_commit": "ebba12f",
+  "branch": "impl/tsg-view-03",
+  "environment": {
+    "anndata": "0.12.16",
+    "data_access": "offline; reads the pinned integer corpus, the G_5000 axis and the accepted view-5k release in bounded windows",
+    "h5py": "3.16.0",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13",
+    "resource_contract": "one heavy job at a time under the repository caps; OMP_NUM_THREADS=2; peak RSS recorded by the driver"
+  },
+  "gates": {
+    "a_solo_view_builds": {
+      "solo-tahoe": {
+        "conditions": 52777,
+        "elapsed_seconds": 84.556,
+        "evidence": {
+          "chosen_profile_id_sha256": "ee072251a697dc11be3a90ac3f5e69d6794da335281952a34acb280b6b9ea6fa",
+          "discarded_members": 12541,
+          "fold_and_training_seed_independent": true,
+          "multi_member_conditions": 9741,
+          "seed": 20261122,
+          "selection": "one member per condition drawn from sha256(SOLO_SEED|source|condition_key) modulo the member count (members ordered by profile_id); independent of folds, corpus row order and training seeds",
+          "selection_rule": "draw",
+          "source_conditions": 52777
+        },
+        "files": {
+          "tahoe_bulk.control_sources.csv": {
+            "bytes": 9166938,
+            "sha256": "9261d799dcddbf607209d89ff3a409e8a3a0f104340f201682575b46bc1cc308"
+          },
+          "tahoe_bulk.h5ad": {
+            "bytes": 2328629910,
+            "sha256": "d689a4c74b194918f6dfc7029ea77684e3769e91cc85962bb4b788d7c3b1eb56"
+          },
+          "tahoe_bulk.json": {
+            "bytes": 3413,
+            "sha256": "d4448fbb361ba109c10a5e3d8c5fc6da40c13d379d3f5e30d0d32411669fdf71"
+          },
+          "tahoe_bulk.members.csv": {
+            "bytes": 3443734,
+            "sha256": "795f2e38153d862264e3788d42ba1a8682427f3e684b58673550a4ab5a8921de"
+          },
+          "tahoe_bulk.profile_ids.csv": {
+            "bytes": 1695997,
+            "sha256": "5b06a394f67d80e723e1c6e79df2167ef8f4ae09bbb3c839b7ece62fe97785da"
+          }
+        },
+        "manifest_sha256": "d4448fbb361ba109c10a5e3d8c5fc6da40c13d379d3f5e30d0d32411669fdf71",
+        "mode": "payload",
+        "payload": {
+          "tahoe_bulk.h5ad": {
+            "bytes": 2328629910,
+            "sha256": "d689a4c74b194918f6dfc7029ea77684e3769e91cc85962bb4b788d7c3b1eb56"
+          }
+        },
+        "peak_rss_kib": 576620,
+        "product_manifest_file": "stage2/tsg_view/output/views/solo/tahoe_bulk.json",
+        "rows": 52777,
+        "source": "tahoe_bulk",
+        "treated": 52777,
+        "view": "solo",
+        "worktree_artifact": "/tmp/arc-tsg-03/output-views/solo/tahoe_bulk.h5ad"
+      },
+      "solo-tenv": {
+        "conditions": 1377,
+        "elapsed_seconds": 4.673,
+        "evidence": {
+          "chosen_profile_id_sha256": "40d3c6e0880edde29bb63d9909f395e1713c9f9bebbfffa807701208e30b3bd2",
+          "discarded_members": 2829,
+          "fold_and_training_seed_independent": true,
+          "multi_member_conditions": 1377,
+          "seed": 20261122,
+          "selection": "one member per condition drawn from sha256(SOLO_SEED|source|condition_key) modulo the member count (members ordered by profile_id); independent of folds, corpus row order and training seeds",
+          "selection_rule": "draw",
+          "source_conditions": 1377
+        },
+        "files": {
+          "tenv.control_sources.csv": {
+            "bytes": 224347,
+            "sha256": "c82baef3498f0f3e1828b651bd1a51f6b3df50e01db275faed95dcc3c4fa8d1e"
+          },
+          "tenv.h5ad": {
+            "bytes": 42914440,
+            "sha256": "5f4c537e64a387158391312d92a93401225037c093f655204b1938f3b7dc7b86"
+          },
+          "tenv.json": {
+            "bytes": 3365,
+            "sha256": "63418c90dff97a5253072b962ca6e9ef00dfc28aa94dd7f15f34d559eb785c2f"
+          },
+          "tenv.members.csv": {
+            "bytes": 180368,
+            "sha256": "0c4866f0bb23937a3d209a6dc97dd3b07d6842ee9e770ac4b42466021503a7df"
+          },
+          "tenv.profile_ids.csv": {
+            "bytes": 35313,
+            "sha256": "65b474ae23f487a072156ac091e4d29d185dcac09ecdf3c0b67803836e0bb92c"
+          }
+        },
+        "manifest_sha256": "63418c90dff97a5253072b962ca6e9ef00dfc28aa94dd7f15f34d559eb785c2f",
+        "mode": "payload",
+        "payload": {
+          "tenv.h5ad": {
+            "bytes": 42914440,
+            "sha256": "5f4c537e64a387158391312d92a93401225037c093f655204b1938f3b7dc7b86"
+          }
+        },
+        "peak_rss_kib": 363956,
+        "product_manifest_file": "stage2/tsg_view/output/views/solo/tenv.json",
+        "rows": 1377,
+        "source": "tenv",
+        "treated": 1377,
+        "view": "solo",
+        "worktree_artifact": "/tmp/arc-tsg-03/output-views/solo/tenv.h5ad"
+      }
+    },
+    "b_solo_deepest_view_builds": {
+      "conditions": 1377,
+      "elapsed_seconds": 4.539,
+      "evidence": {
+        "chosen_profile_id_sha256": "da21475242e812068650f9cfa249c7d894fa335e24818e93836ab473cb9d65ac",
+        "discarded_members": 2829,
+        "fold_and_training_seed_independent": true,
+        "multi_member_conditions": 1377,
+        "seed": null,
+        "selection": "one member per condition: the largest retained selected-axis library_total, ties breaking to the smallest profile_id",
+        "selection_rule": "deepest",
+        "source_conditions": 1377
+      },
+      "files": {
+        "tenv.control_sources.csv": {
+          "bytes": 224343,
+          "sha256": "5445d95163100cd455c63a595c43082528ead7b6f41ea2bb271c06d6de468570"
+        },
+        "tenv.h5ad": {
+          "bytes": 43668260,
+          "sha256": "13bb2d24f032b65bf0c49fdce70379aca39fec89e137ca6743f45eb66c088f83"
+        },
+        "tenv.json": {
+          "bytes": 3335,
+          "sha256": "04193b9e05507e0c6d3d625aee7d71a86c30af734abbe22d25e49aacf7a69166"
+        },
+        "tenv.members.csv": {
+          "bytes": 180356,
+          "sha256": "c9134f6ab6fdfa84d1a1261917fae14d182f619518ff58ca94e947f0c9275c24"
+        },
+        "tenv.profile_ids.csv": {
+          "bytes": 35311,
+          "sha256": "85f1d4cae3465523eaa356b6c4e5bb06a96f94892b1ddaa17b5222efde55ac51"
+        }
+      },
+      "manifest_sha256": "04193b9e05507e0c6d3d625aee7d71a86c30af734abbe22d25e49aacf7a69166",
+      "mode": "payload",
+      "payload": {
+        "tenv.h5ad": {
+          "bytes": 43668260,
+          "sha256": "13bb2d24f032b65bf0c49fdce70379aca39fec89e137ca6743f45eb66c088f83"
+        }
+      },
+      "peak_rss_kib": 363160,
+      "product_manifest_file": "stage2/tsg_view/output/views/solo-deepest/tenv.json",
+      "rows": 1377,
+      "source": "tenv",
+      "treated": 1377,
+      "view": "solo-deepest",
+      "worktree_artifact": "/tmp/arc-tsg-03/output-views/solo-deepest/tenv.h5ad"
+    },
+    "c_freezes": {
+      "solo-deepest-tenv": {
+        "condition_partition_map_equal_to_sealed": true,
+        "conditions": 1377,
+        "delta_kind": "expression_minus_control",
+        "elapsed_seconds": 3.0,
+        "freeze_dir": "execution/freezes/solo-deepest/tenv (worktree-local ignored payload)",
+        "manifest_sha256": "322ad2b4b205a70b2d0cf09911fde9ba296a89a33369fc871b9292ff593d1a53",
+        "outputs": {
+          "all_obs.csv": "c8bfc2ec22db52e748ea504773d0681c33bba732936bf9d043095df686b968e1",
+          "config.json": "3249b91a7ffdbdd4e5f16a871fff5e904080ea351627a6988d0258f67998218a",
+          "control.npy": "a85a983246ae9c81636ab318f8bdd6f495408e62d1e43a3f6497f1a15161d367",
+          "control_sources.csv": "91fe2b25e804ee75a05d5f7ddf975a35c3e2f2090d0c1377839805bd9cd6ac2b",
+          "expression.npy": "6ecd16a9a604439130c12ba085e6a8c4cbe821a4997483403605cefcd7056e44",
+          "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "matched_controls.json": "0bfc4848370032ffb580fbaad87b51c32d96f0aa1af92da8a936daf71f0a1adf",
+          "morgan.npy": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+          "parents.csv": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+          "population.csv": "e4a63bf224524cbb8efae4c67291ee2d2ab863aa751665a21952995edb2cd167",
+          "splits.csv": "6e17e8d3d535c9848bdddaef6add5cbfa7934df8e2560324f24feb1e83a9ab05"
+        },
+        "peak_rss_kib": 382524,
+        "rows": 1377,
+        "sealed_keys_covered": 8262,
+        "source": "tenv",
+        "splits_byte_equal_to_sealed": false,
+        "verified": true,
+        "verified_rows": 1377,
+        "view": "solo-deepest",
+        "worktree_artifact": "/tmp/arc-tsg-03/output-freezes/solo-deepest/tenv"
+      },
+      "solo-tahoe_bulk": {
+        "condition_partition_map_equal_to_sealed": true,
+        "conditions": 52777,
+        "delta_kind": "expression_minus_control",
+        "elapsed_seconds": 27.04,
+        "freeze_dir": "execution/freezes/solo/tahoe_bulk (worktree-local ignored payload)",
+        "manifest_sha256": "7932e88111ef7b0965d0c6adbee1e377193e658ccd039e50b9293a10c978075f",
+        "outputs": {
+          "all_obs.csv": "96e647003d6f8a399aff8707e6076ae2db7c3acd9d6ef14037c8c45da55d2bd9",
+          "config.json": "77e76aeee16f36886a49a3a5193973ff9a80bb4a1d5b7a876634e87aa03f9189",
+          "control.npy": "5f4d4effb37d860ad1cc4311d7841a950539aa56039785ca226caaaa5fdd0970",
+          "control_sources.csv": "08229dc7de7626c87c01593c287a7e75c465c7c0ccd803435c2b9b08373cde60",
+          "expression.npy": "b4e340d6ae7bfe53e861e44254842864ac52577338ae5e6293228f3308385f01",
+          "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "matched_controls.json": "bb5cdd4ad586c0ad6b6fed59a15ed3788110d0afba720fdcc8a70ccc34437dfe",
+          "morgan.npy": "f61b3979ed6cb234b7af6a19bf48008cb873029c63dcdba2359e36278be4bf3e",
+          "parents.csv": "f5164f16e5c5b719b35b00812003946c91d65829051a51dc8c830c5dac8de139",
+          "population.csv": "7615bf869f06aed5bd8a6c7f0a2f7b707a6de2e9018a7f455c6e3c6ef79d1dbc",
+          "splits.csv": "429c9dcbf343dfc2c5c9986a2f1ac92475dd308e161aae1ee5e15c7d78ee36d1"
+        },
+        "peak_rss_kib": 2786072,
+        "rows": 52777,
+        "sealed_keys_covered": 6336,
+        "source": "tahoe_bulk",
+        "splits_byte_equal_to_sealed": false,
+        "verified": true,
+        "verified_rows": 52777,
+        "view": "solo",
+        "worktree_artifact": "/tmp/arc-tsg-03/output-freezes/solo/tahoe_bulk"
+      },
+      "solo-tenv": {
+        "condition_partition_map_equal_to_sealed": true,
+        "conditions": 1377,
+        "delta_kind": "expression_minus_control",
+        "elapsed_seconds": 3.03,
+        "freeze_dir": "execution/freezes/solo/tenv (worktree-local ignored payload)",
+        "manifest_sha256": "f2f0e5565b9e7be8385569474e741c3323d3a475f1286f6145997a41f42525b8",
+        "outputs": {
+          "all_obs.csv": "5a7792d6e9ca7ca660c3a25ed6c6733fb26f484ad66529853bf633fa91a962f6",
+          "config.json": "32ddfc4794b9258e18d76d991dd2cacbc01a57eb0a96adc9bbb3a1116a7844f2",
+          "control.npy": "8a34bc21656a3ea167f682a3da47d7632fd1d777ec8e87efaf4b10debbb4005c",
+          "control_sources.csv": "8a618788ede4e8e07c02dd48cccdd7a5e3e0a0d5d04734d729bcea6c0af78ecf",
+          "expression.npy": "f44de3878d04ea2a2837843bf0144f30227de5870e097c169274b42139d3c072",
+          "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "matched_controls.json": "4ffcf97d14e2fc132269127158f0e8d7e0cb407ffa1e085f4731af21a7aba62e",
+          "morgan.npy": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+          "parents.csv": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+          "population.csv": "f8584d31450b65aeff181682b4962cfd328bbb9e5ad75bb84adc5473bdb0eb2d",
+          "splits.csv": "76f394a5978f6fe5f43a65891335f37021ee52ad4d59a608d48fd0e233486aa7"
+        },
+        "peak_rss_kib": 379420,
+        "rows": 1377,
+        "sealed_keys_covered": 8262,
+        "source": "tenv",
+        "splits_byte_equal_to_sealed": false,
+        "verified": true,
+        "verified_rows": 1377,
+        "view": "solo",
+        "worktree_artifact": "/tmp/arc-tsg-03/output-freezes/solo/tenv"
+      }
+    },
+    "d_bounded_gpu_smoke_fits": {
+      "solo": {
+        "best_epoch": 2,
+        "children_peak_rss_kib": 1810444,
+        "device": "cuda",
+        "driver_elapsed_seconds": 13.973,
+        "epochs": 2,
+        "epochs_run": 2,
+        "fold": 0,
+        "freeze": "execution/freezes/solo/tenv",
+        "freeze_manifest_sha256": "f2f0e5565b9e7be8385569474e741c3323d3a475f1286f6145997a41f42525b8",
+        "phases": [
+          {
+            "elapsed_seconds": 3.735,
+            "phase": "train",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.384,
+            "phase": "replay",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.424,
+            "phase": "test",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.429,
+            "phase": "replay",
+            "returncode": 0
+          }
+        ],
+        "replay": "train -> replay -> test -> replay in fresh processes; every phase exits 0 and the learner rejects a non-bit-exact replay",
+        "rows": 64,
+        "run_manifest_sha256": "90aa2a631f71bedf534a881542775001a0fd44791217bb119602f679ccb5796a",
+        "seed": 42,
+        "source": "tenv",
+        "status": "complete",
+        "training_elapsed_seconds": 2.837,
+        "training_peak_rss_kib": 1726924,
+        "validation_mse": 0.6100605130195618,
+        "view": "solo",
+        "view_product_sha256": "63418c90dff97a5253072b962ca6e9ef00dfc28aa94dd7f15f34d559eb785c2f"
+      },
+      "solo-deepest": {
+        "best_epoch": 2,
+        "children_peak_rss_kib": 1810684,
+        "device": "cuda",
+        "driver_elapsed_seconds": 14.232,
+        "epochs": 2,
+        "epochs_run": 2,
+        "fold": 0,
+        "freeze": "execution/freezes/solo-deepest/tenv",
+        "freeze_manifest_sha256": "322ad2b4b205a70b2d0cf09911fde9ba296a89a33369fc871b9292ff593d1a53",
+        "phases": [
+          {
+            "elapsed_seconds": 3.797,
+            "phase": "train",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.514,
+            "phase": "replay",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.487,
+            "phase": "test",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.435,
+            "phase": "replay",
+            "returncode": 0
+          }
+        ],
+        "replay": "train -> replay -> test -> replay in fresh processes; every phase exits 0 and the learner rejects a non-bit-exact replay",
+        "rows": 64,
+        "run_manifest_sha256": "05f956b1469b74b9d4255ecd7351ede25d4684aa12fc0439ab7acf78048cce24",
+        "seed": 42,
+        "source": "tenv",
+        "status": "complete",
+        "training_elapsed_seconds": 2.9,
+        "training_peak_rss_kib": 1727072,
+        "validation_mse": 0.5280459523200989,
+        "view": "solo-deepest",
+        "view_product_sha256": "04193b9e05507e0c6d3d625aee7d71a86c30af734abbe22d25e49aacf7a69166"
+      }
+    },
+    "e_health_checks": {
+      "check_paths": {
+        "command": "bash script/check_paths.sh",
+        "elapsed_seconds": 13.1,
+        "exit": 0,
+        "note": "the worktree lacks gitignore-only payload bytes; 184 read-only symlinks to /home/chang/arc payload subtrees were added for the run and removed afterwards (no tracked change)",
+        "result": "RESULT: PASS \u2014 every extracted path literal resolves; stage2 retired-step-path audit: PASS"
+      },
+      "check_tracked": {
+        "command": "bash script/check_tracked.sh",
+        "elapsed_seconds": 0.022,
+        "exit": 0,
+        "result": "RESULT: PASS \u2014 all scanned executable files are tracked (or documented expected-ignored)"
+      }
+    },
+    "f_correctness_checks": {
+      "tahoe_bulk": {
+        "conditions": 52777,
+        "discarded_members": 12541,
+        "member_counts": {
+          "1": 43036,
+          "16": 50,
+          "2": 7941,
+          "3": 1400,
+          "4": 350
+        },
+        "note": "25 randomly sampled chosen rows compared bit-exactly against the accepted tahoe_bulk payload (X, control, library_total)",
+        "rows": 52777,
+        "sampled_rows_equal_full_view": 25,
+        "singleton_conditions": 43036
+      },
+      "tenv": {
+        "chosen_rows_x_control_retained_equal_full_view": true,
+        "conditions": 1377,
+        "deepest_total_greater_than_solo": 957,
+        "deepest_total_less_than_solo": 0,
+        "delta_equals_x_minus_control": true,
+        "discarded_members": 2829,
+        "member_count_columns_match_member_table": true,
+        "member_counts": {
+          "3": 1320,
+          "4": 48,
+          "6": 9
+        },
+        "per_condition_columns_present": true,
+        "retained_total_sum_solo": 481664915,
+        "retained_total_sum_solo_deepest": 682243371,
+        "rows": 1377,
+        "rows_per_condition_one": true,
+        "solo_vs_solo_deepest_differing_conditions": 957,
+        "solo_vs_solo_deepest_identical_conditions": 420
+      }
+    }
+  },
+  "interpreter": "/home/chang/miniconda3/envs/arc/bin/python",
+  "merger_verification": {
+    "branch": "dev",
+    "checkout": "/home/chang/arc",
+    "commands": [
+      "git merge --no-ff impl/tsg-view-03 -m 'Merge Stage 2 tsg_view 03: solo and solo-deepest views'",
+      "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+      "../01_bases/execution/capped.sh /usr/bin/time -v <python> execution/build.py --view {solo,solo-deepest} --source tenv --output output/views --staging execution/checkpoints/merger-03/staging --repo-root /home/chang/arc --record execution/checkpoints/merger-03/build-<view>-tenv.json",
+      "../01_bases/execution/capped.sh /usr/bin/time -v <python> execution/build.py --view solo --source tahoe_bulk --output output/views --staging execution/checkpoints/merger-03/staging --repo-root /home/chang/arc --record execution/checkpoints/merger-03/build-solo-tahoe_bulk.json",
+      "../01_bases/execution/capped.sh /usr/bin/time -v <python> execution/freeze.py --view <view> --source <source> --views output/views --destination execution/freezes/<view>/<source> --repo-root /home/chang/arc --record execution/checkpoints/merger-03/freeze-<view>-<source>.json",
+      "../01_bases/execution/capped.sh /usr/bin/time -v <python> execution/smoke.py --view solo --source tenv --freeze execution/freezes/solo/tenv --output execution/checkpoints/merger-03/smoke --rows 64 --epochs 2 --device cuda --seed 42 --repo-root /home/chang/arc --sealed /home/chang/arc/stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tenv --record execution/checkpoints/merger-03/smoke-solo-tenv.json",
+      "bash script/check_paths.sh",
+      "bash script/check_tracked.sh"
+    ],
+    "date": "2026-11-22",
+    "digest_reconciliation": {
+      "canonical_freeze_digests": "Downstream tickets must use the main-checkout values: solo/tenv manifest 500d93e6\u2026 config cdb2698f\u2026; solo-deepest/tenv manifest 78e6609c\u2026; solo/tahoe_bulk manifest 48d33229\u2026 (full per-file digests in gates.materialised_products.<pair>.freeze_outputs).",
+      "freeze_data_files": "PASS \u2014 expression.npy, control.npy, morgan.npy, parents.csv, splits.csv, population.csv, all_obs.csv, genes.csv, matched_controls.json and control_sources.csv are digest-equal to the implementer record for all three pairs.",
+      "freeze_metadata_divergence": "EXPECTED, benign \u2014 config.json and manifest.json differ from the implementer record by exactly one field: config.view_product.file records relative(manifest, root). Run in the implementer worktree the product manifest sat outside that worktree's bind root, so relative() fell back to the bare file name ('tenv.json'/'tahoe_bulk.json'); in the main checkout it resolves to the canonical repo-relative path. Reproducing the worktree value from the main-checkout config/manifest re-derives the implementer's recorded digests exactly (solo/tenv config 32ddfc47\u2026, manifest f2f0e556\u2026; solo-deepest/tenv 3249b91a\u2026/322ad2b4\u2026; solo/tahoe 77e76aee\u2026/7932e881\u2026). No data byte differs.",
+      "products": "PASS \u2014 every payload, manifest and companion-file digest equals the implementer's log/build-03.json values, byte counts included (solo tenv 5f4c537e\u2026 42,914,440 B; solo-deepest tenv 13bb2d24\u2026 43,668,260 B; solo tahoe d689a4c7\u2026 2,328,629,910 B)."
+    },
+    "gates": {
+      "bounded_gpu_smoke_fits": {
+        "solo": {
+          "best_epoch": 2,
+          "children_peak_rss_kib": 1810652,
+          "device": "cuda",
+          "driver_elapsed_seconds": 13.152,
+          "epochs": 2,
+          "epochs_run": 2,
+          "fold": 0,
+          "phases": [
+            {
+              "elapsed_seconds": 3.66,
+              "phase": "train",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.199,
+              "phase": "replay",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.236,
+              "phase": "test",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.057,
+              "phase": "replay",
+              "returncode": 0
+            }
+          ],
+          "replay": "train -> replay -> test -> replay, one process per phase",
+          "rows": 64,
+          "run_dir": "execution/checkpoints/merger-03/smoke/tenv/solo/fold-0/seed-42",
+          "run_manifest_sha256": "a47f15baf60a7a16581ed7d442ca16d630443cefa490c11e7d42c5e7957e6e5f",
+          "seed": 42,
+          "source": "tenv",
+          "status": "complete",
+          "training_peak_rss_kib": 1727052,
+          "validation_mse": 0.6100605130195618,
+          "validation_mse_matches_implementer_record": true,
+          "view": "solo",
+          "wall_seconds": 13.36
+        },
+        "solo-deepest": {
+          "best_epoch": 2,
+          "children_peak_rss_kib": 1803516,
+          "device": "cuda",
+          "driver_elapsed_seconds": 13.825,
+          "epochs": 2,
+          "epochs_run": 2,
+          "fold": 0,
+          "phases": [
+            {
+              "elapsed_seconds": 3.802,
+              "phase": "train",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.569,
+              "phase": "replay",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.248,
+              "phase": "test",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.205,
+              "phase": "replay",
+              "returncode": 0
+            }
+          ],
+          "replay": "train -> replay -> test -> replay, one process per phase",
+          "rows": 64,
+          "run_dir": "execution/checkpoints/merger-03/smoke/tenv/solo-deepest/fold-0/seed-42",
+          "run_manifest_sha256": "de010113606fb252afbe250fbadbe3701d9c40df14313b341612d5b221808d65",
+          "seed": 42,
+          "source": "tenv",
+          "status": "complete",
+          "training_peak_rss_kib": 1720208,
+          "validation_mse": 0.5280459523200989,
+          "validation_mse_matches_implementer_record": true,
+          "view": "solo-deepest",
+          "wall_seconds": 14.03
+        }
+      },
+      "freeze_verification_with_inputs": {
+        "checks_covered": [
+          "view freeze schedule/digest of every declared output",
+          "G_5000 axis identity and genes.csv digest",
+          "sealed Step 04 parents/morgan byte identity",
+          "sealed condition->partition map (check_splits) and coverage",
+          "matched-control / control_sources composition"
+        ],
+        "method": "fresh process: sys.path.insert(0,'execution'); Inputs(<dir>, repo_root='/home/chang/arc') for each of the three pairs",
+        "result": "PASS \u2014 all three freezes load with no HarnessError"
+      },
+      "health_checks": {
+        "check_paths": {
+          "command": "bash script/check_paths.sh",
+          "exit": 0,
+          "result": "RESULT: PASS \u2014 every extracted path literal resolves; stage2 retired-step-path audit: PASS",
+          "wall_seconds": 16.77
+        },
+        "check_tracked": {
+          "command": "bash script/check_tracked.sh",
+          "exit": 0,
+          "result": "RESULT: PASS \u2014 all scanned executable files are tracked (or documented expected-ignored)"
+        }
+      },
+      "materialised_products": {
+        "solo-deepest/tenv": {
+          "companion_files": {
+            "tenv.control_sources.csv": "5445d95163100cd455c63a595c43082528ead7b6f41ea2bb271c06d6de468570",
+            "tenv.json": "04193b9e05507e0c6d3d625aee7d71a86c30af734abbe22d25e49aacf7a69166",
+            "tenv.members.csv": "c9134f6ab6fdfa84d1a1261917fae14d182f619518ff58ca94e947f0c9275c24",
+            "tenv.profile_ids.csv": "85f1d4cae3465523eaa356b6c4e5bb06a96f94892b1ddaa17b5222efde55ac51"
+          },
+          "conditions": 1377,
+          "freeze_dir": "stage2/tsg_view/execution/freezes/solo-deepest/tenv",
+          "freeze_manifest_sha256": "78e6609c09e5d4be9ad7411f83fd769374ee94ee3c568ccfa34096756ee56ba2",
+          "freeze_outputs": {
+            "all_obs.csv": "c8bfc2ec22db52e748ea504773d0681c33bba732936bf9d043095df686b968e1",
+            "config.json": "11bd33a0a326882b503eaaf0a9059523847d09975c6ccd2cd11db1e3ddfe11e9",
+            "control.npy": "a85a983246ae9c81636ab318f8bdd6f495408e62d1e43a3f6497f1a15161d367",
+            "control_sources.csv": "91fe2b25e804ee75a05d5f7ddf975a35c3e2f2090d0c1377839805bd9cd6ac2b",
+            "expression.npy": "6ecd16a9a604439130c12ba085e6a8c4cbe821a4997483403605cefcd7056e44",
+            "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+            "matched_controls.json": "0bfc4848370032ffb580fbaad87b51c32d96f0aa1af92da8a936daf71f0a1adf",
+            "morgan.npy": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+            "parents.csv": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+            "population.csv": "e4a63bf224524cbb8efae4c67291ee2d2ab863aa751665a21952995edb2cd167",
+            "splits.csv": "6e17e8d3d535c9848bdddaef6add5cbfa7934df8e2560324f24feb1e83a9ab05"
+          },
+          "freeze_peak_rss_kib": 374076,
+          "freeze_runtime_seconds": 3.02,
+          "freeze_splits_byte_equal_to_sealed": false,
+          "freeze_splits_sha256": "6e17e8d3d535c9848bdddaef6add5cbfa7934df8e2560324f24feb1e83a9ab05",
+          "freeze_verified_by_inputs": true,
+          "freeze_verified_rows": 1377,
+          "implementer_freeze_manifest_sha256": "322ad2b4b205a70b2d0cf09911fde9ba296a89a33369fc871b9292ff593d1a53",
+          "manifest": {
+            "file": "stage2/tsg_view/output/views/solo-deepest/tenv.json",
+            "sha256": "04193b9e05507e0c6d3d625aee7d71a86c30af734abbe22d25e49aacf7a69166"
+          },
+          "mode": "payload",
+          "payload": {
+            "bytes": 43668260,
+            "file": "stage2/tsg_view/output/views/solo-deepest/tenv.h5ad",
+            "sha256": "13bb2d24f032b65bf0c49fdce70379aca39fec89e137ca6743f45eb66c088f83"
+          },
+          "payload_and_files_match_implementer_record": true,
+          "peak_rss_kib": 363772,
+          "product_dir": "stage2/tsg_view/output/views/solo-deepest",
+          "rows": 1377,
+          "runtime_seconds": 4.551,
+          "wall_seconds": 4.89
+        },
+        "solo/tahoe_bulk": {
+          "companion_files": {
+            "tahoe_bulk.control_sources.csv": "9261d799dcddbf607209d89ff3a409e8a3a0f104340f201682575b46bc1cc308",
+            "tahoe_bulk.json": "d4448fbb361ba109c10a5e3d8c5fc6da40c13d379d3f5e30d0d32411669fdf71",
+            "tahoe_bulk.members.csv": "795f2e38153d862264e3788d42ba1a8682427f3e684b58673550a4ab5a8921de",
+            "tahoe_bulk.profile_ids.csv": "5b06a394f67d80e723e1c6e79df2167ef8f4ae09bbb3c839b7ece62fe97785da"
+          },
+          "conditions": 52777,
+          "freeze_dir": "stage2/tsg_view/execution/freezes/solo/tahoe_bulk",
+          "freeze_manifest_sha256": "48d33229246d029d492df5eb9768840343da6271778bd30697b8ff49722baba4",
+          "freeze_outputs": {
+            "all_obs.csv": "96e647003d6f8a399aff8707e6076ae2db7c3acd9d6ef14037c8c45da55d2bd9",
+            "config.json": "5f8288fc51103fd0e74fa6637bd400d56922ae179e8fdc165cf816a1f452ec97",
+            "control.npy": "5f4d4effb37d860ad1cc4311d7841a950539aa56039785ca226caaaa5fdd0970",
+            "control_sources.csv": "08229dc7de7626c87c01593c287a7e75c465c7c0ccd803435c2b9b08373cde60",
+            "expression.npy": "b4e340d6ae7bfe53e861e44254842864ac52577338ae5e6293228f3308385f01",
+            "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+            "matched_controls.json": "bb5cdd4ad586c0ad6b6fed59a15ed3788110d0afba720fdcc8a70ccc34437dfe",
+            "morgan.npy": "f61b3979ed6cb234b7af6a19bf48008cb873029c63dcdba2359e36278be4bf3e",
+            "parents.csv": "f5164f16e5c5b719b35b00812003946c91d65829051a51dc8c830c5dac8de139",
+            "population.csv": "7615bf869f06aed5bd8a6c7f0a2f7b707a6de2e9018a7f455c6e3c6ef79d1dbc",
+            "splits.csv": "429c9dcbf343dfc2c5c9986a2f1ac92475dd308e161aae1ee5e15c7d78ee36d1"
+          },
+          "freeze_peak_rss_kib": 2784484,
+          "freeze_runtime_seconds": 25.35,
+          "freeze_splits_byte_equal_to_sealed": false,
+          "freeze_splits_sha256": "429c9dcbf343dfc2c5c9986a2f1ac92475dd308e161aae1ee5e15c7d78ee36d1",
+          "freeze_verified_by_inputs": true,
+          "freeze_verified_rows": 52777,
+          "implementer_freeze_manifest_sha256": "7932e88111ef7b0965d0c6adbee1e377193e658ccd039e50b9293a10c978075f",
+          "manifest": {
+            "file": "stage2/tsg_view/output/views/solo/tahoe_bulk.json",
+            "sha256": "d4448fbb361ba109c10a5e3d8c5fc6da40c13d379d3f5e30d0d32411669fdf71"
+          },
+          "mode": "payload",
+          "payload": {
+            "bytes": 2328629910,
+            "file": "stage2/tsg_view/output/views/solo/tahoe_bulk.h5ad",
+            "sha256": "d689a4c74b194918f6dfc7029ea77684e3769e91cc85962bb4b788d7c3b1eb56"
+          },
+          "payload_and_files_match_implementer_record": true,
+          "peak_rss_kib": 576708,
+          "product_dir": "stage2/tsg_view/output/views/solo",
+          "rows": 52777,
+          "runtime_seconds": 84.395,
+          "wall_seconds": 93.61
+        },
+        "solo/tenv": {
+          "companion_files": {
+            "tenv.control_sources.csv": "c82baef3498f0f3e1828b651bd1a51f6b3df50e01db275faed95dcc3c4fa8d1e",
+            "tenv.json": "63418c90dff97a5253072b962ca6e9ef00dfc28aa94dd7f15f34d559eb785c2f",
+            "tenv.members.csv": "0c4866f0bb23937a3d209a6dc97dd3b07d6842ee9e770ac4b42466021503a7df",
+            "tenv.profile_ids.csv": "65b474ae23f487a072156ac091e4d29d185dcac09ecdf3c0b67803836e0bb92c"
+          },
+          "conditions": 1377,
+          "freeze_dir": "stage2/tsg_view/execution/freezes/solo/tenv",
+          "freeze_manifest_sha256": "500d93e64ac55dbc042d7944b62dd5696f1802b76fd06ddff80aca5b6f4d904c",
+          "freeze_outputs": {
+            "all_obs.csv": "5a7792d6e9ca7ca660c3a25ed6c6733fb26f484ad66529853bf633fa91a962f6",
+            "config.json": "cdb2698fbb0540581e1654ce1f7411af2161a7893cdf103bf65ddf13da0fd65d",
+            "control.npy": "8a34bc21656a3ea167f682a3da47d7632fd1d777ec8e87efaf4b10debbb4005c",
+            "control_sources.csv": "8a618788ede4e8e07c02dd48cccdd7a5e3e0a0d5d04734d729bcea6c0af78ecf",
+            "expression.npy": "f44de3878d04ea2a2837843bf0144f30227de5870e097c169274b42139d3c072",
+            "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+            "matched_controls.json": "4ffcf97d14e2fc132269127158f0e8d7e0cb407ffa1e085f4731af21a7aba62e",
+            "morgan.npy": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+            "parents.csv": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+            "population.csv": "f8584d31450b65aeff181682b4962cfd328bbb9e5ad75bb84adc5473bdb0eb2d",
+            "splits.csv": "76f394a5978f6fe5f43a65891335f37021ee52ad4d59a608d48fd0e233486aa7"
+          },
+          "freeze_peak_rss_kib": 378820,
+          "freeze_runtime_seconds": 3.13,
+          "freeze_splits_byte_equal_to_sealed": false,
+          "freeze_splits_sha256": "76f394a5978f6fe5f43a65891335f37021ee52ad4d59a608d48fd0e233486aa7",
+          "freeze_verified_by_inputs": true,
+          "freeze_verified_rows": 1377,
+          "implementer_freeze_manifest_sha256": "f2f0e5565b9e7be8385569474e741c3323d3a475f1286f6145997a41f42525b8",
+          "manifest": {
+            "file": "stage2/tsg_view/output/views/solo/tenv.json",
+            "sha256": "63418c90dff97a5253072b962ca6e9ef00dfc28aa94dd7f15f34d559eb785c2f"
+          },
+          "mode": "payload",
+          "payload": {
+            "bytes": 42914440,
+            "file": "stage2/tsg_view/output/views/solo/tenv.h5ad",
+            "sha256": "5f4c537e64a387158391312d92a93401225037c093f655204b1938f3b7dc7b86"
+          },
+          "payload_and_files_match_implementer_record": true,
+          "peak_rss_kib": 362960,
+          "product_dir": "stage2/tsg_view/output/views/solo",
+          "rows": 1377,
+          "runtime_seconds": 4.714,
+          "wall_seconds": 5.07
+        }
+      },
+      "merge": {
+        "conflicts": 0,
+        "files_changed": 4,
+        "insertions": 985,
+        "result": "PASS",
+        "strategy": "ort"
+      },
+      "unit_tests_on_dev": {
+        "command": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+        "elapsed_seconds": 33.445,
+        "errors": 0,
+        "failures": 0,
+        "note": "ticket-01 dev baseline was 21 tests; the 10 solo tests bring it to 31. The three learner-smoke tests are not skipped because pert_model/TranSiGen/source/src/model.py exists in the main checkout.",
+        "ran": 31,
+        "result": "OK",
+        "skipped": 0
+      }
+    },
+    "implementer_branch": "impl/tsg-view-03",
+    "implementer_tip": "95b06fc6eac9933a8c9e8c178b10a082140a4cdf",
+    "interpreter": "/home/chang/miniconda3/envs/arc/bin/python",
+    "merge_commit": "8ff5dd78554fd4db4f3481506da16f81c5f2094c",
+    "merge_message": "Merge Stage 2 tsg_view 03: solo and solo-deepest views",
+    "notes_for_downstream": [
+      "solo and solo-deepest tenv payloads plus the solo tahoe_bulk payload are materialised in the main checkout under stage2/tsg_view/output/views/ (gitignored, \u22482.37 GB total); their product manifests are tracked.",
+      "All three freezes live under stage2/tsg_view/execution/freezes/ (gitignored payloads, tracked manifests/parents/splits/CSVs) and pass Inputs verification against the sealed Step 04 round1-axis-local-inputs/<source> freeze.",
+      "Use the main-checkout freeze manifest digests (see digest_reconciliation.canonical_freeze_digests), not the worktree ones recorded in gates.c_freezes of this log's implementer section.",
+      "splits.csv is intentionally not byte-equal to the sealed splits for derived views (splits_byte_equal_to_sealed=false); the condition->partition map is equal and verified.",
+      "Peak RSS stayed well under the 4 GiB merger budget (max 2.79 GB during the tahoe freeze); heavy steps ran one at a time under ../01_bases/execution/capped.sh.",
+      "Both materialised tenv freezes were smoke-fitted on dev with exact replay; validation MSE reproduces the implementer record bit-for-bit (solo 0.6100605130195618, solo-deepest 0.5280459523200989)."
+    ],
+    "pre_merge_dev_rev": "ebba12fed744318edef464692f857e0143e6ec4b",
+    "schema": "tsg-view-merger-verification-v1",
+    "scope_check": {
+      "command": "git -C /home/chang/arc diff --name-only dev..impl/tsg-view-03",
+      "files": [
+        "stage2/tsg_view/execution/tests/test_views_solo.py",
+        "stage2/tsg_view/execution/views/solo.py",
+        "stage2/tsg_view/execution/views/solo_deepest.py",
+        "stage2/tsg_view/log/build-03.json"
+      ],
+      "result": "PASS \u2014 exactly the four allowed paths; nothing out of scope"
+    }
+  },
+  "note": "Ran in the ticket worktree against the accepted payloads and sealed Step 04 checkpoints of /home/chang/arc. Payloads and freezes are worktree-local ignored artifacts; the merger re-materialises them from dev code. Every product row is a verbatim accepted full-view row, so no accepted digest is re-derived. tahoe_bulk solo-deepest is intentionally not built: the gate lists tenv solo-deepest and tahoe_bulk solo only (plan C4 fits tenv solo-deepest).",
+  "schema": "tsg-view-build-evidence-v1",
+  "ticket": "03-solo-views",
+  "worktree": "/tmp/arc-tsg-03"
+}
