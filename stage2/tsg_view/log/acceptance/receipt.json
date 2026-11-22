@@ -42,6 +42,9 @@
     },
     "matplotlib": "3.10.9",
     "render_status_sha256": "d40bc19ee3cb299d7206e90df53edbc5bdcbaf610819cf1d31f25a94dd129b56",
+    "renderer_closure_sha256": {
+      "render.py": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8"
+    },
     "renderer_sha256": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8",
     "suite": "all"
   },
@@ -81,16 +84,69 @@
   },
   "formal_fits": 45,
   "formal_verify": {
+    "code_identity": {
+      "driver_code_drift": [
+        "formal.py"
+      ],
+      "moved": [
+        {
+          "current_sha256": "39800f6126d06072df120942d2555899b31b734b9208a557afda38a5a432346b",
+          "file": "formal.py",
+          "sealed_sha256": "242f88b3a83d1b121396f97219e622b8cc2bbb3297cac486853a68a904d26f6f",
+          "section": "code"
+        },
+        {
+          "current_sha256": "5aea9cffb9bf67a014e74c33b3f44b6a1829d53bedef198d169056c373e2b746",
+          "file": "learner.py",
+          "sealed_sha256": "4a03ebc5e9be3c7d4463d343930416b57f28019e82d12a26b96fa1a87d23a54e",
+          "section": "code"
+        },
+        {
+          "current_sha256": "1e5dbc5bbc0a0b79c795fb4832c01aad2ad9ca9bc15bbfe541d4f285493327f5",
+          "file": "matrix.py",
+          "sealed_sha256": "68da92b8608f3044ed425024b52a85f999e5fcabdfac8573523b967d7fced2b2",
+          "section": "code"
+        },
+        {
+          "current_sha256": "a46da414c3e4fffa4dd56bac38161ead68ad32b3118f91d87e43ec0b677c8da3",
+          "file": "views/__init__.py",
+          "sealed_sha256": "7af35a6b09d1b7f1aec9a11db23a8cb18b142b958b87e8acf8077bf90fa4c165",
+          "section": "code"
+        },
+        {
+          "current_sha256": "a46da414c3e4fffa4dd56bac38161ead68ad32b3118f91d87e43ec0b677c8da3",
+          "file": "__init__.py",
+          "sealed_sha256": "7af35a6b09d1b7f1aec9a11db23a8cb18b142b958b87e8acf8077bf90fa4c165",
+          "section": "learner_runtime"
+        },
+        {
+          "current_sha256": "5aea9cffb9bf67a014e74c33b3f44b6a1829d53bedef198d169056c373e2b746",
+          "file": "learner.py",
+          "sealed_sha256": "4a03ebc5e9be3c7d4463d343930416b57f28019e82d12a26b96fa1a87d23a54e",
+          "section": "learner_runtime"
+        }
+      ],
+      "note": "verify records every code digest that moved since the plan was sealed (both the driver/verifier files and the learner runtime); the refactor-only drift is reported here and never hidden. Any non-code input change still fails closed, a replay still refuses a moved learner runtime, and run/resume keeps the driver-file-only allowance",
+      "status": "CODE_DRIFT"
+    },
+    "full_arm": {
+      "anchor_seed": 42,
+      "comparisons": 8,
+      "sensitivity_seeds": [
+        43
+      ],
+      "statement": "the sealed anchor was measured at seed 42; this seed-43 arm is reported for transparency and claims no anchor reproduction"
+    },
     "origins": 45,
     "path": "stage2/tsg_view/output/runs/formal_verify.json",
-    "sha256": "c0cbafd9d1881eb06b1af7bc1bc1ca87a4b42401d1f44f353b5e35059fa04bbe",
+    "sha256": "c079d55f4cef2f6c07c62fbb8e8cd6d46462ae2bf4fa08f040c39e1f66ad82f8",
     "status": "PASS"
   },
-  "generated_at": "2026-11-22T15:02:48Z",
+  "generated_at": "2026-11-22T15:26:58Z",
   "git": {
     "branch": "dev",
-    "dev": "1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0",
-    "head": "1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0",
+    "dev": "85b8cd3f5974737400589166c6c04dbf76752c74",
+    "head": "85b8cd3f5974737400589166c6c04dbf76752c74",
     "main": "4413a762faf75e0a01e100b9c23d663536a6a035"
   },
   "health": {
@@ -103,7 +159,7 @@
         "log": "stage2/tsg_view/log/acceptance/health/check_paths.sh.log",
         "log_sha256": "8e7b9f8b1a04df1fd5ce71ecb93cf1927e6411f87c77b3f4bd142ab5ad40207a",
         "returncode": 0,
-        "runtime_seconds": 13.034,
+        "runtime_seconds": 12.749,
         "script_sha256": "37e76871b8db58f1ed7d3e0fcb57250bc0aed3ae38ef879f69b6fed4adb8e1cf"
       },
       "check_tracked.sh": {
@@ -114,7 +170,7 @@
         "log": "stage2/tsg_view/log/acceptance/health/check_tracked.sh.log",
         "log_sha256": "f6758c7335bf85d705519ab3399dd242cf575fa29e4768a36ac3187a29984b37",
         "returncode": 0,
-        "runtime_seconds": 0.204,
+        "runtime_seconds": 0.088,
         "script_sha256": "e24a0f59e73ffad60e31517f97babe5aea3e702f15b370f6f6dbc5479f7082f7"
       },
       "verify_all.sh": {
@@ -125,12 +181,14 @@
         "log": "stage2/tsg_view/log/acceptance/health/verify_all.sh.log",
         "log_sha256": "d370bab94e499ad5f3d74c92cc2c37bd95d4f879a410fa36b55b1f6605f5a33f",
         "returncode": 0,
-        "runtime_seconds": 280.237,
+        "runtime_seconds": 269.852,
         "script_sha256": "3a3ab19965d848114f019e64e1d793b31d43e4b39ca16bb52a2cdb3ab1145fe3"
       }
     },
-    "commit": "1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0",
-    "health_json_sha256": "0b2bc36d8a09d28f3af4f85aab8c77c88612bf2d80bb24dd226cc55d39a891a5",
+    "commit": "85b8cd3f5974737400589166c6c04dbf76752c74",
+    "head": "85b8cd3f5974737400589166c6c04dbf76752c74",
+    "health_commit_stale": false,
+    "health_json_sha256": "9db8307d19fb1035c7f497b0fb625d2171d4770174bd3f6274239c2d57f41383",
     "schema": "tsg-view-health-v1",
     "verify_all": {
       "command": [
@@ -140,7 +198,7 @@
       "log": "stage2/tsg_view/log/acceptance/health/verify_all.sh.log",
       "log_sha256": "d370bab94e499ad5f3d74c92cc2c37bd95d4f879a410fa36b55b1f6605f5a33f",
       "returncode": 0,
-      "runtime_seconds": 280.237,
+      "runtime_seconds": 269.852,
       "script_sha256": "3a3ab19965d848114f019e64e1d793b31d43e4b39ca16bb52a2cdb3ab1145fe3",
       "status": "passed"
     }
@@ -703,7 +761,7 @@
       },
       "stage2/tsg_view/log/acceptance/health/health.json": {
         "bytes": 1136,
-        "sha256": "0b2bc36d8a09d28f3af4f85aab8c77c88612bf2d80bb24dd226cc55d39a891a5"
+        "sha256": "9db8307d19fb1035c7f497b0fb625d2171d4770174bd3f6274239c2d57f41383"
       },
       "stage2/tsg_view/log/acceptance/health/verify_all.sh.log": {
         "bytes": 2176,
@@ -3664,8 +3722,8 @@
         "sha256": "f5b6b249e4801ebc3fa90f34955f402d860a12d4dfe385e0b0ead0dbe890cfab"
       },
       "stage2/tsg_view/output/runs/formal_verify.json": {
-        "bytes": 37925,
-        "sha256": "c0cbafd9d1881eb06b1af7bc1bc1ca87a4b42401d1f44f353b5e35059fa04bbe"
+        "bytes": 37947,
+        "sha256": "c079d55f4cef2f6c07c62fbb8e8cd6d46462ae2bf4fa08f040c39e1f66ad82f8"
       },
       "stage2/tsg_view/output/runs/records/tahoe_bulk/full/fold-0/seed-42.json": {
         "bytes": 6869,
@@ -8788,6 +8846,9 @@
         },
         "matplotlib": "3.10.9",
         "render_status_sha256": "d40bc19ee3cb299d7206e90df53edbc5bdcbaf610819cf1d31f25a94dd129b56",
+        "renderer_closure_sha256": {
+          "render.py": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8"
+        },
         "renderer_sha256": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8",
         "suite": "all"
       },
@@ -9778,6 +9839,9 @@
       },
       "matplotlib": "3.10.9",
       "render_status_sha256": "d40bc19ee3cb299d7206e90df53edbc5bdcbaf610819cf1d31f25a94dd129b56",
+      "renderer_closure_sha256": {
+        "render.py": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8"
+      },
       "renderer_sha256": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8",
       "suite": "all"
     },

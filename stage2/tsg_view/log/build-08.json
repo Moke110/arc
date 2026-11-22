@@ -1046,5 +1046,164 @@
     }
   },
   "ticket": "08: acceptance receipt, pre-registered report and step documentation (phases A+B)",
-  "worktree": "/tmp/arc-tsg-08"
+  "worktree": "/tmp/arc-tsg-08",
+  "final_closeout": {
+    "commits": {
+      "closeout": "this commit (the one carrying this block)",
+      "doc_nits": "85b8cd3",
+      "verify_fix": "7f2ab35"
+    },
+    "date": "2026-11-22",
+    "head_at_receipt": "85b8cd3f5974737400589166c6c04dbf76752c74",
+    "health": {
+      "checks": {
+        "check_paths.sh": {
+          "returncode": 0,
+          "runtime_seconds": 12.749
+        },
+        "check_tracked.sh": {
+          "returncode": 0,
+          "runtime_seconds": 0.088
+        },
+        "verify_all.sh": {
+          "items": "66/66 PASS",
+          "returncode": 0,
+          "runtime_seconds": 269.852
+        }
+      },
+      "commit": "85b8cd3f5974737400589166c6c04dbf76752c74",
+      "post_receipt": {
+        "check_paths.sh": {
+          "returncode": 0,
+          "seconds": 12.388,
+          "stale_stage2_literals": 0,
+          "unresolved_literals": 0
+        },
+        "check_tracked.sh": {
+          "returncode": 0,
+          "seconds": 0.104
+        }
+      },
+      "run": {
+        "command": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/acceptance.py health --root /home/chang/arc --output log/acceptance/health --verify-all --timeout 1200",
+        "exit_code": 0,
+        "finished_at": "2026-11-22T23:25:59+08:00",
+        "preflight": {
+          "available_ram_gib": 20,
+          "formal_or_learner_processes": 0,
+          "gpu_compute_processes": 0
+        },
+        "started_at": "2026-11-22T23:20:52+08:00",
+        "wall_seconds": 307
+      }
+    },
+    "phase": "final closeout: no vacuous verify PASS, product/doc nits, receipt and health re-pin",
+    "publication": "dev -> main is not performed here; main remains 4413a762faf75e0a01e100b9c23d663536a6a035",
+    "receipt": {
+      "absolute_paths": "none: no /tmp or /home/chang string in receipt.json",
+      "bytes": 964502,
+      "command": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/acceptance.py receipt --root /home/chang/arc --phase final --verify-binary --preregistration log/acceptance/pre_registration.md --health-dir log/acceptance/health --output log/acceptance/receipt.json",
+      "complete_origins": 45,
+      "csv_only_replay": {
+        "byte_identical": true,
+        "figures": 7,
+        "renderer_closure_sha256": {
+          "render.py": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8"
+        },
+        "renderer_sha256": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8",
+        "suite": "all"
+      },
+      "formal_verify": {
+        "code_identity": "CODE_DRIFT with 6 section-tagged moved digests",
+        "full_arm": {
+          "anchor_seed": 42,
+          "comparisons": 8,
+          "sensitivity_seeds": [
+            43
+          ]
+        },
+        "origins": 45,
+        "sha256": "c079d55f4cef2f6c07c62fbb8e8cd6d46462ae2bf4fa08f040c39e1f66ad82f8",
+        "status": "PASS"
+      },
+      "generated_at": "2026-11-22T15:26:58Z",
+      "git": {
+        "branch": "dev",
+        "dev": "85b8cd3f5974737400589166c6c04dbf76752c74",
+        "head": "85b8cd3f5974737400589166c6c04dbf76752c74",
+        "main": "4413a762faf75e0a01e100b9c23d663536a6a035"
+      },
+      "health": {
+        "commit": "85b8cd3f5974737400589166c6c04dbf76752c74",
+        "head": "85b8cd3f5974737400589166c6c04dbf76752c74",
+        "health_commit_stale": false,
+        "verify_all": "PASS (66/66 items, exit 0)"
+      },
+      "inventory_entries": 1522,
+      "path": "stage2/tsg_view/log/acceptance/receipt.json",
+      "pending_origins": 0,
+      "phase": "final",
+      "schema": "tsg-view-acceptance-v1",
+      "sha256": "da510e586ed75f113ccd6f18a531082bfb11934d6a6046126011123c63c5bcc1",
+      "status": "passed",
+      "steps01_06": "PASS: six per-step verdicts PASS, planning-ref diff b048687..dev empty, worktree clean for every step",
+      "wall_seconds": 56
+    },
+    "supersedes": {
+      "formal_verify_sha256": "c0cbafd9d1881eb06b1af7bc1bc1ca87a4b42401d1f44f353b5e35059fa04bbe",
+      "receipt_sha256": "174e82efa52f55e057c50b8142e61f39263d01cc9d0bf65f58323af396797710"
+    },
+    "tests": {
+      "command": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+      "ran": 212,
+      "result": "OK",
+      "seconds": 131.952,
+      "skipped": 0,
+      "wall_seconds": 145,
+      "when": "after the receipt was rebuilt"
+    },
+    "tree": "clean after this evidence commit; no background job left running",
+    "vacuous_verify_fix": {
+      "defect": "verify --only-seed 43 (any filter leaving out the seed-42 full origins) built an empty full-arm comparison set, and all([]) made status a vacuous PASS",
+      "filtered_refusal": {
+        "command": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/formal.py verify --candidate output/runs --freezes execution/freezes --truth output/truth --native-source /home/chang/arc/pert_model/TranSiGen/source --repo-root /home/chang/arc --device cuda --mode formal --only-seed 43",
+        "exit_code": 1,
+        "stderr": "ValueError: the filtered verify has no anchor-comparable full origin or fold mean: the sealed anchors are measured at seed 42 only, so a selection that excludes the seed-42 full arm cannot reproduce them"
+      },
+      "fix": "formal.verify now fails closed when the selected schedule yields no anchor-comparable full origin or fold mean; full_arm.comparisons records the count; the sealed acceptance receipt requires a positive count and pins the anchor seed 42",
+      "tests": [
+        "test_formal.FullArmAnchorSeedTest.test_a_seed_43_only_arm_records_no_anchor_comparison",
+        "test_formal.FullArmAnchorSeedTest.test_the_comparison_count_is_the_anchor_record_count",
+        "test_formal.ProbeRunTest.test_a_filtered_verify_without_the_anchor_arm_fails_closed",
+        "test_acceptance.CodeIdentityTest.test_a_verify_without_anchor_comparisons_fails_closed",
+        "test_acceptance.CodeIdentityTest.test_the_anchor_seed_must_be_the_sealed_seed_42"
+      ]
+    },
+    "verify": {
+      "code_identity": {
+        "driver_code_drift": [
+          "formal.py"
+        ],
+        "moved": 6,
+        "status": "CODE_DRIFT"
+      },
+      "command": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/formal.py verify --candidate output/runs --freezes execution/freezes --truth output/truth --native-source /home/chang/arc/pert_model/TranSiGen/source --repo-root /home/chang/arc --device cuda --mode formal",
+      "full_arm": {
+        "anchor_seed": 42,
+        "comparisons": 8,
+        "fold_mean": 2,
+        "origins": 6,
+        "sensitivity": 8,
+        "sensitivity_seeds": [
+          43
+        ]
+      },
+      "mode": "formal",
+      "origins": 45,
+      "path": "stage2/tsg_view/output/runs/formal_verify.json",
+      "runs_untouched": "sha256 over every file in output/runs except formal_verify.json was 5970d78348bdcc6f181e96e494366c70e5715c0e544b34ef12b9d68c4a6f647d before and after the regeneration (identical)",
+      "sha256": "c079d55f4cef2f6c07c62fbb8e8cd6d46462ae2bf4fa08f040c39e1f66ad82f8",
+      "status": "PASS"
+    }
+  }
 }

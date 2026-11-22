@@ -7,7 +7,7 @@
       ],
       "log_sha256": "8e7b9f8b1a04df1fd5ce71ecb93cf1927e6411f87c77b3f4bd142ab5ad40207a",
       "returncode": 0,
-      "runtime_seconds": 13.034,
+      "runtime_seconds": 12.749,
       "script_sha256": "37e76871b8db58f1ed7d3e0fcb57250bc0aed3ae38ef879f69b6fed4adb8e1cf"
     },
     "check_tracked.sh": {
@@ -17,7 +17,7 @@
       ],
       "log_sha256": "f6758c7335bf85d705519ab3399dd242cf575fa29e4768a36ac3187a29984b37",
       "returncode": 0,
-      "runtime_seconds": 0.204,
+      "runtime_seconds": 0.088,
       "script_sha256": "e24a0f59e73ffad60e31517f97babe5aea3e702f15b370f6f6dbc5479f7082f7"
     },
     "verify_all.sh": {
@@ -27,10 +27,10 @@
       ],
       "log_sha256": "d370bab94e499ad5f3d74c92cc2c37bd95d4f879a410fa36b55b1f6605f5a33f",
       "returncode": 0,
-      "runtime_seconds": 280.237,
+      "runtime_seconds": 269.852,
       "script_sha256": "3a3ab19965d848114f019e64e1d793b31d43e4b39ca16bb52a2cdb3ab1145fe3"
     }
   },
-  "commit": "1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0",
+  "commit": "85b8cd3f5974737400589166c6c04dbf76752c74",
   "schema": "tsg-view-health-v1"
 }
