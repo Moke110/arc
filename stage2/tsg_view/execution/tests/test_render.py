@@ -45,13 +45,13 @@ def sha256(path):
 def run_isolated(base, data, suite, name="run", output=None):
     """Render in a fresh process in a tree holding only the renderer, data/ and output/.
 
-    ``common.py`` is the renderer's whole import closure beyond the standard library
-    (the schedule constants); it imports no science stack and holds no payload.
+    ``render.py`` is the renderer's whole import closure beyond the standard library: the
+    sealed acceptance replay copies this one file into an empty tree, so it must stay
+    standalone.
     """
     isolated = Path(base) / name
     isolated.mkdir(parents=True, exist_ok=True)
-    for module in ("render.py", "common.py"):
-        shutil.copy2(EXECUTION / module, isolated / module)
+    shutil.copy2(EXECUTION / "render.py", isolated / "render.py")
     shutil.copytree(data, isolated / "data")
     environment = dict(os.environ, MPLCONFIGDIR=str(isolated / "mpl"))
     environment.pop("PYTHONPATH", None)
@@ -119,7 +119,7 @@ class TestCsvOnlyRerender(unittest.TestCase):
         self.assertEqual(payloads, [])
         source = (EXECUTION / "render.py").read_text()
         imported = set()
-        for module in ("render.py", "common.py"):
+        for module in ("render.py",):
             tree = ast.parse((EXECUTION / module).read_text())
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
@@ -127,7 +127,7 @@ class TestCsvOnlyRerender(unittest.TestCase):
                 elif isinstance(node, ast.ImportFrom) and node.module:
                     imported.add(node.module.split(".")[0])
         self.assertLessEqual(imported, {"argparse", "csv", "hashlib", "json", "sys", "pathlib",
-                                        "matplotlib", "__future__", "common"})
+                                        "matplotlib", "__future__"})
         for forbidden in (".npy", "checkpoint.pt", "torch", "pandas", "numpy", "output/truth"):
             self.assertNotIn(forbidden, source)
             self.assertNotIn(forbidden, (EXECUTION / "common.py").read_text())

@@ -31,12 +31,6 @@ import json
 import sys
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
-if str(HERE) not in sys.path:
-    sys.path.insert(0, str(HERE))
-
-import common  # noqa: E402
-
 import matplotlib
 
 matplotlib.use("Agg")
@@ -46,12 +40,14 @@ from matplotlib.lines import Line2D  # noqa: E402
 SCHEMA = "tsg-view-render-v1"
 RENDERER_VERSION = "tsg-view-render-v1"
 DPI = 150
-#: The schedule (source order, per-source view order, per-view seed list) has one source
-#: of truth in ``common``; the figure grid derives its seed map from it.
-SOURCES = common.SOURCE_ORDER
-VIEW_ORDER = common.VIEW_ORDER
-SEEDS = {source: {view: common.seeds_for(view) for view in VIEW_ORDER[source]}
-         for source in SOURCES}
+SOURCES = ("tenv", "tahoe_bulk")
+VIEW_ORDER = {
+    "tenv": ("full", "merge", "solo", "full-pooled-label", "solo-deepest"),
+    "tahoe_bulk": ("full", "merge", "solo"),
+}
+SEEDS = {"tenv": {view: (42,) if view == "solo-deepest" else (42, 43)
+                  for view in VIEW_ORDER["tenv"]},
+         "tahoe_bulk": {view: (42, 43) for view in VIEW_ORDER["tahoe_bulk"]}}
 FOLDS = (0, 1, 2)
 METRICS = (("delta_pcc", "\u0394 Pearson r (PCC)"),
            ("delta_spearman", "\u0394 Spearman r"),
@@ -475,7 +471,8 @@ def render(data, output, suite="all"):
     output.mkdir(parents=True, exist_ok=True)
     figures = {}
     if suite == "cross":
-        figures["views_effect"] = render_views_effect(data, output)
+        for name in ("views_effect.png",):
+            figures[f"views_effect"] = render_views_effect(data, output)
     else:
         for source in wanted:
             figures[f"learning_curves_{source}"] = render_learning_curves(data, source, output)

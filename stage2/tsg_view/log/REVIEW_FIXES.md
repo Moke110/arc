@@ -81,6 +81,21 @@ semantic-payload change dressed as a refactor. Deferred to a round that may rebu
 re-seal the views: it needs the manifests, freezes, runs and receipt regenerated together,
 not a code-only edit.
 
+## Final-pass correction: the figure renderer is sealed
+
+Fix #5 also rewrote `execution/render.py` to import `common` and to take the schedule
+constants from it. That refactor is incompatible with the sealed figure product:
+`figure/render_status.json` pins `renderer_sha256 = 7a252b…`, and the acceptance CSV-only
+replay copies `execution/render.py` alone into a fresh tree and requires the replayed
+`render_status.json` bytes to equal the sealed ones. With the refactored renderer the replay
+first failed with `ModuleNotFoundError: No module named 'common'` (the final-pass receipt
+attempt), and with `common.py` also copied the replayed status still differed by
+`renderer_sha256`. The renderer was therefore restored to its sealed bytes and its
+de-duplication is deferred alongside `control_rule`: a renderer change needs
+`figure/render_status.json` (and the PNG check) re-sealed in a round that may rebuild the
+figure products, not a code-only edit. `execution/tests/test_render.py` now asserts the
+renderer is standalone. This changes no figure, report, view, truth or run byte.
+
 ## Code-identity consequence (must be carried into the final receipt)
 
 The sealed plan binds two code-digest blocks, `code` and `learner_runtime`. The
