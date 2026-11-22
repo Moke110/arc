@@ -682,10 +682,22 @@ def merge_rows(conditions, source, retained_totals, source_manifest_sha256):
 
 
 def member_table(conditions, profile_id=None):
-    """Long-form ``profile_id,member_profile_id`` table for a derived product."""
+    """Long-form ``profile_id,member_profile_id`` table for a derived product.
+
+    ``profile_id`` may be omitted (the canonical condition key), a callable over one
+    condition row (``merge``), or a sequence with one identity per condition (``solo``,
+    ``solo-deepest`` and ``full-pooled-label`` need the chosen member's own id).
+    """
+    if profile_id is None:
+        identities = [str(key) for key in conditions["condition_key"]]
+    elif callable(profile_id):
+        identities = [str(profile_id(condition)) for condition in conditions.itertuples()]
+    else:
+        identities = [str(value) for value in profile_id]
+        if len(identities) != len(conditions):
+            raise HarnessError("one member-table identity per condition is required")
     rows = []
-    for condition in conditions.itertuples():
-        identity = profile_id(condition) if profile_id else condition.condition_key
+    for identity, condition in zip(identities, conditions.itertuples()):
         for member in condition.profile_ids:
             rows.append({"profile_id": identity, "member_profile_id": str(member)})
     return pd.DataFrame(rows, columns=["profile_id", "member_profile_id"])

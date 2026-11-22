@@ -154,6 +154,10 @@ class HarnessTest(unittest.TestCase):
         # A different source or seed changes the draw for multi-member conditions.
         other_seed = views.solo_choice(conditions, rule="draw", seed=1, source="tenv")
         self.assertFalse(np.array_equal(first, other_seed))
+        # The member table can carry a per-condition identity (as solo/pooled-label need).
+        table = views.member_table(conditions, chosen_ids)
+        self.assertEqual(sorted(table.profile_id.unique()), sorted(chosen_ids))
+        self.assertEqual(len(table), int(conditions.member_count.sum()))
 
     def test_solo_deepest_picks_the_largest_retained_total(self):
         conditions, _ = views.condition_table(self.accepted_obs(), "tenv")
