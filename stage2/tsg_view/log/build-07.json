@@ -1,8 +1,8 @@
 {
   "schema": "tsg-view-build-07-v1",
   "ticket": "07-report-and-figures",
-  "phase": "A",
-  "status": "phase-b-tenv-published",
+  "phase": "B",
+  "status": "phase-b-all-published",
   "branch": "impl/tsg-view-07",
   "base_commit": "3b59faf",
   "dev_merge": "fd9763c (dev merged into impl/tsg-view-07 after the phase A commits; report and renderer tests plus check_paths/check_tracked re-run green after the merge)",
@@ -669,5 +669,675 @@
       "the report CSVs and figure/data CSVs will gain the Tahoe rows, so the CSV digests above are frozen only for this first publication"
     ],
     "artifact_digest_note": "the phase A artifact_sha256 entries for execution/report.py and execution/tests/test_report.py are superseded by artifacts_changed above; execution/render.py and figure/script/render.py are unchanged (renderer_sha256 in figure/render_status.json still equals the phase A digest)"
+  },
+  "phase_b_all": {
+    "note": "second and final publication of ticket 07: all 45 origins (27 tenv + 18 Tahoe) are complete and formal_verify.json reports PASS, so the same documented commands publish the Tahoe panels and the cross-source views_effect panel on top of the accepted tenv publication. No code changed in this pass",
+    "date": "2026-11-22",
+    "log_status_update": {
+      "phase": "A -> B",
+      "status": "phase-b-tenv-published -> phase-b-all-published",
+      "why": "the top-level status still described the tenv-only publication, which would read as 'Tahoe pending' after this pass; nothing else in the phase A/B-tenv blocks was rewritten"
+    },
+    "canonical_inputs": {
+      "runs": "/home/chang/arc/stage2/tsg_view/output/runs (formal candidate root; runs/tenv 27 origins and runs/tahoe_bulk 18 origins, each with terminal status complete)",
+      "truth": "/home/chang/arc/stage2/tsg_view/output/truth",
+      "mean_cell": "stage2/04_tsg_dose/execution/historical/report_axis_local/baselines/data/round1_runs.csv",
+      "formal_verify": "/home/chang/arc/stage2/tsg_view/output/runs/formal_verify.json: status PASS, 45 run records bound to the plan, each with its run_manifest_sha256 and selection_sha256"
+    },
+    "commands": {
+      "report": "cd /tmp/arc-tsg-07/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/report.py --runs /home/chang/arc/stage2/tsg_view/output/runs --truth /home/chang/arc/stage2/tsg_view/output/truth --report output/report --figure-data figure/data",
+      "render_tahoe": "cd /tmp/arc-tsg-07/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python figure/script/render.py --data figure/data --output figure --suite tahoe",
+      "render_all": "cd /tmp/arc-tsg-07/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python figure/script/render.py --data figure/data --output figure --suite all",
+      "render_cross_probe": "render.py --data figure/data --output /tmp/cross-check --suite cross -> exit 0, writes views_effect.png only; sha256 equals the --suite all panel",
+      "csv_only_replay": "rm -rf /tmp/tahoe-replay && mkdir -p /tmp/tahoe-replay/data && cp figure/data/*.csv /tmp/tahoe-replay/data/ && cp execution/render.py /tmp/tahoe-replay/render.py && cd /tmp/tahoe-replay && MPLCONFIGDIR=/tmp/tahoe-replay/mpl python -I render.py --data data --output out --suite all",
+      "tests": {
+        "report": "cd /tmp/arc-tsg-07/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p test_report.py",
+        "render": "cd /tmp/arc-tsg-07/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p test_render.py",
+        "whole_step_suite": "cd /tmp/arc-tsg-07/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v"
+      },
+      "health": [
+        "cd /tmp/arc-tsg-07 && bash script/check_paths.sh",
+        "cd /tmp/arc-tsg-07 && bash script/check_tracked.sh"
+      ]
+    },
+    "report_summary": {
+      "complete_origins": 45,
+      "pending_origins": 0,
+      "sources": [
+        "tenv",
+        "tahoe_bulk"
+      ],
+      "run_status_rows": 45,
+      "status_counts": {
+        "tahoe_bulk": {
+          "complete": 18
+        },
+        "tenv": {
+          "complete": 27
+        }
+      },
+      "stdout": "complete_origins=45, pending_origins=0, sources=[tenv, tahoe_bulk], 11 tables and 8 figure/data files written"
+    },
+    "report_tables": {
+      "baseline_mean_cell.csv": {
+        "rows": 24,
+        "sha256": "2855975f2231d72fef47f16a8b5efc28a299b9aa48178ab51459a729e15fd03d"
+      },
+      "diagnostics_beside_scores.csv": {
+        "rows": 8,
+        "sha256": "1b366ab96ea862ad48f7d54faf43c0c518937f28a6842830b8c6482cc856d860"
+      },
+      "fold_spread.csv": {
+        "rows": 120,
+        "sha256": "516449f45c62053b054b271bf1ac72286265cf2c6d75a76d1b2f25dc700319d5"
+      },
+      "learning_curves.csv": {
+        "rows": 4843,
+        "sha256": "179439293b629ddc5a0c03d927f17c707632a9b3d2b4d30295b797ae8fcd1d18"
+      },
+      "metrics_condition_mean.csv": {
+        "rows": 45,
+        "sha256": "a8e2db633b06514728e4af3d884b56331a546d1c00a8001abe688ec0f04485f6"
+      },
+      "metrics_per_dose.csv": {
+        "rows": 180,
+        "sha256": "da96fe09aac0223447c4a73e39b1f364ce3e814e3738e4fa452ffa14e9b56390"
+      },
+      "metrics_primary.csv": {
+        "rows": 45,
+        "sha256": "c5036160a3aeb3daefbe7864ae8a4e03b918cab5a77e323b8d6d25ec0a777fa7"
+      },
+      "paired_vs_full.csv": {
+        "rows": 20,
+        "sha256": "6714f82608de1f9fb7e5ba1c44c208776b46762ae04d57ada661e416edcc4b61"
+      },
+      "paired_vs_full_solo_deepest.csv": {
+        "rows": 4,
+        "sha256": "66faa2d2ad828526b30f77efbb4209b9e65a5d1e8975400338394fe2075235e7"
+      },
+      "run_status.csv": {
+        "rows": 45,
+        "sha256": "c0bfee18c1362f3dc880d759a995cb1d2d93b51cde6eb7de95edeb8e85b0e090"
+      },
+      "seed_spread.csv": {
+        "rows": 64,
+        "sha256": "6c2fcbd96bc701f153c03d15974262e89b30cfdfbe748c56046915ebbb497ab7"
+      }
+    },
+    "figure_data": {
+      "learning_curves.csv": {
+        "rows": 4843,
+        "sha256": "179439293b629ddc5a0c03d927f17c707632a9b3d2b4d30295b797ae8fcd1d18"
+      },
+      "learning_curves_mean.csv": {
+        "rows": 997,
+        "sha256": "1556c274a29f4d932ed02dd4e714f880389c050df0cfd0de18f0abefffcf5032"
+      },
+      "metrics_bars.csv": {
+        "rows": 32,
+        "sha256": "b9ff2099e09a7ea2bb87800b24d2f24007c36223c7bc45114633e77157849b25"
+      },
+      "metrics_baseline.csv": {
+        "rows": 8,
+        "sha256": "600242dafa71130d45909b08d3a2a3dc3f2fa10452c3392112dd753676ce26c4"
+      },
+      "metrics_per_dose_bars.csv": {
+        "rows": 96,
+        "sha256": "2edd8bca29ad4edd3b6ca180de8d1b37d06d91d24998338867367e3023febfa6"
+      },
+      "metrics_per_dose_points.csv": {
+        "rows": 180,
+        "sha256": "4646dc50ecf9aefface09b32e20d1b736c3334bd951fb33f0a1ff4511ebf795b"
+      },
+      "metrics_points.csv": {
+        "rows": 180,
+        "sha256": "372dc6d55bb911ffa2f36231f52419e50a162319f2cc59591705ea627450e7a0"
+      },
+      "views_effect.csv": {
+        "rows": 24,
+        "sha256": "3c184d6e21a6081c5bdacc3eccb5dacff4a3f1667521a5ebabfb562ab08805ec"
+      }
+    },
+    "figures": {
+      "tahoe_and_cross": {
+        "learning_curves_tahoe_bulk.png": {
+          "bytes": 111944,
+          "sha256": "b3f66712bd937f13cac3b472eab0aead0d16f7742e05f0d1e71080da2ada04a6",
+          "sha256_prefix": "b3f66712bd",
+          "panel": "Tahoe per-epoch train/validation curves per view, mean over runs with run spread"
+        },
+        "metrics_tahoe_bulk.png": {
+          "bytes": 101645,
+          "sha256": "3328c1fc94510a2941b367ff964b28a24437b44a5e7837e7300321d519172490",
+          "sha256_prefix": "3328c1fc94",
+          "panel": "Tahoe view scores: equal-fold-mean bars, separate fold SD and seed SD error bars, per-run dots, Mean_cell reference line"
+        },
+        "metrics_per_dose_tahoe_bulk.png": {
+          "bytes": 173106,
+          "sha256": "f8f26adc99027c44b7e1e4d7c051e9e04b1e4c4deb048b7464e3b47c291d74fb",
+          "sha256_prefix": "f8f26adc99",
+          "panel": "Tahoe per-dose (per held fold) view scores with seed spread; dose and fold are confounded by design"
+        },
+        "views_effect.png": {
+          "bytes": 101415,
+          "sha256": "629335b1d52fed2886d3898fecdaabb020b94da1730efbed8fc3a7260fe5ccf6",
+          "sha256_prefix": "629335b1d5",
+          "panel": "cross-source paired (view - full) differences with fold+seed intervals; tenv and Tahoe side by side, solo-deepest hatched and reported separately"
+        }
+      },
+      "tenv_accepted": {
+        "learning_curves_tenv.png": {
+          "bytes": 219515,
+          "sha256": "30592793904ff3dbf0f398b035445ad043602aaa1ba2a0fc0b451fe1487fa011",
+          "sha256_prefix": "3059279390",
+          "unchanged_from_phase_b_tenv": true
+        },
+        "metrics_tenv.png": {
+          "bytes": 152352,
+          "sha256": "163e9f3729bf989a28b8c9ddae8b3814ef5ccf7259c1fe275f6d9746db6d3ca7",
+          "sha256_prefix": "163e9f3729",
+          "unchanged_from_phase_b_tenv": true
+        },
+        "metrics_per_dose_tenv.png": {
+          "bytes": 280645,
+          "sha256": "9e735e561fe532e1a1914a2249427c3a7275a9e19dd1aeac481310cd244028a5",
+          "sha256_prefix": "9e735e561f",
+          "unchanged_from_phase_b_tenv": true
+        }
+      },
+      "all_pngs": {
+        "learning_curves_tahoe_bulk.png": "b3f66712bd937f13cac3b472eab0aead0d16f7742e05f0d1e71080da2ada04a6",
+        "learning_curves_tenv.png": "30592793904ff3dbf0f398b035445ad043602aaa1ba2a0fc0b451fe1487fa011",
+        "metrics_per_dose_tahoe_bulk.png": "f8f26adc99027c44b7e1e4d7c051e9e04b1e4c4deb048b7464e3b47c291d74fb",
+        "metrics_per_dose_tenv.png": "9e735e561fe532e1a1914a2249427c3a7275a9e19dd1aeac481310cd244028a5",
+        "metrics_tahoe_bulk.png": "3328c1fc94510a2941b367ff964b28a24437b44a5e7837e7300321d519172490",
+        "metrics_tenv.png": "163e9f3729bf989a28b8c9ddae8b3814ef5ccf7259c1fe275f6d9746db6d3ca7",
+        "views_effect.png": "629335b1d52fed2886d3898fecdaabb020b94da1730efbed8fc3a7260fe5ccf6"
+      },
+      "count": 7
+    },
+    "render_status_json": {
+      "sha256": "d40bc19ee3cb299d7206e90df53edbc5bdcbaf610819cf1d31f25a94dd129b56",
+      "bytes": 2102,
+      "suite": "all",
+      "figures_pinned": 7,
+      "pending": {},
+      "renderer_sha256": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8",
+      "csv_inputs": "all 8 figure/data digests, equal to report_manifest.json figure_data"
+    },
+    "report_manifest": {
+      "sha256": "d88da7e0daf22a45c1184cd93c220021461c2c6c1c66201f6970a68170698cab",
+      "bytes": 4704,
+      "complete_origins": 45,
+      "pending_origins": 0,
+      "sources": [
+        "tenv",
+        "tahoe_bulk"
+      ],
+      "diagnostics_sha256": {
+        "tenv": "964f057586fbb0a3880c631e668dbe8d358a6425ca77ce666e042d0de5adfe53",
+        "tahoe_bulk": "5950f303aaf48eb0caaff8f70147f47672bc3f2ea2c583b69d6b0373959442f2"
+      },
+      "tables": "11 tables with per-table sha256, matching report_tables above"
+    },
+    "tenv_png_stability": {
+      "before": {
+        "learning_curves_tenv.png": "30592793904ff3dbf0f398b035445ad043602aaa1ba2a0fc0b451fe1487fa011",
+        "metrics_tenv.png": "163e9f3729bf989a28b8c9ddae8b3814ef5ccf7259c1fe275f6d9746db6d3ca7",
+        "metrics_per_dose_tenv.png": "9e735e561fe532e1a1914a2249427c3a7275a9e19dd1aeac481310cd244028a5"
+      },
+      "after": {
+        "learning_curves_tenv.png": "30592793904ff3dbf0f398b035445ad043602aaa1ba2a0fc0b451fe1487fa011",
+        "metrics_tenv.png": "163e9f3729bf989a28b8c9ddae8b3814ef5ccf7259c1fe275f6d9746db6d3ca7",
+        "metrics_per_dose_tenv.png": "9e735e561fe532e1a1914a2249427c3a7275a9e19dd1aeac481310cd244028a5"
+      },
+      "check": "sha256sum figure/*.png after --suite tahoe and again after --suite all; sha256sum -c against the three phase B-tenv digests -> all three OK",
+      "identical": true
+    },
+    "csv_only_replay_evidence": {
+      "tree": "/tmp/tahoe-replay: data/ (the 8 figure/data CSVs, nothing else) + render.py (byte copy of execution/render.py); no matrices, checkpoints, run directories or truth products",
+      "interpreter": "python -I (isolated mode, no site-packages/user paths) with MPLCONFIGDIR=/tmp/tahoe-replay/mpl",
+      "command": "python -I render.py --data data --output out --suite all",
+      "result": "all 7 PNGs re-rendered byte-identically and render_status.json was byte-identical too",
+      "pngs_identical": 7,
+      "pngs_total": 7,
+      "digests": {
+        "learning_curves_tahoe_bulk.png": "b3f66712bd937f13cac3b472eab0aead0d16f7742e05f0d1e71080da2ada04a6",
+        "learning_curves_tenv.png": "30592793904ff3dbf0f398b035445ad043602aaa1ba2a0fc0b451fe1487fa011",
+        "metrics_per_dose_tahoe_bulk.png": "f8f26adc99027c44b7e1e4d7c051e9e04b1e4c4deb048b7464e3b47c291d74fb",
+        "metrics_per_dose_tenv.png": "9e735e561fe532e1a1914a2249427c3a7275a9e19dd1aeac481310cd244028a5",
+        "metrics_tahoe_bulk.png": "3328c1fc94510a2941b367ff964b28a24437b44a5e7837e7300321d519172490",
+        "metrics_tenv.png": "163e9f3729bf989a28b8c9ddae8b3814ef5ccf7259c1fe275f6d9746db6d3ca7",
+        "views_effect.png": "629335b1d52fed2886d3898fecdaabb020b94da1730efbed8fc3a7260fe5ccf6"
+      }
+    },
+    "tahoe_headline_numbers": {
+      "note": "equal-fold mean of the per-run sample-equal Delta metrics, primary truth; headline is the mean of the two per-seed equal-fold means. Tahoe has no full-pooled-label or solo-deepest arm (VIEW_ORDER['tahoe_bulk'] = full, merge, solo)",
+      "views": {
+        "full": {
+          "per_seed_equal_fold_mean": {
+            "42": {
+              "delta_pcc": 0.422633,
+              "delta_rmse": 0.154796,
+              "n_folds": 3
+            },
+            "43": {
+              "delta_pcc": 0.421723,
+              "delta_rmse": 0.154512,
+              "n_folds": 3
+            }
+          },
+          "headline": {
+            "delta_pcc": 0.422178,
+            "delta_rmse": 0.154654,
+            "seed_sd_pcc": 0.000644,
+            "seed_sd_rmse": 0.000201,
+            "n_seeds": 2,
+            "n_folds": 3,
+            "estimand": "mean of the per-seed equal-fold means; per-seed value = equal-fold mean of the per-run sample-equal Delta metrics (primary truth)"
+          },
+          "paired_vs_full": "reference arm: every other view is paired against this one"
+        },
+        "merge": {
+          "per_seed_equal_fold_mean": {
+            "42": {
+              "delta_pcc": 0.409336,
+              "delta_rmse": 0.157132,
+              "n_folds": 3
+            },
+            "43": {
+              "delta_pcc": 0.409591,
+              "delta_rmse": 0.156824,
+              "n_folds": 3
+            }
+          },
+          "headline": {
+            "delta_pcc": 0.409463,
+            "delta_rmse": 0.156978,
+            "seed_sd_pcc": 0.00018,
+            "seed_sd_rmse": 0.000218,
+            "n_seeds": 2,
+            "n_folds": 3,
+            "estimand": "mean of the per-seed equal-fold means; per-seed value = equal-fold mean of the per-run sample-equal Delta metrics (primary truth)"
+          },
+          "paired_vs_full": {
+            "delta_pcc": {
+              "delta_mean": -0.012714,
+              "low": -0.029631,
+              "high": 0.004202,
+              "fold_sd": 0.014915,
+              "seed_sd": 0.000824,
+              "n_pairs": 6,
+              "status": "ok"
+            },
+            "delta_spearman": {
+              "delta_mean": -0.009899,
+              "low": -0.022002,
+              "high": 0.002204,
+              "fold_sd": 0.010694,
+              "seed_sd": 0.000125,
+              "n_pairs": 6,
+              "status": "ok"
+            },
+            "delta_rmse": {
+              "delta_mean": 0.002324,
+              "low": -0.002032,
+              "high": 0.006681,
+              "fold_sd": 0.00385,
+              "seed_sd": 1.6e-05,
+              "n_pairs": 6,
+              "status": "ok"
+            },
+            "delta_r2": {
+              "delta_mean": -0.046143,
+              "low": -0.142908,
+              "high": 0.050622,
+              "fold_sd": 0.085503,
+              "seed_sd": 0.001003,
+              "n_pairs": 6,
+              "status": "ok"
+            }
+          }
+        },
+        "solo": {
+          "per_seed_equal_fold_mean": {
+            "42": {
+              "delta_pcc": 0.414194,
+              "delta_rmse": 0.156945,
+              "n_folds": 3
+            },
+            "43": {
+              "delta_pcc": 0.415407,
+              "delta_rmse": 0.15596,
+              "n_folds": 3
+            }
+          },
+          "headline": {
+            "delta_pcc": 0.414801,
+            "delta_rmse": 0.156453,
+            "seed_sd_pcc": 0.000858,
+            "seed_sd_rmse": 0.000696,
+            "n_seeds": 2,
+            "n_folds": 3,
+            "estimand": "mean of the per-seed equal-fold means; per-seed value = equal-fold mean of the per-run sample-equal Delta metrics (primary truth)"
+          },
+          "paired_vs_full": {
+            "delta_pcc": {
+              "delta_mean": -0.007377,
+              "low": -0.026555,
+              "high": 0.011801,
+              "fold_sd": 0.016847,
+              "seed_sd": 0.001501,
+              "n_pairs": 6,
+              "status": "ok"
+            },
+            "delta_spearman": {
+              "delta_mean": -0.006163,
+              "low": -0.019596,
+              "high": 0.00727,
+              "fold_sd": 0.011866,
+              "seed_sd": 0.000281,
+              "n_pairs": 6,
+              "status": "ok"
+            },
+            "delta_rmse": {
+              "delta_mean": 0.001799,
+              "low": -0.003895,
+              "high": 0.007492,
+              "fold_sd": 0.004995,
+              "seed_sd": 0.000495,
+              "n_pairs": 6,
+              "status": "ok"
+            },
+            "delta_r2": {
+              "delta_mean": -0.035987,
+              "low": -0.161627,
+              "high": 0.089654,
+              "fold_sd": 0.109987,
+              "seed_sd": 0.012389,
+              "n_pairs": 6,
+              "status": "ok"
+            }
+          }
+        }
+      },
+      "paired_reading": "every Tahoe paired (view - full) 95% interval covers zero, so no view is distinguishable from full on Tahoe at 3 folds x 2 seeds; merge - full dPCC -0.0127 [-0.0296, +0.0042], solo - full dPCC -0.0074 [-0.0266, +0.0118]",
+      "tenv_reference": {
+        "note": "for orientation only: tenv and Tahoe Delta values sit on different truth products and different profile populations, so they are not directly comparable; the comparable cross-source statement is the within-source paired view - full contrast in figure/views_effect.png",
+        "views": {
+          "full": {
+            "per_seed_equal_fold_mean": {
+              "42": {
+                "delta_pcc": 0.265459,
+                "delta_rmse": 0.421338,
+                "n_folds": 3
+              },
+              "43": {
+                "delta_pcc": 0.264532,
+                "delta_rmse": 0.422583,
+                "n_folds": 3
+              }
+            },
+            "headline": {
+              "delta_pcc": 0.264996,
+              "delta_rmse": 0.42196,
+              "seed_sd_pcc": 0.000655,
+              "seed_sd_rmse": 0.00088,
+              "n_seeds": 2,
+              "n_folds": 3,
+              "estimand": "mean of the per-seed equal-fold means; per-seed value = equal-fold mean of the per-run sample-equal Delta metrics (primary truth)"
+            },
+            "paired_vs_full": "reference arm: every other view is paired against this one"
+          },
+          "merge": {
+            "per_seed_equal_fold_mean": {
+              "42": {
+                "delta_pcc": 0.23243,
+                "delta_rmse": 0.436719,
+                "n_folds": 3
+              },
+              "43": {
+                "delta_pcc": 0.234914,
+                "delta_rmse": 0.437313,
+                "n_folds": 3
+              }
+            },
+            "headline": {
+              "delta_pcc": 0.233672,
+              "delta_rmse": 0.437016,
+              "seed_sd_pcc": 0.001757,
+              "seed_sd_rmse": 0.00042,
+              "n_seeds": 2,
+              "n_folds": 3,
+              "estimand": "mean of the per-seed equal-fold means; per-seed value = equal-fold mean of the per-run sample-equal Delta metrics (primary truth)"
+            },
+            "paired_vs_full": {
+              "delta_pcc": {
+                "delta_mean": -0.031323,
+                "low": -0.045937,
+                "high": -0.01671,
+                "fold_sd": 0.012571,
+                "seed_sd": 0.002412,
+                "n_pairs": 6,
+                "status": "ok"
+              },
+              "delta_spearman": {
+                "delta_mean": -0.024708,
+                "low": -0.038282,
+                "high": -0.011133,
+                "fold_sd": 0.011985,
+                "seed_sd": 0.00041,
+                "n_pairs": 6,
+                "status": "ok"
+              },
+              "delta_rmse": {
+                "delta_mean": 0.015056,
+                "low": 0.013108,
+                "high": 0.017005,
+                "fold_sd": 0.001627,
+                "seed_sd": 0.000461,
+                "n_pairs": 6,
+                "status": "ok"
+              },
+              "delta_r2": {
+                "delta_mean": -0.100453,
+                "low": -0.136387,
+                "high": -0.06452,
+                "fold_sd": 0.023414,
+                "seed_sd": 0.017514,
+                "n_pairs": 6,
+                "status": "ok"
+              }
+            }
+          },
+          "solo": {
+            "per_seed_equal_fold_mean": {
+              "42": {
+                "delta_pcc": 0.207401,
+                "delta_rmse": 0.454286,
+                "n_folds": 3
+              },
+              "43": {
+                "delta_pcc": 0.205964,
+                "delta_rmse": 0.455859,
+                "n_folds": 3
+              }
+            },
+            "headline": {
+              "delta_pcc": 0.206682,
+              "delta_rmse": 0.455072,
+              "seed_sd_pcc": 0.001017,
+              "seed_sd_rmse": 0.001112,
+              "n_seeds": 2,
+              "n_folds": 3,
+              "estimand": "mean of the per-seed equal-fold means; per-seed value = equal-fold mean of the per-run sample-equal Delta metrics (primary truth)"
+            },
+            "paired_vs_full": {
+              "delta_pcc": {
+                "delta_mean": -0.058313,
+                "low": -0.073054,
+                "high": -0.043573,
+                "fold_sd": 0.013019,
+                "seed_sd": 0.000361,
+                "n_pairs": 6,
+                "status": "ok"
+              },
+              "delta_spearman": {
+                "delta_mean": -0.032499,
+                "low": -0.039243,
+                "high": -0.025754,
+                "fold_sd": 0.005957,
+                "seed_sd": 0.00017,
+                "n_pairs": 6,
+                "status": "ok"
+              },
+              "delta_rmse": {
+                "delta_mean": 0.033112,
+                "low": 0.023498,
+                "high": 0.042726,
+                "fold_sd": 0.008491,
+                "seed_sd": 0.000232,
+                "n_pairs": 6,
+                "status": "ok"
+              },
+              "delta_r2": {
+                "delta_mean": -0.290378,
+                "low": -0.378939,
+                "high": -0.201817,
+                "fold_sd": 0.078207,
+                "seed_sd": 0.002367,
+                "n_pairs": 6,
+                "status": "ok"
+              }
+            }
+          },
+          "full-pooled-label": {
+            "per_seed_equal_fold_mean": {
+              "42": {
+                "delta_pcc": 0.210433,
+                "delta_rmse": 0.447382,
+                "n_folds": 3
+              },
+              "43": {
+                "delta_pcc": 0.203828,
+                "delta_rmse": 0.449287,
+                "n_folds": 3
+              }
+            },
+            "headline": {
+              "delta_pcc": 0.20713,
+              "delta_rmse": 0.448335,
+              "seed_sd_pcc": 0.00467,
+              "seed_sd_rmse": 0.001347,
+              "n_seeds": 2,
+              "n_folds": 3,
+              "estimand": "mean of the per-seed equal-fold means; per-seed value = equal-fold mean of the per-run sample-equal Delta metrics (primary truth)"
+            },
+            "paired_vs_full": {
+              "delta_pcc": {
+                "delta_mean": -0.057865,
+                "low": -0.066482,
+                "high": -0.049249,
+                "fold_sd": 0.005814,
+                "seed_sd": 0.004015,
+                "n_pairs": 6,
+                "status": "ok"
+              },
+              "delta_spearman": {
+                "delta_mean": -0.030392,
+                "low": -0.043734,
+                "high": -0.017049,
+                "fold_sd": 0.009694,
+                "seed_sd": 0.00548,
+                "n_pairs": 6,
+                "status": "ok"
+              },
+              "delta_rmse": {
+                "delta_mean": 0.026375,
+                "low": 0.021589,
+                "high": 0.03116,
+                "fold_sd": 0.00419,
+                "seed_sd": 0.000467,
+                "n_pairs": 6,
+                "status": "ok"
+              },
+              "delta_r2": {
+                "delta_mean": -0.215058,
+                "low": -0.275192,
+                "high": -0.154923,
+                "fold_sd": 0.05265,
+                "seed_sd": 0.005881,
+                "n_pairs": 6,
+                "status": "ok"
+              }
+            }
+          }
+        },
+        "solo_deepest": {
+          "per_seed_equal_fold_mean": {
+            "42": {
+              "delta_pcc": 0.25559,
+              "delta_rmse": 0.457821,
+              "n_folds": 3
+            }
+          },
+          "note": "single-seed (42) sensitivity arm; reported separately, not a head-to-head view"
+        }
+      }
+    },
+    "test_evidence": {
+      "test_report.py": {
+        "tests": 21,
+        "result": "OK",
+        "runtime_seconds": 4.27
+      },
+      "test_render.py": {
+        "tests": 8,
+        "result": "OK",
+        "runtime_seconds": 14.14
+      },
+      "whole_step_suite": {
+        "tests": 119,
+        "result": "OK",
+        "runtime_seconds": 92.43,
+        "note": "ran with the documented discover pattern; the real-payload learner smoke and formal probe tests were not skipped because the read-only payload links are present"
+      },
+      "total_reported": 29
+    },
+    "health_evidence": {
+      "check_paths.sh": {
+        "exit": 0,
+        "result": "PASS - 1999 tracked text files, 7672 path-literal occurrences (751 distinct), 0 unresolved; stage3 source-first audit PASS; stage2 retired-step-path audit PASS"
+      },
+      "check_tracked.sh": {
+        "exit": 0,
+        "result": "PASS - 606 scanned code files, 0 untracked, 0 holes"
+      },
+      "payload_links": "the item source/local read-only links created in phase A are present and remain untracked; git status lists only the 20 modified deliverables, the 4 new PNGs and this log"
+    },
+    "code_changes": [],
+    "code_digests": {
+      "execution/report.py": "d066182a3b198c4cd44a8068df2cc0c19af6cc8ab757b86047e226aa0dbb5a90",
+      "execution/render.py": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8",
+      "figure/script/render.py": "13f88769d4199335b8d66af4b418097ec27fe2a16b0bb82dcf230f7d642aacf3",
+      "execution/tests/test_report.py": "ee4d54b2430437c374c6e7382a415c18dfd322957660cbf831f2c0df9609e4ba",
+      "execution/tests/test_render.py": "7f3ce91d7e4c78dfe852fe7fcc9a2f43e69223250721e2e14f9a8ad29eec323b",
+      "note": "identical to the phase B-tenv artifacts_changed/phase A artifact_sha256 values, and render_status.json still pins renderer_sha256 = the phase A digest"
+    },
+    "artifacts_changed": {
+      "stage2/tsg_view/output/report/*.csv": "11 tables rewritten with the Tahoe rows (45 origins, 0 pending)",
+      "stage2/tsg_view/output/report/report_manifest.json": "d88da7e0daf22a45c1184cd93c220021461c2c6c1c66201f6970a68170698cab",
+      "stage2/tsg_view/figure/data/*.csv": "8 figure-data tables rewritten with the Tahoe rows",
+      "stage2/tsg_view/figure/render_status.json": "d40bc19ee3cb299d7206e90df53edbc5bdcbaf610819cf1d31f25a94dd129b56",
+      "stage2/tsg_view/figure/*.png": "7 panels: 3 accepted tenv panels byte-identical, 3 Tahoe panels and views_effect.png new",
+      "stage2/tsg_view/log/build-07.json": "this phase_b_all block plus the status update"
+    },
+    "deviations": [
+      "the Tahoe suite was rendered before the complete suite (--suite tahoe then --suite all) so the final render_status.json pins all 7 figures with suite=all and pending={}; --suite cross was exercised into /tmp/cross-check instead of figure/ because a later cross pass would overwrite the all-suite render_status.json with a one-figure status",
+      "--suite all re-renders the tenv panels as well; the pass proves they come back byte-identical rather than skipping them, so the accepted tenv panels are also a render regression check",
+      "the phase B-tenv CSV digests are superseded by this pass (the tables gained the Tahoe rows); the three tenv PNG digests are not",
+      "paired_vs_full_solo_deepest.csv is byte-identical to phase B-tenv because solo-deepest is a tenv-only sensitivity arm; Tahoe has no solo-deepest run",
+      "Tahoe Delta values are not comparable in level to the tenv ones (different truth product and profile population); the cross-source comparison is the within-source paired contrast"
+    ]
   }
 }
