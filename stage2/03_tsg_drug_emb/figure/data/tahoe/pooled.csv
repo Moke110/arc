@@ -1,0 +1,9 @@
+source,scenario,seed,method,pcc,defined_parents,parents,defined_profiles,profiles
+tahoe_bulk,cold-drug,42,Mean_cell,0.46099725765751687,352,352,65318,65318
+tahoe_bulk,cold-drug,42,ECFP4C,0.5371535659727261,352,352,65318,65318
+tahoe_bulk,cold-drug,42,ECFP6C,0.5345891124242473,352,352,65318,65318
+tahoe_bulk,cold-drug,42,FCFP4C,0.5272902955997947,352,352,65318,65318
+tahoe_bulk,cold-drug,42,FCFP6C,0.5289995962574028,352,352,65318,65318
+tahoe_bulk,cold-drug,42,E3FP,0.5345324130680441,352,352,65318,65318
+tahoe_bulk,cold-drug,42,KPGT,0.5218663187587353,352,352,65318,65318
+tahoe_bulk,cold-drug,42,UniMol,0.5149132885841295,352,352,65318,65318
