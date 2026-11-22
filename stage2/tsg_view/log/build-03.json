@@ -424,48 +424,93 @@
       "products": "PASS \u2014 every payload, manifest and companion-file digest equals the implementer's log/build-03.json values, byte counts included (solo tenv 5f4c537e\u2026 42,914,440 B; solo-deepest tenv 13bb2d24\u2026 43,668,260 B; solo tahoe d689a4c7\u2026 2,328,629,910 B)."
     },
     "gates": {
-      "bounded_gpu_smoke_fit": {
-        "best_epoch": 2,
-        "children_peak_rss_kib": 1810652,
-        "device": "cuda",
-        "driver_elapsed_seconds": 13.152,
-        "epochs": 2,
-        "epochs_run": 2,
-        "fold": 0,
-        "phases": [
-          {
-            "elapsed_seconds": 3.66,
-            "phase": "train",
-            "returncode": 0
-          },
-          {
-            "elapsed_seconds": 3.199,
-            "phase": "replay",
-            "returncode": 0
-          },
-          {
-            "elapsed_seconds": 3.236,
-            "phase": "test",
-            "returncode": 0
-          },
-          {
-            "elapsed_seconds": 3.057,
-            "phase": "replay",
-            "returncode": 0
-          }
-        ],
-        "replay": "train -> replay -> test -> replay, one process per phase",
-        "rows": 64,
-        "run_dir": "execution/checkpoints/merger-03/smoke/tenv/solo/fold-0/seed-42",
-        "run_manifest_sha256": "a47f15baf60a7a16581ed7d442ca16d630443cefa490c11e7d42c5e7957e6e5f",
-        "seed": 42,
-        "source": "tenv",
-        "status": "complete",
-        "training_peak_rss_kib": 1727052,
-        "validation_mse": 0.6100605130195618,
-        "validation_mse_matches_implementer_record": true,
-        "view": "solo",
-        "wall_seconds": 13.36
+      "bounded_gpu_smoke_fits": {
+        "solo": {
+          "best_epoch": 2,
+          "children_peak_rss_kib": 1810652,
+          "device": "cuda",
+          "driver_elapsed_seconds": 13.152,
+          "epochs": 2,
+          "epochs_run": 2,
+          "fold": 0,
+          "phases": [
+            {
+              "elapsed_seconds": 3.66,
+              "phase": "train",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.199,
+              "phase": "replay",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.236,
+              "phase": "test",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.057,
+              "phase": "replay",
+              "returncode": 0
+            }
+          ],
+          "replay": "train -> replay -> test -> replay, one process per phase",
+          "rows": 64,
+          "run_dir": "execution/checkpoints/merger-03/smoke/tenv/solo/fold-0/seed-42",
+          "run_manifest_sha256": "a47f15baf60a7a16581ed7d442ca16d630443cefa490c11e7d42c5e7957e6e5f",
+          "seed": 42,
+          "source": "tenv",
+          "status": "complete",
+          "training_peak_rss_kib": 1727052,
+          "validation_mse": 0.6100605130195618,
+          "validation_mse_matches_implementer_record": true,
+          "view": "solo",
+          "wall_seconds": 13.36
+        },
+        "solo-deepest": {
+          "best_epoch": 2,
+          "children_peak_rss_kib": 1803516,
+          "device": "cuda",
+          "driver_elapsed_seconds": 13.825,
+          "epochs": 2,
+          "epochs_run": 2,
+          "fold": 0,
+          "phases": [
+            {
+              "elapsed_seconds": 3.802,
+              "phase": "train",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.569,
+              "phase": "replay",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.248,
+              "phase": "test",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.205,
+              "phase": "replay",
+              "returncode": 0
+            }
+          ],
+          "replay": "train -> replay -> test -> replay, one process per phase",
+          "rows": 64,
+          "run_dir": "execution/checkpoints/merger-03/smoke/tenv/solo-deepest/fold-0/seed-42",
+          "run_manifest_sha256": "de010113606fb252afbe250fbadbe3701d9c40df14313b341612d5b221808d65",
+          "seed": 42,
+          "source": "tenv",
+          "status": "complete",
+          "training_peak_rss_kib": 1720208,
+          "validation_mse": 0.5280459523200989,
+          "validation_mse_matches_implementer_record": true,
+          "view": "solo-deepest",
+          "wall_seconds": 14.03
+        }
       },
       "freeze_verification_with_inputs": {
         "checks_covered": [
@@ -662,7 +707,8 @@
       "All three freezes live under stage2/tsg_view/execution/freezes/ (gitignored payloads, tracked manifests/parents/splits/CSVs) and pass Inputs verification against the sealed Step 04 round1-axis-local-inputs/<source> freeze.",
       "Use the main-checkout freeze manifest digests (see digest_reconciliation.canonical_freeze_digests), not the worktree ones recorded in gates.c_freezes of this log's implementer section.",
       "splits.csv is intentionally not byte-equal to the sealed splits for derived views (splits_byte_equal_to_sealed=false); the condition->partition map is equal and verified.",
-      "Peak RSS stayed well under the 4 GiB merger budget (max 2.79 GB during the tahoe freeze); heavy steps ran one at a time under ../01_bases/execution/capped.sh."
+      "Peak RSS stayed well under the 4 GiB merger budget (max 2.79 GB during the tahoe freeze); heavy steps ran one at a time under ../01_bases/execution/capped.sh.",
+      "Both materialised tenv freezes were smoke-fitted on dev with exact replay; validation MSE reproduces the implementer record bit-for-bit (solo 0.6100605130195618, solo-deepest 0.5280459523200989)."
     ],
     "pre_merge_dev_rev": "ebba12fed744318edef464692f857e0143e6ec4b",
     "schema": "tsg-view-merger-verification-v1",
