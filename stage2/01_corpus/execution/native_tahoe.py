@@ -12,10 +12,10 @@ import pandas as pd
 import pyarrow.parquet as pq
 from anndata import AnnData
 from anndata.io import read_elem
-from scipy.sparse import csr_matrix
+from scipy.sparse import coo_matrix, csr_matrix
 
 from bases import tahoe as projected
-from bases.tahoe import _aggregate, _digest, _json, _obs, _plate_key, _plate_layout
+from bases.tahoe import _digest, _entries, _json, _obs, _plate_key, _plate_layout
 
 SCHEMA = projected.SCHEMA
 
@@ -37,6 +37,55 @@ def _plan(source, mapping, manifest, expected_shards, expected_genes):
     evidence["mapping_sha256"] = hashlib.sha256(mapping.to_csv(index=False).encode()).hexdigest()
     input_sha = hashlib.sha256(json.dumps(evidence, sort_keys=True).encode()).hexdigest()
     return source, mapping, plates, samples, lines, names, lookup, evidence, input_sha
+
+
+def _pack_rows(counts, selected):
+    """Encode bounded row blocks directly into a single canonical CSR payload."""
+    batch_rows = 64
+    pointers = np.zeros(len(selected) + 1, dtype=np.int64)
+    for start in range(0, len(selected), batch_rows):
+        stop = min(start + batch_rows, len(selected))
+        block = counts[selected[start:stop]]
+        if np.any(block < 0) or block.max(initial=0) > np.iinfo(np.int32).max:
+            raise ValueError("aggregated counts overflow int32")
+        pointers[start + 1:stop + 1] = np.count_nonzero(block, axis=1)
+    np.cumsum(pointers, out=pointers)
+
+    data = np.empty(pointers[-1], dtype=np.int32)
+    columns = np.empty(pointers[-1], dtype=np.int32)
+    for start in range(0, len(selected), batch_rows):
+        stop = min(start + batch_rows, len(selected))
+        block = counts[selected[start:stop]]
+        rows, genes = block.nonzero()
+        lo, hi = pointers[start], pointers[stop]
+        columns[lo:hi] = genes
+        data[lo:hi] = block[rows, genes]
+    return csr_matrix((data, columns, pointers), shape=(len(selected), counts.shape[1]))
+
+
+def _aggregate(plate, shards, sample_meta, line_ids, lookup, batch_size, independent=False):
+    wells, well_ix, line_ix = _plate_layout(plate, sample_meta, line_ids)
+    counts = np.zeros((len(wells) * len(line_ids), int(lookup.max()) + 1), dtype=np.int64)
+    cells = np.zeros(len(counts), dtype=np.int64)
+    for shard_index, path in enumerate(shards, 1):
+        for batch in pq.ParquetFile(path).iter_batches(
+            batch_size=batch_size, columns=["genes", "expressions", "sample", "cell_line_id", "plate"],
+            use_threads=False,
+        ):
+            rows, genes, values, cell_rows = _entries(batch, plate, well_ix, line_ix, lookup, sample_meta)
+            np.add.at(cells, cell_rows, 1)
+            if independent:
+                reduced = coo_matrix((values, (rows, genes)), shape=counts.shape).tocsr()
+                for row in np.flatnonzero(np.diff(reduced.indptr)):
+                    lo, hi = reduced.indptr[row:row + 2]
+                    counts[row, reduced.indices[lo:hi]] += reduced.data[lo:hi]
+            else:
+                np.add.at(counts, (rows, genes), values)
+        if shard_index % 40 == 0:
+            print(json.dumps({"plate": plate, "shards_complete": shard_index, "shards": len(shards),
+                              "independent": independent}), flush=True)
+    selected = np.flatnonzero(cells)
+    return _pack_rows(counts, selected), cells[selected], selected, wells
 
 
 def _write_h5ad(destination, parts, obs, mapping):

@@ -30,7 +30,8 @@ def _coverage(gene_ids, namespace, axis):
             if gene in lookup}
 
 
-def _table(candidate, name, path, metadata, axis, namespace, sep="\t"):
+def build_count_table(candidate, name, path, metadata, axis, namespace, sep="\t"):
+    """Stage one immutable count table and return its measured common-axis coverage."""
     gene_ids = []
     destination = candidate / f"{name}.h5ad"
     with h5py.File(destination, "w") as handle:
@@ -169,7 +170,7 @@ def build_cardiac_sources(candidate, data, axis, pin_source, inputs):
     def register(name, item, table, design, metadata, namespace, sep="\t"):
         for path in (table, design):
             consumed[path.relative_to(data).as_posix()] = pin_source(data / item, path)
-        mappings[name] = _table(candidate, name, table, metadata(design),
+        mappings[name] = build_count_table(candidate, name, table, metadata(design),
                                 axis, namespace, sep)
 
     for name, series, technology in (
