@@ -1,0 +1,2298 @@
+{
+  "base_commit": "ebba12f",
+  "branch": "impl/tsg-view-02",
+  "environment": {
+    "anndata": "0.12.16",
+    "data_access": "offline; pinned integer corpus, G_5000 axis, accepted view-5k",
+    "h5py": "3.16.0",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13",
+    "resource_contract": "one heavy job at a time; OMP_NUM_THREADS=2; peak RSS recorded"
+  },
+  "gates": {
+    "a_merge_view_builds": {
+      "merge-tahoe_bulk": {
+        "conditions": 52777,
+        "elapsed_seconds": 98.026,
+        "evidence": {
+          "control_sources_rows": 52777,
+          "cross_plate_conditions": 8741,
+          "member_count_distribution": {
+            "1": 43036,
+            "16": 50,
+            "2": 7941,
+            "3": 1400,
+            "4": 350
+          },
+          "member_count_histogram": {
+            "1": 43036,
+            "10": 0,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 50,
+            "2": 7941,
+            "3": 1400,
+            "4": 350,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0
+          },
+          "member_ids_equal_accepted_treated_ids": true,
+          "member_rows": 65318,
+          "named_traps": {
+            "four_well_reference_compounds": 0,
+            "six_well_salt_pairs": 0,
+            "source_has_named_traps": false
+          },
+          "one_row_per_condition": true,
+          "pooled_control_retained_total_sum": 69367399227,
+          "pooled_treated_retained_total": {
+            "max": 24048508,
+            "median": 430970.0,
+            "min": 95,
+            "sum": 32402112533
+          },
+          "pooling_identity_probe": {
+            "checked_conditions": 256,
+            "checked_members": 581,
+            "differing_rows": 256,
+            "max_abs_difference": 2.471058662312308,
+            "rule": "sum the members' retained integer counts, then normalize the sum on its own selected-axis total; never a mean of normalized values"
+          },
+          "pooling_rule": "normalize-of-sum over the union of the members' matched_control_group vehicle counts (never a mean of normalized values)"
+        },
+        "files": {
+          "tahoe_bulk.control_sources.csv": {
+            "bytes": 5759449,
+            "sha256": "15e7cb8c09bfe83e309da96110d2a5e5ac6407244dd7892aff84b3589b3de336"
+          },
+          "tahoe_bulk.h5ad": {
+            "bytes": 2093287036,
+            "sha256": "10c2c39db087ad2b4cb3aad81acff8e127ce1f4ee6fcc791e647a7859ec349f8"
+          },
+          "tahoe_bulk.json": {
+            "bytes": 4133,
+            "sha256": "e31ca3ade39b5bd9bccb7bdaa0f228a33d6ef0a96975690742974d6499140f40"
+          },
+          "tahoe_bulk.members.csv": {
+            "bytes": 5649521,
+            "sha256": "ebff8550dc92d92e32018f9aa3e06bb60b74bb67241fc5396dbb9c3877379b9d"
+          },
+          "tahoe_bulk.profile_ids.csv": {
+            "bytes": 3484115,
+            "sha256": "6f6253ee34210bf03733505cbf6b814c4be8da45c6ae38c223a748726ef6c2cb"
+          }
+        },
+        "manifest_sha256": "e31ca3ade39b5bd9bccb7bdaa0f228a33d6ef0a96975690742974d6499140f40",
+        "mode": "payload",
+        "payload": {
+          "bytes": 2093287036,
+          "cols": 5000,
+          "dtype": "float32",
+          "file": "tahoe_bulk.h5ad",
+          "layers": [
+            "control",
+            "delta"
+          ],
+          "rows": 52777,
+          "sha256": "10c2c39db087ad2b4cb3aad81acff8e127ce1f4ee6fcc791e647a7859ec349f8"
+        },
+        "peak_rss_kib": 3745188,
+        "rows": 52777,
+        "source": "tahoe_bulk",
+        "treated": 52777,
+        "view": "merge",
+        "worktree_artifact": "/tmp/tsg02-scratch/output-views/merge/tahoe_bulk.h5ad"
+      },
+      "merge-tenv": {
+        "conditions": 1377,
+        "elapsed_seconds": 5.803,
+        "evidence": {
+          "control_sources_rows": 1377,
+          "cross_plate_conditions": 6,
+          "member_count_distribution": {
+            "3": 1320,
+            "4": 48,
+            "6": 9
+          },
+          "member_count_histogram": {
+            "1": 0,
+            "2": 0,
+            "3": 1320,
+            "4": 48,
+            "5": 0,
+            "6": 9
+          },
+          "member_ids_equal_accepted_treated_ids": true,
+          "member_rows": 4206,
+          "named_traps": {
+            "four_well_reference_compounds": 48,
+            "six_well_salt_pairs": 9,
+            "source_has_named_traps": true
+          },
+          "one_row_per_condition": true,
+          "pooled_control_retained_total_sum": 5270597961,
+          "pooled_treated_retained_total": {
+            "max": 3358942,
+            "median": 941620.0,
+            "min": 234095,
+            "sum": 1503657870
+          },
+          "pooling_identity_probe": {
+            "checked_conditions": 256,
+            "checked_members": 777,
+            "differing_rows": 256,
+            "max_abs_difference": 2.7230451280885313,
+            "rule": "sum the members' retained integer counts, then normalize the sum on its own selected-axis total; never a mean of normalized values"
+          },
+          "pooling_rule": "normalize-of-sum over the union of the members' matched_control_group vehicle counts (never a mean of normalized values)",
+          "special_conditions": {
+            "cross_plate_conditions": 6,
+            "four_well_reference_compounds": [
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Oxazepam"
+                ],
+                "control_groups": [
+                  "tenv::Plate2::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "ADIMAYPTOBDMTL-UHFFFAOYSA-N",
+                "drug_parent_smiles": "O=C1Nc2ccc(Cl)cc2C(c2ccccc2)=NC1O",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate2-E02",
+                  "temp_env::Plate2-H02",
+                  "temp_env::Plate2-K02",
+                  "temp_env::Plate2-N23"
+                ],
+                "plates": [
+                  "Plate2"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::ADIMAYPTOBDMTL-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Oxazepam"
+                ],
+                "control_groups": [
+                  "tenv::Plate2::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "ADIMAYPTOBDMTL-UHFFFAOYSA-N",
+                "drug_parent_smiles": "O=C1Nc2ccc(Cl)cc2C(c2ccccc2)=NC1O",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate2-D02",
+                  "temp_env::Plate2-G02",
+                  "temp_env::Plate2-J02",
+                  "temp_env::Plate2-M23"
+                ],
+                "plates": [
+                  "Plate2"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::ADIMAYPTOBDMTL-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Oxazepam"
+                ],
+                "control_groups": [
+                  "tenv::Plate2::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "ADIMAYPTOBDMTL-UHFFFAOYSA-N",
+                "drug_parent_smiles": "O=C1Nc2ccc(Cl)cc2C(c2ccccc2)=NC1O",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate2-C02",
+                  "temp_env::Plate2-F02",
+                  "temp_env::Plate2-I02",
+                  "temp_env::Plate2-L23"
+                ],
+                "plates": [
+                  "Plate2"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::ADIMAYPTOBDMTL-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "17alpha-Ethinylestradiol"
+                ],
+                "control_groups": [
+                  "tenv::Plate4::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "BFPYWIDHMRZLRN-SLHNCBLASA-N",
+                "drug_parent_smiles": "C#C[C@]1(O)CC[C@H]2[C@@H]3CCc4cc(O)ccc4[C@H]3CC[C@@]21C",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate4-E02",
+                  "temp_env::Plate4-H02",
+                  "temp_env::Plate4-K02",
+                  "temp_env::Plate4-N23"
+                ],
+                "plates": [
+                  "Plate4"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::BFPYWIDHMRZLRN-SLHNCBLASA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "17alpha-Ethinylestradiol"
+                ],
+                "control_groups": [
+                  "tenv::Plate4::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "BFPYWIDHMRZLRN-SLHNCBLASA-N",
+                "drug_parent_smiles": "C#C[C@]1(O)CC[C@H]2[C@@H]3CCc4cc(O)ccc4[C@H]3CC[C@@]21C",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate4-D02",
+                  "temp_env::Plate4-G02",
+                  "temp_env::Plate4-J02",
+                  "temp_env::Plate4-M23"
+                ],
+                "plates": [
+                  "Plate4"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::BFPYWIDHMRZLRN-SLHNCBLASA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "17alpha-Ethinylestradiol"
+                ],
+                "control_groups": [
+                  "tenv::Plate4::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "BFPYWIDHMRZLRN-SLHNCBLASA-N",
+                "drug_parent_smiles": "C#C[C@]1(O)CC[C@H]2[C@@H]3CCc4cc(O)ccc4[C@H]3CC[C@@]21C",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate4-C02",
+                  "temp_env::Plate4-F02",
+                  "temp_env::Plate4-I02",
+                  "temp_env::Plate4-L23"
+                ],
+                "plates": [
+                  "Plate4"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::BFPYWIDHMRZLRN-SLHNCBLASA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dieldrin"
+                ],
+                "control_groups": [
+                  "tenv::Plate15::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "DFBKLUNHFCTMDC-PICURKEMSA-N",
+                "drug_parent_smiles": "ClC1=C(Cl)[C@]2(Cl)[C@@H]3[C@@H]4C[C@@H]([C@H]5O[C@@H]45)[C@@H]3[C@@]1(Cl)C2(Cl)Cl",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate15-E02",
+                  "temp_env::Plate15-H02",
+                  "temp_env::Plate15-K02",
+                  "temp_env::Plate15-N23"
+                ],
+                "plates": [
+                  "Plate15"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::DFBKLUNHFCTMDC-PICURKEMSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dieldrin"
+                ],
+                "control_groups": [
+                  "tenv::Plate15::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "DFBKLUNHFCTMDC-PICURKEMSA-N",
+                "drug_parent_smiles": "ClC1=C(Cl)[C@]2(Cl)[C@@H]3[C@@H]4C[C@@H]([C@H]5O[C@@H]45)[C@@H]3[C@@]1(Cl)C2(Cl)Cl",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate15-D02",
+                  "temp_env::Plate15-G02",
+                  "temp_env::Plate15-J02",
+                  "temp_env::Plate15-M23"
+                ],
+                "plates": [
+                  "Plate15"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::DFBKLUNHFCTMDC-PICURKEMSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dieldrin"
+                ],
+                "control_groups": [
+                  "tenv::Plate15::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "DFBKLUNHFCTMDC-PICURKEMSA-N",
+                "drug_parent_smiles": "ClC1=C(Cl)[C@]2(Cl)[C@@H]3[C@@H]4C[C@@H]([C@H]5O[C@@H]45)[C@@H]3[C@@]1(Cl)C2(Cl)Cl",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate15-C02",
+                  "temp_env::Plate15-F02",
+                  "temp_env::Plate15-I02",
+                  "temp_env::Plate15-L23"
+                ],
+                "plates": [
+                  "Plate15"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::DFBKLUNHFCTMDC-PICURKEMSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "4,4'-Oxydianiline"
+                ],
+                "control_groups": [
+                  "tenv::Plate11::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "HLBLWEWZXPIGSM-UHFFFAOYSA-N",
+                "drug_parent_smiles": "Nc1ccc(Oc2ccc(N)cc2)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate11-E02",
+                  "temp_env::Plate11-H02",
+                  "temp_env::Plate11-K02",
+                  "temp_env::Plate11-N23"
+                ],
+                "plates": [
+                  "Plate11"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::HLBLWEWZXPIGSM-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "4,4'-Oxydianiline"
+                ],
+                "control_groups": [
+                  "tenv::Plate11::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "HLBLWEWZXPIGSM-UHFFFAOYSA-N",
+                "drug_parent_smiles": "Nc1ccc(Oc2ccc(N)cc2)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate11-D02",
+                  "temp_env::Plate11-G02",
+                  "temp_env::Plate11-J02",
+                  "temp_env::Plate11-M23"
+                ],
+                "plates": [
+                  "Plate11"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::HLBLWEWZXPIGSM-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "4,4'-Oxydianiline"
+                ],
+                "control_groups": [
+                  "tenv::Plate11::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "HLBLWEWZXPIGSM-UHFFFAOYSA-N",
+                "drug_parent_smiles": "Nc1ccc(Oc2ccc(N)cc2)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate11-C02",
+                  "temp_env::Plate11-F02",
+                  "temp_env::Plate11-I02",
+                  "temp_env::Plate11-L23"
+                ],
+                "plates": [
+                  "Plate11"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::HLBLWEWZXPIGSM-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dofetilide"
+                ],
+                "control_groups": [
+                  "tenv::Plate16::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "IXTMWRCNAAVVAI-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CN(CCOc1ccc(NS(C)(=O)=O)cc1)CCc1ccc(NS(C)(=O)=O)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate16-E02",
+                  "temp_env::Plate16-H02",
+                  "temp_env::Plate16-K02",
+                  "temp_env::Plate16-N23"
+                ],
+                "plates": [
+                  "Plate16"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::IXTMWRCNAAVVAI-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dofetilide"
+                ],
+                "control_groups": [
+                  "tenv::Plate16::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "IXTMWRCNAAVVAI-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CN(CCOc1ccc(NS(C)(=O)=O)cc1)CCc1ccc(NS(C)(=O)=O)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate16-D02",
+                  "temp_env::Plate16-G02",
+                  "temp_env::Plate16-J02",
+                  "temp_env::Plate16-M23"
+                ],
+                "plates": [
+                  "Plate16"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::IXTMWRCNAAVVAI-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dofetilide"
+                ],
+                "control_groups": [
+                  "tenv::Plate16::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "IXTMWRCNAAVVAI-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CN(CCOc1ccc(NS(C)(=O)=O)cc1)CCc1ccc(NS(C)(=O)=O)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate16-C02",
+                  "temp_env::Plate16-F02",
+                  "temp_env::Plate16-I02",
+                  "temp_env::Plate16-L23"
+                ],
+                "plates": [
+                  "Plate16"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::IXTMWRCNAAVVAI-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dimethoate"
+                ],
+                "control_groups": [
+                  "tenv::Plate7::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "MCWXGJITAZMZEV-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CNC(=O)CSP(=S)(OC)OC",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate7-E02",
+                  "temp_env::Plate7-H02",
+                  "temp_env::Plate7-K02",
+                  "temp_env::Plate7-N23"
+                ],
+                "plates": [
+                  "Plate7"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::MCWXGJITAZMZEV-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dimethoate"
+                ],
+                "control_groups": [
+                  "tenv::Plate7::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "MCWXGJITAZMZEV-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CNC(=O)CSP(=S)(OC)OC",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate7-D02",
+                  "temp_env::Plate7-G02",
+                  "temp_env::Plate7-J02",
+                  "temp_env::Plate7-M23"
+                ],
+                "plates": [
+                  "Plate7"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::MCWXGJITAZMZEV-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dimethoate"
+                ],
+                "control_groups": [
+                  "tenv::Plate7::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "MCWXGJITAZMZEV-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CNC(=O)CSP(=S)(OC)OC",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate7-C02",
+                  "temp_env::Plate7-F02",
+                  "temp_env::Plate7-I02",
+                  "temp_env::Plate7-L23"
+                ],
+                "plates": [
+                  "Plate7"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::MCWXGJITAZMZEV-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dapsone"
+                ],
+                "control_groups": [
+                  "tenv::Plate6::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "MQJKPEGWNLWLTK-UHFFFAOYSA-N",
+                "drug_parent_smiles": "Nc1ccc(S(=O)(=O)c2ccc(N)cc2)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate6-E02",
+                  "temp_env::Plate6-H02",
+                  "temp_env::Plate6-K02",
+                  "temp_env::Plate6-N23"
+                ],
+                "plates": [
+                  "Plate6"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::MQJKPEGWNLWLTK-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dapsone"
+                ],
+                "control_groups": [
+                  "tenv::Plate6::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "MQJKPEGWNLWLTK-UHFFFAOYSA-N",
+                "drug_parent_smiles": "Nc1ccc(S(=O)(=O)c2ccc(N)cc2)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate6-D02",
+                  "temp_env::Plate6-G02",
+                  "temp_env::Plate6-J02",
+                  "temp_env::Plate6-M23"
+                ],
+                "plates": [
+                  "Plate6"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::MQJKPEGWNLWLTK-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Dapsone"
+                ],
+                "control_groups": [
+                  "tenv::Plate6::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "MQJKPEGWNLWLTK-UHFFFAOYSA-N",
+                "drug_parent_smiles": "Nc1ccc(S(=O)(=O)c2ccc(N)cc2)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate6-C02",
+                  "temp_env::Plate6-F02",
+                  "temp_env::Plate6-I02",
+                  "temp_env::Plate6-L23"
+                ],
+                "plates": [
+                  "Plate6"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::MQJKPEGWNLWLTK-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Spiroxamine"
+                ],
+                "control_groups": [
+                  "tenv::Plate5::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "PUYXTUJWRLOUCW-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCCN(CC)CC1COC2(CCC(C(C)(C)C)CC2)O1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate5-E02",
+                  "temp_env::Plate5-H02",
+                  "temp_env::Plate5-K02",
+                  "temp_env::Plate5-N23"
+                ],
+                "plates": [
+                  "Plate5"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::PUYXTUJWRLOUCW-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Spiroxamine"
+                ],
+                "control_groups": [
+                  "tenv::Plate5::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "PUYXTUJWRLOUCW-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCCN(CC)CC1COC2(CCC(C(C)(C)C)CC2)O1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate5-D02",
+                  "temp_env::Plate5-G02",
+                  "temp_env::Plate5-J02",
+                  "temp_env::Plate5-M23"
+                ],
+                "plates": [
+                  "Plate5"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::PUYXTUJWRLOUCW-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Spiroxamine"
+                ],
+                "control_groups": [
+                  "tenv::Plate5::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "PUYXTUJWRLOUCW-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCCN(CC)CC1COC2(CCC(C(C)(C)C)CC2)O1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate5-C02",
+                  "temp_env::Plate5-F02",
+                  "temp_env::Plate5-I02",
+                  "temp_env::Plate5-L23"
+                ],
+                "plates": [
+                  "Plate5"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::PUYXTUJWRLOUCW-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Isoniazid"
+                ],
+                "control_groups": [
+                  "tenv::Plate1::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "QRXWMOHMRWLFEY-UHFFFAOYSA-N",
+                "drug_parent_smiles": "NNC(=O)c1ccncc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate1-E02",
+                  "temp_env::Plate1-H02",
+                  "temp_env::Plate1-K02",
+                  "temp_env::Plate1-N23"
+                ],
+                "plates": [
+                  "Plate1"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::QRXWMOHMRWLFEY-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Isoniazid"
+                ],
+                "control_groups": [
+                  "tenv::Plate1::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "QRXWMOHMRWLFEY-UHFFFAOYSA-N",
+                "drug_parent_smiles": "NNC(=O)c1ccncc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate1-D02",
+                  "temp_env::Plate1-G02",
+                  "temp_env::Plate1-J02",
+                  "temp_env::Plate1-M23"
+                ],
+                "plates": [
+                  "Plate1"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::QRXWMOHMRWLFEY-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Isoniazid"
+                ],
+                "control_groups": [
+                  "tenv::Plate1::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "QRXWMOHMRWLFEY-UHFFFAOYSA-N",
+                "drug_parent_smiles": "NNC(=O)c1ccncc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate1-C02",
+                  "temp_env::Plate1-F02",
+                  "temp_env::Plate1-I02",
+                  "temp_env::Plate1-L23"
+                ],
+                "plates": [
+                  "Plate1"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::QRXWMOHMRWLFEY-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Octabenzone"
+                ],
+                "control_groups": [
+                  "tenv::Plate14::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "QUAMTGJKVDWJEQ-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCCCCCCCOc1ccc(C(=O)c2ccccc2)c(O)c1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate14-E02",
+                  "temp_env::Plate14-H02",
+                  "temp_env::Plate14-K02",
+                  "temp_env::Plate14-N23"
+                ],
+                "plates": [
+                  "Plate14"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::QUAMTGJKVDWJEQ-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Octabenzone"
+                ],
+                "control_groups": [
+                  "tenv::Plate14::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "QUAMTGJKVDWJEQ-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCCCCCCCOc1ccc(C(=O)c2ccccc2)c(O)c1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate14-D02",
+                  "temp_env::Plate14-G02",
+                  "temp_env::Plate14-J02",
+                  "temp_env::Plate14-M23"
+                ],
+                "plates": [
+                  "Plate14"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::QUAMTGJKVDWJEQ-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Octabenzone"
+                ],
+                "control_groups": [
+                  "tenv::Plate14::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "QUAMTGJKVDWJEQ-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCCCCCCCOc1ccc(C(=O)c2ccccc2)c(O)c1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate14-C02",
+                  "temp_env::Plate14-F02",
+                  "temp_env::Plate14-I02",
+                  "temp_env::Plate14-L23"
+                ],
+                "plates": [
+                  "Plate14"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::QUAMTGJKVDWJEQ-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Nicotine"
+                ],
+                "control_groups": [
+                  "tenv::Plate8::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "SNICXCGAKADSCV-JTQLQIEISA-N",
+                "drug_parent_smiles": "CN1CCC[C@H]1c1cccnc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate8-E02",
+                  "temp_env::Plate8-H02",
+                  "temp_env::Plate8-K02",
+                  "temp_env::Plate8-N23"
+                ],
+                "plates": [
+                  "Plate8"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::SNICXCGAKADSCV-JTQLQIEISA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Nicotine"
+                ],
+                "control_groups": [
+                  "tenv::Plate8::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "SNICXCGAKADSCV-JTQLQIEISA-N",
+                "drug_parent_smiles": "CN1CCC[C@H]1c1cccnc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate8-D02",
+                  "temp_env::Plate8-G02",
+                  "temp_env::Plate8-J02",
+                  "temp_env::Plate8-M23"
+                ],
+                "plates": [
+                  "Plate8"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::SNICXCGAKADSCV-JTQLQIEISA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Nicotine"
+                ],
+                "control_groups": [
+                  "tenv::Plate8::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "SNICXCGAKADSCV-JTQLQIEISA-N",
+                "drug_parent_smiles": "CN1CCC[C@H]1c1cccnc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate8-C02",
+                  "temp_env::Plate8-F02",
+                  "temp_env::Plate8-I02",
+                  "temp_env::Plate8-L23"
+                ],
+                "plates": [
+                  "Plate8"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::SNICXCGAKADSCV-JTQLQIEISA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Clofentezine"
+                ],
+                "control_groups": [
+                  "tenv::Plate3::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "UXADOQPNKNTIHB-UHFFFAOYSA-N",
+                "drug_parent_smiles": "Clc1ccccc1-c1nnc(-c2ccccc2Cl)nn1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate3-E02",
+                  "temp_env::Plate3-H02",
+                  "temp_env::Plate3-K02",
+                  "temp_env::Plate3-N23"
+                ],
+                "plates": [
+                  "Plate3"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::UXADOQPNKNTIHB-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Clofentezine"
+                ],
+                "control_groups": [
+                  "tenv::Plate3::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "UXADOQPNKNTIHB-UHFFFAOYSA-N",
+                "drug_parent_smiles": "Clc1ccccc1-c1nnc(-c2ccccc2Cl)nn1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate3-D02",
+                  "temp_env::Plate3-G02",
+                  "temp_env::Plate3-J02",
+                  "temp_env::Plate3-M23"
+                ],
+                "plates": [
+                  "Plate3"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::UXADOQPNKNTIHB-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Clofentezine"
+                ],
+                "control_groups": [
+                  "tenv::Plate3::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "UXADOQPNKNTIHB-UHFFFAOYSA-N",
+                "drug_parent_smiles": "Clc1ccccc1-c1nnc(-c2ccccc2Cl)nn1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate3-C02",
+                  "temp_env::Plate3-F02",
+                  "temp_env::Plate3-I02",
+                  "temp_env::Plate3-L23"
+                ],
+                "plates": [
+                  "Plate3"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::UXADOQPNKNTIHB-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Resmethrin"
+                ],
+                "control_groups": [
+                  "tenv::Plate12::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "VEMKTZHHVJILDY-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CC(C)=CC1C(C(=O)OCc2coc(Cc3ccccc3)c2)C1(C)C",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate12-E02",
+                  "temp_env::Plate12-H02",
+                  "temp_env::Plate12-K02",
+                  "temp_env::Plate12-N23"
+                ],
+                "plates": [
+                  "Plate12"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::VEMKTZHHVJILDY-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Resmethrin"
+                ],
+                "control_groups": [
+                  "tenv::Plate12::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "VEMKTZHHVJILDY-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CC(C)=CC1C(C(=O)OCc2coc(Cc3ccccc3)c2)C1(C)C",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate12-D02",
+                  "temp_env::Plate12-G02",
+                  "temp_env::Plate12-J02",
+                  "temp_env::Plate12-M23"
+                ],
+                "plates": [
+                  "Plate12"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::VEMKTZHHVJILDY-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Resmethrin"
+                ],
+                "control_groups": [
+                  "tenv::Plate12::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "VEMKTZHHVJILDY-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CC(C)=CC1C(C(=O)OCc2coc(Cc3ccccc3)c2)C1(C)C",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate12-C02",
+                  "temp_env::Plate12-F02",
+                  "temp_env::Plate12-I02",
+                  "temp_env::Plate12-L23"
+                ],
+                "plates": [
+                  "Plate12"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::VEMKTZHHVJILDY-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Asulam"
+                ],
+                "control_groups": [
+                  "tenv::Plate10::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "VGPYEHKOIGNJKV-UHFFFAOYSA-N",
+                "drug_parent_smiles": "COC(=O)NS(=O)(=O)c1ccc(N)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate10-E02",
+                  "temp_env::Plate10-H02",
+                  "temp_env::Plate10-K02",
+                  "temp_env::Plate10-N23"
+                ],
+                "plates": [
+                  "Plate10"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::VGPYEHKOIGNJKV-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Asulam"
+                ],
+                "control_groups": [
+                  "tenv::Plate10::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "VGPYEHKOIGNJKV-UHFFFAOYSA-N",
+                "drug_parent_smiles": "COC(=O)NS(=O)(=O)c1ccc(N)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate10-D02",
+                  "temp_env::Plate10-G02",
+                  "temp_env::Plate10-J02",
+                  "temp_env::Plate10-M23"
+                ],
+                "plates": [
+                  "Plate10"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::VGPYEHKOIGNJKV-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Asulam"
+                ],
+                "control_groups": [
+                  "tenv::Plate10::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "VGPYEHKOIGNJKV-UHFFFAOYSA-N",
+                "drug_parent_smiles": "COC(=O)NS(=O)(=O)c1ccc(N)cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate10-C02",
+                  "temp_env::Plate10-F02",
+                  "temp_env::Plate10-I02",
+                  "temp_env::Plate10-L23"
+                ],
+                "plates": [
+                  "Plate10"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::VGPYEHKOIGNJKV-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Metolachlor"
+                ],
+                "control_groups": [
+                  "tenv::Plate13::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "WVQBLGZPHOPPFO-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCc1cccc(C)c1N(C(=O)CCl)C(C)COC",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate13-E02",
+                  "temp_env::Plate13-H02",
+                  "temp_env::Plate13-K02",
+                  "temp_env::Plate13-N23"
+                ],
+                "plates": [
+                  "Plate13"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::WVQBLGZPHOPPFO-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Metolachlor"
+                ],
+                "control_groups": [
+                  "tenv::Plate13::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "WVQBLGZPHOPPFO-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCc1cccc(C)c1N(C(=O)CCl)C(C)COC",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate13-D02",
+                  "temp_env::Plate13-G02",
+                  "temp_env::Plate13-J02",
+                  "temp_env::Plate13-M23"
+                ],
+                "plates": [
+                  "Plate13"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::WVQBLGZPHOPPFO-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Metolachlor"
+                ],
+                "control_groups": [
+                  "tenv::Plate13::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "WVQBLGZPHOPPFO-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCc1cccc(C)c1N(C(=O)CCl)C(C)COC",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate13-C02",
+                  "temp_env::Plate13-F02",
+                  "temp_env::Plate13-I02",
+                  "temp_env::Plate13-L23"
+                ],
+                "plates": [
+                  "Plate13"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::WVQBLGZPHOPPFO-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Paraoxon"
+                ],
+                "control_groups": [
+                  "tenv::Plate9::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "WYMSBXTXOHUIGT-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCOP(=O)(OCC)Oc1ccc([N+](=O)[O-])cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate9-E02",
+                  "temp_env::Plate9-H02",
+                  "temp_env::Plate9-K02",
+                  "temp_env::Plate9-N23"
+                ],
+                "plates": [
+                  "Plate9"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::WYMSBXTXOHUIGT-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Paraoxon"
+                ],
+                "control_groups": [
+                  "tenv::Plate9::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "WYMSBXTXOHUIGT-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCOP(=O)(OCC)Oc1ccc([N+](=O)[O-])cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate9-D02",
+                  "temp_env::Plate9-G02",
+                  "temp_env::Plate9-J02",
+                  "temp_env::Plate9-M23"
+                ],
+                "plates": [
+                  "Plate9"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::WYMSBXTXOHUIGT-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Paraoxon"
+                ],
+                "control_groups": [
+                  "tenv::Plate9::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "WYMSBXTXOHUIGT-UHFFFAOYSA-N",
+                "drug_parent_smiles": "CCOP(=O)(OCC)Oc1ccc([N+](=O)[O-])cc1",
+                "member_count": 4,
+                "member_profile_ids": [
+                  "temp_env::Plate9-C02",
+                  "temp_env::Plate9-F02",
+                  "temp_env::Plate9-I02",
+                  "temp_env::Plate9-L23"
+                ],
+                "plates": [
+                  "Plate9"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::WYMSBXTXOHUIGT-UHFFFAOYSA-N::10"
+              }
+            ],
+            "member_count_histogram": {
+              "1": 0,
+              "2": 0,
+              "3": 1320,
+              "4": 48,
+              "5": 0,
+              "6": 9
+            },
+            "six_well_salt_pairs": [
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Tamoxifen",
+                  "Tamoxifen citrate"
+                ],
+                "control_groups": [
+                  "tenv::Plate8::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "NKANXQFJJICGDU-QPLCGJKRSA-N",
+                "drug_parent_smiles": "CC/C(=C(\\c1ccccc1)c1ccc(OCCN(C)C)cc1)c1ccccc1",
+                "member_count": 6,
+                "member_profile_ids": [
+                  "temp_env::Plate8-E08",
+                  "temp_env::Plate8-E23",
+                  "temp_env::Plate8-H08",
+                  "temp_env::Plate8-H23",
+                  "temp_env::Plate8-K08",
+                  "temp_env::Plate8-K23"
+                ],
+                "plates": [
+                  "Plate8"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::NKANXQFJJICGDU-QPLCGJKRSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Tamoxifen",
+                  "Tamoxifen citrate"
+                ],
+                "control_groups": [
+                  "tenv::Plate8::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "NKANXQFJJICGDU-QPLCGJKRSA-N",
+                "drug_parent_smiles": "CC/C(=C(\\c1ccccc1)c1ccc(OCCN(C)C)cc1)c1ccccc1",
+                "member_count": 6,
+                "member_profile_ids": [
+                  "temp_env::Plate8-D08",
+                  "temp_env::Plate8-D23",
+                  "temp_env::Plate8-G08",
+                  "temp_env::Plate8-G23",
+                  "temp_env::Plate8-J08",
+                  "temp_env::Plate8-J23"
+                ],
+                "plates": [
+                  "Plate8"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::NKANXQFJJICGDU-QPLCGJKRSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Tamoxifen",
+                  "Tamoxifen citrate"
+                ],
+                "control_groups": [
+                  "tenv::Plate8::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "NKANXQFJJICGDU-QPLCGJKRSA-N",
+                "drug_parent_smiles": "CC/C(=C(\\c1ccccc1)c1ccc(OCCN(C)C)cc1)c1ccccc1",
+                "member_count": 6,
+                "member_profile_ids": [
+                  "temp_env::Plate8-C08",
+                  "temp_env::Plate8-C23",
+                  "temp_env::Plate8-F08",
+                  "temp_env::Plate8-F23",
+                  "temp_env::Plate8-I08",
+                  "temp_env::Plate8-I23"
+                ],
+                "plates": [
+                  "Plate8"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::NKANXQFJJICGDU-QPLCGJKRSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Ammonium perfluorooctanoate",
+                  "Perfluorooctanoic acid"
+                ],
+                "control_groups": [
+                  "tenv::Plate5::DMSO",
+                  "tenv::Plate9::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "SNGREZUHAYWORS-UHFFFAOYSA-N",
+                "drug_parent_smiles": "O=C(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+                "member_count": 6,
+                "member_profile_ids": [
+                  "temp_env::Plate5-E03",
+                  "temp_env::Plate5-H03",
+                  "temp_env::Plate5-K03",
+                  "temp_env::Plate9-E06",
+                  "temp_env::Plate9-H06",
+                  "temp_env::Plate9-K06"
+                ],
+                "plates": [
+                  "Plate5",
+                  "Plate9"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::SNGREZUHAYWORS-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Ammonium perfluorooctanoate",
+                  "Perfluorooctanoic acid"
+                ],
+                "control_groups": [
+                  "tenv::Plate5::DMSO",
+                  "tenv::Plate9::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "SNGREZUHAYWORS-UHFFFAOYSA-N",
+                "drug_parent_smiles": "O=C(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+                "member_count": 6,
+                "member_profile_ids": [
+                  "temp_env::Plate5-D03",
+                  "temp_env::Plate5-G03",
+                  "temp_env::Plate5-J03",
+                  "temp_env::Plate9-D06",
+                  "temp_env::Plate9-G06",
+                  "temp_env::Plate9-J06"
+                ],
+                "plates": [
+                  "Plate5",
+                  "Plate9"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::SNGREZUHAYWORS-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Ammonium perfluorooctanoate",
+                  "Perfluorooctanoic acid"
+                ],
+                "control_groups": [
+                  "tenv::Plate5::DMSO",
+                  "tenv::Plate9::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "SNGREZUHAYWORS-UHFFFAOYSA-N",
+                "drug_parent_smiles": "O=C(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+                "member_count": 6,
+                "member_profile_ids": [
+                  "temp_env::Plate5-C03",
+                  "temp_env::Plate5-F03",
+                  "temp_env::Plate5-I03",
+                  "temp_env::Plate9-C06",
+                  "temp_env::Plate9-F06",
+                  "temp_env::Plate9-I06"
+                ],
+                "plates": [
+                  "Plate5",
+                  "Plate9"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::SNGREZUHAYWORS-UHFFFAOYSA-N::10"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Perfluorooctanesulfonic acid",
+                  "Potassium perfluorooctanesulfonate"
+                ],
+                "control_groups": [
+                  "tenv::Plate12::DMSO",
+                  "tenv::Plate8::DMSO"
+                ],
+                "dose_um": 0.2,
+                "drug_parent_inchikey": "YFSUTJLHUFNCNZ-UHFFFAOYSA-N",
+                "drug_parent_smiles": "O=S(=O)(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+                "member_count": 6,
+                "member_profile_ids": [
+                  "temp_env::Plate12-E17",
+                  "temp_env::Plate12-H17",
+                  "temp_env::Plate12-K17",
+                  "temp_env::Plate8-E18",
+                  "temp_env::Plate8-H18",
+                  "temp_env::Plate8-K18"
+                ],
+                "plates": [
+                  "Plate12",
+                  "Plate8"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::YFSUTJLHUFNCNZ-UHFFFAOYSA-N::0.2"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Perfluorooctanesulfonic acid",
+                  "Potassium perfluorooctanesulfonate"
+                ],
+                "control_groups": [
+                  "tenv::Plate12::DMSO",
+                  "tenv::Plate8::DMSO"
+                ],
+                "dose_um": 1.0,
+                "drug_parent_inchikey": "YFSUTJLHUFNCNZ-UHFFFAOYSA-N",
+                "drug_parent_smiles": "O=S(=O)(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+                "member_count": 6,
+                "member_profile_ids": [
+                  "temp_env::Plate12-D17",
+                  "temp_env::Plate12-G17",
+                  "temp_env::Plate12-J17",
+                  "temp_env::Plate8-D18",
+                  "temp_env::Plate8-G18",
+                  "temp_env::Plate8-J18"
+                ],
+                "plates": [
+                  "Plate12",
+                  "Plate8"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::YFSUTJLHUFNCNZ-UHFFFAOYSA-N::1"
+              },
+              {
+                "cell_line": "hiPSC-CM",
+                "compound_names": [
+                  "Perfluorooctanesulfonic acid",
+                  "Potassium perfluorooctanesulfonate"
+                ],
+                "control_groups": [
+                  "tenv::Plate12::DMSO",
+                  "tenv::Plate8::DMSO"
+                ],
+                "dose_um": 10.0,
+                "drug_parent_inchikey": "YFSUTJLHUFNCNZ-UHFFFAOYSA-N",
+                "drug_parent_smiles": "O=S(=O)(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+                "member_count": 6,
+                "member_profile_ids": [
+                  "temp_env::Plate12-C17",
+                  "temp_env::Plate12-F17",
+                  "temp_env::Plate12-I17",
+                  "temp_env::Plate8-C18",
+                  "temp_env::Plate8-F18",
+                  "temp_env::Plate8-I18"
+                ],
+                "plates": [
+                  "Plate12",
+                  "Plate8"
+                ],
+                "profile_id": "merge::tenv::hiPSC-CM::YFSUTJLHUFNCNZ-UHFFFAOYSA-N::10"
+              }
+            ],
+            "source_has_named_traps": true
+          }
+        },
+        "files": {
+          "tenv.control_sources.csv": {
+            "bytes": 128842,
+            "sha256": "3f04c2d122d2958931254af7a6d41422dbf2d7096bedcce08b834bb556b444aa"
+          },
+          "tenv.h5ad": {
+            "bytes": 53851602,
+            "sha256": "27f39cc720f049fab2cc4e845eb50c4010947a3efa775b79a9a37c996a6a6474"
+          },
+          "tenv.json": {
+            "bytes": 44022,
+            "sha256": "8bb9bfb781ada22237b5a16a3dfc88e4c831876f27fb50492d5c00d3666df257"
+          },
+          "tenv.members.csv": {
+            "bytes": 321524,
+            "sha256": "9bcc191e0cdf8b1017eee55cf42ca4ae3e8e1e7f4dc4ddadc305b84f76191dfb"
+          },
+          "tenv.profile_ids.csv": {
+            "bytes": 81525,
+            "sha256": "d5f359d69e1fae41b91a931567d3d642cf29bd3f1d0d1b7ce957140a3df26a21"
+          }
+        },
+        "manifest_sha256": "8bb9bfb781ada22237b5a16a3dfc88e4c831876f27fb50492d5c00d3666df257",
+        "mode": "payload",
+        "payload": {
+          "bytes": 53851602,
+          "cols": 5000,
+          "dtype": "float32",
+          "file": "tenv.h5ad",
+          "layers": [
+            "control",
+            "delta"
+          ],
+          "rows": 1377,
+          "sha256": "27f39cc720f049fab2cc4e845eb50c4010947a3efa775b79a9a37c996a6a6474"
+        },
+        "peak_rss_kib": 438820,
+        "rows": 1377,
+        "source": "tenv",
+        "treated": 1377,
+        "view": "merge",
+        "worktree_artifact": "/tmp/tsg02-scratch/output-views/merge/tenv.h5ad"
+      }
+    },
+    "b_freezes": {
+      "merge-tahoe_bulk": {
+        "condition_members_in_one_partition": true,
+        "condition_partition_map_equal_to_sealed": true,
+        "conditions": 52777,
+        "delta_kind": "expression_minus_control",
+        "freeze_assertions": {
+          "blocks": {
+            "cold-drug-dose/fold-0": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "excluded-held-dose": 11700,
+                "excluded-held-parent": 11783,
+                "test": 5898,
+                "train": 20996,
+                "validation": 2400
+              },
+              "rows": 52777
+            },
+            "cold-drug-dose/fold-1": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "excluded-held-dose": 11729,
+                "excluded-held-parent": 11700,
+                "test": 5850,
+                "train": 21100,
+                "validation": 2398
+              },
+              "rows": 52777
+            },
+            "cold-drug-dose/fold-2": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "excluded-held-dose": 11750,
+                "excluded-held-parent": 11696,
+                "test": 5850,
+                "train": 21081,
+                "validation": 2400
+              },
+              "rows": 52777
+            },
+            "cold-drug/fold-0": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "test": 17681,
+                "train": 31496,
+                "validation": 3600
+              },
+              "rows": 52777
+            },
+            "cold-drug/fold-1": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "test": 17550,
+                "train": 31629,
+                "validation": 3598
+              },
+              "rows": 52777
+            },
+            "cold-drug/fold-2": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "test": 17546,
+                "train": 31631,
+                "validation": 3600
+              },
+              "rows": 52777
+            }
+          },
+          "condition_members_in_one_partition": true,
+          "condition_partitions_max": 1,
+          "condition_partitions_min": 1,
+          "conditions": 52777,
+          "control_rules": [
+            "pooled-sum"
+          ],
+          "control_sha256": "3f9eb4e39f8c5977535bc3a7ac1e530911c4ac3889afd2f3966b2a04077b1bcd",
+          "control_source_rows": 52777,
+          "delta_kind": "expression_minus_control",
+          "expression_sha256": "636bd0761e04354c4be93761fa533bb348067431630c45403e64c4e7da8d8482",
+          "indicator_all_both": true,
+          "merged_keys": 6336,
+          "one_partition_per_condition_key": true,
+          "parents": 352,
+          "partition_mismatches": 0,
+          "rows": 52777,
+          "sealed_map_keys": 6336,
+          "sealed_parent_dose_covered": true,
+          "splits_rows": 316662,
+          "splits_sha256": "c8193e9db9e3265e2594c67364b7ba0f73e1303f20a4f58e45b0f662a324591a"
+        },
+        "freeze_dir": "execution/freezes/merge (worktree-local ignored payload)",
+        "manifest_sha256": "741b79ae16798aba83a2e15024e1ea2079dc726d054c880f3fa40282e8b0d29a",
+        "outputs": {
+          "all_obs.csv": "03ff0ab82e9451fd6d28879c81333d86b44c96f10ee11eb5b1fdb22238cfc36b",
+          "config.json": "c8d0bed3d11dae9c8068fb00fd631992486e9c26cd7eb56e523353d70eb8c6da",
+          "control.npy": "3f9eb4e39f8c5977535bc3a7ac1e530911c4ac3889afd2f3966b2a04077b1bcd",
+          "control_sources.csv": "15e7cb8c09bfe83e309da96110d2a5e5ac6407244dd7892aff84b3589b3de336",
+          "expression.npy": "636bd0761e04354c4be93761fa533bb348067431630c45403e64c4e7da8d8482",
+          "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "matched_controls.json": "b3409c461a34be599a754fe8b748cbeecd21a3a7604956e1ca08c792228cc4cd",
+          "morgan.npy": "f61b3979ed6cb234b7af6a19bf48008cb873029c63dcdba2359e36278be4bf3e",
+          "parents.csv": "f5164f16e5c5b719b35b00812003946c91d65829051a51dc8c830c5dac8de139",
+          "population.csv": "9a062617a892af5a6f6edbd6eded67f3a8d88df64e31bbaad88dab47dc87371c",
+          "splits.csv": "c8193e9db9e3265e2594c67364b7ba0f73e1303f20a4f58e45b0f662a324591a"
+        },
+        "replay_byte_identical": true,
+        "replay_manifest_sha256": "741b79ae16798aba83a2e15024e1ea2079dc726d054c880f3fa40282e8b0d29a",
+        "rows": 52777,
+        "sealed_keys_covered": 6336,
+        "source": "tahoe_bulk",
+        "splits_byte_equal_to_sealed": false,
+        "splits_sha256": "c8193e9db9e3265e2594c67364b7ba0f73e1303f20a4f58e45b0f662a324591a",
+        "verified": true,
+        "view": "merge",
+        "worktree_artifact": "/tmp/tsg02-scratch/freezes/merge/tahoe_bulk"
+      },
+      "merge-tenv": {
+        "condition_members_in_one_partition": true,
+        "condition_partition_map_equal_to_sealed": true,
+        "conditions": 1377,
+        "delta_kind": "expression_minus_control",
+        "freeze_assertions": {
+          "blocks": {
+            "cold-drug-dose/fold-0": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "excluded-held-dose": 306,
+                "excluded-held-parent": 306,
+                "test": 153,
+                "train": 550,
+                "validation": 62
+              },
+              "rows": 1377
+            },
+            "cold-drug-dose/fold-1": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "excluded-held-dose": 306,
+                "excluded-held-parent": 306,
+                "test": 153,
+                "train": 550,
+                "validation": 62
+              },
+              "rows": 1377
+            },
+            "cold-drug-dose/fold-2": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "excluded-held-dose": 306,
+                "excluded-held-parent": 306,
+                "test": 153,
+                "train": 550,
+                "validation": 62
+              },
+              "rows": 1377
+            },
+            "cold-drug/fold-0": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "test": 459,
+                "train": 825,
+                "validation": 93
+              },
+              "rows": 1377
+            },
+            "cold-drug/fold-1": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "test": 459,
+                "train": 825,
+                "validation": 93
+              },
+              "rows": 1377
+            },
+            "cold-drug/fold-2": {
+              "covered": true,
+              "disjoint": true,
+              "partitions": {
+                "test": 459,
+                "train": 825,
+                "validation": 93
+              },
+              "rows": 1377
+            }
+          },
+          "condition_members_in_one_partition": true,
+          "condition_partitions_max": 1,
+          "condition_partitions_min": 1,
+          "conditions": 1377,
+          "control_rules": [
+            "pooled-sum"
+          ],
+          "control_sha256": "92c4b09334084b8a004144931806e608a25e56346eae09e6748b8c583a7e15c5",
+          "control_source_rows": 1377,
+          "delta_kind": "expression_minus_control",
+          "expression_sha256": "d7a38957e40b63e2ef40267b188b0c4b6739bac1e6ec23bd102aca40ec361acc",
+          "indicator_all_both": true,
+          "merged_keys": 8262,
+          "one_partition_per_condition_key": true,
+          "parents": 459,
+          "partition_mismatches": 0,
+          "rows": 1377,
+          "sealed_map_keys": 8262,
+          "sealed_parent_dose_covered": true,
+          "splits_rows": 8262,
+          "splits_sha256": "089e2455a579fa9c5da7e6b9c77c5bc14ca30936367d7d1a642de083cd598d5a"
+        },
+        "freeze_dir": "execution/freezes/merge (worktree-local ignored payload)",
+        "manifest_sha256": "7b208b542724fa0c1f949b02ecec6e72487108890867c9a33fa48462acad50ee",
+        "outputs": {
+          "all_obs.csv": "6ab59eeeaa260a925c7b5c746d10ac137b334f23802301a5effecb3fb102930c",
+          "config.json": "4d870b48da73942f3dbea623bcb168c53797b4e5e91d20940d227b9900cb810d",
+          "control.npy": "92c4b09334084b8a004144931806e608a25e56346eae09e6748b8c583a7e15c5",
+          "control_sources.csv": "3f04c2d122d2958931254af7a6d41422dbf2d7096bedcce08b834bb556b444aa",
+          "expression.npy": "d7a38957e40b63e2ef40267b188b0c4b6739bac1e6ec23bd102aca40ec361acc",
+          "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "matched_controls.json": "531b3427c245b9048e3bcfbca08515c64f5264a24c4f3480dc175de0ed352c25",
+          "morgan.npy": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+          "parents.csv": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+          "population.csv": "fd518a65800ffce54bb1c007bdd3d7a1fef85076f7919ee86fcc41abaa4f26b9",
+          "splits.csv": "089e2455a579fa9c5da7e6b9c77c5bc14ca30936367d7d1a642de083cd598d5a"
+        },
+        "replay_byte_identical": true,
+        "replay_manifest_sha256": "7b208b542724fa0c1f949b02ecec6e72487108890867c9a33fa48462acad50ee",
+        "rows": 1377,
+        "sealed_keys_covered": 8262,
+        "source": "tenv",
+        "splits_byte_equal_to_sealed": false,
+        "splits_sha256": "089e2455a579fa9c5da7e6b9c77c5bc14ca30936367d7d1a642de083cd598d5a",
+        "verified": true,
+        "view": "merge",
+        "worktree_artifact": "/tmp/tsg02-scratch/freezes/merge/tenv"
+      }
+    },
+    "c_bounded_gpu_smoke_fits": {
+      "tahoe_bulk": {
+        "best_epoch": 2,
+        "children_peak_rss_kib": 3824340,
+        "device": "cuda",
+        "driver_elapsed_seconds": 44.514,
+        "epochs": 2,
+        "epochs_run": 2,
+        "fold": 0,
+        "freeze_manifest_sha256": "741b79ae16798aba83a2e15024e1ea2079dc726d054c880f3fa40282e8b0d29a",
+        "phases": [
+          {
+            "elapsed_seconds": 11.473,
+            "phase": "train",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 10.748,
+            "phase": "replay",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 11.121,
+            "phase": "test",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 11.171,
+            "phase": "replay",
+            "returncode": 0
+          }
+        ],
+        "replay": "train -> replay -> test -> replay in fresh processes; every phase exits 0 and the learner rejects a non-bit-exact replay",
+        "rows": 64,
+        "run": "/tmp/tsg02-scratch/smoke/tahoe_bulk/merge/fold-0/seed-42",
+        "run_manifest_sha256": "f51717199d3b24ad4b65a7b811cf783840e8e3ea6a5c4c1cd1ad1fe403fbd75d",
+        "seed": 42,
+        "source": "tahoe_bulk",
+        "status": "complete",
+        "test_metrics": {
+          "constant_prediction_count": 0,
+          "constant_truth_count": 0,
+          "n_samples": 64,
+          "nonfinite_count": 0,
+          "pcc": 0.024309252023870916,
+          "r2": -89.49026629472773,
+          "rmse": 0.9258339325561687,
+          "spearman": 0.0023367201917494137,
+          "undefined_pcc_count": 0,
+          "undefined_r2_count": 0,
+          "undefined_rmse_count": 0,
+          "undefined_spearman_count": 0
+        },
+        "training_elapsed_seconds": 10.574,
+        "training_peak_rss_kib": 3824340,
+        "validation_mse": 0.8641747832298279,
+        "view": "merge"
+      },
+      "tenv": {
+        "best_epoch": 2,
+        "children_peak_rss_kib": 1810760,
+        "device": "cuda",
+        "driver_elapsed_seconds": 14.228,
+        "epochs": 2,
+        "epochs_run": 2,
+        "fold": 0,
+        "freeze_manifest_sha256": "7b208b542724fa0c1f949b02ecec6e72487108890867c9a33fa48462acad50ee",
+        "phases": [
+          {
+            "elapsed_seconds": 4.029,
+            "phase": "train",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.314,
+            "phase": "replay",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.348,
+            "phase": "test",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.537,
+            "phase": "replay",
+            "returncode": 0
+          }
+        ],
+        "replay": "train -> replay -> test -> replay in fresh processes; every phase exits 0 and the learner rejects a non-bit-exact replay",
+        "rows": 64,
+        "run": "/tmp/tsg02-scratch/smoke/tenv/merge/fold-0/seed-42",
+        "run_manifest_sha256": "a25dbcefea697d05cc7477c51655e53ec73a719dec62675496648f6731745303",
+        "seed": 42,
+        "source": "tenv",
+        "status": "complete",
+        "test_metrics": {
+          "constant_prediction_count": 0,
+          "constant_truth_count": 0,
+          "n_samples": 64,
+          "nonfinite_count": 0,
+          "pcc": 0.15490288307347955,
+          "r2": -9.689554510206914,
+          "rmse": 0.738155010928391,
+          "spearman": 0.2313826119767551,
+          "undefined_pcc_count": 0,
+          "undefined_r2_count": 0,
+          "undefined_rmse_count": 0,
+          "undefined_spearman_count": 0
+        },
+        "training_elapsed_seconds": 3.16,
+        "training_peak_rss_kib": 1727036,
+        "validation_mse": 0.5469114184379578,
+        "view": "merge"
+      }
+    },
+    "d_health_checks": {
+      "check_paths": {
+        "command": "bash script/check_paths.sh",
+        "elapsed_seconds": 13.898,
+        "exit": 0,
+        "note": "the worktree lacks gitignore-only payload bytes; 184 read-only symlinks to /home/chang/arc payload subtrees were added for the run and removed afterwards (no tracked change)",
+        "result": "RESULT: PASS \u2014 every extracted path literal resolves"
+      },
+      "check_tracked": {
+        "command": "bash script/check_tracked.sh",
+        "elapsed_seconds": 0.026,
+        "exit": 0,
+        "result": "RESULT: PASS \u2014 all scanned executable files are tracked (or documented expected-ignored)"
+      }
+    },
+    "e_real_data_reconciliation": {
+      "tahoe_bulk": {
+        "conditions": 52777,
+        "cross_plate_conditions": 8741,
+        "member_rows": 65318,
+        "pooled_control_retained_total_sum": 69367399227,
+        "pooled_treated_retained_total": 32402112533,
+        "rows": 52777,
+        "rows_per_condition_max": 16,
+        "sampled_delta_equals_x_minus_control_float32": true,
+        "sampled_freeze_delta_equals_expression_minus_control": true,
+        "sampled_freeze_expression_control_equal_product": true,
+        "sampled_rows": 159,
+        "singleton_conditions": 43036,
+        "source_treated_rows": 65318
+      },
+      "tenv": {
+        "conditions": 1377,
+        "cross_plate_conditions": 6,
+        "member_rows": 4206,
+        "pooled_control_retained_total_sum": 5270597961,
+        "pooled_treated_retained_total": 1503657870,
+        "rows": 1377,
+        "rows_per_condition_max": 6,
+        "sampled_delta_equals_x_minus_control_float32": true,
+        "sampled_freeze_delta_equals_expression_minus_control": true,
+        "sampled_freeze_expression_control_equal_product": true,
+        "sampled_rows": 155,
+        "singleton_conditions": 0,
+        "source_treated_rows": 4206
+      }
+    }
+  },
+  "interpreter": "/home/chang/miniconda3/envs/arc/bin/python",
+  "merger_verification": {
+    "branch": "dev",
+    "checkout": "/home/chang/arc",
+    "commands": [
+      "git -C /home/chang/arc diff --name-only dev..impl/tsg-view-02",
+      "git -C /home/chang/arc merge --no-ff impl/tsg-view-02 -m 'Merge Stage 2 tsg_view 02: replicate-pooled merge view and pooled controls'",
+      "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+      "../01_bases/execution/capped.sh /usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python execution/build.py --view merge --source {tenv,tahoe_bulk} --output output/views --staging execution/checkpoints/merger-02/staging --repo-root /home/chang/arc --record execution/checkpoints/merger-02/build-merge-<source>.json",
+      "../01_bases/execution/capped.sh /usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python execution/freeze.py --view merge --source <source> --views output/views --destination execution/freezes/merge/<source> --repo-root /home/chang/arc --record execution/checkpoints/merger-02/freeze-merge-<source>.json",
+      "../01_bases/execution/capped.sh /usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python execution/smoke.py --view merge --source tenv --freeze execution/freezes/merge/tenv --output execution/checkpoints/merger-02/smoke --rows 64 --epochs 2 --device cuda --seed 42 --repo-root /home/chang/arc --sealed /home/chang/arc/stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tenv --record execution/checkpoints/merger-02/smoke-merge-tenv.json",
+      "/home/chang/miniconda3/envs/arc/bin/python /tmp/verify_merge_pooling.py   # independent merger reconciliation from the integer corpus",
+      "bash script/check_paths.sh",
+      "bash script/check_tracked.sh"
+    ],
+    "date": "2026-11-22",
+    "digest_reconciliation": {
+      "freeze_metadata_divergence": "EXPECTED, benign - config.json and manifest.json differ by exactly one semantic field, config.view_product.file (bare name in the implementer worktree vs canonical repo-relative path in the main checkout; the manifest embeds the config digest, so it moves too). The worktree artifacts /tmp/tsg02-scratch/freezes/merge/<source> still reproduce the implementer config/manifest digests exactly. No data byte differs.",
+      "freezes": "PASS for data - expression.npy, control.npy, morgan.npy, parents.csv, splits.csv, population.csv, all_obs.csv, genes.csv, matched_controls.json and control_sources.csv are digest-equal to the implementer record for both sources.",
+      "products": "PASS - every payload, manifest and companion-file digest and byte count equals the implementer's log/build-02.json values (merge/tenv payload 27f39cc7... 53,851,602 B; merge/tahoe_bulk payload 10c2c39d... 2,093,287,036 B).",
+      "splits": "merge splits.csv is NOT byte-equal to the sealed splits.csv by design (C2: only `full` is). The sealed condition->partition map is equal, the sealed parent/dose population is covered and each condition sits in exactly one partition, which Inputs.check_splits verifies."
+    },
+    "gates": {
+      "bounded_gpu_smoke_fits": {
+        "merge/tenv": {
+          "best_epoch": 2,
+          "children_peak_rss_kib": 1799996,
+          "device": "cuda",
+          "driver_elapsed_seconds": 13.767,
+          "epochs": 2,
+          "epochs_run": 2,
+          "fold": 0,
+          "phases": [
+            {
+              "elapsed_seconds": 3.957,
+              "phase": "train",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.366,
+              "phase": "replay",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.237,
+              "phase": "test",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.207,
+              "phase": "replay",
+              "returncode": 0
+            }
+          ],
+          "replay": "train -> replay -> test -> replay, one process per phase",
+          "result": "PASS - train -> replay -> test -> replay, one fresh process per phase; every phase exits 0 and the learner rejects a non-bit-exact replay",
+          "rows": 64,
+          "run_dir": "stage2/tsg_view/execution/checkpoints/merger-02/smoke/tenv/merge/fold-0/seed-42",
+          "run_manifest_sha256": "bbdf55ab38629f024ce5b17c80a53e23306aa08f7822634fea966217e0157b98",
+          "seed": 42,
+          "status": "complete",
+          "test_metrics": {
+            "constant_prediction_count": 0,
+            "constant_truth_count": 0,
+            "n_samples": 64,
+            "nonfinite_count": 0,
+            "pcc": 0.15490288307347955,
+            "r2": -9.689554510206914,
+            "rmse": 0.738155010928391,
+            "spearman": 0.2313826119767551,
+            "undefined_pcc_count": 0,
+            "undefined_r2_count": 0,
+            "undefined_rmse_count": 0,
+            "undefined_spearman_count": 0
+          },
+          "test_metrics_match_implementer_record": true,
+          "training_elapsed_seconds": 3.045,
+          "training_peak_rss_kib": 1721172,
+          "validation_mse": 0.5469114184379578,
+          "validation_mse_matches_implementer_record": true
+        }
+      },
+      "freeze_verification_with_inputs": {
+        "checks_covered": [
+          "manifest schema and the exact Step 04 REQUIRED+control_sources file set",
+          "sha256 digest of every declared freeze output",
+          "G_5000 axis identity and genes.csv digest",
+          "sealed Step 04 parents/morgan byte identity and sealed-digest binding",
+          "sealed condition->partition map equality, sealed parent/dose coverage, one partition per condition key, partition disjointness and full coverage",
+          "matched-control/control_sources composition; pooled-sum controls recover integer retained counts on the recorded totals; expression rows are CP10K compositions"
+        ],
+        "method": "fresh process: sys.path.insert(0,'execution'); Inputs(execution/freezes/merge/<source>, repo_root='/home/chang/arc') for tenv and tahoe_bulk",
+        "result": "PASS - both freezes load with no HarnessError",
+        "results": {
+          "merge/tahoe_bulk": "PASS (52,777 rows)",
+          "merge/tenv": "PASS (1,377 rows)"
+        }
+      },
+      "health_checks": {
+        "check_paths": {
+          "command": "bash script/check_paths.sh",
+          "exit": 0,
+          "result": "RESULT: PASS - every extracted path literal resolves; stage2 retired-step-path audit: PASS",
+          "wall_seconds": 13
+        },
+        "check_tracked": {
+          "command": "bash script/check_tracked.sh",
+          "exit": 0,
+          "result": "RESULT: PASS - all scanned executable files are tracked (or documented expected-ignored)",
+          "wall_seconds": 1
+        },
+        "result": "PASS"
+      },
+      "materialised_products": {
+        "merge/tahoe_bulk": {
+          "companion_files": {
+            "tahoe_bulk.control_sources.csv": "15e7cb8c09bfe83e309da96110d2a5e5ac6407244dd7892aff84b3589b3de336",
+            "tahoe_bulk.json": "e31ca3ade39b5bd9bccb7bdaa0f228a33d6ef0a96975690742974d6499140f40",
+            "tahoe_bulk.members.csv": "ebff8550dc92d92e32018f9aa3e06bb60b74bb67241fc5396dbb9c3877379b9d",
+            "tahoe_bulk.profile_ids.csv": "6f6253ee34210bf03733505cbf6b814c4be8da45c6ae38c223a748726ef6c2cb"
+          },
+          "conditions": 52777,
+          "freeze_dir": "stage2/tsg_view/execution/freezes/merge/tahoe_bulk",
+          "freeze_manifest_sha256": "a4eb303c60f33561318c4c62767fe72101d2209b8a585ccfacadcde1c849c453",
+          "freeze_metadata_divergence": {
+            "data_files_identical_to_implementer": true,
+            "implementer_config_sha256": "c8d0bed3d11dae9c8068fb00fd631992486e9c26cd7eb56e523353d70eb8c6da",
+            "note": "config.json and manifest.json differ from the implementer record in exactly one semantic field: config.view_product.file. In the implementer worktree /tmp/arc-tsg-02 the product manifest sat outside that worktree's bind root, so relative() fell back to the bare file name; in the main checkout it is the canonical repo-relative path. The manifest digests differ only because the manifest embeds the config digest. Every data file is digest-equal. The still-present worktree artifacts reproduce the implementer digests exactly.",
+            "worktree_artifacts": "/tmp/tsg02-scratch/freezes/merge/tahoe_bulk",
+            "worktree_config_sha256": "c8d0bed3d11dae9c8068fb00fd631992486e9c26cd7eb56e523353d70eb8c6da",
+            "worktree_manifest_sha256": "741b79ae16798aba83a2e15024e1ea2079dc726d054c880f3fa40282e8b0d29a"
+          },
+          "freeze_outputs": {
+            "all_obs.csv": "03ff0ab82e9451fd6d28879c81333d86b44c96f10ee11eb5b1fdb22238cfc36b",
+            "config.json": "4e949ffdec3574053c1c70e61ee95bbdeb7aadfc0618328d85f4429f37ec72ce",
+            "control.npy": "3f9eb4e39f8c5977535bc3a7ac1e530911c4ac3889afd2f3966b2a04077b1bcd",
+            "control_sources.csv": "15e7cb8c09bfe83e309da96110d2a5e5ac6407244dd7892aff84b3589b3de336",
+            "expression.npy": "636bd0761e04354c4be93761fa533bb348067431630c45403e64c4e7da8d8482",
+            "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+            "matched_controls.json": "b3409c461a34be599a754fe8b748cbeecd21a3a7604956e1ca08c792228cc4cd",
+            "morgan.npy": "f61b3979ed6cb234b7af6a19bf48008cb873029c63dcdba2359e36278be4bf3e",
+            "parents.csv": "f5164f16e5c5b719b35b00812003946c91d65829051a51dc8c830c5dac8de139",
+            "population.csv": "9a062617a892af5a6f6edbd6eded67f3a8d88df64e31bbaad88dab47dc87371c",
+            "splits.csv": "c8193e9db9e3265e2594c67364b7ba0f73e1303f20a4f58e45b0f662a324591a"
+          },
+          "freeze_peak_rss_kib": 2818180,
+          "freeze_runtime_seconds": 26.4,
+          "freeze_splits_byte_equal_to_sealed": false,
+          "freeze_splits_sha256": "c8193e9db9e3265e2594c67364b7ba0f73e1303f20a4f58e45b0f662a324591a",
+          "freeze_verified_by_inputs": true,
+          "freeze_verified_rows": 52777,
+          "implementer_freeze_manifest_sha256": "741b79ae16798aba83a2e15024e1ea2079dc726d054c880f3fa40282e8b0d29a",
+          "implementer_manifest_sha256": "e31ca3ade39b5bd9bccb7bdaa0f228a33d6ef0a96975690742974d6499140f40",
+          "implementer_payload_sha256": "10c2c39db087ad2b4cb3aad81acff8e127ce1f4ee6fcc791e647a7859ec349f8",
+          "manifest": "e31ca3ade39b5bd9bccb7bdaa0f228a33d6ef0a96975690742974d6499140f40",
+          "mode": "payload",
+          "payload": {
+            "bytes": 2093287036,
+            "cols": 5000,
+            "dtype": "float32",
+            "file": "tahoe_bulk.h5ad",
+            "layers": [
+              "control",
+              "delta"
+            ],
+            "rows": 52777,
+            "sha256": "10c2c39db087ad2b4cb3aad81acff8e127ce1f4ee6fcc791e647a7859ec349f8"
+          },
+          "payload_and_files_match_implementer_record": true,
+          "peak_rss_kib": 3746156,
+          "product_dir": "stage2/tsg_view/output/views/merge",
+          "rows": 52777,
+          "runtime_seconds": 95.861,
+          "wall_seconds": 105.05
+        },
+        "merge/tenv": {
+          "companion_files": {
+            "tenv.control_sources.csv": "3f04c2d122d2958931254af7a6d41422dbf2d7096bedcce08b834bb556b444aa",
+            "tenv.json": "8bb9bfb781ada22237b5a16a3dfc88e4c831876f27fb50492d5c00d3666df257",
+            "tenv.members.csv": "9bcc191e0cdf8b1017eee55cf42ca4ae3e8e1e7f4dc4ddadc305b84f76191dfb",
+            "tenv.profile_ids.csv": "d5f359d69e1fae41b91a931567d3d642cf29bd3f1d0d1b7ce957140a3df26a21"
+          },
+          "conditions": 1377,
+          "freeze_dir": "stage2/tsg_view/execution/freezes/merge/tenv",
+          "freeze_manifest_sha256": "5b56a373f23ffcb3a1ce9128b41e1db56feb337fdcc358002861e6eaccf2143b",
+          "freeze_metadata_divergence": {
+            "data_files_identical_to_implementer": true,
+            "implementer_config_sha256": "4d870b48da73942f3dbea623bcb168c53797b4e5e91d20940d227b9900cb810d",
+            "note": "config.json and manifest.json differ from the implementer record in exactly one semantic field: config.view_product.file. In the implementer worktree /tmp/arc-tsg-02 the product manifest sat outside that worktree's bind root, so relative() fell back to the bare file name; in the main checkout it is the canonical repo-relative path. The manifest digests differ only because the manifest embeds the config digest. Every data file is digest-equal. The still-present worktree artifacts reproduce the implementer digests exactly.",
+            "worktree_artifacts": "/tmp/tsg02-scratch/freezes/merge/tenv",
+            "worktree_config_sha256": "4d870b48da73942f3dbea623bcb168c53797b4e5e91d20940d227b9900cb810d",
+            "worktree_manifest_sha256": "7b208b542724fa0c1f949b02ecec6e72487108890867c9a33fa48462acad50ee"
+          },
+          "freeze_outputs": {
+            "all_obs.csv": "6ab59eeeaa260a925c7b5c746d10ac137b334f23802301a5effecb3fb102930c",
+            "config.json": "6394a83799c33b0301da7b747d56fcf6f20fae71bb7b3a1534ffe2e63eaba79b",
+            "control.npy": "92c4b09334084b8a004144931806e608a25e56346eae09e6748b8c583a7e15c5",
+            "control_sources.csv": "3f04c2d122d2958931254af7a6d41422dbf2d7096bedcce08b834bb556b444aa",
+            "expression.npy": "d7a38957e40b63e2ef40267b188b0c4b6739bac1e6ec23bd102aca40ec361acc",
+            "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+            "matched_controls.json": "531b3427c245b9048e3bcfbca08515c64f5264a24c4f3480dc175de0ed352c25",
+            "morgan.npy": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+            "parents.csv": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+            "population.csv": "fd518a65800ffce54bb1c007bdd3d7a1fef85076f7919ee86fcc41abaa4f26b9",
+            "splits.csv": "089e2455a579fa9c5da7e6b9c77c5bc14ca30936367d7d1a642de083cd598d5a"
+          },
+          "freeze_peak_rss_kib": 399464,
+          "freeze_runtime_seconds": 3.38,
+          "freeze_splits_byte_equal_to_sealed": false,
+          "freeze_splits_sha256": "089e2455a579fa9c5da7e6b9c77c5bc14ca30936367d7d1a642de083cd598d5a",
+          "freeze_verified_by_inputs": true,
+          "freeze_verified_rows": 1377,
+          "implementer_freeze_manifest_sha256": "7b208b542724fa0c1f949b02ecec6e72487108890867c9a33fa48462acad50ee",
+          "implementer_manifest_sha256": "8bb9bfb781ada22237b5a16a3dfc88e4c831876f27fb50492d5c00d3666df257",
+          "implementer_payload_sha256": "27f39cc720f049fab2cc4e845eb50c4010947a3efa775b79a9a37c996a6a6474",
+          "manifest": "8bb9bfb781ada22237b5a16a3dfc88e4c831876f27fb50492d5c00d3666df257",
+          "mode": "payload",
+          "payload": {
+            "bytes": 53851602,
+            "cols": 5000,
+            "dtype": "float32",
+            "file": "tenv.h5ad",
+            "layers": [
+              "control",
+              "delta"
+            ],
+            "rows": 1377,
+            "sha256": "27f39cc720f049fab2cc4e845eb50c4010947a3efa775b79a9a37c996a6a6474"
+          },
+          "payload_and_files_match_implementer_record": true,
+          "peak_rss_kib": 437964,
+          "product_dir": "stage2/tsg_view/output/views/merge",
+          "rows": 1377,
+          "runtime_seconds": 6.134,
+          "wall_seconds": 6.45
+        }
+      },
+      "merge": {
+        "conflicts": [],
+        "files_changed": 3,
+        "insertions": 2522,
+        "result": "PASS",
+        "strategy": "ort"
+      },
+      "real_data_reconciliation_on_dev": {
+        "method": "independent recomputation straight from the integer corpus (stage2/01_bases/output/corpus) and the G_5000 axis, compared to the accepted payload and freeze arrays; not the implementation helpers",
+        "peak_rss_kib": 3188716,
+        "result": "PASS - pooled expression/control are the normalize-of-sum recipe, byte-identical to the accepted payload and freeze; singleton conditions deepen their control under merge (C7.2)",
+        "runtime_seconds": 53.24,
+        "tahoe_bulk": {
+          "control_mismatches": 0,
+          "expression_mismatches": 0,
+          "max_abs_pooled_minus_member_mean": 2.292053452692926,
+          "mean_probe_conditions": 325,
+          "mean_probe_conditions_where_pooled_differs": 325,
+          "member_ids_reconciled_to_corpus": true,
+          "pooled_retained_total_mismatches": 0,
+          "product_delta_equals_x_minus_control_all_52777_rows": true,
+          "product_equals_freeze_arrays_all_rows": true,
+          "repeats": 9741,
+          "sample": "every multi-member condition (9,741) plus every 40th singleton (1,076), 10,817 of 52,777",
+          "sampled_conditions": 10817
+        },
+        "tenv": {
+          "control_mismatches": 0,
+          "expression_mismatches": 0,
+          "max_abs_pooled_minus_member_mean": 3.2671244740486145,
+          "member_ids_reconciled_to_corpus": true,
+          "pooled_retained_total_mismatches": 0,
+          "product_delta_equals_x_minus_control": true,
+          "product_equals_freeze_arrays": true,
+          "repeats": 1377,
+          "repeats_where_pooled_row_differs_from_member_normalized_mean": 1377,
+          "sample": "all 1,377 conditions",
+          "sampled_conditions": 1377
+        }
+      },
+      "unit_tests_on_dev": {
+        "command": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+        "elapsed_seconds": 32.143,
+        "errors": 0,
+        "failures": 0,
+        "note": "The implementer worktree skipped 3 test_learner_smoke tests (skipUnless on pert_model/TranSiGen/source/src/model.py); the main checkout has the real source, so all 39 ran and passed here.",
+        "ran": 39,
+        "result": "PASS",
+        "skipped": 0
+      }
+    },
+    "implementer_branch": "impl/tsg-view-02",
+    "implementer_tip": "fd51666e24878c5ac452e411366b0287b9a0c1e8",
+    "interpreter": "/home/chang/miniconda3/envs/arc/bin/python",
+    "merge_commit": "5421838266cfef5934fa04a13dbdd48c4d8eee1e",
+    "merge_message": "Merge Stage 2 tsg_view 02: replicate-pooled merge view and pooled controls",
+    "notes_for_downstream": {
+      "accepted_payloads": "merge/tenv 27f39cc720f049fab2cc4e845eb50c4010947a3efa775b79a9a37c996a6a6474 (53,851,602 B, 1,377 rows); merge/tahoe_bulk 10c2c39db087ad2b4cb3aad81acff8e127ce1f4ee6fcc791e647a7859ec349f8 (2,093,287,036 B, 52,777 rows).",
+      "canonical_freeze_digests": "Downstream tickets must use the main-checkout values: merge/tenv manifest 5b56a373... config 6394a837...; merge/tahoe_bulk manifest a4eb303c... config 4e949ffd... (full per-file digests in gates.materialised_products.<pair>.freeze_outputs).",
+      "control_rule": "merge uses control_rule=pooled-sum: the union of the members' matched control groups is summed in int64 and normalized on its own selected-axis total, so a singleton condition keeps its X but its control deepens and its delta differs from the full view (plan C7.2).",
+      "freeze_paths": "stage2/tsg_view/execution/freezes/merge/tenv and stage2/tsg_view/execution/freezes/merge/tahoe_bulk. They are gitignored and exist only in the main checkout /home/chang/arc; the tracked product manifests/CSVs under stage2/tsg_view/output/views/merge/ pin the payload digests.",
+      "record_type": "merge rows are merge::{source}::{cell_line}::{parent}::{dose:g}, one per condition (tenv 1,377, tahoe_bulk 52,777)."
+    },
+    "pre_merge_dev_rev": "d2ffef03fea4a1e3fdba842aef528e038c6513d6",
+    "schema": "tsg-view-merger-verification-v1",
+    "scope_check": {
+      "allowed": [
+        "stage2/tsg_view/execution/views/merge.py",
+        "stage2/tsg_view/execution/tests/test_views_merge.py",
+        "stage2/tsg_view/log/build-02.json"
+      ],
+      "command": "git -C /home/chang/arc diff --name-only dev..impl/tsg-view-02",
+      "files": [
+        "stage2/tsg_view/execution/tests/test_views_merge.py",
+        "stage2/tsg_view/execution/views/merge.py",
+        "stage2/tsg_view/log/build-02.json"
+      ],
+      "outside_scope": [],
+      "result": "PASS"
+    }
+  },
+  "note": "Ran in the ticket worktree against the accepted payloads of /home/chang/arc. Derived merge payloads, freezes and smoke runs live under /tmp/tsg02-scratch (gitignored-equivalent scratch); only manifests, digests and counts are recorded here. The merger re-runs these gates in the main checkout and materialises the accepted products.",
+  "schema": "tsg-view-build-evidence-v1",
+  "ticket": "02-merge-view",
+  "worktree": "/tmp/arc-tsg-02"
+}

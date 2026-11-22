@@ -215,3 +215,17 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 /stage2/06_tsg_transfer/output/api/**/__pycache__/
 /stage2/06_tsg_transfer/output/api/**/*.py[cod]
 !/stage2/06_tsg_transfer/figure/data/*.csv
+
+# ADR 0082 view-variant study: manifests, parents, splits and CSV summaries are
+# tracked evidence; expression payloads, frozen truth/run payloads and build or
+# fit state are disposable and stay local to the checkout that produced them.
+# The global `output/` rule hides the directory, so re-include it before the
+# payload patterns below re-exclude the heavy files.
+!/stage2/tsg_view/figure/data/*.csv
+!/stage2/tsg_view/output/
+!/stage2/tsg_view/output/**
+/stage2/tsg_view/output/**/*.h5ad
+/stage2/tsg_view/output/**/*.npy
+/stage2/tsg_view/output/runs/
+/stage2/tsg_view/execution/freezes/
+/stage2/tsg_view/execution/checkpoints/

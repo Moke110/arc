@@ -3,8 +3,9 @@
 #
 # Stage 2's active roots are 01_bases (shared foundation), 02_models_tenv-5k
 # (single-dose native comparison), 03_tsg_drug_emb (representation comparison),
-# 04_tsg_dose (all-dose comparison), 05_tsg_width_dose (width and dose comparison) and
-# 06_tsg_transfer (Tahoe-to-tenv comparison). Scan tracked active executable code
+# 04_tsg_dose (all-dose comparison), 05_tsg_width_dose (width and dose comparison),
+# 06_tsg_transfer (Tahoe-to-tenv comparison) and tsg_view (non-numbered ADR 0082
+# view-variant study). Scan tracked active executable code
 # for references to any other Stage 2 root.
 # Historical payload literals require exact file/literal whitelist entries.
 # Every invocation rejects any other immediate on-disk Stage 2 entry (directories
@@ -98,7 +99,7 @@ main() {
   # The retired step roots, then the retired bundle name handled per line.
   local step_pattern='stage2/[[:alnum:]_./+@-]+'
 
-  local active_roots=(01_bases 02_models_tenv-5k 03_tsg_drug_emb 04_tsg_dose 05_tsg_width_dose 06_tsg_transfer)
+  local active_roots=(01_bases 02_models_tenv-5k 03_tsg_drug_emb 04_tsg_dose 05_tsg_width_dose 06_tsg_transfer tsg_view)
 
   # Layout guard: fail closed on retired step entries.  Only the active step
   # directories and the Stage 2 routing document stage2/AGENTS.md (present at the
