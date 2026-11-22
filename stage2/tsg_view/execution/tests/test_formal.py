@@ -780,6 +780,19 @@ class CodeIdentityTest(unittest.TestCase):
         self.assertEqual(identity["driver_code_drift"], [])
         self.assertIn("refactor", identity["note"])
 
+    def test_the_learner_runtime_drift_is_recorded_too(self):
+        drifted = self.drifted()
+        drifted["learner_runtime"]["learner.py"] = "f" * 64
+        entries, identical = formal.code_drift(self.plan, drifted)
+        self.assertTrue(identical)
+        self.assertEqual([(entry["section"], entry["file"]) for entry in entries],
+                         [("learner_runtime", "learner.py")])
+        identity = formal.code_identity(self.plan, drifted)
+        self.assertEqual(identity["status"], "CODE_DRIFT")
+        self.assertEqual(identity["driver_code_drift"], [])
+        # run/resume is still refused: a moved worker runtime is not driver-only drift.
+        self.assertIsNone(formal.driver_code_drift(self.plan, drifted))
+
     def test_a_non_code_input_change_still_fails_closed(self):
         def move_truth(value):
             value["truth"]["tenv/fold-0"]["primary"]["manifest_sha256"] = "f" * 64
@@ -789,7 +802,8 @@ class CodeIdentityTest(unittest.TestCase):
         """Resuming a fit under changed scientific code must stay refused."""
         self.assertIsNone(formal.driver_code_drift(self.plan, self.drifted("learner.py")))
         self.assertEqual(formal.driver_code_drift(self.plan, self.drifted("formal.py")),
-                         [{"file": "formal.py", "sealed_sha256": self.plan["code"]["formal.py"],
+                         [{"section": "code", "file": "formal.py",
+                           "sealed_sha256": self.plan["code"]["formal.py"],
                            "current_sha256": "f" * 64}])
 
 

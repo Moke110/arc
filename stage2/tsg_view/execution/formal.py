@@ -58,23 +58,30 @@ RUN_REPORT_FILE = "formal_run_report.json"
 DRIVER_CODE_FILES = ("formal.py",)
 
 
+#: The plan's two code-digest blocks: the driver/verifier files (``code``) and the worker
+#: plus reused shared modules the runs were fitted with (``learner_runtime``).
+CODE_SECTIONS = ("code", "learner_runtime")
+
+
 def code_drift(sealed, current):
-    """``(entries, inputs_identical)`` for every formal code file that moved.
+    """``(entries, inputs_identical)`` for every formal code digest that moved.
 
     ``inputs_identical`` is ``True`` only when the two plans agree on everything except
-    the code digests, i.e. the plan body, freezes, truth, native source, runtime and
-    environment are unchanged. That distinction is what keeps the fail-closed rule about
-    *inputs* while letting a verified refactor be reported instead of refused.
+    the two code blocks, i.e. the plan body, freezes, truth, native source, runtime
+    environment and schedule are unchanged. That distinction keeps the fail-closed rule
+    about *inputs* while letting a verified refactor be reported instead of refused.
     """
     sealed_copy = json.loads(json.dumps(sealed))
     current_copy = json.loads(json.dumps(current))
     entries = []
-    for name in matrix.CODE_FILES:
-        before = (sealed_copy.get("code") or {}).pop(name, None)
-        after = (current_copy.get("code") or {}).pop(name, None)
-        if before != after:
-            entries.append({"file": name, "sealed_sha256": before,
-                            "current_sha256": after})
+    for section in CODE_SECTIONS:
+        before_block = sealed_copy.pop(section, None) or {}
+        after_block = current_copy.pop(section, None) or {}
+        for name in sorted(set(before_block) | set(after_block)):
+            before, after = before_block.get(name), after_block.get(name)
+            if before != after:
+                entries.append({"section": section, "file": name,
+                                "sealed_sha256": before, "current_sha256": after})
     return entries, sealed_copy == current_copy
 
 
@@ -85,7 +92,8 @@ def driver_code_drift(sealed, current):
     entries, identical = code_drift(sealed, current)
     if not identical:
         return None
-    driver = [entry for entry in entries if entry["file"] in DRIVER_CODE_FILES]
+    driver = [entry for entry in entries
+              if entry["section"] == "code" and entry["file"] in DRIVER_CODE_FILES]
     if len(driver) != len(entries):
         return None
     return driver
@@ -103,14 +111,18 @@ def code_identity(sealed, current):
     if not identical:
         return None
     return {"sealed": sealed.get("code"), "current": current.get("code"),
+            "sealed_runtime": sealed.get("learner_runtime"),
+            "current_runtime": current.get("learner_runtime"),
             "status": "MATCH" if not entries else "CODE_DRIFT",
             "code_drift": entries,
             "driver_code_drift": [entry for entry in entries
-                                  if entry["file"] in DRIVER_CODE_FILES],
-            "note": ("verify records which code files moved since the plan was sealed; "
-                     "the refactor-only drift is reported here and never hidden, while "
-                     "any non-code input change still fails closed and the run/resume path "
-                     "keeps the driver-file-only allowance")}
+                                  if entry["section"] == "code"
+                                  and entry["file"] in DRIVER_CODE_FILES],
+            "note": ("verify records every code digest that moved since the plan was "
+                     "sealed (both the driver/verifier files and the learner runtime); the "
+                     "refactor-only drift is reported here and never hidden. Any non-code "
+                     "input change still fails closed, a replay still refuses a moved "
+                     "learner runtime, and run/resume keeps the driver-file-only allowance")}
 
 
 def emit_json(value, *, pretty=False):
