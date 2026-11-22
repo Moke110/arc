@@ -1,0 +1,626 @@
+{
+  "base_dev": "fd9763c6b08839a7b7eae3dd9f6406572c20d1cf",
+  "branch": "impl/tsg-view-08",
+  "commands": {
+    "capture_health": "python stage2/tsg_view/execution/acceptance.py health --root /home/chang/arc --output /tmp/arc-tsg-08/.phaseA/health",
+    "health_main_check_paths": "cd /home/chang/arc && bash script/check_paths.sh",
+    "health_phase_b": "cd /tmp/arc-tsg-08/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/acceptance.py health --root /home/chang/arc --output log/acceptance/health --verify-all --timeout 1200",
+    "health_worktree_check_paths": "cd /tmp/arc-tsg-08 && bash script/check_paths.sh",
+    "health_worktree_check_tracked": "cd /tmp/arc-tsg-08 && bash script/check_tracked.sh",
+    "preflight": "free -g; nvidia-smi --query-compute-apps; pgrep -af 'formal.py|learner.py|run_matrix|smoke.py'; uptime",
+    "receipt_final": "cd /tmp/arc-tsg-08/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/acceptance.py receipt --root /home/chang/arc --phase final --verify-binary --preregistration log/acceptance/pre_registration.md --health-dir log/acceptance/health --output log/acceptance/receipt.json",
+    "receipt_final_guard": "python stage2/tsg_view/execution/acceptance.py receipt --root /home/chang/arc --phase final --health-dir /tmp/arc-tsg-08/.phaseA/health --output /tmp/arc-tsg-08/.phaseA/should-not-exist.json",
+    "receipt_partial": "python stage2/tsg_view/execution/acceptance.py receipt --root /home/chang/arc --phase partial --health-dir /tmp/arc-tsg-08/.phaseA/health --output /tmp/arc-tsg-08/.phaseA/receipt.partial.json",
+    "setup": "cd /home/chang/arc && git worktree add /tmp/arc-tsg-08 -b impl/tsg-view-08 dev",
+    "steps01_06_diff": "git -C /home/chang/arc diff --name-only b048687..dev -- stage2/01_bases stage2/02_models_tenv-5k stage2/03_tsg_drug_emb stage2/04_tsg_dose stage2/05_tsg_width_dose stage2/06_tsg_transfer",
+    "tests_acceptance": "cd stage2/tsg_view && python -m unittest discover -s execution/tests -p test_acceptance.py",
+    "tests_docs": "cd stage2/tsg_view && python -m unittest discover -s execution/tests -p test_docs.py",
+    "tests_step_suite": "cd stage2/tsg_view && python -m unittest discover -s execution/tests"
+  },
+  "date": "2026-11-22",
+  "dev_merge_phase_b": "7b068b78db2ab0917130e431abe987330de1e90d",
+  "deviations": [
+    "The pinned Steps 01-06 baseline file is 68 bytes of an opaque combined digest ('<hex>  -'); its capture recipe is not reproducible (six candidate git-listing recipes and 36 python/json recipe variants do not match). The receipt therefore records the file's own sha256 and mode and anchors PASS/CHANGED on the ADR-0082 planning commit recorded in refs.txt (b048687), which is reproducible and already covers the same tracked tree. Phase B should re-capture a per-path manifest when it seals; .scratch is read-only for this agent.",
+    "check_paths.sh cannot exit 0 in a pristine worktree: the gitignored external payloads are absent by design (#195). The worktree run measured FAIL (6329 occurrences / 245 literals / 10m16s); the same script exits 0 in the main checkout (14.9 s). Phase A records both and does not whitelist or edit anything.",
+    "The 10 s driver sampler jitters: measured gaps reach 14.656 s over 410 real intervals. The cap gate tolerates one interval (20 s) and still rejects a stalled sampler; .phaseA health/telemetry evidence carries the measured values.",
+    "No Tahoe smoke receipt exists under execution/checkpoints (only merger-01..03, all tenv). Tahoe fresh-process replay evidence is taken from the nested merger smoke gate in log/build-02.json (view merge); the receipt pins both the checkpoint receipts and those build-log gates.",
+    "run_records.json reports complete=27 while a 28th Tahoe run manifest was mid-flight. Partial mode classifies an origin as pending unless manifest, terminal and record are all sealed, so completeness is 27/45 rather than 28/45; final mode would fail closed on it."
+  ],
+  "environment": {
+    "cuda": "13.0",
+    "device": "cuda",
+    "driver": "617.42",
+    "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "python": "3.13.13",
+    "torch": "2.12.0+cu130"
+  },
+  "gates": {
+    "a_receipt_builder": {
+      "cli": "acceptance.py health|receipt with --root/--views/--freezes/--truth/--runs/--inputs/--report/--figure/--log/--health-dir/--baseline/--refs/--preregistration/--verify-binary/--timestamp/--phase",
+      "deterministic": "receipt_bytes are a pure function of the inputs; only generated_at is injectable (--timestamp) and the test proves byte equality modulo that field",
+      "evidence": {
+        "receipt_bytes": 601554,
+        "receipt_sha256": "42b8cef5546ffd2f988f88193a02145177226cd99cb3ed27fd547fa1e3e3d6a3"
+      },
+      "fail_closed": [
+        "missing artifact",
+        "digest mismatch",
+        "cap violation",
+        "non-identical CSV-only re-render",
+        "missing replay token/phase",
+        "missing or changed health transcript",
+        "changed Steps 01-06"
+      ],
+      "portable_paths": "every inventory key and recorded path is repo-relative; the test asserts no /tmp or study-root absolute path appears in the receipt",
+      "schema": "tsg-view-acceptance-v1",
+      "status_vocabulary": [
+        "partial",
+        "passed"
+      ]
+    },
+    "b_partial_receipt_real_artifacts": {
+      "bytes": 601554,
+      "command": "receipt --root /home/chang/arc --phase partial",
+      "complete_origins": 27,
+      "determinism": {
+        "note": "the recorded receipt_sha256 belongs to the exact recorded argv and default timestamp; generated_at is the only non-input field",
+        "proof": "two runs with identical argv (same --output, fixed --timestamp) produced byte-identical receipts",
+        "sha256": "38d0f7f45d87c001aae58c13e568097e9de79b7fe11cc044b37a6a1c3b63ef6d"
+      },
+      "git": {
+        "branch": "dev",
+        "dev": "fd9763c6b08839a7b7eae3dd9f6406572c20d1cf",
+        "head": "fd9763c6b08839a7b7eae3dd9f6406572c20d1cf",
+        "main": "4413a762faf75e0a01e100b9c23d663536a6a035"
+      },
+      "input_manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+      "inventory": {
+        "freezes": 108,
+        "health": 5,
+        "inputs": 1,
+        "resources": 432,
+        "runs": 331,
+        "smoke": 8,
+        "truth": 60,
+        "view_companions": 21,
+        "view_payloads": 7,
+        "views": 11
+      },
+      "pending_detail": {
+        "rule": "every Tahoe origin (3 views x 3 folds x 2 seeds = 18); all 27 tenv fits are present, plus one in-progress Tahoe run manifest classified as pending because its record/terminal were not sealed yet",
+        "sources": [
+          "tahoe_bulk"
+        ],
+        "views": [
+          "full",
+          "merge",
+          "solo"
+        ]
+      },
+      "pending_origins": 18,
+      "pending_products": {
+        "figures": "ticket 07 PNGs/render_status are not on dev yet",
+        "formal_verify": "sealed matrix verification not written yet",
+        "report": "ticket 07 report tables are not on dev yet",
+        "verify_all": "documented-not-run in phase A"
+      },
+      "plan_manifest_sha256": "f5b6b249e4801ebc3fa90f34955f402d860a12d4dfe385e0b0ead0dbe890cfab",
+      "plan_sha256": "2f59a8704b416debc8bd8ea9a7bb0acbaa3f0a2bd0fa2f11f4060f6fca44bf29",
+      "products": {
+        "figures": {},
+        "freezes": 9,
+        "report": "pending",
+        "truth_sources": 2,
+        "views": 9
+      },
+      "receipt_sha256": "42b8cef5546ffd2f988f88193a02145177226cd99cb3ed27fd547fa1e3e3d6a3",
+      "replay": {
+        "all_exact": true,
+        "matrix_origins_with_exact_replay": 27,
+        "smoke_receipts": 4,
+        "smoke_sources": [
+          "None",
+          "tahoe_bulk",
+          "tenv"
+        ]
+      },
+      "resources": {
+        "caps": {
+          "memory_max": "10G",
+          "memory_max_bytes": 10737418240,
+          "memory_swap_max": "8G",
+          "swap_max_bytes": 8589934592,
+          "telemetry_seconds": 10.0
+        },
+        "max_sample_gap_seconds": 14.656,
+        "note": "every present phase asserted MemoryMax=10G / MemorySwapMax=8G, telemetry cadence and peak RSS below the cap",
+        "origins": 27,
+        "peak_gpu_used_mib": 3268,
+        "peak_rss_kib": 1859568,
+        "telemetry_samples": 285
+      },
+      "status": "partial"
+    },
+    "c_final_fail_closed": {
+      "command": "receipt --root /home/chang/arc --phase final (no --verify-binary)",
+      "error": "a sealed receipt requires --verify-binary",
+      "exit": 1,
+      "incomplete_matrix_path": "covered by test_acceptance.PhaseTest.test_final_phase_fails_on_an_incomplete_matrix",
+      "output_written": false
+    },
+    "d_steps01_06_invariance": {
+      "baseline_file": {
+        "lines": 1,
+        "matches_recipe": false,
+        "mode": "opaque",
+        "opaque_digest": "ebb4dee6a6cc8c2fc314f098a0f7150c4e9e594a3a16f6b0eaf8171714b9d415",
+        "path": ".scratch/tsg-view/research/baseline/steps01-06-artifact-digests.sha256",
+        "sha256": "53c1ecb2cf5a28276a95076ea140d3f03e8e5a20e6d85e52416fa8a310b1ee97"
+      },
+      "baseline_ref": {
+        "refs_sha256": "ed212bef27dc56a81b1db97c793273ccfc72e24eff6aa6e501515bd9fb56eef0",
+        "rev": "b04868769e9bbf924a7a73b59005491568b96c9c",
+        "source": ".scratch/tsg-view/research/baseline/refs.txt"
+      },
+      "metric": "sha256 over `git ls-files` paths and their file-content sha256, per step; compared with the pinned baseline, or with the ADR-0082 planning commit when the pinned capture is an opaque single digest",
+      "note": "dev and main are untouched; stage2/01_bases..06_tsg_transfer have zero diff against b048687 (git diff --stat empty), so the proof is PASS",
+      "sealed_artifacts": {
+        "digest": "c22c06455f33b18b0a0d85873791c2f19bebaf0afb8a97bc6745626e4255b75a",
+        "files": 106,
+        "includes": "output/**/manifest.json and log/**/*acceptance*.json + log/**/health.json per preceding step"
+      },
+      "steps": {
+        "01_bases": {
+          "baseline_digest": "fbbb8bd51259f6858b775aa14d2d8cfd39ec4cbd99d17eddff36647794372b04",
+          "bytes": 164018808,
+          "digest": "fbbb8bd51259f6858b775aa14d2d8cfd39ec4cbd99d17eddff36647794372b04",
+          "files": 261,
+          "verdict": "PASS"
+        },
+        "02_models_tenv-5k": {
+          "baseline_digest": "396268c84b60e02697d8101418fcd47aeb9f96cc6c4ae44d07253e1696f73b18",
+          "bytes": 6188087,
+          "digest": "396268c84b60e02697d8101418fcd47aeb9f96cc6c4ae44d07253e1696f73b18",
+          "files": 271,
+          "verdict": "PASS"
+        },
+        "03_tsg_drug_emb": {
+          "baseline_digest": "1d7d1c2fd506d4312c31de80734c395cd693de96263c60568973fa01c850fa88",
+          "bytes": 3388225,
+          "digest": "1d7d1c2fd506d4312c31de80734c395cd693de96263c60568973fa01c850fa88",
+          "files": 57,
+          "verdict": "PASS"
+        },
+        "04_tsg_dose": {
+          "baseline_digest": "7cb636137237fb291430652ea43915ca78adf2dc632259e44f11045818d3f5a6",
+          "bytes": 24570645,
+          "digest": "7cb636137237fb291430652ea43915ca78adf2dc632259e44f11045818d3f5a6",
+          "files": 333,
+          "verdict": "PASS"
+        },
+        "05_tsg_width_dose": {
+          "baseline_digest": "a894bef0e6786ec1173ed9fcbed99a820bd49fc3a772086dc0c117b491bf7059",
+          "bytes": 1828896,
+          "digest": "a894bef0e6786ec1173ed9fcbed99a820bd49fc3a772086dc0c117b491bf7059",
+          "files": 24,
+          "verdict": "PASS"
+        },
+        "06_tsg_transfer": {
+          "baseline_digest": "ec98de4d584ec5200bd449da0e3f2bb1e3de469a072cd11b5f437cd1ee949d7b",
+          "bytes": 435620,
+          "digest": "ec98de4d584ec5200bd449da0e3f2bb1e3de469a072cd11b5f437cd1ee949d7b",
+          "files": 39,
+          "verdict": "PASS"
+        }
+      },
+      "verdict": "PASS"
+    },
+    "e_health": {
+      "health_json": {
+        "checks": {
+          "check_paths.sh": {
+            "log_sha256": "568734a38bbf1a37ae60d9c950d4fcad01d7c899072b81f6007e5b7e11afcd19",
+            "returncode": 0,
+            "runtime_seconds": 13.655
+          },
+          "check_tracked.sh": {
+            "log_sha256": "d7b50dd67f29c9bebda14c1d9849d273fcc544d76164a674c49385d46144c005",
+            "returncode": 0,
+            "runtime_seconds": 0.189
+          }
+        },
+        "schema": "tsg-view-health-v1",
+        "verify_all": "documented-not-run"
+      },
+      "main_checkout_check_paths": {
+        "command": "cd /home/chang/arc && bash script/check_paths.sh",
+        "detail": "RESULT: PASS \u2014 every extracted path literal resolves; stage2 retired-step-path audit: PASS",
+        "exit": 0,
+        "result": "PASS",
+        "runtime_seconds": 14.887
+      },
+      "worktree_check_paths": {
+        "cause": "a fresh git worktree does not share gitignored external payloads (pert_model/*/source, pert_data/*/local ...), so path literals cannot resolve there; AGENTS.md runs health checks from the repo root",
+        "command": "cd /tmp/arc-tsg-08 && bash script/check_paths.sh",
+        "detail": "6329 occurrences of 245 unresolved literals",
+        "exit": 1,
+        "result": "FAIL",
+        "runtime_seconds": 615.8
+      },
+      "worktree_check_tracked": {
+        "command": "cd /tmp/arc-tsg-08 && bash script/check_tracked.sh",
+        "detail": "before the commit it reported exactly the 2 new untracked python files",
+        "result": "PASS after committing the two new scripts"
+      }
+    }
+  },
+  "interpreter": "/home/chang/miniconda3/envs/arc/bin/python",
+  "merge_commit": "5d904cc4a2601ac5c5fb37228c98dd29f8a485ff",
+  "note": "Phase A builds and unit-tests the acceptance receipt builder and the Steps 01-06 invariance proof only. The final report, step README/AGENTS prose and the sealed --phase final receipt are phase B.",
+  "phase": "A+B",
+  "phase_a_evidence_dir": "/tmp/tsg-view-08-phaseA",
+  "phase_b": {
+    "commands": {
+      "health_phase_b": "cd /tmp/arc-tsg-08/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/acceptance.py health --root /home/chang/arc --output log/acceptance/health --verify-all --timeout 1200",
+      "preflight": "free -g; nvidia-smi --query-compute-apps; pgrep -af 'formal.py|learner.py|run_matrix|smoke.py'; uptime",
+      "receipt_final": "cd /tmp/arc-tsg-08/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/acceptance.py receipt --root /home/chang/arc --phase final --verify-binary --preregistration log/acceptance/pre_registration.md --health-dir log/acceptance/health --output log/acceptance/receipt.json",
+      "steps01_06_diff": "git -C /home/chang/arc diff --name-only b048687..dev -- stage2/01_bases stage2/02_models_tenv-5k stage2/03_tsg_drug_emb stage2/04_tsg_dose stage2/05_tsg_width_dose stage2/06_tsg_transfer",
+      "tests": {
+        "acceptance": "cd stage2/tsg_view && python -m unittest discover -s execution/tests -p test_acceptance.py",
+        "docs": "cd stage2/tsg_view && python -m unittest discover -s execution/tests -p test_docs.py",
+        "step_suite": "cd stage2/tsg_view && python -m unittest discover -s execution/tests"
+      }
+    },
+    "date": "2026-11-22",
+    "deviations": [
+      "The dev merge (7b068b7) brought tickets 01-07 products into the branch; the sealed receipt still reads the materialised checkout /home/chang/arc, because the accepted payloads, freezes and runs exist only there.",
+      "The phase-A invariance proof anchored on an opaque combined digest whose capture recipe was not reproducible. Phase B uses the pinned per-path baseline .scratch/tsg-view/research/baseline/steps01-06-per-path.sha256 (sha256 e6afc96e..., 11,468 files, 49.22 GB); steps_invariance now verifies that on-disk inventory, the b048687..dev diff and the dirty working tree.",
+      "Health evidence was produced with cwd /home/chang/arc by acceptance.py health and written into the worktree log/acceptance/health; a worktree run of check_paths still fails by design because the gitignored payloads are absent (#195).",
+      "The receipt run hashed the 49 GB Steps 01-06 artifact inventory plus the accepted payloads in 69.9 s; it was run alone, after verify_all had finished.",
+      "Report tables and figures are ticket 07 products; phase B did not regenerate them. The receipt verified them in place, replayed every PNG byte-identically from the figure CSVs, and all seven PNG digests equal the ones in log/build-07.json."
+    ],
+    "docs": {
+      "AGENTS.md": {
+        "bytes": 5658,
+        "sha256": "26a054c1afc9a4985d94d356b1134677001e6c832e8e41ccf0695dcd285981cb"
+      },
+      "README.md": {
+        "bytes": 19511,
+        "sections": [
+          "what the study is + links",
+          "pre-registration",
+          "results",
+          "verdict",
+          "limitations",
+          "reusable products",
+          "reproduction"
+        ],
+        "sha256": "1178ad1a6172d2443556ddb50e79f7618938ac0313f24d1d350bf913e707c8ed"
+      },
+      "stage2/AGENTS.md": {
+        "bullet": "tsg_view/ is a non-numbered study step (five view families / eight source products), publishes no weights",
+        "bytes": 4764,
+        "sha256": "79f9ce081f5c7e0ad9e22bde68b90772aaf7e92574db2b3a4835ed14701cdc67"
+      }
+    },
+    "gates": {
+      "f_sealed_receipt": "status=passed; 45/45 origins; pending 0; csv_only_replay byte-identical; Steps 01-06 PASS; caps 10G/8G; replay all_exact",
+      "g_docs": "README pre-registration precedes the first results section and contains log/acceptance/pre_registration.md verbatim; test_docs.py 6/6 OK",
+      "h_health": "check_paths 0 (13.25 s), check_tracked 0 (0.125 s), verify_all 0 (281.094 s, 66/66) from /home/chang/arc, verify_all alone"
+    },
+    "health": {
+      "checks": {
+        "check_paths.sh": {
+          "log_sha256": "805db09292cd986f905d90df4d688a61be778813f1119b0597c4b23164b23b66",
+          "result": "RESULT: PASS - every extracted path literal resolves; stage2 retired-step-path audit: PASS",
+          "returncode": 0,
+          "runtime_seconds": 13.25
+        },
+        "check_tracked.sh": {
+          "log_sha256": "4c0781aa0cce274f1795a64d15899f593ca94b262cf41fe8a22ab5ea693fe635",
+          "result": "RESULT: PASS - all scanned executable files are tracked (or documented expected-ignored)",
+          "returncode": 0,
+          "runtime_seconds": 0.125
+        },
+        "verify_all.sh": {
+          "isolation": "run alone in the main checkout /home/chang/arc after the preflight; no other heavy job active",
+          "log_sha256": "d370bab94e499ad5f3d74c92cc2c37bd95d4f879a410fa36b55b1f6605f5a33f",
+          "result": "RESULT: PASS - verified 66/66 item(s)",
+          "returncode": 0,
+          "runtime_seconds": 281.094
+        }
+      },
+      "commit": "7b068b78db2ab0917130e431abe987330de1e90d",
+      "dir": "log/acceptance/health",
+      "health_json_sha256": "61e435b2c504ac9e5fbfda818d070801164cc7ecc187f20662a2e1d76b1b8a08",
+      "preflight": {
+        "available_ram_gib": 20,
+        "file": "log/acceptance/health/preflight.txt",
+        "formal_or_learner_processes": 0,
+        "gpu_compute_processes": 0,
+        "note": "recorded immediately before the health run; no GPU or formal job was active",
+        "sha256": "36e3c7ecbe38cc4b7491afa48a12dc0f94523197ad8bd6c8861fe1fd523100e3",
+        "swap_free_gib": 61
+      }
+    },
+    "pre_registration": {
+      "bytes": 379,
+      "path": "log/acceptance/pre_registration.md",
+      "position": "before the first results heading (test_docs.py enforces both)",
+      "readme_contains_verbatim": true,
+      "sha256": "265d4a7897f9b1d705e362e9722419b7f862127b97221887f3d80aab353fda9d",
+      "source": "verbatim block from .scratch/tsg-view/research/final-results.md (ADR 0082 wording)"
+    },
+    "receipt": {
+      "absolute_paths": "none: the receipt contains no /tmp or /home/chang string",
+      "bytes": 961596,
+      "caps": {
+        "memory_max": "10G",
+        "memory_max_bytes": 10737418240,
+        "memory_swap_max": "8G",
+        "swap_max_bytes": 8589934592,
+        "telemetry_seconds": 10.0
+      },
+      "complete_origins": 45,
+      "csv_only_replay": {
+        "byte_identical": true,
+        "dpi": 150,
+        "matplotlib": "3.10.9",
+        "render_status_sha256": "d40bc19ee3cb299d7206e90df53edbc5bdcbaf610819cf1d31f25a94dd129b56",
+        "renderer_sha256": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8",
+        "suite": "all"
+      },
+      "figures": {
+        "learning_curves_tahoe_bulk.png": "b3f66712bd937f13cac3b472eab0aead0d16f7742e05f0d1e71080da2ada04a6",
+        "learning_curves_tenv.png": "30592793904ff3dbf0f398b035445ad043602aaa1ba2a0fc0b451fe1487fa011",
+        "metrics_per_dose_tahoe_bulk.png": "f8f26adc99027c44b7e1e4d7c051e9e04b1e4c4deb048b7464e3b47c291d74fb",
+        "metrics_per_dose_tenv.png": "9e735e561fe532e1a1914a2249427c3a7275a9e19dd1aeac481310cd244028a5",
+        "metrics_tahoe_bulk.png": "3328c1fc94510a2941b367ff964b28a24437b44a5e7837e7300321d519172490",
+        "metrics_tenv.png": "163e9f3729bf989a28b8c9ddae8b3814ef5ccf7259c1fe275f6d9746db6d3ca7",
+        "views_effect.png": "629335b1d52fed2886d3898fecdaabb020b94da1730efbed8fc3a7260fe5ccf6"
+      },
+      "figures_match_build_07": true,
+      "formal_fits": 45,
+      "formal_verify": {
+        "origins": 45,
+        "path": "stage2/tsg_view/output/runs/formal_verify.json",
+        "sha256": "ad3d96beaf8df570ac99683cb7dee07a72520c4a5ddaf5a8f6b6b4f577a640c8",
+        "status": "PASS"
+      },
+      "inventory": {
+        "figure_data": 8,
+        "figures": 8,
+        "freezes": 108,
+        "health": 7,
+        "inputs": 1,
+        "report": 1,
+        "report_tables": 11,
+        "resources": 720,
+        "runs": 551,
+        "smoke": 8,
+        "truth": 60,
+        "view_companions": 21,
+        "view_payloads": 7,
+        "views": 11
+      },
+      "path": "log/acceptance/receipt.json",
+      "pending_origins": 0,
+      "phase": "final",
+      "plan_sha256": "2f59a8704b416debc8bd8ea9a7bb0acbaa3f0a2bd0fa2f11f4060f6fca44bf29",
+      "pre_registration_sha256": "265d4a7897f9b1d705e362e9722419b7f862127b97221887f3d80aab353fda9d",
+      "replay": {
+        "all_exact": true,
+        "matrix_origins_exact": 45,
+        "smoke_claims": 10
+      },
+      "resources": {
+        "max_sample_gap_seconds": 16.986,
+        "memory_max_bytes": 10737418240,
+        "min_available_ram_kib": 18833496,
+        "origins": 45,
+        "peak_gpu_used_mib": 3367,
+        "peak_rss_below_cap": true,
+        "peak_rss_kib": 6668544,
+        "swap_max_bytes": 8589934592,
+        "telemetry_samples": 1354
+      },
+      "runtime_seconds": 69.9,
+      "schema": "tsg-view-acceptance-v1",
+      "sha256": "9e1842e9d77e1fcf0d3faf2b15a3cfd9d3ba90e0f6cf284a9aff62c88ddf5a5f",
+      "status": "passed"
+    },
+    "status": "sealed",
+    "steps01_06": {
+      "baseline_file": {
+        "files": 11468,
+        "mode": "manifest",
+        "path": ".scratch/tsg-view/research/baseline/steps01-06-per-path.sha256",
+        "sha256": "e6afc96eb6af7cf4d6c1562e5be01bd3a0e9371913f3afb79eb4c8f60dbb7e89"
+      },
+      "baseline_ref": {
+        "refs_sha256": "ed212bef27dc56a81b1db97c793273ccfc72e24eff6aa6e501515bd9fb56eef0",
+        "rev": "b04868769e9bbf924a7a73b59005491568b96c9c",
+        "source": ".scratch/tsg-view/research/baseline/refs.txt"
+      },
+      "git_diff": {
+        "command": [
+          "git",
+          "diff",
+          "--name-only",
+          "b04868769e9bbf924a7a73b59005491568b96c9c..dev",
+          "--",
+          "stage2/01_bases",
+          "stage2/02_models_tenv-5k",
+          "stage2/03_tsg_drug_emb",
+          "stage2/04_tsg_dose",
+          "stage2/05_tsg_width_dose",
+          "stage2/06_tsg_transfer"
+        ],
+        "empty": true,
+        "paths": [],
+        "status": "PASS",
+        "worktree_clean": true
+      },
+      "sealed": {
+        "digest": "c22c06455f33b18b0a0d85873791c2f19bebaf0afb8a97bc6745626e4255b75a",
+        "files": 106,
+        "per_step": {
+          "01_bases": {
+            "bytes": 216309,
+            "digest": "22484333a717352a9cd1657c6f435f44a732dcacf3aad1dc83ee5bdec53783fc",
+            "files": 17
+          },
+          "02_models_tenv-5k": {
+            "bytes": 110054,
+            "digest": "0a86d29b056874e0d716a24ad02d47efcd4e7b7b60cbac23e40cdd5f55d95c77",
+            "files": 61
+          },
+          "03_tsg_drug_emb": {
+            "bytes": 15449,
+            "digest": "2e03b2170e6824cb953b0a0adfaccef37c8c817f9d3af1aaa90ad10ac9d92e0c",
+            "files": 4
+          },
+          "04_tsg_dose": {
+            "bytes": 238584,
+            "digest": "d75aa4181801cbf0bc2fe8fea55c0c96fe74ce631f3997e61edf572e17f41346",
+            "files": 20
+          },
+          "05_tsg_width_dose": {
+            "bytes": 45404,
+            "digest": "a1b5c1d0b372c9a11162d3eb9244d970e27b68dcc6f05a6c36a25718c79cbeaa",
+            "files": 3
+          },
+          "06_tsg_transfer": {
+            "bytes": 77943,
+            "digest": "34d295c0fa42c03c20fca6743e53c1bea41814cc68e5dca1aff39e896fd3b0a7",
+            "files": 1
+          }
+        }
+      },
+      "steps": {
+        "01_bases": {
+          "baseline_digest": "cbe61e75b3ac6bc84851022a10a5b00c8d5ea860caa28783ea5e0f18a1a7ddac",
+          "bytes": 297412967,
+          "digest": "cbe61e75b3ac6bc84851022a10a5b00c8d5ea860caa28783ea5e0f18a1a7ddac",
+          "files": 451,
+          "verdict": "PASS"
+        },
+        "02_models_tenv-5k": {
+          "baseline_digest": "6292a27deb79ce645284de511f5988adc674571bbcab1ba2d21f840c82f3fa02",
+          "bytes": 1417917070,
+          "digest": "6292a27deb79ce645284de511f5988adc674571bbcab1ba2d21f840c82f3fa02",
+          "files": 1313,
+          "verdict": "PASS"
+        },
+        "03_tsg_drug_emb": {
+          "baseline_digest": "2b47a21944fdd9971e5423a1af763e2d3f035c78554cd5facc25aff6bcf7b1ff",
+          "bytes": 13157045081,
+          "digest": "2b47a21944fdd9971e5423a1af763e2d3f035c78554cd5facc25aff6bcf7b1ff",
+          "files": 1764,
+          "verdict": "PASS"
+        },
+        "04_tsg_dose": {
+          "baseline_digest": "5c6774132f9d7fdf8b60b3db9f37f9c9947159efbe9944e0b359ab90a4861552",
+          "bytes": 34043313647,
+          "digest": "5c6774132f9d7fdf8b60b3db9f37f9c9947159efbe9944e0b359ab90a4861552",
+          "files": 7194,
+          "verdict": "PASS"
+        },
+        "05_tsg_width_dose": {
+          "baseline_digest": "c625a966620d69bf906696f5cf778700ba1fff44f181a11fe1c4933704bcb3d1",
+          "bytes": 195936842,
+          "digest": "c625a966620d69bf906696f5cf778700ba1fff44f181a11fe1c4933704bcb3d1",
+          "files": 403,
+          "verdict": "PASS"
+        },
+        "06_tsg_transfer": {
+          "baseline_digest": "98cb71b41ff966c6ff819c6803668a94d8b839f506c2e3b392b076153e88972a",
+          "bytes": 107647562,
+          "digest": "98cb71b41ff966c6ff819c6803668a94d8b839f506c2e3b392b076153e88972a",
+          "files": 343,
+          "verdict": "PASS"
+        }
+      },
+      "verdict": "PASS"
+    },
+    "tests": {
+      "acceptance": {
+        "command": "python -m unittest discover -s execution/tests -p test_acceptance.py",
+        "failed": 0,
+        "passed": 34,
+        "ran": 34,
+        "result": "OK",
+        "seconds": 9.922
+      },
+      "docs": {
+        "command": "python -m unittest discover -s execution/tests -p test_docs.py",
+        "failed": 0,
+        "passed": 6,
+        "ran": 6,
+        "result": "OK",
+        "seconds": 0.001
+      },
+      "step_suite": {
+        "command": "python -m unittest discover -s execution/tests",
+        "failed": 0,
+        "passed": 163,
+        "ran": 166,
+        "result": "OK (skipped=3)",
+        "seconds": 76.073,
+        "skipped": 3
+      }
+    }
+  },
+  "schema": "tsg-view-build-08-v1",
+  "scope": {
+    "untouched": [
+      "report.py",
+      "render.py",
+      "learner.py",
+      "matrix.py",
+      "formal.py",
+      "stage2/tsg_view/output/runs (read-only)"
+    ],
+    "written": [
+      "stage2/tsg_view/execution/acceptance.py",
+      "stage2/tsg_view/execution/tests/test_acceptance.py",
+      "stage2/tsg_view/execution/tests/test_docs.py",
+      "stage2/tsg_view/log/build-08.json",
+      "stage2/tsg_view/README.md",
+      "stage2/tsg_view/AGENTS.md",
+      "stage2/AGENTS.md",
+      "stage2/tsg_view/log/acceptance/**"
+    ]
+  },
+  "tests": {
+    "acceptance": {
+      "command": "python -m unittest discover -s execution/tests -p test_acceptance.py",
+      "failed": 0,
+      "passed": 34,
+      "ran": 34,
+      "result": "OK",
+      "seconds": 9.922
+    },
+    "docs": {
+      "command": "python -m unittest discover -s execution/tests -p test_docs.py",
+      "failed": 0,
+      "passed": 6,
+      "ran": 6,
+      "result": "OK",
+      "seconds": 0.001
+    },
+    "step_suite": {
+      "command": "python -m unittest discover -s execution/tests",
+      "failed": 0,
+      "passed": 163,
+      "ran": 166,
+      "result": "OK (skipped=3)",
+      "seconds": 76.073,
+      "skipped": 3
+    }
+  },
+  "ticket": "08: acceptance receipt, pre-registered report and step documentation (phases A+B)",
+  "worktree": "/tmp/arc-tsg-08"
+}

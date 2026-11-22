@@ -1,0 +1,13 @@
+== check_tracked: every executable file must be tracked by git ==
+repo root: /home/chang/arc
+scan: 619 code files on disk (excluding virtualenvs, source/, __pycache__/, .git/, workspace archives); 648 tracked by git
+untracked: 13  (documented expected-ignored: 13, holes: 0)
+
+EXPECTED-IGNORED TREES (documented; reported, not failed)
+      13  stage1/xpert-fda-miri-v0
+  rationale: frozen v0 and ADR 0042 old formal recovery copies stay out of git. External items
+  (source/ and local/) are pruned by the scan itself, not listed here. Remove an
+  entry from EXPECTED_IGNORED when its tree retires.
+
+RESULT: PASS — all scanned executable files are tracked (or documented expected-ignored)
+exit: 0
