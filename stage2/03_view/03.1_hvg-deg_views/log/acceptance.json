@@ -1,0 +1,287 @@
+{
+  "axis_5000_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+  "axis_release_sha256": "ca14d9ff0dbdd83ec5ba6acf0fcd345dfc1aedb7445bbc362329754105989494",
+  "bounded_native_numeric_checks": [
+    {
+      "exclusions": 32,
+      "family": "full",
+      "members": {
+        "expression": 1,
+        "matched_vehicle": 12
+      },
+      "profile": "temp_env::Plate1-C02",
+      "shape": [
+        4478,
+        5000
+      ],
+      "source": "tenv"
+    },
+    {
+      "exclusions": 32,
+      "family": "merge",
+      "members": {
+        "expression": 6,
+        "matched_vehicle": 24
+      },
+      "profile": "merge::tenv::hiPSC-CM::SNGREZUHAYWORS-UHFFFAOYSA-N::0.2",
+      "shape": [
+        1377,
+        5000
+      ],
+      "source": "tenv"
+    },
+    {
+      "exclusions": 32,
+      "family": "solo",
+      "members": {
+        "expression": 1,
+        "matched_vehicle": 12
+      },
+      "profile": "temp_env::Plate1-C04",
+      "shape": [
+        1377,
+        5000
+      ],
+      "source": "tenv"
+    },
+    {
+      "exclusions": 32,
+      "family": "solo-deepest",
+      "members": {
+        "expression": 1,
+        "matched_vehicle": 12
+      },
+      "profile": "temp_env::Plate1-C03",
+      "shape": [
+        1377,
+        5000
+      ],
+      "source": "tenv"
+    },
+    {
+      "exclusions": 32,
+      "family": "full-pooled-label",
+      "members": {
+        "expression": 1,
+        "label_expression": 4,
+        "label_vehicle": 12,
+        "matched_vehicle": 12
+      },
+      "profile": "temp_env::Plate1-C02",
+      "shape": [
+        4478,
+        5000
+      ],
+      "source": "tenv"
+    },
+    {
+      "exclusions": 300,
+      "family": "full",
+      "members": {
+        "expression": 1,
+        "matched_vehicle": 2
+      },
+      "profile": "plate1:smp_1495:CVCL_0023",
+      "shape": [
+        66718,
+        5000
+      ],
+      "source": "tahoe_bulk"
+    },
+    {
+      "exclusions": 300,
+      "family": "merge",
+      "members": {
+        "expression": 2,
+        "matched_vehicle": 4
+      },
+      "profile": "merge::tahoe_bulk::A-172::ACWZRVQXLIRSDF-UHFFFAOYSA-N::0.05",
+      "shape": [
+        52777,
+        5000
+      ],
+      "source": "tahoe_bulk"
+    },
+    {
+      "exclusions": 300,
+      "family": "solo",
+      "members": {
+        "expression": 1,
+        "matched_vehicle": 2
+      },
+      "profile": "plate10:smp_2359:CVCL_0023",
+      "shape": [
+        52777,
+        5000
+      ],
+      "source": "tahoe_bulk"
+    },
+    {
+      "exclusions": 300,
+      "family": "full-pooled-label",
+      "members": {
+        "expression": 1,
+        "label_expression": 2,
+        "label_vehicle": 2,
+        "matched_vehicle": 2
+      },
+      "profile": "plate1:smp_1497:CVCL_0023",
+      "shape": [
+        66718,
+        5000
+      ],
+      "source": "tahoe_bulk"
+    }
+  ],
+  "consumer_fixed_prediction_checks": {
+    "e04": {
+      "fixed_prediction_sha256": "fa96c59bf76b49ed572313dbdec0902e464885f5732ce6b65d8b70ba47158ac5",
+      "per_observation_sha256": "223ff478074b269fea91f3531b10acc59d0c603a1cf0918454e4b5615602efcf",
+      "profile_order_sha256": "83d6f1789bfe3d7b30153784379828ea2839d2f0d501ff6f58d6fccf722bcfb9",
+      "rows": 469,
+      "source": "tenv",
+      "summary_sha256": "c4c6e893bdc5f29bf7e610726ec3476d7a3f796e8a399381c8ef7d09deff0b92"
+    },
+    "e05-tahoe_bulk": {
+      "fixed_prediction_sha256": "be2c420a3b5950870ba415262cf538d0fb399c9c1c5030fa70f041684f5730ad",
+      "per_observation_sha256": "7ffc1155dd33a493613399952c45b7588fe34c83e1cb98fa364527bf1917efc6",
+      "profile_order_sha256": "6ebb9b342be69659e57ad4b53e75a5506ab63bfd2aa99e9b2a5638458df99949",
+      "rows": 21626,
+      "source": "tahoe_bulk",
+      "summary_sha256": "040b1c5248dd00a16074f21d3178cfd5ffc82f118079995444372b9d8e3f3311"
+    },
+    "e05-tenv": {
+      "fixed_prediction_sha256": "ab9cc2bbf7812fbd29e5be3644b8194d6858827899d23f2424ecaeca02be5409",
+      "per_observation_sha256": "56884ad1be4a1d9a34c7bf45ba53fb82d9ba52f423e88dcaf95cf7f90eae5bca",
+      "profile_order_sha256": "56e0d3e29416bded65b3a27d433be44cc0007297b41dfc6dc7872d1e9ca57fd7",
+      "rows": 1407,
+      "source": "tenv",
+      "summary_sha256": "a9a880f9e93d5adbea2fb70bb8d4677847ba94ad656d307d0928e897400fa6a9"
+    },
+    "e06-tahoe_bulk": {
+      "fixed_prediction_sha256": "f73c38b018ded1ea297549a8f7ef797f8b0ed52c7ad8c22610155cf3f2a92bb7",
+      "per_observation_sha256": "a5a63eabdb985fca5f753567ebd89b13158b4bc19015b31ba724e9750234ca63",
+      "profile_order_sha256": "2faae6dd9727a8950649483103eb2a25bf192ff6ed7100f392ad8b30febcc9de",
+      "rows": 6643,
+      "source": "tahoe_bulk",
+      "summary_sha256": "fa04632a0d977ef69c9420a703954f8c3cfe915df41d1f43404f2732ab1ad5ba"
+    },
+    "e06-tenv": {
+      "fixed_prediction_sha256": "fa96c59bf76b49ed572313dbdec0902e464885f5732ce6b65d8b70ba47158ac5",
+      "per_observation_sha256": "4d3c541e51284f0182aef7cfff51df14cdd7bcf2f100e64f3837143e3c92aa46",
+      "profile_order_sha256": "99675052fc6eb1e620778c04c011f59abed9c4f47a8e5ce89962693153debf6a",
+      "rows": 469,
+      "source": "tenv",
+      "summary_sha256": "a885b2c4e5451dbdeb97314e3e5349cbbc58ffbff420168e21dc2a3481d10cb4"
+    },
+    "e07": {
+      "fixed_prediction_sha256": "fa96c59bf76b49ed572313dbdec0902e464885f5732ce6b65d8b70ba47158ac5",
+      "per_observation_sha256": "27b092a0a432497d4d27cbf4569d493aaa43c5577b27c2e7b71d7325faa1ec17",
+      "profile_order_sha256": "99675052fc6eb1e620778c04c011f59abed9c4f47a8e5ce89962693153debf6a",
+      "rows": 469,
+      "source": "tenv",
+      "summary_sha256": "2f6d0d7a41e8c1424935f62f072d8f38aa440db6c5a3325bff7015c2c8496eda"
+    }
+  },
+  "corpus_sha256": "a4cd6c42165569f77765a9c65de0d9d7e7292c192fdc7d25b455b78fdb50b4e4",
+  "csv_only_figure_sha256": {
+    "step04.png": "d139186f4f7524165524dc2bc96c151df7263dbed9a5e14e824d296a31e85fe2",
+    "step05-tahoe_bulk.png": "a89d7be97f454250afcd8a87ecde83b904e1695e956a6dc7131e020f43676321",
+    "step05-tenv.png": "ffb3bb874a11b25e6bae59cb04d9186554a9e8d79a32427a5d3aae4dc21ec957",
+    "step06-tahoe_bulk.png": "a08b8dca06e37fc504271cc5aaa654e6c7e99ce391e71b68d3c13cbb8c81c519",
+    "step06-tenv.png": "a77e604d329d1d1ae2325a924b2e0d375b0ff14b08453067a81b993460795550",
+    "step07.png": "5122a1eb4bdec63e696d31121f07355d504e8526bc4d84baabedccf33eec56be",
+    "step08.png": "054980e4a977b7b474aa5b96de03372f9245ca324257a013a6149a556f29455b"
+  },
+  "historical_tahoe_transfer_split_sha256": "e9ff5252c9a5f46aeda0a5a7124c28a1080127411b5712e7be571461ab6c554d",
+  "historical_tenv_kpgt_sha256": "618258ccb9342b6692d728a287051e19127ece4819ddb6d9f6f7a63b6f133822",
+  "pair_manifest_sha256": "31221eb48e9b1fd3f7a5c5d61bf63cdc0291bebb47f5d20debe1fb2c797e6395",
+  "partition_and_morgan_historical_parity": [
+    "single-dose tenv",
+    "dose tenv",
+    "dose Tahoe"
+  ],
+  "peak_rss_kib": {
+    "axis": 351576,
+    "consumer_cli_checks": 1973176,
+    "independent_numeric_checks": 594112,
+    "view_publish_and_replay": [
+      3210888,
+      3123468
+    ]
+  },
+  "representation_manifests": {
+    "tahoe_bulk": "4d00b23d6dcf0ddfbba4f60725b7f32701103a475f278e1db94eeebb968fbeac",
+    "tenv": "bc10c6af897b1b0d939a685aa198e03b22a3392e3891b721f70cc49f1f028678"
+  },
+  "status": "accepted",
+  "transfer_csv_outputs": {
+    "transfer_differences.csv": "82490b902c4b1e1742e6b34b030b9fb1c445d19adc5d4d31ef297140e88d07a7",
+    "transfer_scores.csv": "07d48a0149404ddd485761655328b79362d27ff7d9313056f9912435a7e2c517"
+  },
+  "transfer_fixed_prediction_checks": {
+    "e08-tahoe-only-0": {
+      "receipt_sha256": "37e4604d75e557da3c60d991b094b29578d100d437080eaf296f074037342bae",
+      "rows": 469
+    },
+    "e08-tahoe-only-1": {
+      "receipt_sha256": "9f53163ac1e1f3ff0c3bfb5cbffc3dceac08f4fbe0dc629076d37d027c099830",
+      "rows": 468
+    },
+    "e08-tahoe-only-2": {
+      "receipt_sha256": "63f658b8f2b2a25a904c052283e8d5d29a85854ef78c577b4dda8e8429f02386",
+      "rows": 465
+    },
+    "e08-tenv-only-0": {
+      "receipt_sha256": "933475119ad3fa0a035e887044ff78a24c2e4c25e06e99ec4007c1c78c129699",
+      "rows": 469
+    },
+    "e08-tenv-only-1": {
+      "receipt_sha256": "32a0c0eb9212b0d557e813babe7f9dc4293238442b6cd680c24cb771293c4c8f",
+      "rows": 468
+    },
+    "e08-tenv-only-2": {
+      "receipt_sha256": "1731157a14ebb3818f3e31cc2acd5ea95e49ed7ff8aa6b5e8d7b1f63792d6ffe",
+      "rows": 465
+    },
+    "e08-transfer-0": {
+      "receipt_sha256": "555f4d2e96d3c99b97fc54c956fe0c47143bbb901084b0458b9e3f5723bac616",
+      "rows": 469
+    },
+    "e08-transfer-1": {
+      "receipt_sha256": "c16c73d9a772d3ed4c2e807fa4e73ce77e395bcfab8f774487e0a0c19c82c039",
+      "rows": 468
+    },
+    "e08-transfer-2": {
+      "receipt_sha256": "9c557f326b3dcbb99bbe0aab290551142dc6a625957e038b7d8d711b01cd1be5",
+      "rows": 465
+    }
+  },
+  "view_manifest_sha256": "038129736f94233f0b9abc45a13d4363b47d463c10a2c5c6b7921e66312030a6",
+  "view_replay": {
+    "manifest_sha256": "038129736f94233f0b9abc45a13d4363b47d463c10a2c5c6b7921e66312030a6",
+    "outputs": [
+      "full-pooled-label/tahoe_bulk.h5ad",
+      "full-pooled-label/tahoe_bulk.members.csv",
+      "full-pooled-label/tenv.h5ad",
+      "full-pooled-label/tenv.members.csv",
+      "full/tahoe_bulk.h5ad",
+      "full/tahoe_bulk.members.csv",
+      "full/tenv.h5ad",
+      "full/tenv.members.csv",
+      "merge/tahoe_bulk.h5ad",
+      "merge/tahoe_bulk.members.csv",
+      "merge/tenv.h5ad",
+      "merge/tenv.members.csv",
+      "solo-deepest/tenv.h5ad",
+      "solo-deepest/tenv.members.csv",
+      "solo/tahoe_bulk.h5ad",
+      "solo/tahoe_bulk.members.csv",
+      "solo/tenv.h5ad",
+      "solo/tenv.members.csv",
+      "tahoe_bulk.exclusions.csv",
+      "tenv.exclusions.csv"
+    ],
+    "result": "PASS"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "axis_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+  "axis_size": 5000,
+  "control": "union matched vehicle rows by source observation identity",
+  "corpus_sha256": "a4cd6c42165569f77765a9c65de0d9d7e7292c192fdc7d25b455b78fdb50b4e4",
+  "default_family": "full",
+  "delta": "X minus control, or the corresponding merge delta for pooled labels",
+  "normalization": "sum selected-axis integer counts, then separate CP10K and log1p",
+  "outputs": {
+    "full-pooled-label/tahoe_bulk.h5ad": "71590b8b88056e37245a961f63b9ff019c4e9bdf869f620596f8c4de37f7117a",
+    "full-pooled-label/tahoe_bulk.members.csv": "96550f2ef84413d48b9411585ee54af2cfc157406b15067484307fdd99a0d06d",
+    "full-pooled-label/tenv.h5ad": "dd5d02feb28027acf9532823c196e29d11672d6605b21f717ac8e842b9ef0980",
+    "full-pooled-label/tenv.members.csv": "d929921323e69c2a3f580c645815db8661adcae53e8f46156408995216149c54",
+    "full/tahoe_bulk.h5ad": "79e06aeaf3135a8564d5889508e375e77a05c61325e497efc0d6d19365085e7c",
+    "full/tahoe_bulk.members.csv": "b9db6704d52d9597052a11ca83409b11f2bd4bc4e5e7cba0fef14b42ae7fa353",
+    "full/tenv.h5ad": "80925c0d0df0d1800e1a1e55ce7ebf5201abb276defbbff7a8d735d64bad0ecb",
+    "full/tenv.members.csv": "738ae868c8af1e29a947b5360ff0d9db94b5a43eb745759b295ff99394768cc4",
+    "merge/tahoe_bulk.h5ad": "591cfea49b9515c4e54b37f1218d766eed9049a27414663ea5ac3c513565d9a1",
+    "merge/tahoe_bulk.members.csv": "4041f7ca9573a03e75aacc9e9fab5d8e3ba97dd3b465d3c52ac24a46b8537d48",
+    "merge/tenv.h5ad": "88e78488ffeb58e6fd9bb708766d6507ed191f9b7a2f2d5e53213961fb183d3b",
+    "merge/tenv.members.csv": "3346ed6715e34984ec402795d441109e55ac782ae561fcd5f93968d43852b02f",
+    "solo-deepest/tenv.h5ad": "a3c3f0ec78932f4dd1b643e6feb009e4ac0b390e21df8cd799b2e1f7890d6f26",
+    "solo-deepest/tenv.members.csv": "f8087f12b2045a583099d49ff52df5c0d0619278eead5ebc4f892b658d9e3d49",
+    "solo/tahoe_bulk.h5ad": "80569d086592a4dc90747570ad30259b0ac35955aef6b3a1273261a5d6e79398",
+    "solo/tahoe_bulk.members.csv": "907efaed83cd1edfeceb5e3d143564171cea58c656065a8e63965cb4c1e0a3ea",
+    "solo/tenv.h5ad": "23f48cfa38ba9f658cabc844e1e30a1afc55464980a23151c5f5b6c925c432b7",
+    "solo/tenv.members.csv": "700cd2a06fb7b4f5cd663535fb56d8d4c7fb42d297fd9c7614bdc318e8e9a5f6",
+    "tahoe_bulk.exclusions.csv": "9c9e61ede74b0b8b0bff5b074f3c1499cd1e165ec8a792597b0f5750fc538d86",
+    "tenv.exclusions.csv": "2b3fdee7a85c77e2b0caf835d92cf935ec38968d7edfff84daff29104b0dbfb7"
+  },
+  "schema": "stage2-hvg-deg-views-raw-first-v1",
+  "solo_seed": 20261122,
+  "sources": [
+    "tenv",
+    "tahoe_bulk"
+  ]
+}
