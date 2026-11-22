@@ -24,11 +24,13 @@ weights**, and it must not edit Steps 01–06 products or their sealed records.
 ## Build, freeze, truth, matrix
 
 One heavy job at a time, under the repository caps (10 GiB memory, 8 GiB swap, 10-second
-RAM/GPU telemetry). Use `../01_bases/execution/capped.sh` or `systemd-run --user --scope -p
-MemoryMax=10G -p MemorySwapMax=8G`; check `free -g` (≥ 12 GiB available) first and never
-run a fit beside `script/verify_all.sh`. Disposable payloads go under
-`execution/checkpoints/` or `execution/freezes/`; keep manifests, parents, splits and CSV
-summaries tracked.
+RAM/GPU telemetry). Manual heavy runs (`build.py`, `freeze.py`, `truth.py`, `report.py`, or a
+bounded probe) go through `systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G`
+or the wrapper `../01_bases/execution/capped.sh`; the formal driver re-execs itself into the
+same scope, so `formal.py plan|run|verify` needs no outer wrapper. Check `free -g` (≥ 12 GiB
+available) first and never run a fit beside `script/verify_all.sh`. Disposable payloads go
+under `execution/checkpoints/` or `execution/freezes/`; keep manifests, parents, splits and
+CSV summaries tracked.
 
 ```bash
 PY=/home/chang/miniconda3/envs/arc/bin/python
@@ -50,6 +52,19 @@ $PY execution/formal.py verify --candidate execution/checkpoints/formal   # writ
 cannot move folds. `formal.py` seals its plan before the first fit and re-execs under the
 capped scope; re-running the same command resumes only the missing phases, and
 `--only-source` / `--only-fold` keep each fold group whole.
+
+### Code identity and replay after the review fixes
+
+The sealed plan binds two code-digest blocks, `code` and `learner_runtime`. The review-fix
+refactor (`formal.py`, `learner.py`, `matrix.py`, `views/__init__.py`) moves six digests, so
+`formal.py verify` records `code_identity.status = CODE_DRIFT` with a section-tagged
+`code_drift` list instead of refusing a code-only move; every non-code input change still
+fails closed. `formal.py run`/resume keeps the driver-file-only allowance. A fresh-process
+replay is deliberately stricter: it refuses a moved learner runtime (`learner.load`), because
+regenerating predictions would need the pre-refactor worker. The sealed runs' replay
+evidence is therefore the in-run, same-runtime evidence recorded in
+`output/runs/formal_run_report.json` and the per-origin run records, not a post-refactor
+replay. See [log/REVIEW_FIXES.md](log/REVIEW_FIXES.md).
 
 ## Report, figures and acceptance
 
@@ -94,9 +109,23 @@ bash script/check_tracked.sh
 bash script/verify_all.sh     # alone; heavy (52 GB hashed, 9.7 GiB page cache)
 ```
 
-The tests are hermetic (synthetic fixtures, no payloads, GPU or network). Health checks run
-from the repo root: a git worktree lacks the gitignored external payloads, so
-`check_paths.sh` fails there by design and `verify_all.sh` must run in the main checkout.
+The suite is **two-tier**. Fixture-only tests run anywhere (synthetic arrays, no payloads, GPU
+or network). Real-artifact tests read the TranSiGen source and the gitignored view/truth
+payloads repo-relatively or through `TSG_NATIVE_SOURCE` / `TSG_PAYLOAD_ROOT`, and are
+`skipUnless`-guarded with a message naming the missing path. The main checkout carries both
+dependencies, so `discover` runs 195/195 there with no variables; with the dependencies absent
+(a bare worktree, or either variable pointing at a path without them) 28 tests skip explicitly.
+Point both variables at the materialised checkout for full coverage:
+
+```bash
+cd /home/chang/arc/stage2/tsg_view
+TSG_NATIVE_SOURCE=/home/chang/arc/pert_model/TranSiGen/source \
+TSG_PAYLOAD_ROOT=/home/chang/arc \
+$PY -m unittest discover -s execution/tests -p 'test_*.py' -v
+```
+
+Health checks run from the repo root: a git worktree lacks the gitignored external payloads,
+so `check_paths.sh` fails there by design and `verify_all.sh` must run in the main checkout.
 
 ## Staging and publication
 
@@ -104,3 +133,12 @@ Publish only the minimal accepted products under `output/report/`, `figure/` and
 manifests under `output/views/`; payloads, freezes and run checkpoints stay gitignored.
 Commit acceptance evidence under `log/acceptance/` and the ticket evidence under
 `log/build-08.json`. Leave the sealed Step 01–06 products and their logs intact.
+
+### Ticket-03 derived-view evidence
+
+`execution/evidence.py` regenerates the per-condition discarded-member counts from the
+published `members.csv` companions (never from a payload matrix), and the tracked result is
+`log/ticket-03-discarded-members.csv` — 55,531 rows: `solo` tenv 1,377, `solo` tahoe_bulk
+52,777, `solo-deepest` tenv 1,377. `execution/tests/test_evidence.py` reconciles the table
+with the released population constants and proves regeneration is byte-identical;
+`log/build-03.json` pins the run.
