@@ -50,6 +50,79 @@ MIN_GPU_FREE_MIB = 4096
 TELEMETRY_SECONDS = 10.0
 MEMINFO_KEYS = {"MemTotal": "mem_total_kib", "MemAvailable": "mem_available_kib",
                 "SwapFree": "swap_free_kib"}
+RUN_REPORT_FILE = "formal_run_report.json"
+#: Orchestration-only code. A driver bug fix must be able to resume an otherwise
+#: complete candidate without rewriting its sealed plan; the drift is recorded in the
+#: run/verify report, never hidden, and any scientific/freeze/truth/runtime change
+#: still fails closed.
+DRIVER_CODE_FILES = ("formal.py",)
+
+
+def driver_code_drift(sealed, current):
+    """Return the driver-only code drift, ``[]`` if identical, or ``None`` (fail closed)."""
+    if sealed == current:
+        return []
+    sealed_copy = json.loads(json.dumps(sealed))
+    current_copy = json.loads(json.dumps(current))
+    drift = []
+    for name in DRIVER_CODE_FILES:
+        before = (sealed_copy.get("code") or {}).pop(name, None)
+        after = (current_copy.get("code") or {}).pop(name, None)
+        if before != after:
+            drift.append({"file": name, "sealed_sha256": before,
+                          "current_sha256": after})
+    if sealed_copy != current_copy:
+        return None
+    return drift
+
+
+def emit_json(value, *, pretty=False):
+    """Best-effort stdout emission.
+
+    A blocked or broken stdout pipe (``BlockingIOError``/``OSError``/``BrokenPipeError``)
+    must never decide the driver's exit status: the durable report files are the
+    contract. Returns whether the text was written.
+    """
+    text = json.dumps(value, indent=2 if pretty else None, sort_keys=True) + "\n"
+    try:
+        sys.stdout.write(text)
+        sys.stdout.flush()
+    except (BlockingIOError, OSError):
+        return False
+    return True
+
+
+class _NullStdout:
+    """A stdout stand-in used only when the real stream cannot be flushed."""
+
+    def write(self, *args, **kwargs):
+        return 0
+
+    def flush(self):
+        return None
+
+    def isatty(self):
+        return False
+
+
+def quiet_stdout():
+    """Make interpreter-shutdown's stdout flush harmless after best-effort emission.
+
+    CPython exits 120 when flushing ``sys.stdout`` fails at shutdown, so a blocked pipe
+    could still change the exit status after ``main`` returned 0. Once writes have
+    failed we either flush cleanly or replace the stream with a no-op.
+    """
+    try:
+        sys.stdout.flush()
+    except (BlockingIOError, OSError):
+        sys.stdout = _NullStdout()
+
+
+def write_run_report(candidate, report):
+    """Write the durable final run report; this file, not stdout, is the evidence."""
+    path = Path(candidate) / RUN_REPORT_FILE
+    write_json(path, report)
+    return path
 TIME_BINARY = Path("/usr/bin/time")
 NVIDIA = shutil.which("nvidia-smi") or "/usr/lib/wsl/lib/nvidia-smi"
 
@@ -306,8 +379,7 @@ def invoke(context, origin, action, phase, *, selection, min_ram_kib,
     wrapped = list(command)
     if TIME_BINARY.is_file():
         wrapped = [str(TIME_BINARY), "-v", "-o", str(attempt / "time.txt")] + wrapped
-    print(json.dumps({"event": "start", "origin": origin, "action": action,
-                      "phase": phase}, sort_keys=True), flush=True)
+    emit_json({"event": "start", "origin": origin, "action": action, "phase": phase})
     telemetry = Telemetry(attempt / "telemetry.jsonl", interval=telemetry_seconds)
     with telemetry, (attempt / "subprocess.log").open("w") as log:
         completed = runner(wrapped, stdout=log, stderr=subprocess.STDOUT,
@@ -323,9 +395,8 @@ def invoke(context, origin, action, phase, *, selection, min_ram_kib,
         "plan_mode": plan["mode"]}
     write_json(attempt / "result.json", result)
     completed.check_returncode()
-    print(json.dumps({"event": "complete", "origin": origin, "action": action,
-                      "phase": phase, "elapsed_seconds": result["elapsed_seconds"]},
-                     sort_keys=True), flush=True)
+    emit_json({"event": "complete", "origin": origin, "action": action, "phase": phase,
+               "elapsed_seconds": result["elapsed_seconds"]})
     return result
 
 
@@ -424,12 +495,19 @@ def run_matrix(candidate, *, freezes, truth, native_source, device="cuda", mode=
                     only_fold=only_fold if mode == "probe" else (),
                     only_seed=only_seed if mode == "probe" else (),
                     repo_root_path=repo_root_path)
-    matrix.seal_plan(candidate, plan)
+    if (candidate / "formal_plan.json").is_file():
+        sealed_plan = matrix.load_plan(candidate)
+        code_drift = driver_code_drift(sealed_plan, plan)
+        if code_drift is None:
+            raise ValueError("sealed formal plan, runtime or input identity changed")
+    else:
+        matrix.seal_plan(candidate, plan)
+        sealed_plan = matrix.load_plan(candidate)
+        code_drift = []
     selected = matrix.filter_origins(plan["origins"], only_source=only_source,
                                      only_view=only_view, only_fold=only_fold,
                                      only_seed=only_seed)
     check_group_completeness(plan, selected)
-    sealed_plan = matrix.load_plan(candidate)
     records = []
     with (candidate / ".driver.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -468,7 +546,8 @@ def run_matrix(candidate, *, freezes, truth, native_source, device="cuda", mode=
                 "runs": sorted(records, key=lambda item: matrix.origin_key(item["origin"]))})
     return {"schema": RUN_REPORT_SCHEMA, "plan_sha256": matrix.plan_sha256(candidate),
             "mode": sealed_plan["mode"], "selected": len(selected),
-            "complete": len(records), "runs": records}
+            "complete": len(records), "runs": records,
+            "driver_code_drift": code_drift}
 
 
 # --------------------------------------------------------------------------- #
@@ -526,11 +605,15 @@ def verify(candidate, *, freezes, truth, native_source, device="cuda", mode="for
     sealed_plan = matrix.load_plan(candidate)
     if mode is not None and sealed_plan["mode"] != mode:
         raise ValueError(f"the sealed plan is a {sealed_plan['mode']} plan, not {mode}")
+    code_identity = None
     if sealed_plan["mode"] == "formal":
         current = plan_for(freezes=freezes, truth=truth, native_source=native_source,
                            device=device, mode="formal", repo_root_path=repo_root_path)
-        if current != sealed_plan:
+        code_drift = driver_code_drift(sealed_plan, current)
+        if code_drift is None:
             raise ValueError("sealed formal plan, runtime or input identity changed")
+        code_identity = {"sealed": sealed_plan["code"], "current": current["code"],
+                         "driver_code_drift": code_drift}
     selected = matrix.filter_origins(sealed_plan["origins"], only_source=only_source,
                                      only_view=only_view, only_fold=only_fold,
                                      only_seed=only_seed)
@@ -566,7 +649,7 @@ def verify(candidate, *, freezes, truth, native_source, device="cuda", mode="for
                            full_arm["origins"] + full_arm["fold_mean"]) else "DRIFT"
     report = {"schema": VERIFY_SCHEMA, "status": status,
               "mode": sealed_plan["mode"], "plan_sha256": matrix.plan_sha256(candidate),
-              "origins": len(evidence), "full_arm": full_arm,
+              "origins": len(evidence), "full_arm": full_arm, "code_identity": code_identity,
               "runs": [{"origin": item["origin"],
                         "run_manifest_sha256": item["run_manifest_sha256"],
                         "selection_sha256": item["selection_sha256"]} for item in evidence]}
@@ -592,6 +675,13 @@ def _plan_summary(plan_value):
 
 
 def main(argv=None):
+    try:
+        return _main(argv)
+    finally:
+        quiet_stdout()
+
+
+def _main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -629,13 +719,8 @@ def main(argv=None):
                   repo_root_path=arguments.repo_root, **filters)
     if arguments.action == "plan":
         plan_value = plan_for(**common)
-        if arguments.candidate:
-            path = matrix.seal_plan(arguments.candidate, plan_value)
-            sys.stdout.write(json.dumps({"plan": str(path),
-                                         **_plan_summary(plan_value)},
-                                        indent=2, sort_keys=True) + "\n")
-        else:
-            sys.stdout.write(json.dumps(plan_value, indent=2, sort_keys=True) + "\n")
+        path = matrix.seal_plan(arguments.candidate, plan_value)
+        emit_json({"plan": str(path), **_plan_summary(plan_value)}, pretty=True)
         return 0
     if arguments.action == "verify":
         report = verify(arguments.candidate, freezes=arguments.freezes,
@@ -644,7 +729,7 @@ def main(argv=None):
                         mode=arguments.mode, probe_rows=arguments.probe_rows,
                         probe_epochs=arguments.probe_epochs,
                         repo_root_path=arguments.repo_root, **filters)
-        sys.stdout.write(json.dumps(report, indent=2, sort_keys=True) + "\n")
+        emit_json(report, pretty=True)
         return 1 if arguments.fail_on_drift and report["status"] == "DRIFT" else 0
     # run
     if not arguments.no_scope and os.environ.get("TSG_VIEW_SCOPED") != "1":
@@ -658,7 +743,7 @@ def main(argv=None):
         record_cap(arguments.candidate, os.environ.get(
             "TSG_VIEW_SCOPE_UNIT", "arc-tsg-view-formal"))
     preflight_value = preflight(arguments.device, arguments.min_ram_kib)
-    sys.stdout.write(json.dumps({"preflight": preflight_value}, sort_keys=True) + "\n")
+    emit_json({"preflight": preflight_value})
     report = run_matrix(arguments.candidate, freezes=arguments.freezes,
                         truth=arguments.truth, native_source=arguments.native_source,
                         device=arguments.device, mode=arguments.mode,
@@ -668,7 +753,8 @@ def main(argv=None):
                         telemetry_seconds=arguments.telemetry_seconds,
                         repo_root_path=arguments.repo_root, sealed=arguments.sealed,
                         **filters)
-    sys.stdout.write(json.dumps(report, indent=2, sort_keys=True) + "\n")
+    write_run_report(arguments.candidate, report)
+    emit_json(report, pretty=True)
     return 0
 
 

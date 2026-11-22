@@ -221,6 +221,7 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # fit state are disposable and stay local to the checkout that produced them.
 # The global `output/` rule hides the directory, so re-include it before the
 # payload patterns below re-exclude the heavy files.
+!/stage2/tsg_view/figure/data/*.csv
 !/stage2/tsg_view/output/
 !/stage2/tsg_view/output/**
 /stage2/tsg_view/output/**/*.h5ad
