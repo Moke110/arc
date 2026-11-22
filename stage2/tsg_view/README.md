@@ -59,8 +59,17 @@ $PY execution/build.py --view full --source tenv --output output/views \
 $PY execution/freeze.py --view full --source tenv --views output/views \
     --destination execution/freezes/full/tenv --repo-root /home/chang/arc
 $PY execution/smoke.py --view full --source tenv --freeze execution/freezes/full/tenv \
-    --output execution/checkpoints/smoke --rows 64 --epochs 2 --device cuda
+    --output execution/checkpoints/smoke --rows 64 --epochs 2 --device cuda \
+    --repo-root /home/chang/arc \
+    --sealed /home/chang/arc/stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tenv
 ```
 
+A git worktree does not carry the gitignored payload trees, so the build, the freeze and the
+fit need `--repo-root /home/chang/arc` (the freeze and the fit also need `--sealed` when the
+checkout cannot resolve it), or read-only links to those payload directories.
+
 The `full` product carries only the accepted release's manifest digest and payload digests;
-the authoritative expression payload remains `stage2/01_bases/output/view-5k/`.
+the authoritative expression payload remains `stage2/01_bases/output/view-5k/`. Ticket-01
+evidence — digest-equal rebuilds for both sources (accepted manifest
+`3a596bb6…`, two staged rebuilds per source), byte-equal sealed folds and a bounded GPU
+smoke fit with exact replay — is recorded in [log/build-01.json](log/build-01.json).
