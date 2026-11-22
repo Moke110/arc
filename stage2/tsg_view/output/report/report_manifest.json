@@ -1,0 +1,56 @@
+{
+  "complete_origins": 27,
+  "diagnostics_sha256": {
+    "tenv": "964f057586fbb0a3880c631e668dbe8d358a6425ca77ce666e042d0de5adfe53"
+  },
+  "estimands": {
+    "condition_mean_caveat": "the replicated-condition population is not a random subset of the source: repeats concentrate on multi-plate, multi-article conditions",
+    "dose_design_note": "dose and fold are confounded by design: each fold holds exactly one dose, so dose and fold effects cannot be disentangled",
+    "fold": "equal-fold mean and fold sample SD (ddof=1); sample_equal_pooled is recorded for comparison and is never the headline",
+    "noise_floor": "median over replicated conditions of sqrt(mean over genes of the within-condition Delta variance, ddof=0) (population SD; headline)",
+    "paired": "equal-fold mean of paired (view - full) differences per seed, then equal-seed mean; half-width = 1.96*sqrt((fold_sd/sqrt(n_folds))**2 + (seed_sd/sqrt(n_seeds))**2), fold_sd = equal-seed mean of the per-seed fold sample SDs (ddof=1), seed_sd = sample SD of the per-seed equal-fold means (ddof=1); fold and seed spread are never pooled into one bar",
+    "paired_single_seed": "equal-fold mean of paired (view - full) differences; half-width = 1.96*fold_sd/sqrt(n_folds) with fold_sd the fold sample SD (ddof=1); single-seed sensitivity, no seed spread, reported separately from the main arms",
+    "pcc_ceiling": "profile-weighted mean of sqrt(rho_c) over the source's replicated conditions; heuristic diagnostic, not a measurement-error model",
+    "run": "per-profile sample-equal Delta metrics of one run (equal weight per profile)",
+    "seed": "headline = mean of per-seed equal-fold means; seed sample SD (ddof=1); fold and seed spread are reported separately, never pooled"
+  },
+  "figure_data": {
+    "figure/learning_curves.csv": "b4e048034d66284c68b5f29a93a897a4046717e20b2dcac3b75f0637fb63871a",
+    "figure/learning_curves_mean.csv": "d3d1d0590bbef6fa2f1837e24ee1a99d176df5b1027c622b8f7956a0cc0fe6ef",
+    "figure/metrics_bars.csv": "4b94c3d0db4457e7b2c0ec97b08652880ed11107106eecdba879d07b1df4ba63",
+    "figure/metrics_baseline.csv": "9854f97b73c3d55f04660bb01a92beb8d0fc8646a947f33bf93371058bfeef79",
+    "figure/metrics_per_dose_bars.csv": "9db7457ab4b3dc4d02509c9347addb255999011c2edd4ec6ef99106e09914b0f",
+    "figure/metrics_per_dose_points.csv": "379bbc3a3582df2c609abe1434460f7e2ed1d639acc890b644523f08bca73d98",
+    "figure/metrics_points.csv": "de5de7bcd295394a8a153d2fae099225d83828f3d515abe218cc97c4ef160dbb",
+    "figure/views_effect.csv": "301cc1b99f21e602bbe93fc6b77c4a7b8e6694bda50750fe7302b87183329a1e"
+  },
+  "mean_cell": {
+    "acceptance_receipt": "stage2/04_tsg_dose/log/round1-baselines-acceptance.json",
+    "acceptance_receipt_sha256": "f5077771f56299f01729740a73b88cc1f935643766b65e2d62ed18d37814415c",
+    "definition": "Step 04 axis-local Mean_cell: per cell line, the pooled mean of the fitted treated expression plus that cell line's unique original vehicles, scored Delta-space on the same frozen cold-drug-dose test rows",
+    "path": "stage2/04_tsg_dose/execution/historical/report_axis_local/baselines/data/round1_runs.csv",
+    "sha256": "52d209006d0885f92fd792d0071573295abba8f834ef8430de59019c04a6baeb"
+  },
+  "pending_origins": 18,
+  "schema": "tsg-view-report-v1",
+  "sources": [
+    "tenv"
+  ],
+  "tables": {
+    "baseline_mean_cell.csv": "7de6a5243ea72a12a94e4be83e6e50062d3dcbaaa54176c8e226997e65d7d9b4",
+    "diagnostics_beside_scores.csv": "4f7224385813f735aba3b40d8d7a759f0bb994aa02eedb768e31b0c88f6146e0",
+    "fold_spread.csv": "3587ea83d741beb81e05b408a96e9f47110e3d67b925b40ab67e18eb25562611",
+    "learning_curves.csv": "b4e048034d66284c68b5f29a93a897a4046717e20b2dcac3b75f0637fb63871a",
+    "metrics_condition_mean.csv": "7d1456eb69bdf42ebe308c34004fd44493e6a15fbfb94b0d665388f0748b78ef",
+    "metrics_per_dose.csv": "d8114bfa743365c26a32f641ad481351ee424682bd75010644d753365bab14e7",
+    "metrics_primary.csv": "a7cc5566cc9e412a2ea918e02dcfa0a82929b42ef34e95434e3ecbb2aa6b57f3",
+    "paired_vs_full.csv": "fade93dd390d8e104dbd7b8a62fbb2e4423e10e729065dd5d9266102cef639ee",
+    "paired_vs_full_solo_deepest.csv": "66faa2d2ad828526b30f77efbb4209b9e65a5d1e8975400338394fe2075235e7",
+    "run_status.csv": "88fa270cdfa383ab14dec874dec027d5753e8112ee1e2f9ad1a16acc1072360d",
+    "seed_spread.csv": "d0094c35df790f207adcfc31b180b65bc36c1204ed234c6cc7f96716b97de39b"
+  },
+  "truth_manifest_sha256": {
+    "tahoe_bulk": "9160f5f1b46ae6392f136718ff8b13aa83d31a672bfbdafd0e98fccca94e74d8",
+    "tenv": "dfbf9ff20be8f4422901f0f017648b56df1d646e8c860b694101e72437509230"
+  }
+}

@@ -1,0 +1,46 @@
+source,view,arm_type,fold,seed,status,detail,run_relative
+tenv,full,main,0,42,complete,,runs/tenv/full/fold-0/seed-42
+tenv,full,main,0,43,complete,,runs/tenv/full/fold-0/seed-43
+tenv,merge,main,0,42,complete,,runs/tenv/merge/fold-0/seed-42
+tenv,merge,main,0,43,complete,,runs/tenv/merge/fold-0/seed-43
+tenv,solo,main,0,42,complete,,runs/tenv/solo/fold-0/seed-42
+tenv,solo,main,0,43,complete,,runs/tenv/solo/fold-0/seed-43
+tenv,full-pooled-label,main,0,42,complete,,runs/tenv/full-pooled-label/fold-0/seed-42
+tenv,full-pooled-label,main,0,43,complete,,runs/tenv/full-pooled-label/fold-0/seed-43
+tenv,solo-deepest,solo-deepest sensitivity,0,42,complete,,runs/tenv/solo-deepest/fold-0/seed-42
+tenv,full,main,1,42,complete,,runs/tenv/full/fold-1/seed-42
+tenv,full,main,1,43,complete,,runs/tenv/full/fold-1/seed-43
+tenv,merge,main,1,42,complete,,runs/tenv/merge/fold-1/seed-42
+tenv,merge,main,1,43,complete,,runs/tenv/merge/fold-1/seed-43
+tenv,solo,main,1,42,complete,,runs/tenv/solo/fold-1/seed-42
+tenv,solo,main,1,43,complete,,runs/tenv/solo/fold-1/seed-43
+tenv,full-pooled-label,main,1,42,complete,,runs/tenv/full-pooled-label/fold-1/seed-42
+tenv,full-pooled-label,main,1,43,complete,,runs/tenv/full-pooled-label/fold-1/seed-43
+tenv,solo-deepest,solo-deepest sensitivity,1,42,complete,,runs/tenv/solo-deepest/fold-1/seed-42
+tenv,full,main,2,42,complete,,runs/tenv/full/fold-2/seed-42
+tenv,full,main,2,43,complete,,runs/tenv/full/fold-2/seed-43
+tenv,merge,main,2,42,complete,,runs/tenv/merge/fold-2/seed-42
+tenv,merge,main,2,43,complete,,runs/tenv/merge/fold-2/seed-43
+tenv,solo,main,2,42,complete,,runs/tenv/solo/fold-2/seed-42
+tenv,solo,main,2,43,complete,,runs/tenv/solo/fold-2/seed-43
+tenv,full-pooled-label,main,2,42,complete,,runs/tenv/full-pooled-label/fold-2/seed-42
+tenv,full-pooled-label,main,2,43,complete,,runs/tenv/full-pooled-label/fold-2/seed-43
+tenv,solo-deepest,solo-deepest sensitivity,2,42,complete,,runs/tenv/solo-deepest/fold-2/seed-42
+tahoe_bulk,full,main,0,42,incomplete,missing terminal.json,runs/tahoe_bulk/full/fold-0/seed-42
+tahoe_bulk,full,main,0,43,missing,missing run directory,runs/tahoe_bulk/full/fold-0/seed-43
+tahoe_bulk,merge,main,0,42,missing,missing run directory,runs/tahoe_bulk/merge/fold-0/seed-42
+tahoe_bulk,merge,main,0,43,missing,missing run directory,runs/tahoe_bulk/merge/fold-0/seed-43
+tahoe_bulk,solo,main,0,42,missing,missing run directory,runs/tahoe_bulk/solo/fold-0/seed-42
+tahoe_bulk,solo,main,0,43,missing,missing run directory,runs/tahoe_bulk/solo/fold-0/seed-43
+tahoe_bulk,full,main,1,42,missing,missing run directory,runs/tahoe_bulk/full/fold-1/seed-42
+tahoe_bulk,full,main,1,43,missing,missing run directory,runs/tahoe_bulk/full/fold-1/seed-43
+tahoe_bulk,merge,main,1,42,missing,missing run directory,runs/tahoe_bulk/merge/fold-1/seed-42
+tahoe_bulk,merge,main,1,43,missing,missing run directory,runs/tahoe_bulk/merge/fold-1/seed-43
+tahoe_bulk,solo,main,1,42,missing,missing run directory,runs/tahoe_bulk/solo/fold-1/seed-42
+tahoe_bulk,solo,main,1,43,missing,missing run directory,runs/tahoe_bulk/solo/fold-1/seed-43
+tahoe_bulk,full,main,2,42,missing,missing run directory,runs/tahoe_bulk/full/fold-2/seed-42
+tahoe_bulk,full,main,2,43,missing,missing run directory,runs/tahoe_bulk/full/fold-2/seed-43
+tahoe_bulk,merge,main,2,42,missing,missing run directory,runs/tahoe_bulk/merge/fold-2/seed-42
+tahoe_bulk,merge,main,2,43,missing,missing run directory,runs/tahoe_bulk/merge/fold-2/seed-43
+tahoe_bulk,solo,main,2,42,missing,missing run directory,runs/tahoe_bulk/solo/fold-2/seed-42
+tahoe_bulk,solo,main,2,43,missing,missing run directory,runs/tahoe_bulk/solo/fold-2/seed-43

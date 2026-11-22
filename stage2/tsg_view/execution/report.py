@@ -285,9 +285,28 @@ def plan_origins():
     return matrix.plan()
 
 
+def resolve_runs_root(runs_root):
+    """Accept either the runs directory or the formal candidate root that carries it.
+
+    ``matrix.run_relative`` puts every fit under ``<candidate>/runs/<source>/<view>/...``,
+    so the published formal root (``output/runs``) is one level above the directory this
+    module globs.  Resolve it instead of silently reporting an all-pending matrix when the
+    caller hands over the candidate root; the runs directory itself always wins.
+    """
+    runs_root = Path(runs_root)
+    if not runs_root.is_dir():
+        return runs_root
+    if any(runs_root.glob("*/*/fold-*/seed-*")):
+        return runs_root
+    nested = runs_root / "runs"
+    if nested.is_dir() and any(nested.glob("*/*/fold-*/seed-*")):
+        return nested
+    return runs_root
+
+
 def discover_run_dirs(runs_root):
     """Map ``(source, view, fold, seed)`` to the on-disk run directory."""
-    runs_root = Path(runs_root)
+    runs_root = resolve_runs_root(runs_root)
     found = {}
     if not runs_root.is_dir():
         return found
@@ -716,6 +735,7 @@ def _pair_interval(pairs, *, single_seed):
 def paired_tables(runs):
     """Paired view-vs-`full` differences; `solo-deepest` goes to its own table."""
     primary = [run for run in runs]
+    present = {run["source"] for run in primary}
     index = {}
     for run in primary:
         for metric in METRIC_COLUMNS:
@@ -743,6 +763,11 @@ def paired_tables(runs):
                     "metric": metric, "n_pairs": len(pairs), "missing_pairs": missing,
                     "interval_estimator": (PAIR_ESTIMAND_SINGLE_SEED if view == "solo-deepest"
                                            else PAIR_ESTIMAND)})
+                if source not in present:
+                    # the whole source is still running: name the absence instead of
+                    # leaving a "no-pairs" row that a later reader could mistake for a
+                    # finished source whose arms simply did not pair
+                    summary["status"] = "pending"
                 target.append(summary)
     main = _sorted(pd.DataFrame(main_rows, columns=TABLE_COLUMNS["paired_vs_full"]),
                    by_metric=True)

@@ -521,7 +521,7 @@ class TestRunInventory(ReportFixture):
             paired = pd.read_csv(out / "report" / "paired_vs_full.csv")
             tahoe = paired[paired["source"] == "tahoe_bulk"]
             self.assertTrue((tahoe["n_pairs"] == 0).all())
-            self.assertTrue((tahoe["status"] == "no-pairs").all())
+            self.assertTrue((tahoe["status"] == "pending").all())
             self.assertTrue((paired[paired["source"] == "tenv"]["n_pairs"] > 0).all())
             effects = pd.read_csv(out / "figure" / "views_effect.csv")
             self.assertEqual(set(effects["source"]), {"tenv"})
@@ -602,6 +602,71 @@ class TestDeterminism(ReportFixture):
                             & (primary["fold"] == row["fold"])
                             & (primary["seed"] == row["seed"])]
             self.assertAlmostEqual(row["value"], float(match[row["metric"]].iloc[0]), places=12)
+
+
+class TestRunsRootResolution(unittest.TestCase):
+    """The published formal root carries ``runs/`` one level down; both forms must work."""
+
+    def _candidate(self, tmp):
+        fixture = build_fixture(tmp / "fixture")
+        candidate = tmp / "candidate"
+        candidate.mkdir()
+        fixture["runs"].rename(candidate / "runs")
+        return fixture, candidate
+
+    def test_formal_candidate_root_is_resolved_to_its_runs_directory(self):
+        with tempfile.TemporaryDirectory(prefix="tsg-view-candidate-") as temporary:
+            tmp = Path(temporary)
+            fixture, candidate = self._candidate(tmp)
+            self.assertEqual(report.resolve_runs_root(candidate), candidate / "runs")
+            self.assertEqual(report.resolve_runs_root(candidate / "runs"), candidate / "runs")
+            arguments = report_args(fixture, tmp / "out")
+            arguments[1] = str(candidate)
+            with redirect_stdout(io.StringIO()):
+                report.main(arguments)
+            manifest = json.loads((tmp / "out" / "report" / "report_manifest.json").read_text())
+            self.assertEqual(manifest["complete_origins"], 45)
+            self.assertEqual(manifest["pending_origins"], 0)
+            status = pd.read_csv(tmp / "out" / "report" / "run_status.csv")
+            self.assertEqual(status["status"].tolist(), ["complete"] * 45)
+
+    def test_partial_candidate_root_reports_the_missing_arms_as_pending(self):
+        with tempfile.TemporaryDirectory(prefix="tsg-view-partial-") as temporary:
+            tmp = Path(temporary)
+            fixture, candidate = self._candidate(tmp)
+            shutil.rmtree(candidate / "runs" / "tahoe_bulk")
+            self.assertEqual(report.resolve_runs_root(candidate), candidate / "runs")
+            arguments = report_args(fixture, tmp / "out")
+            arguments[1] = str(candidate)
+            with redirect_stdout(io.StringIO()):
+                report.main(arguments)
+            manifest = json.loads((tmp / "out" / "report" / "report_manifest.json").read_text())
+            self.assertEqual(manifest["complete_origins"], 27)
+            self.assertEqual(manifest["pending_origins"], 18)
+            self.assertEqual(manifest["sources"], ["tenv"])
+            status = pd.read_csv(tmp / "out" / "report" / "run_status.csv")
+            self.assertEqual(len(status), 45)
+            pending = status[status["source"] == "tahoe_bulk"]
+            self.assertEqual(len(pending), 18)
+            self.assertEqual(set(pending["status"]), {"missing"})
+            primary = pd.read_csv(tmp / "out" / "report" / "metrics_primary.csv")
+            self.assertEqual(set(primary["source"]), {"tenv"})
+            paired = pd.read_csv(tmp / "out" / "report" / "paired_vs_full.csv")
+            tahoe = paired[paired["source"] == "tahoe_bulk"]
+            self.assertEqual(set(tahoe["status"]), {"pending"})
+            self.assertEqual(set(tahoe["n_pairs"]), {0})
+            self.assertTrue(tahoe["delta_mean"].isna().all())
+            tenv = paired[paired["source"] == "tenv"]
+            self.assertEqual(set(tenv["status"]), {"ok"})
+            effects = pd.read_csv(tmp / "out" / "figure" / "views_effect.csv")
+            self.assertEqual(set(effects["source"]), {"tenv"})
+
+    def test_empty_runs_root_keeps_every_origin_pending(self):
+        with tempfile.TemporaryDirectory(prefix="tsg-view-empty-") as temporary:
+            empty = Path(temporary) / "runs"
+            empty.mkdir()
+            self.assertEqual(report.resolve_runs_root(empty), empty)
+            self.assertEqual(report.discover_run_dirs(empty), {})
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
   "schema": "tsg-view-build-07-v1",
   "ticket": "07-report-and-figures",
   "phase": "A",
-  "status": "phase-a-complete",
+  "status": "phase-b-tenv-published",
   "branch": "impl/tsg-view-07",
   "base_commit": "3b59faf",
   "dev_merge": "fd9763c (dev merged into impl/tsg-view-07 after the phase A commits; report and renderer tests plus check_paths/check_tracked re-run green after the merge)",
@@ -462,5 +462,212 @@
       "stage2/tsg_view/figure/views_effect.png"
     ]
   },
-  "merge_commit": "8109808"
+  "merge_commit": "8109808",
+  "phase_b_tenv": {
+    "note": "first publication of ticket 07: the 27 tenv origins are complete, the 18 Tahoe origins are still fitting, so only the tenv tables and the tenv figure suite are published here; Tahoe is carried as an explicit pending marker everywhere a reader could otherwise read the matrix as finished",
+    "date": "2026-11-22",
+    "canonical_inputs": {
+      "runs": "/home/chang/arc/stage2/tsg_view/output/runs (formal candidate root; the 27 tenv origins are under runs/tenv, and runs/tahoe_bulk/full/fold-0/seed-42 is the one in-flight directory)",
+      "truth": "/home/chang/arc/stage2/tsg_view/output/truth",
+      "mean_cell": "stage2/04_tsg_dose/execution/historical/report_axis_local/baselines/data/round1_runs.csv (tracked in this worktree)"
+    },
+    "commands": {
+      "report": "cd /tmp/arc-tsg-07/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/report.py --runs /home/chang/arc/stage2/tsg_view/output/runs --truth /home/chang/arc/stage2/tsg_view/output/truth --report output/report --figure-data figure/data",
+      "render_tenv": "cd /tmp/arc-tsg-07/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python figure/script/render.py --data figure/data --output figure --suite tenv",
+      "refusal_probes": [
+        "--suite cross -> exit 1, cross-source views_effect requires both sources; pending: ['tahoe_bulk']",
+        "--suite all -> exit 1, --suite all requires both sources; pending: ['tahoe_bulk']",
+        "--suite tahoe -> exit 1, --suite tahoe_bulk requested but the figure data carry no tahoe_bulk rows (available: ['tenv'])"
+      ],
+      "csv_only_replay": "copy figure/data/ and execution/render.py into /tmp/tenv-replay, then MPLCONFIGDIR=/tmp/tenv-replay/mpl1 python -I render.py --data data --output out --suite tenv",
+      "tests": {
+        "report": "cd /tmp/arc-tsg-07/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p test_report.py",
+        "render": "cd /tmp/arc-tsg-07/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p test_render.py"
+      },
+      "health": [
+        "cd /tmp/arc-tsg-07 && bash script/check_paths.sh",
+        "cd /tmp/arc-tsg-07 && bash script/check_tracked.sh"
+      ]
+    },
+    "report_summary": {
+      "complete_origins": 27,
+      "pending_origins": 18,
+      "sources": [
+        "tenv"
+      ],
+      "run_status_rows": 45,
+      "tenv_status": "complete x27",
+      "tahoe_status": "missing x17 + incomplete x1 (runs/tahoe_bulk/full/fold-0/seed-42: missing terminal.json)"
+    },
+    "report_tables": {
+      "baseline_mean_cell.csv": {
+        "rows": 12,
+        "sha256": "7de6a5243ea72a12a94e4be83e6e50062d3dcbaaa54176c8e226997e65d7d9b4"
+      },
+      "diagnostics_beside_scores.csv": {
+        "rows": 5,
+        "sha256": "4f7224385813f735aba3b40d8d7a759f0bb994aa02eedb768e31b0c88f6146e0"
+      },
+      "fold_spread.csv": {
+        "rows": 72,
+        "sha256": "3587ea83d741beb81e05b408a96e9f47110e3d67b925b40ab67e18eb25562611"
+      },
+      "learning_curves.csv": {
+        "rows": 3130,
+        "sha256": "b4e048034d66284c68b5f29a93a897a4046717e20b2dcac3b75f0637fb63871a"
+      },
+      "metrics_condition_mean.csv": {
+        "rows": 27,
+        "sha256": "7d1456eb69bdf42ebe308c34004fd44493e6a15fbfb94b0d665388f0748b78ef"
+      },
+      "metrics_per_dose.csv": {
+        "rows": 108,
+        "sha256": "d8114bfa743365c26a32f641ad481351ee424682bd75010644d753365bab14e7"
+      },
+      "metrics_primary.csv": {
+        "rows": 27,
+        "sha256": "a7cc5566cc9e412a2ea918e02dcfa0a82929b42ef34e95434e3ecbb2aa6b57f3"
+      },
+      "paired_vs_full.csv": {
+        "rows": 20,
+        "sha256": "fade93dd390d8e104dbd7b8a62fbb2e4423e10e729065dd5d9266102cef639ee"
+      },
+      "paired_vs_full_solo_deepest.csv": {
+        "rows": 4,
+        "sha256": "66faa2d2ad828526b30f77efbb4209b9e65a5d1e8975400338394fe2075235e7"
+      },
+      "run_status.csv": {
+        "rows": 45,
+        "sha256": "88fa270cdfa383ab14dec874dec027d5753e8112ee1e2f9ad1a16acc1072360d"
+      },
+      "seed_spread.csv": {
+        "rows": 40,
+        "sha256": "d0094c35df790f207adcfc31b180b65bc36c1204ed234c6cc7f96716b97de39b"
+      }
+    },
+    "figure_data": {
+      "learning_curves.csv": {
+        "rows": 3130,
+        "sha256": "b4e048034d66284c68b5f29a93a897a4046717e20b2dcac3b75f0637fb63871a"
+      },
+      "learning_curves_mean.csv": {
+        "rows": 658,
+        "sha256": "d3d1d0590bbef6fa2f1837e24ee1a99d176df5b1027c622b8f7956a0cc0fe6ef"
+      },
+      "metrics_bars.csv": {
+        "rows": 20,
+        "sha256": "4b94c3d0db4457e7b2c0ec97b08652880ed11107106eecdba879d07b1df4ba63"
+      },
+      "metrics_baseline.csv": {
+        "rows": 4,
+        "sha256": "9854f97b73c3d55f04660bb01a92beb8d0fc8646a947f33bf93371058bfeef79"
+      },
+      "metrics_per_dose_bars.csv": {
+        "rows": 60,
+        "sha256": "9db7457ab4b3dc4d02509c9347addb255999011c2edd4ec6ef99106e09914b0f"
+      },
+      "metrics_per_dose_points.csv": {
+        "rows": 108,
+        "sha256": "379bbc3a3582df2c609abe1434460f7e2ed1d639acc890b644523f08bca73d98"
+      },
+      "metrics_points.csv": {
+        "rows": 108,
+        "sha256": "de5de7bcd295394a8a153d2fae099225d83828f3d515abe218cc97c4ef160dbb"
+      },
+      "views_effect.csv": {
+        "rows": 16,
+        "sha256": "301cc1b99f21e602bbe93fc6b77c4a7b8e6694bda50750fe7302b87183329a1e"
+      }
+    },
+    "figures": {
+      "learning_curves_tenv.png": {
+        "bytes": 219515,
+        "sha256": "30592793904ff3dbf0f398b035445ad043602aaa1ba2a0fc0b451fe1487fa011"
+      },
+      "metrics_per_dose_tenv.png": {
+        "bytes": 280645,
+        "sha256": "9e735e561fe532e1a1914a2249427c3a7275a9e19dd1aeac481310cd244028a5"
+      },
+      "metrics_tenv.png": {
+        "bytes": 152352,
+        "sha256": "163e9f3729bf989a28b8c9ddae8b3814ef5ccf7259c1fe275f6d9746db6d3ca7"
+      }
+    },
+    "render_status_json": {
+      "sha256": "662cf7d40c184b0be8a2380eaabb866c6261730f97b91ff0e0b681a39738da83",
+      "suite": "tenv",
+      "pending": {
+        "tahoe_bulk": "pending: Tahoe arms are absent from the report data (tenv suite first)"
+      }
+    },
+    "report_manifest": {
+      "sha256": "4b2e08838a633a58517379a0c556114a55f35b124825229d54984666dbdbc48f",
+      "complete_origins": 27,
+      "pending_origins": 18,
+      "sources": [
+        "tenv"
+      ]
+    },
+    "tahoe_pending_evidence": [
+      "run_status.csv enumerates all 45 origins: 27 tenv complete, 18 Tahoe not complete (17 missing run directory, 1 incomplete: missing terminal.json)",
+      "report_manifest.json records complete_origins=27 and pending_origins=18",
+      "paired_vs_full.csv carries the Tahoe rows with status 'pending', n_pairs=0 and no delta values, so an absent source can never be read as a finished source without pairs",
+      "figure/views_effect.png is not written, and render_status.json names tahoe_bulk pending",
+      "diagnostics_beside_scores.csv and every tenv table carry source=tenv only"
+    ],
+    "tenv_png_stability": {
+      "check": "sha256sum figure/*.png before and after the three refusal probes; sha256sum -c re-verified all three, so a refused cross/all attempt cannot rewrite an accepted tenv panel",
+      "digests": {
+        "learning_curves_tenv.png": "30592793904ff3dbf0f398b035445ad043602aaa1ba2a0fc0b451fe1487fa011",
+        "metrics_per_dose_tenv.png": "9e735e561fe532e1a1914a2249427c3a7275a9e19dd1aeac481310cd244028a5",
+        "metrics_tenv.png": "163e9f3729bf989a28b8c9ddae8b3814ef5ccf7259c1fe275f6d9746db6d3ca7"
+      }
+    },
+    "replay_evidence": {
+      "result": "all three tenv PNGs re-rendered byte-identically from figure/data/*.csv alone in a fresh python -I process with an isolated MPLCONFIGDIR, and render_status.json was byte-identical too",
+      "digests_match": true
+    },
+    "test_evidence": {
+      "test_report.py": {
+        "tests": 21,
+        "result": "OK",
+        "runtime_seconds": 4.58
+      },
+      "test_render.py": {
+        "tests": 8,
+        "result": "OK",
+        "runtime_seconds": 14.95
+      },
+      "total_tests": 29
+    },
+    "health_evidence": {
+      "check_paths.sh": {
+        "exit": 0,
+        "result": "PASS - every extracted path literal resolves; stage3 source-first audit PASS; stage2 retired-step-path audit PASS"
+      },
+      "check_tracked.sh": {
+        "exit": 0,
+        "result": "PASS - 606 scanned code files, 0 untracked"
+      },
+      "payload_links": "the item source/local read-only links created in phase A are still present and untracked; git status lists neither them nor any other non-deliverable file"
+    },
+    "code_changes": [
+      "execution/report.py: resolve_runs_root() accepts the published formal candidate root (the documented --runs path, which carries the runs/ directory one level down) as well as the runs directory itself; without it the documented phase B commands would have published an all-pending matrix with empty tenv tables",
+      "execution/report.py: paired_tables() labels every row of a source with no complete run as 'pending' instead of 'no-pairs', so an in-flight source is named rather than described as a finished source whose arms failed to pair",
+      "execution/tests/test_report.py: +3 tests (candidate-root resolution, partial candidate root reporting 27 complete / 18 pending with tenv-only figures, empty runs root keeping all origins pending); one phase A assertion updated from 'no-pairs' to 'pending' to match the new label",
+      ".gitignore: added !/stage2/tsg_view/figure/data/*.csv, mirroring the 04/05/06 steps, so the complete plotted values are tracked evidence instead of hidden by the global *.csv rule"
+    ],
+    "artifacts_changed": {
+      "execution/report.py": "d066182a3b198c4cd44a8068df2cc0c19af6cc8ab757b86047e226aa0dbb5a90",
+      "execution/tests/test_report.py": "ee4d54b2430437c374c6e7382a415c18dfd322957660cbf831f2c0df9609e4ba",
+      ".gitignore": "56570c1c9c376cd4b43576d38080e3c2205617da7b629bf91f0f2a251828f20b"
+    },
+    "for_the_tahoe_pass": [
+      "re-run the two documented commands unchanged after the 18 Tahoe origins finish; report.py then reports all 45 complete with pending_origins=0",
+      "publish with --suite tahoe, then --suite cross: cross refuses until both sources are present and writes only views_effect.png",
+      "the three tenv PNG digests above are the accepted ones; the Tahoe pass must leave them byte-identical (cross writes nothing else)",
+      "the report CSVs and figure/data CSVs will gain the Tahoe rows, so the CSV digests above are frozen only for this first publication"
+    ],
+    "artifact_digest_note": "the phase A artifact_sha256 entries for execution/report.py and execution/tests/test_report.py are superseded by artifacts_changed above; execution/render.py and figure/script/render.py are unchanged (renderer_sha256 in figure/render_status.json still equals the phase A digest)"
+  }
 }
