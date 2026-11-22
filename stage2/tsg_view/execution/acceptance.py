@@ -99,7 +99,7 @@ FREEZE_REQUIRED = ("config.json", "population.csv", "all_obs.csv", "parents.csv"
 STEPS = ("01_bases", "02_models_tenv-5k", "03_tsg_drug_emb", "04_tsg_dose",
          "05_tsg_width_dose", "06_tsg_transfer")
 BASELINE_REL = (".scratch/tsg-view/research/baseline/"
-                "steps01-06-artifact-digests.sha256")
+                "steps01-06-per-path.sha256")
 REFS_REL = ".scratch/tsg-view/research/baseline/refs.txt"
 
 VERIFY_ALL_NOTE = {
@@ -1319,8 +1319,61 @@ def _sealed_artifacts(root, step):
     return sorted(path for path in paths)
 
 
+def _git_diff_paths(root, rev, step, *, branch="dev"):
+    """Committed paths changed between the pinned planning ref and ``branch``."""
+    for target in (branch, "HEAD"):
+        completed = _git(root, "diff", "--name-only", f"{rev}..{target}", "--",
+                         f"stage2/{step}")
+        if completed.returncode == 0:
+            return sorted(path for path in completed.stdout.splitlines() if path.strip()), target
+    return None, None
+
+
+def _worktree_paths(root, step):
+    """Tracked paths with uncommitted changes (staged, unstaged or untracked)."""
+    completed = _git(root, "status", "--porcelain", "--untracked-files=all", "--",
+                     f"stage2/{step}")
+    if completed.returncode != 0:
+        return None
+    return sorted(line[3:] for line in completed.stdout.splitlines() if line.strip())
+
+
+def _git_diff_evidence(root, rev, diff_paths, dirty_paths, steps, branch="dev"):
+    """Summarise the committed and working-tree evidence for the receipt."""
+    committed = sorted({path for values in diff_paths.values()
+                        for path in (values or [])})
+    dirty = sorted({path for values in dirty_paths.values()
+                    for path in (values or [])})
+    unavailable = rev is None or any(value is None for value in diff_paths.values()) \
+        or any(value is None for value in dirty_paths.values())
+    if unavailable:
+        status = "unavailable"
+    else:
+        status = "PASS" if not committed and not dirty else "CHANGED"
+    command = None if rev is None else [
+        "git", "diff", "--name-only", f"{rev}..{branch}", "--",
+        *[f"stage2/{step}" for step in steps]]
+    return {"rev": rev, "branch": branch, "command": command,
+            "paths": committed, "empty": (None if unavailable else not committed),
+            "status": status,
+            "worktree_clean": (None if unavailable else not dirty),
+            "worktree_paths": dirty,
+            "per_step": {step: list(values or []) for step, values in diff_paths.items()},
+            "per_step_worktree": {step: list(values or [])
+                                  for step, values in dirty_paths.items()}}
+
+
 def steps_invariance(root, baseline_path=None, refs_path=None, *, steps=STEPS,
                      prior_receipt=None):
+    """Prove Steps 01-06 are unchanged.
+
+    The reference is either a per-path manifest (``sha256sum`` lines) or the opaque
+    single digest left by the planning capture. A per-path manifest pins the *on-disk*
+    artifact inventory -- including gitignored payloads such as checkpoints and output
+    manifests that ``git ls-files`` does not see -- so it is compared directly against
+    the current files. The pinned planning commit and the dirty working tree are checked
+    alongside it, so a source-code edit the artifact inventory does not list still fails.
+    """
     root = Path(root)
     paths = default_paths(root)
     baseline_path = Path(baseline_path) if baseline_path else paths["baseline"]
@@ -1343,10 +1396,17 @@ def steps_invariance(root, baseline_path=None, refs_path=None, *, steps=STEPS,
             rev = tokens[0]
     current, current_blocks = {}, {}
     for step in steps:
-        current[step] = _worktree_digests(root, _tracked_paths(root, step))
+        if manifest:
+            # The manifest is the declared artifact inventory: verify exactly those
+            # paths on disk, not the (smaller) git-tracked subset.
+            pinned = sorted(path for path in manifest
+                            if path.startswith(f"stage2/{step}/"))
+            current[step] = _worktree_digests(root, pinned)
+        else:
+            current[step] = _worktree_digests(root, _tracked_paths(root, step))
         current_blocks[step] = _step_block(current[step])
     reference = None
-    if rev is not None:
+    if rev is not None and not manifest:
         reference = {}
         for step in steps:
             records = _rev_digests(root, step, rev)
@@ -1362,9 +1422,15 @@ def steps_invariance(root, baseline_path=None, refs_path=None, *, steps=STEPS,
             "invariance baseline is opaque and the pinned planning ref is unavailable")
     if not manifest and not matches_recipe and reference is None:
         raise InvarianceChanged("invariance baseline cannot be reproduced")
+    diff_paths, diff_branch = {}, None
+    if rev is not None:
+        for step in steps:
+            changed, target = _git_diff_paths(root, rev, step)
+            diff_paths[step] = changed
+            diff_branch = diff_branch or target
+    dirty_paths = {step: _worktree_paths(root, step) for step in steps}
     proof_steps, verdict = {}, "PASS"
     for step in steps:
-        baseline_records = manifest
         if manifest:
             baseline_records = {path: digest for path, digest in manifest.items()
                                 if path.startswith(f"stage2/{step}/")}
@@ -1380,12 +1446,25 @@ def steps_invariance(root, baseline_path=None, refs_path=None, *, steps=STEPS,
         baseline_digest, baseline_bytes = (_step_block(normalized) if normalized
                                            else (sha256_text(""), 0))
         changed = []
-        for path in sorted(set(normalized) | set(current[step])):
-            before = normalized.get(path, {}).get("sha256")
-            after = current[step].get(path, {}).get("sha256")
-            if before != after:
-                changed.append({"path": path, "baseline": before, "current": after})
-        step_verdict = "PASS" if not changed else "CHANGED"
+        if manifest:
+            # Additions cannot hide: current is read from the pinned path set, so a
+            # missing path is a change and every present path is compared one-to-one.
+            for path in sorted(normalized):
+                before = normalized[path]["sha256"]
+                after = current[step].get(path, {}).get("sha256")
+                if before != after:
+                    changed.append({"path": path, "baseline": before, "current": after})
+        else:
+            for path in sorted(set(normalized) | set(current[step])):
+                before = normalized.get(path, {}).get("sha256")
+                after = current[step].get(path, {}).get("sha256")
+                if before != after:
+                    changed.append({"path": path, "baseline": before, "current": after})
+        committed = diff_paths.get(step)
+        dirty = dirty_paths.get(step)
+        unavailable = rev is not None and (committed is None or dirty is None)
+        step_verdict = ("PASS" if not changed and not committed and not dirty
+                        and not unavailable else "CHANGED")
         if step_verdict != "PASS":
             verdict = "CHANGED"
         proof_steps[step] = {
@@ -1397,6 +1476,8 @@ def steps_invariance(root, baseline_path=None, refs_path=None, *, steps=STEPS,
             "baseline_files": len(baseline_records),
             "baseline_bytes": baseline_bytes,
             "changed": changed,
+            "committed_changes": committed,
+            "worktree_changes": dirty,
         }
     sealed = {}
     for step in steps:
@@ -1430,11 +1511,14 @@ def steps_invariance(root, baseline_path=None, refs_path=None, *, steps=STEPS,
                           "sha256": sha256_file(baseline_path), "mode": mode,
                           "matches_recipe": matches_recipe,
                           "opaque_digest": opaque,
+                          "files": len(manifest),
                           "lines": len(text.splitlines())},
         "baseline_ref": {"rev": rev, "source": rel(root, refs_path) if refs_path.is_file()
                          else None,
                          "refs_sha256": sha256_file(refs_path)
                          if refs_path.is_file() else None},
+        "git_diff": _git_diff_evidence(root, rev, diff_paths, dirty_paths, steps,
+                                       diff_branch or "dev"),
     }
     if prior_receipt is not None and verdict != "PASS":
         raise InvarianceChanged("Steps 01-06 changed since the recorded baseline receipt")

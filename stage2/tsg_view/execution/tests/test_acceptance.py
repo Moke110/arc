@@ -580,7 +580,8 @@ class Fixture:
             folder = self.root / "stage2" / name
             for path in sorted(p for p in folder.rglob("*") if p.is_file()):
                 lines.append(f"{sha(path)}  {path.relative_to(self.root).as_posix()}")
-        baseline = self.root / ".scratch/tsg-view/research/baseline/steps01-06-artifact-digests.sha256"
+        baseline = (self.root / ".scratch/tsg-view/research/baseline/"
+                    "steps01-06-per-path.sha256")
         if mode == "manifest":
             write(baseline, "\n".join(lines) + "\n")
         else:
@@ -860,7 +861,7 @@ class FigureReplayTest(AcceptanceTestCase):
 class InvarianceTest(AcceptanceTestCase):
     def baseline(self):
         return (self.root / ".scratch/tsg-view/research/baseline/"
-                "steps01-06-artifact-digests.sha256")
+                "steps01-06-per-path.sha256")
 
     def test_invariance_manifest_baseline_passes(self):
         value = acceptance.steps_invariance(self.root, self.baseline())
@@ -869,6 +870,40 @@ class InvarianceTest(AcceptanceTestCase):
         for step in STEPS:
             self.assertEqual(value["steps"][step]["verdict"], "PASS")
             self.assertEqual(value["steps"][step]["changed"], [])
+        self.assertEqual(value["baseline_file"]["mode"], "manifest")
+        self.assertGreater(value["baseline_file"]["files"], 0)
+        self.assertEqual(value["git_diff"]["status"], "PASS")
+        self.assertTrue(value["git_diff"]["empty"])
+        self.assertTrue(value["git_diff"]["worktree_clean"])
+
+    def test_invariance_detects_a_committed_change_outside_the_baseline(self):
+        # A source file the artifact manifest never listed is still caught by the
+        # pinned-planning-ref diff.
+        write(self.root / "stage2/01_bases/execution/late.py", "x = 1\n")
+        env = {"GIT_AUTHOR_NAME": "f", "GIT_AUTHOR_EMAIL": "f@e",
+               "GIT_COMMITTER_NAME": "f", "GIT_COMMITTER_EMAIL": "f@e",
+               "PATH": "/usr/bin:/bin", "HOME": str(self.root / ".home")}
+        subprocess.run(["git", "-C", str(self.root), "add", "-A"], check=True,
+                       capture_output=True)
+        subprocess.run(["git", "-C", str(self.root), "commit", "-q", "-m", "late"],
+                       check=True, capture_output=True, env=env)
+        value = acceptance.steps_invariance(self.root, self.baseline())
+        self.assertEqual(value["verdict"], "CHANGED")
+        block = value["steps"]["01_bases"]
+        self.assertEqual(block["verdict"], "CHANGED")
+        self.assertEqual(block["changed"], [])
+        self.assertEqual(block["committed_changes"],
+                         ["stage2/01_bases/execution/late.py"])
+        self.assertEqual(value["git_diff"]["status"], "CHANGED")
+
+    def test_invariance_detects_an_uncommitted_change(self):
+        write(self.root / "stage2/04_tsg_dose/execution/edit.py", "y = 2\n")
+        value = acceptance.steps_invariance(self.root, self.baseline())
+        self.assertEqual(value["verdict"], "CHANGED")
+        self.assertEqual(value["steps"]["04_tsg_dose"]["verdict"], "CHANGED")
+        self.assertEqual(value["steps"]["04_tsg_dose"]["worktree_changes"],
+                         ["stage2/04_tsg_dose/execution/edit.py"])
+        self.assertFalse(value["git_diff"]["worktree_clean"])
 
     def test_invariance_detects_a_changed_tracked_file(self):
         write(self.root / "stage2/03_tsg_drug_emb/README.md", "# changed\n")
@@ -916,6 +951,37 @@ class InvarianceTest(AcceptanceTestCase):
                                                         "research/baseline/refs.txt")
                          .read_text().split()[0])
         self.assertGreater(proof["sealed"]["files"], 0)
+
+    def test_receipt_pins_the_sealed_schema_and_git_evidence(self):
+        receipt = self.receipt()
+        self.assertEqual(receipt["schema"], "tsg-view-acceptance-v1")
+        self.assertEqual(receipt["phase"], "final")
+        self.assertEqual(receipt["status"], "passed")
+        self.assertEqual(receipt["formal_fits"], 45)
+        self.assertEqual(receipt["complete_origins"], 45)
+        self.assertEqual(receipt["pending_origins"], [])
+        self.assertTrue(receipt["csv_only_replay"]["byte_identical"])
+        self.assertTrue(receipt["replay"]["all_exact"])
+        self.assertEqual(receipt["caps"]["memory_max"], "10G")
+        self.assertEqual(receipt["caps"]["memory_swap_max"], "8G")
+        self.assertRegex(receipt["pre_registration_sha256"], r"^[0-9a-f]{64}$")
+        self.assertRegex(receipt["plan_sha256"], r"^[0-9a-f]{64}$")
+        self.assertRegex(receipt["input_manifest_sha256"], r"^[0-9a-f]{64}$")
+        self.assertEqual(len(receipt["resources"]), 45)
+        first = next(iter(receipt["resources"].values()))
+        self.assertEqual(first["memory_max_bytes"], 10737418240)
+        self.assertEqual(first["swap_max_bytes"], 8589934592)
+        self.assertGreaterEqual(first["telemetry_samples"], 1)
+        proof = receipt["steps01_06"]
+        self.assertEqual(proof["git_diff"]["status"], "PASS")
+        for step in STEPS:
+            block = proof["steps"][step]
+            self.assertRegex(block["digest"], r"^[0-9a-f]{64}$")
+            self.assertRegex(block["baseline_digest"], r"^[0-9a-f]{64}$")
+            self.assertEqual(block["baseline_files"], block["files"])
+        paths = json.dumps(receipt)
+        self.assertNotIn('"/tmp', paths)
+        self.assertNotIn("/home/chang", paths)
 
 
 class HealthTest(AcceptanceTestCase):
