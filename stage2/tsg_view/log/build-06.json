@@ -703,6 +703,135 @@
     },
     "tree_state": "tracked tree clean; the untracked stage2/tsg_view/output/views/full-pooled-label/ payload directory belongs to ticket 04 and was left untouched"
   },
+  "merger_verification_06_fix": {
+    "acceptance_run": {
+      "command": "python stage2/tsg_view/execution/formal.py run --candidate stage2/tsg_view/output/runs --freezes stage2/tsg_view/execution/freezes --truth stage2/tsg_view/output/truth --native-source pert_model/TranSiGen/source --device cuda",
+      "exit_code": 0,
+      "note": "resume of the real completed candidate; no fit, no probe, no new run directory. The command entered a fresh systemd scope, so the driver rewrote its own scope bookkeeping (see untouched_artifacts)",
+      "refits": 0,
+      "report": {
+        "complete": 45,
+        "mode": "formal",
+        "plan_sha256": "2f59a8704b416debc8bd8ea9a7bb0acbaa3f0a2bd0fa2f11f4060f6fca44bf29",
+        "runs": 45,
+        "schema": "tsg-view-formal-run-v1",
+        "selected": 45
+      },
+      "report_file": "stage2/tsg_view/output/runs/formal_run_report.json",
+      "report_sha256": "6d8acd45b6e9265edb8d8cd8a809a9161fa8da3bc733c501808730729d08a5fd",
+      "report_sha256_matches_post_run_fix": true,
+      "start_events": 0,
+      "wall_seconds": 2.18
+    },
+    "acceptance_verify": {
+      "command": "same candidate/freezes/truth/native-source/device with the verify action",
+      "drift_unchanged": "all four fold-mean entries are bit-identical to the values recorded in post_run_fix.verify_after_fix: the full arm reproduces at about 1e-12 for seed 42 and the pre-existing seed-43 deltas, all PASS",
+      "driver_code_drift": {
+        "current_sha256": "3a60dcd849eeae8257af8885e9efddcba0820d52f8b518eee29e6b14934f57ff",
+        "file": "formal.py",
+        "sealed_sha256": "242f88b3a83d1b121396f97219e622b8cc2bbb3297cac486853a68a904d26f6f"
+      },
+      "exit_code": 0,
+      "formal_verify_json_sha256": "ad3d96beaf8df570ac99683cb7dee07a72520c4a5ddaf5a8f6b6b4f577a640c8",
+      "formal_verify_json_sha256_matches_post_run_fix": true,
+      "full_arm_fold_mean_drift": [
+        {
+          "pcc": -1.8502421816890546e-12,
+          "rmse": -4.839267875311748e-12,
+          "seed": 42,
+          "source": "tahoe_bulk",
+          "status": "PASS"
+        },
+        {
+          "pcc": -0.0009102507333306753,
+          "rmse": -0.0002846856038596912,
+          "seed": 43,
+          "source": "tahoe_bulk",
+          "status": "PASS"
+        },
+        {
+          "pcc": -8.21614998258724e-12,
+          "rmse": -3.18774451280035e-11,
+          "seed": 42,
+          "source": "tenv",
+          "status": "PASS"
+        },
+        {
+          "pcc": -0.0009266375786070591,
+          "rmse": 0.0012449989389755056,
+          "seed": 43,
+          "source": "tenv",
+          "status": "PASS"
+        }
+      ],
+      "origins": 45,
+      "other_code_files_identical": "freeze.py, inputs.py, learner.py, matrix.py and views/__init__.py match the seal exactly; formal.py is the only drift",
+      "runs": 45,
+      "status": "PASS",
+      "wall_seconds": 5.59
+    },
+    "date": "2026-11-22",
+    "health": {
+      "check_paths": "PASS (exit 0): 0 unresolved literals, 0 stale stage2 path literals",
+      "check_tracked": "PASS (exit 0): 13 documented expected-ignored stage1 files, 0 holes"
+    },
+    "merge": {
+      "conflicts": "none; 'ort' strategy, 3 files changed, 356 insertions(+), 21 deletions(-); no manual resolution needed",
+      "dev_before_merge": "32025da",
+      "merge_commit": "b0e7180",
+      "merged_branch": "impl/tsg-view-06 at 544937a (a2e2970, 544937a)",
+      "post_merge_scope": "git diff --name-status 32025da..b0e7180 lists only formal.py, test_formal.py and build-06.json",
+      "preserved": "build-06.json now holds both merger_verification (ticket 04/06 feature merge), post_run_fix (implementer) and this block"
+    },
+    "not_run": [
+      "any fit, probe or refit (resume only)",
+      "any edit of feature code to make a gate pass"
+    ],
+    "note": "Post-run stdout/exit-status fix merged on dev. The original feature-merge record stays in merger_verification; post_run_fix holds the implementer's evidence. This block is the merger's independent acceptance.",
+    "scope_check": {
+      "command": "git diff --name-status fd9763c..impl/tsg-view-06 (merge base; two-dot dev..impl is dominated by dev-side ticket 07 additions)",
+      "files": [
+        "stage2/tsg_view/execution/formal.py",
+        "stage2/tsg_view/execution/tests/test_formal.py",
+        "stage2/tsg_view/log/build-06.json"
+      ],
+      "result": "exactly the three allowed files; nothing else on the branch, no dev-side commits touched them since the merge base"
+    },
+    "tests": {
+      "full_suite": {
+        "command": "cd stage2/tsg_view && python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+        "exit_code": 0,
+        "result": "126 tests OK",
+        "seconds": 91.836
+      },
+      "test_formal": {
+        "command": "python -m unittest execution.tests.test_formal -v",
+        "exit_code": 0,
+        "note": "13 pre-existing + 7 blocked-stdout/driver-drift regressions",
+        "result": "20 tests OK",
+        "seconds": 36.398
+      },
+      "test_matrix": {
+        "command": "python -m unittest execution.tests.test_matrix -v",
+        "exit_code": 0,
+        "result": "13 tests OK",
+        "seconds": 1.211
+      }
+    },
+    "untouched_artifacts": {
+      "formal_plan_json": "2f59a8704b416debc8bd8ea9a7bb0acbaa3f0a2bd0fa2f11f4060f6fca44bf29",
+      "formal_plan_manifest_json": "f5b6b249e4801ebc3fa90f34955f402d860a12d4dfe385e0b0ead0dbe890cfab",
+      "method": "sha256 of all 1451 candidate files except formal_verify.json and formal_run_report.json, taken before the merge and again after both acceptance actions",
+      "only_change": {
+        "after_sha256": "5f345e8c6d7162d66cdc3c3300d0656725b5c48cd36b8220c69fbea5716f5a71",
+        "before_sha256": "c889ecf7067c8bdfa76a05c08c23fc21db5942f8a4e0eeea9d80055e9cb8b06f",
+        "file": "formal_cap.json",
+        "why": "the specified command has no --no-scope, so the driver re-executed inside a fresh systemd scope and record_cap rewrote the scope identity (unit and InvocationID). Driver bookkeeping only: no run, checkpoint, selection, record or plan byte changed."
+      },
+      "result": "1450 of 1451 files byte-identical, including every checkpoint, learning curve, run manifest, selection receipt, resource sample and run record",
+      "run_records_json": "e6f8b2580f59c5275059bc6ce8a80eaad794a2b485f2a3943e6c3f8dad92d6dd"
+    }
+  },
   "post_run_fix": {
     "commit": "a2e2970",
     "fix": {
