@@ -5,7 +5,7 @@
   "status": "phase-a-complete",
   "branch": "impl/tsg-view-07",
   "base_commit": "3b59faf",
-  "dev_merge": "pending: phase B runs after the 45-fit matrix exists; this branch is based on dev 3b59faf",
+  "dev_merge": "fd9763c (dev merged into impl/tsg-view-07 after the phase A commits; report and renderer tests plus check_paths/check_tracked re-run green after the merge)",
   "scope": {
     "written": [
       "stage2/tsg_view/execution/report.py",
@@ -53,8 +53,18 @@
     }
   },
   "test_evidence": {
-    "test_report.py": {"tests": 18, "result": "OK", "runtime_seconds": 4.06, "peak_rss_kib": 119944},
-    "test_render.py": {"tests": 8, "result": "OK", "runtime_seconds": 15.75, "peak_rss_kib": 143332},
+    "test_report.py": {
+      "tests": 18,
+      "result": "OK",
+      "runtime_seconds": 4.06,
+      "peak_rss_kib": 119944
+    },
+    "test_render.py": {
+      "tests": 8,
+      "result": "OK",
+      "runtime_seconds": 15.75,
+      "peak_rss_kib": 143332
+    },
     "total_tests": 26,
     "covers": [
       "run per-profile rows reduce to the stored sample-equal summary; digest tampering fails closed",
@@ -72,33 +82,317 @@
     ]
   },
   "report_tables": {
-    "metrics_primary.csv": ["source", "view", "arm_type", "fold", "seed", "n_samples", "n_defined_pcc", "n_defined_spearman", "n_defined_rmse", "n_defined_r2", "delta_pcc", "delta_spearman", "delta_rmse", "delta_r2", "constant_truth_count", "constant_prediction_count", "nonfinite_count", "truth", "estimand", "run_manifest_sha256", "run_metrics_sha256"],
-    "fold_spread.csv": ["truth", "source", "view", "arm_type", "seed", "metric", "equal_fold_mean", "fold_sd", "n_defined_folds", "sample_equal_pooled", "estimand"],
-    "seed_spread.csv": ["truth", "source", "view", "arm_type", "metric", "headline", "seed_sd", "n_seeds", "n_folds_total", "sample_equal_pooled", "estimand"],
-    "metrics_condition_mean.csv": ["source", "view", "arm_type", "fold", "seed", "n_conditions", "n_profiles", "n_defined_pcc", "n_defined_spearman", "n_defined_rmse", "n_defined_r2", "delta_pcc", "delta_spearman", "delta_rmse", "delta_r2", "truth_replicated_condition_count", "caveat_flag", "caveat", "truth", "estimand", "run_metrics_sha256"],
-    "metrics_per_dose.csv": ["source", "view", "arm_type", "fold", "seed", "held_dose_um", "held_dose_label", "dose_fold_confounded", "metric", "value", "n_samples", "n_defined", "n_profiles_total", "estimand", "design_note"],
-    "paired_vs_full.csv": ["source", "view", "arm_type", "metric", "delta_mean", "low", "high", "half_width", "fold_sd", "seed_sd", "n_folds", "n_seeds", "n_pairs", "missing_pairs", "interval_estimator", "status"],
-    "paired_vs_full_solo_deepest.csv": ["source", "view", "arm_type", "metric", "delta_mean", "low", "high", "half_width", "fold_sd", "seed_sd", "n_folds", "n_seeds", "n_pairs", "missing_pairs", "interval_estimator", "status"],
-    "baseline_mean_cell.csv": ["source", "view", "view_scope", "fold", "metric", "value", "n_samples", "baseline", "scenario", "seed", "estimand", "provenance_path", "provenance_sha256", "acceptance_receipt", "acceptance_receipt_sha256", "truth_rows_match"],
-    "diagnostics_beside_scores.csv": ["source", "view", "arm_type", "n_seeds", "n_folds", "delta_pcc", "delta_spearman", "delta_rmse", "delta_r2", "noise_floor", "noise_floor_mean", "noise_floor_ddof", "noise_floor_estimand", "pcc_ceiling", "pcc_ceiling_label", "pcc_ceiling_estimand", "pcc_ceiling_input_conditions", "pcc_ceiling_input_profiles", "rmse_minus_noise_floor", "pcc_minus_ceiling", "truth", "status", "source_manifest_sha256", "diagnostics_sha256"],
-    "run_status.csv": ["source", "view", "arm_type", "fold", "seed", "status", "detail", "run_relative"],
-    "learning_curves.csv": ["source", "view", "arm_type", "fold", "seed", "epoch", "train_loss", "validation_mse", "best_validation"],
-    "report_manifest.json": ["schema", "complete_origins", "pending_origins", "sources", "truth_manifest_sha256", "diagnostics_sha256", "mean_cell", "estimands", "tables", "figure_data"]
+    "metrics_primary.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "fold",
+      "seed",
+      "n_samples",
+      "n_defined_pcc",
+      "n_defined_spearman",
+      "n_defined_rmse",
+      "n_defined_r2",
+      "delta_pcc",
+      "delta_spearman",
+      "delta_rmse",
+      "delta_r2",
+      "constant_truth_count",
+      "constant_prediction_count",
+      "nonfinite_count",
+      "truth",
+      "estimand",
+      "run_manifest_sha256",
+      "run_metrics_sha256"
+    ],
+    "fold_spread.csv": [
+      "truth",
+      "source",
+      "view",
+      "arm_type",
+      "seed",
+      "metric",
+      "equal_fold_mean",
+      "fold_sd",
+      "n_defined_folds",
+      "sample_equal_pooled",
+      "estimand"
+    ],
+    "seed_spread.csv": [
+      "truth",
+      "source",
+      "view",
+      "arm_type",
+      "metric",
+      "headline",
+      "seed_sd",
+      "n_seeds",
+      "n_folds_total",
+      "sample_equal_pooled",
+      "estimand"
+    ],
+    "metrics_condition_mean.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "fold",
+      "seed",
+      "n_conditions",
+      "n_profiles",
+      "n_defined_pcc",
+      "n_defined_spearman",
+      "n_defined_rmse",
+      "n_defined_r2",
+      "delta_pcc",
+      "delta_spearman",
+      "delta_rmse",
+      "delta_r2",
+      "truth_replicated_condition_count",
+      "caveat_flag",
+      "caveat",
+      "truth",
+      "estimand",
+      "run_metrics_sha256"
+    ],
+    "metrics_per_dose.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "fold",
+      "seed",
+      "held_dose_um",
+      "held_dose_label",
+      "dose_fold_confounded",
+      "metric",
+      "value",
+      "n_samples",
+      "n_defined",
+      "n_profiles_total",
+      "estimand",
+      "design_note"
+    ],
+    "paired_vs_full.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "metric",
+      "delta_mean",
+      "low",
+      "high",
+      "half_width",
+      "fold_sd",
+      "seed_sd",
+      "n_folds",
+      "n_seeds",
+      "n_pairs",
+      "missing_pairs",
+      "interval_estimator",
+      "status"
+    ],
+    "paired_vs_full_solo_deepest.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "metric",
+      "delta_mean",
+      "low",
+      "high",
+      "half_width",
+      "fold_sd",
+      "seed_sd",
+      "n_folds",
+      "n_seeds",
+      "n_pairs",
+      "missing_pairs",
+      "interval_estimator",
+      "status"
+    ],
+    "baseline_mean_cell.csv": [
+      "source",
+      "view",
+      "view_scope",
+      "fold",
+      "metric",
+      "value",
+      "n_samples",
+      "baseline",
+      "scenario",
+      "seed",
+      "estimand",
+      "provenance_path",
+      "provenance_sha256",
+      "acceptance_receipt",
+      "acceptance_receipt_sha256",
+      "truth_rows_match"
+    ],
+    "diagnostics_beside_scores.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "n_seeds",
+      "n_folds",
+      "delta_pcc",
+      "delta_spearman",
+      "delta_rmse",
+      "delta_r2",
+      "noise_floor",
+      "noise_floor_mean",
+      "noise_floor_ddof",
+      "noise_floor_estimand",
+      "pcc_ceiling",
+      "pcc_ceiling_label",
+      "pcc_ceiling_estimand",
+      "pcc_ceiling_input_conditions",
+      "pcc_ceiling_input_profiles",
+      "rmse_minus_noise_floor",
+      "pcc_minus_ceiling",
+      "truth",
+      "status",
+      "source_manifest_sha256",
+      "diagnostics_sha256"
+    ],
+    "run_status.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "fold",
+      "seed",
+      "status",
+      "detail",
+      "run_relative"
+    ],
+    "learning_curves.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "fold",
+      "seed",
+      "epoch",
+      "train_loss",
+      "validation_mse",
+      "best_validation"
+    ],
+    "report_manifest.json": [
+      "schema",
+      "complete_origins",
+      "pending_origins",
+      "sources",
+      "truth_manifest_sha256",
+      "diagnostics_sha256",
+      "mean_cell",
+      "estimands",
+      "tables",
+      "figure_data"
+    ]
   },
   "figure_data": {
-    "learning_curves.csv": ["source", "view", "arm_type", "fold", "seed", "epoch", "train_loss", "validation_mse", "best_validation"],
-    "learning_curves_mean.csv": ["source", "view", "arm_type", "epoch", "mean_train_loss", "mean_validation_mse", "n_runs"],
-    "metrics_bars.csv": ["source", "view", "arm_type", "metric", "headline", "fold_sd", "seed_sd", "n_folds", "n_seeds", "sd_estimand", "mean_cell", "mean_cell_fold_sd"],
-    "metrics_points.csv": ["source", "view", "arm_type", "fold", "seed", "metric", "value", "x_offset"],
-    "metrics_baseline.csv": ["source", "metric", "mean_cell", "mean_cell_fold_sd", "n_folds", "provenance_sha256"],
-    "metrics_per_dose_bars.csv": ["source", "fold", "held_dose_um", "held_dose_label", "view", "arm_type", "metric", "value", "seed_sd", "n_seeds", "n_samples", "dose_fold_confounded", "design_note"],
-    "metrics_per_dose_points.csv": ["source", "fold", "held_dose_um", "view", "arm_type", "metric", "seed", "value", "x_offset"],
-    "views_effect.csv": ["source", "view", "arm_type", "metric", "delta_mean", "low", "high", "fold_sd", "seed_sd", "n_pairs", "status", "interval_estimator"]
+    "learning_curves.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "fold",
+      "seed",
+      "epoch",
+      "train_loss",
+      "validation_mse",
+      "best_validation"
+    ],
+    "learning_curves_mean.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "epoch",
+      "mean_train_loss",
+      "mean_validation_mse",
+      "n_runs"
+    ],
+    "metrics_bars.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "metric",
+      "headline",
+      "fold_sd",
+      "seed_sd",
+      "n_folds",
+      "n_seeds",
+      "sd_estimand",
+      "mean_cell",
+      "mean_cell_fold_sd"
+    ],
+    "metrics_points.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "fold",
+      "seed",
+      "metric",
+      "value",
+      "x_offset"
+    ],
+    "metrics_baseline.csv": [
+      "source",
+      "metric",
+      "mean_cell",
+      "mean_cell_fold_sd",
+      "n_folds",
+      "provenance_sha256"
+    ],
+    "metrics_per_dose_bars.csv": [
+      "source",
+      "fold",
+      "held_dose_um",
+      "held_dose_label",
+      "view",
+      "arm_type",
+      "metric",
+      "value",
+      "seed_sd",
+      "n_seeds",
+      "n_samples",
+      "dose_fold_confounded",
+      "design_note"
+    ],
+    "metrics_per_dose_points.csv": [
+      "source",
+      "fold",
+      "held_dose_um",
+      "view",
+      "arm_type",
+      "metric",
+      "seed",
+      "value",
+      "x_offset"
+    ],
+    "views_effect.csv": [
+      "source",
+      "view",
+      "arm_type",
+      "metric",
+      "delta_mean",
+      "low",
+      "high",
+      "fold_sd",
+      "seed_sd",
+      "n_pairs",
+      "status",
+      "interval_estimator"
+    ]
   },
   "figures": {
-    "per_source_tenv": ["learning_curves_tenv.png", "metrics_tenv.png", "metrics_per_dose_tenv.png"],
-    "per_source_tahoe": ["learning_curves_tahoe_bulk.png", "metrics_tahoe_bulk.png", "metrics_per_dose_tahoe_bulk.png"],
-    "cross_source": ["views_effect.png"],
+    "per_source_tenv": [
+      "learning_curves_tenv.png",
+      "metrics_tenv.png",
+      "metrics_per_dose_tenv.png"
+    ],
+    "per_source_tahoe": [
+      "learning_curves_tahoe_bulk.png",
+      "metrics_tahoe_bulk.png",
+      "metrics_per_dose_tahoe_bulk.png"
+    ],
+    "cross_source": [
+      "views_effect.png"
+    ],
     "suites": {
       "tenv": "renders the three tenv panels only; render_status.json records tahoe_bulk pending",
       "tahoe": "renders the three Tahoe panels only; accepted tenv PNGs untouched",
@@ -109,7 +403,9 @@
       "backend": "Agg before pyplot",
       "dpi": 150,
       "figure_size": "explicit figsize per figure and explicit subplots_adjust, never tight_layout",
-      "metadata": {"Software": null},
+      "metadata": {
+        "Software": null
+      },
       "timestamps": "none",
       "proof": "test_render.py copies figure/data and execution/render.py into a fresh tree, runs twice under python -I with separate MPLCONFIGDIR, and compares PNG sha256 (and render_status.json bytes)"
     }
@@ -139,8 +435,14 @@
     "renderer_preview": "all seven PNGs rendered and were visually inspected from a synthetic 45-run tree"
   },
   "health": {
-    "check_paths.sh": {"exit": 0, "result": "PASS - every extracted path literal resolves; stage2 and stage3 audits PASS"},
-    "check_tracked.sh": {"exit": 0, "result": "PASS - all scanned executable files are tracked"},
+    "check_paths.sh": {
+      "exit": 0,
+      "result": "PASS - every extracted path literal resolves; stage2 and stage3 audits PASS"
+    },
+    "check_tracked.sh": {
+      "exit": 0,
+      "result": "PASS - all scanned executable files are tracked"
+    },
     "note": "a git worktree does not carry gitignored payloads; for this health run the item source/local trees were linked read-only from /home/chang/arc, which leaves git status clean. No repository file was changed."
   },
   "deviations": [
@@ -159,5 +461,6 @@
       "stage2/tsg_view/figure/{learning_curves,metrics,metrics_per_dose}_{tenv,tahoe_bulk}.png",
       "stage2/tsg_view/figure/views_effect.png"
     ]
-  }
+  },
+  "merge_commit": "8109808"
 }
