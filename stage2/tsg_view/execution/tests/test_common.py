@@ -64,7 +64,7 @@ class RepositoryRootTest(unittest.TestCase):
             common.repo_root(HERE)
 
     def test_relative_falls_back_to_the_bare_name(self):
-        self.assertEqual(common.relative(REPO / "stage2/x.csv", REPO), "stage2/x.csv")
+        self.assertEqual(common.relative(REPO / "some/dir/x.csv", REPO), "some/dir/x.csv")
         self.assertEqual(common.relative("/elsewhere/y.csv", REPO), "y.csv")
 
 
