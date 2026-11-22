@@ -66,5 +66,33 @@ class ReportLinksTest(unittest.TestCase):
         self.assertFalse((STEP / "output" / "model").exists())
 
 
+class FigureCoverageTest(unittest.TestCase):
+    def setUp(self):
+        self.readme = README.read_text()
+
+    def test_every_published_png_is_linked(self):
+        pngs = sorted(path.name for path in (STEP / "figure").glob("*.png"))
+        self.assertTrue(pngs, "the figure suite is empty")
+        for name in pngs:
+            with self.subTest(name=name):
+                self.assertIn(f"figure/{name}", self.readme)
+
+
+class AgentsHermeticityTest(unittest.TestCase):
+    def setUp(self):
+        self.agents = (STEP / "AGENTS.md").read_text()
+
+    def test_no_unconditional_hermeticity_claim(self):
+        self.assertNotIn("The tests are hermetic (synthetic fixtures, no payloads", self.agents)
+        self.assertIn("two-tier", self.agents.lower())
+
+    def test_the_two_tier_contract_names_the_override_variables(self):
+        for name in ("TSG_NATIVE_SOURCE", "TSG_PAYLOAD_ROOT"):
+            with self.subTest(name=name):
+                self.assertIn(name, self.agents)
+        self.assertIn("skipUnless", self.agents)
+        self.assertIn("28 tests skip", self.agents)
+
+
 if __name__ == "__main__":
     unittest.main()
