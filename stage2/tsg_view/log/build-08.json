@@ -36,6 +36,155 @@
     "python": "3.13.13",
     "torch": "2.12.0+cu130"
   },
+  "final_refresh": {
+    "commands": {
+      "health": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/acceptance.py health --root /home/chang/arc --output log/acceptance/health --verify-all --timeout 1200",
+      "health_final": [
+        "cd /home/chang/arc && bash script/check_paths.sh",
+        "cd /home/chang/arc && bash script/check_tracked.sh"
+      ],
+      "receipt": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/acceptance.py receipt --root /home/chang/arc --phase final --verify-binary --preregistration log/acceptance/pre_registration.md --health-dir log/acceptance/health --output log/acceptance/receipt.json",
+      "tests": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v"
+    },
+    "commits": {
+      "docs": "1d57c6c",
+      "note": "dev is local (no upstream); the two commits were re-laid so the docs commit is the receipt HEAD",
+      "renderer_restore": "a45ebaf"
+    },
+    "date": "2026-11-22",
+    "docs_changes": {
+      "agents": [
+        "replaced 'The tests are hermetic (synthetic fixtures, no payloads, GPU or network)' with the two-tier contract: fixture-only tests plus real-artifact tests gated by TSG_NATIVE_SOURCE/TSG_PAYLOAD_ROOT and explicit skipUnless",
+        "full-coverage command with both variables set; 195 tests in the main checkout (195/195), 28 explicit skips when the dependencies are absent",
+        "cap mechanism: manual heavy runs under systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G or ../01_bases/execution/capped.sh; the formal driver re-execs itself in the same scope",
+        "code identity/replay: verify records CODE_DRIFT for a code-only move, run/resume keeps the driver-only allowance, a fresh-process replay refuses a moved learner runtime, and the sealed replay evidence is the in-run same-runtime record in formal_run_report.json/run records",
+        "ticket-03 evidence inventory: execution/evidence.py + log/ticket-03-discarded-members.csv (55,531 rows)"
+      ],
+      "readme": [
+        "full-arm anchor comparison stated as seed-42 only; seed-43 rows are full_arm.sensitivity with anchor_seed 42 and status sensitivity",
+        "new 'Post-review changes and code identity' section citing log/REVIEW_FIXES.md",
+        "Tahoe ceiling 0.4283 stated as a moved heuristic estimate 0.0017 below the ADR 0082 0.43-0.52 band, not agreement, and not tuned",
+        "ticket-03 discarded-member evidence bullet; test comment corrected to the two-tier wording",
+        "no 1.06 GB figure appeared in README.md or AGENTS.md, so none was corrected"
+      ],
+      "tests": "test_docs.py grew 6 -> 9: every published figure/*.png must be linked; AGENTS.md must not claim unconditional hermeticity and must name both override variables"
+    },
+    "health": {
+      "check_paths.sh": {
+        "returncode": 0,
+        "runtime_seconds": 13.034
+      },
+      "check_tracked.sh": {
+        "returncode": 0,
+        "runtime_seconds": 0.204
+      },
+      "commit": "1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0",
+      "dir": "stage2/tsg_view/log/acceptance/health",
+      "verify_all.sh": {
+        "items": "66/66 PASS",
+        "returncode": 0,
+        "runtime_seconds": 280.237
+      }
+    },
+    "preflight": {
+      "available_ram_gib": 20,
+      "formal_or_learner_processes": 0,
+      "gpu_compute_processes": 0,
+      "load_average": "2.36, 2.27, 2.12",
+      "note": "captured before the health+receipt pass; health/preflight.txt is the earlier phase_b transcript (21:59:51) and was not rewritten",
+      "swap_free_gib": 61,
+      "timestamp": "2026-11-22T22:56:39+08:00"
+    },
+    "receipt": {
+      "absolute_paths": "none: no /tmp or /home/chang string in the receipt",
+      "bytes": 961597,
+      "caps": {
+        "memory_max": "10G",
+        "memory_swap_max": "8G"
+      },
+      "complete_origins": 45,
+      "csv_only_replay": {
+        "byte_identical": true,
+        "figures": 7,
+        "renderer_sha256": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8"
+      },
+      "formal_verify": {
+        "origins": 45,
+        "path": "stage2/tsg_view/output/runs/formal_verify.json",
+        "sha256": "c0cbafd9d1881eb06b1af7bc1bc1ca87a4b42401d1f44f353b5e35059fa04bbe",
+        "status": "PASS"
+      },
+      "generated_at": "2026-11-22T15:02:48Z",
+      "git": {
+        "branch": "dev",
+        "dev": "1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0",
+        "head": "1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0",
+        "main": "4413a762faf75e0a01e100b9c23d663536a6a035"
+      },
+      "invariance": {
+        "git_diff": "PASS",
+        "per_step_verdicts": {
+          "01_bases": "PASS",
+          "02_models_tenv-5k": "PASS",
+          "03_tsg_drug_emb": "PASS",
+          "04_tsg_dose": "PASS",
+          "05_tsg_width_dose": "PASS",
+          "06_tsg_transfer": "PASS"
+        },
+        "schema": "tsg-view-steps01-06-invariance-v1"
+      },
+      "inventory_entries": 1522,
+      "path": "stage2/tsg_view/log/acceptance/receipt.json",
+      "pending_origins": 0,
+      "pre_registration_matches_file": true,
+      "pre_registration_sha256": "265d4a7897f9b1d705e362e9722419b7f862127b97221887f3d80aab353fda9d",
+      "sha256": "174e82efa52f55e057c50b8142e61f39263d01cc9d0bf65f58323af396797710",
+      "status": "passed"
+    },
+    "renderer_restore": {
+      "deferred": "execution/render.py de-duplication is deferred with control_rule; a renderer change needs figure/render_status.json re-sealed, not a code-only edit",
+      "fix": "restored execution/render.py to its sealed bytes (sha256 7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8); test_render.py now asserts the renderer is standalone",
+      "symptom": "receipt failed with ModuleNotFoundError: No module named 'common'; copying common.py as well left the replayed status differing only by renderer_sha256",
+      "unchanged": "no figure, report, view, truth or run byte changed",
+      "why": "review fix #5 rewrote execution/render.py to import common; figure/render_status.json (sealed) pins renderer_sha256 7a252b..., while the acceptance CSV-only replay copies execution/render.py alone and requires the replayed render_status.json bytes to equal the sealed ones"
+    },
+    "scope": "final pass: documentation corrections, sealed-renderer restore, health/receipt re-pin at the docs HEAD, full-suite evidence and clean tree",
+    "tests": {
+      "acceptance": {
+        "failed": 0,
+        "passed": 34,
+        "ran": 34,
+        "result": "OK",
+        "seconds": 9.341
+      },
+      "dependency_free": {
+        "note": "measured with the source/payloads absent (both override variables pointing at a missing path); the 28 skips are the gated real-artifact tests",
+        "ran": 195,
+        "skipped": 28
+      },
+      "docs": {
+        "failed": 0,
+        "passed": 9,
+        "ran": 9,
+        "result": "OK"
+      },
+      "step_suite": {
+        "failed": 0,
+        "passed": 195,
+        "ran": 195,
+        "result": "OK",
+        "seconds": 104.733,
+        "skipped": 0
+      }
+    },
+    "tree": {
+      "final_health": [
+        "script/check_paths.sh",
+        "script/check_tracked.sh"
+      ],
+      "state": "clean after the evidence commit; the receipt git.head names the docs commit 1d57c6c, as required"
+    }
+  },
   "gates": {
     "a_receipt_builder": {
       "cli": "acceptance.py health|receipt with --root/--views/--freezes/--truth/--runs/--inputs/--report/--figure/--log/--health-dir/--baseline/--refs/--preregistration/--verify-binary/--timestamp/--phase",

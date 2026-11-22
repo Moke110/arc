@@ -83,14 +83,14 @@
   "formal_verify": {
     "origins": 45,
     "path": "stage2/tsg_view/output/runs/formal_verify.json",
-    "sha256": "ad3d96beaf8df570ac99683cb7dee07a72520c4a5ddaf5a8f6b6b4f577a640c8",
+    "sha256": "c0cbafd9d1881eb06b1af7bc1bc1ca87a4b42401d1f44f353b5e35059fa04bbe",
     "status": "PASS"
   },
-  "generated_at": "2026-11-22T14:06:28Z",
+  "generated_at": "2026-11-22T15:02:48Z",
   "git": {
     "branch": "dev",
-    "dev": "7b068b78db2ab0917130e431abe987330de1e90d",
-    "head": "7b068b78db2ab0917130e431abe987330de1e90d",
+    "dev": "1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0",
+    "head": "1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0",
     "main": "4413a762faf75e0a01e100b9c23d663536a6a035"
   },
   "health": {
@@ -101,9 +101,9 @@
           "script/check_paths.sh"
         ],
         "log": "stage2/tsg_view/log/acceptance/health/check_paths.sh.log",
-        "log_sha256": "805db09292cd986f905d90df4d688a61be778813f1119b0597c4b23164b23b66",
+        "log_sha256": "8e7b9f8b1a04df1fd5ce71ecb93cf1927e6411f87c77b3f4bd142ab5ad40207a",
         "returncode": 0,
-        "runtime_seconds": 13.25,
+        "runtime_seconds": 13.034,
         "script_sha256": "37e76871b8db58f1ed7d3e0fcb57250bc0aed3ae38ef879f69b6fed4adb8e1cf"
       },
       "check_tracked.sh": {
@@ -112,9 +112,9 @@
           "script/check_tracked.sh"
         ],
         "log": "stage2/tsg_view/log/acceptance/health/check_tracked.sh.log",
-        "log_sha256": "4c0781aa0cce274f1795a64d15899f593ca94b262cf41fe8a22ab5ea693fe635",
+        "log_sha256": "f6758c7335bf85d705519ab3399dd242cf575fa29e4768a36ac3187a29984b37",
         "returncode": 0,
-        "runtime_seconds": 0.125,
+        "runtime_seconds": 0.204,
         "script_sha256": "e24a0f59e73ffad60e31517f97babe5aea3e702f15b370f6f6dbc5479f7082f7"
       },
       "verify_all.sh": {
@@ -125,12 +125,12 @@
         "log": "stage2/tsg_view/log/acceptance/health/verify_all.sh.log",
         "log_sha256": "d370bab94e499ad5f3d74c92cc2c37bd95d4f879a410fa36b55b1f6605f5a33f",
         "returncode": 0,
-        "runtime_seconds": 281.094,
+        "runtime_seconds": 280.237,
         "script_sha256": "3a3ab19965d848114f019e64e1d793b31d43e4b39ca16bb52a2cdb3ab1145fe3"
       }
     },
-    "commit": "7b068b78db2ab0917130e431abe987330de1e90d",
-    "health_json_sha256": "61e435b2c504ac9e5fbfda818d070801164cc7ecc187f20662a2e1d76b1b8a08",
+    "commit": "1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0",
+    "health_json_sha256": "0b2bc36d8a09d28f3af4f85aab8c77c88612bf2d80bb24dd226cc55d39a891a5",
     "schema": "tsg-view-health-v1",
     "verify_all": {
       "command": [
@@ -140,7 +140,7 @@
       "log": "stage2/tsg_view/log/acceptance/health/verify_all.sh.log",
       "log_sha256": "d370bab94e499ad5f3d74c92cc2c37bd95d4f879a410fa36b55b1f6605f5a33f",
       "returncode": 0,
-      "runtime_seconds": 281.094,
+      "runtime_seconds": 280.237,
       "script_sha256": "3a3ab19965d848114f019e64e1d793b31d43e4b39ca16bb52a2cdb3ab1145fe3",
       "status": "passed"
     }
@@ -695,15 +695,15 @@
       },
       "stage2/tsg_view/log/acceptance/health/check_paths.sh.log": {
         "bytes": 934,
-        "sha256": "805db09292cd986f905d90df4d688a61be778813f1119b0597c4b23164b23b66"
+        "sha256": "8e7b9f8b1a04df1fd5ce71ecb93cf1927e6411f87c77b3f4bd142ab5ad40207a"
       },
       "stage2/tsg_view/log/acceptance/health/check_tracked.sh.log": {
         "bytes": 698,
-        "sha256": "4c0781aa0cce274f1795a64d15899f593ca94b262cf41fe8a22ab5ea693fe635"
+        "sha256": "f6758c7335bf85d705519ab3399dd242cf575fa29e4768a36ac3187a29984b37"
       },
       "stage2/tsg_view/log/acceptance/health/health.json": {
-        "bytes": 1135,
-        "sha256": "61e435b2c504ac9e5fbfda818d070801164cc7ecc187f20662a2e1d76b1b8a08"
+        "bytes": 1136,
+        "sha256": "0b2bc36d8a09d28f3af4f85aab8c77c88612bf2d80bb24dd226cc55d39a891a5"
       },
       "stage2/tsg_view/log/acceptance/health/verify_all.sh.log": {
         "bytes": 2176,
@@ -3664,8 +3664,8 @@
         "sha256": "f5b6b249e4801ebc3fa90f34955f402d860a12d4dfe385e0b0ead0dbe890cfab"
       },
       "stage2/tsg_view/output/runs/formal_verify.json": {
-        "bytes": 32561,
-        "sha256": "ad3d96beaf8df570ac99683cb7dee07a72520c4a5ddaf5a8f6b6b4f577a640c8"
+        "bytes": 37925,
+        "sha256": "c0cbafd9d1881eb06b1af7bc1bc1ca87a4b42401d1f44f353b5e35059fa04bbe"
       },
       "stage2/tsg_view/output/runs/records/tahoe_bulk/full/fold-0/seed-42.json": {
         "bytes": 6869,
@@ -5882,8 +5882,8 @@
         "sha256": "9f15b02bb9cee3625eff177097abce1af0c19bc45d4d710e9de53b7e9528c376"
       },
       "stage2/tsg_view/log/build-03.json": {
-        "bytes": 36988,
-        "sha256": "4d318d3577fb577a98546cadeab2b99bcd3a356af2b6d84a57e1e94bfeae8b95"
+        "bytes": 38995,
+        "sha256": "673b934b60d7954be9990df0e02a595e977586ff2139ceb545d80e713465db61"
       },
       "stage2/tsg_view/log/build-04.json": {
         "bytes": 47075,
@@ -9728,7 +9728,7 @@
         "replay_phases": 2,
         "rows": 64,
         "seed": 42,
-        "sha256": "4d318d3577fb577a98546cadeab2b99bcd3a356af2b6d84a57e1e94bfeae8b95",
+        "sha256": "673b934b60d7954be9990df0e02a595e977586ff2139ceb545d80e713465db61",
         "source": "tenv",
         "view": "solo"
       },
@@ -9742,7 +9742,7 @@
         "replay_phases": 2,
         "rows": 64,
         "seed": 42,
-        "sha256": "4d318d3577fb577a98546cadeab2b99bcd3a356af2b6d84a57e1e94bfeae8b95",
+        "sha256": "673b934b60d7954be9990df0e02a595e977586ff2139ceb545d80e713465db61",
         "source": "tenv",
         "view": "solo-deepest"
       },
@@ -9824,7 +9824,7 @@
   },
   "report_scripts_sha256": {
     "execution/render.py": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8",
-    "execution/report.py": "d066182a3b198c4cd44a8068df2cc0c19af6cc8ab757b86047e226aa0dbb5a90",
+    "execution/report.py": "8e66357f2e3f4ed62f0277b25bad5a1b64ccbbc16aed1bca08dafb16d620e15b",
     "figure/script/render.py": "13f88769d4199335b8d66af4b418097ec27fe2a16b0bb82dcf230f7d642aacf3"
   },
   "resources": {

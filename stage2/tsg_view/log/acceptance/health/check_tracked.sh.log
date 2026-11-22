@@ -1,6 +1,6 @@
 == check_tracked: every executable file must be tracked by git ==
 repo root: /home/chang/arc
-scan: 619 code files on disk (excluding virtualenvs, source/, __pycache__/, .git/, workspace archives); 648 tracked by git
+scan: 626 code files on disk (excluding virtualenvs, source/, __pycache__/, .git/, workspace archives); 655 tracked by git
 untracked: 13  (documented expected-ignored: 13, holes: 0)
 
 EXPECTED-IGNORED TREES (documented; reported, not failed)
