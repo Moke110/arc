@@ -1,0 +1,163 @@
+{
+  "schema": "tsg-view-build-07-v1",
+  "ticket": "07-report-and-figures",
+  "phase": "A",
+  "status": "phase-a-complete",
+  "branch": "impl/tsg-view-07",
+  "base_commit": "3b59faf",
+  "dev_merge": "pending: phase B runs after the 45-fit matrix exists; this branch is based on dev 3b59faf",
+  "scope": {
+    "written": [
+      "stage2/tsg_view/execution/report.py",
+      "stage2/tsg_view/execution/render.py",
+      "stage2/tsg_view/figure/script/render.py",
+      "stage2/tsg_view/execution/tests/test_report.py",
+      "stage2/tsg_view/execution/tests/test_render.py",
+      "stage2/tsg_view/log/build-07.json"
+    ],
+    "untouched": [
+      "stage2/tsg_view/execution/learner.py",
+      "stage2/tsg_view/execution/matrix.py",
+      "stage2/tsg_view/execution/formal.py",
+      "stage2/tsg_view/execution/views/**",
+      "stage2/tsg_view/execution/truth.py",
+      "stage2/tsg_view/execution/freeze.py",
+      "stage2/tsg_view/execution/inputs.py",
+      "stage2/tsg_view/AGENTS.md",
+      "stage2/tsg_view/README.md"
+    ]
+  },
+  "artifact_sha256": {
+    "execution/report.py": "1f94b0335038d24806a5ee677f93428af8ad66194803bfa6389ca6e272d3278f",
+    "execution/render.py": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8",
+    "figure/script/render.py": "13f88769d4199335b8d66af4b418097ec27fe2a16b0bb82dcf230f7d642aacf3",
+    "execution/tests/test_report.py": "40e4ff8373e2580b6bb082a16f7b770a0135ffe8b672ffee69c33b4dde68d319",
+    "execution/tests/test_render.py": "7f3ce91d7e4c78dfe852fe7fcc9a2f43e69223250721e2e14f9a8ad29eec323b"
+  },
+  "commands": {
+    "tests": {
+      "report": "cd stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p test_report.py -v",
+      "render": "cd stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p test_render.py -v"
+    },
+    "health": [
+      "cd /tmp/arc-tsg-07 && bash script/check_paths.sh",
+      "cd /tmp/arc-tsg-07 && bash script/check_tracked.sh"
+    ],
+    "phase_b": {
+      "step_1_report_after_tenv_runs": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/execution/report.py --runs stage2/tsg_view/output/runs --truth stage2/tsg_view/output/truth --report stage2/tsg_view/output/report --figure-data stage2/tsg_view/figure/data",
+      "step_2_publish_tenv_suite": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/figure/script/render.py --data stage2/tsg_view/figure/data --output stage2/tsg_view/figure --suite tenv",
+      "step_3_report_after_tahoe_runs": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/execution/report.py --runs stage2/tsg_view/output/runs --truth stage2/tsg_view/output/truth --report stage2/tsg_view/output/report --figure-data stage2/tsg_view/figure/data",
+      "step_4_publish_tahoe_suite": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/figure/script/render.py --data stage2/tsg_view/figure/data --output stage2/tsg_view/figure --suite tahoe",
+      "step_5_redraw_cross_source": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/figure/script/render.py --data stage2/tsg_view/figure/data --output stage2/tsg_view/figure --suite cross",
+      "step_6_csv_only_replay": "copy figure/data/*.csv and execution/render.py into a fresh tree; /home/chang/miniconda3/envs/arc/bin/python -I render.py --data data --output out --suite all with MPLCONFIGDIR set inside the tree"
+    }
+  },
+  "test_evidence": {
+    "test_report.py": {"tests": 18, "result": "OK", "runtime_seconds": 4.06, "peak_rss_kib": 119944},
+    "test_render.py": {"tests": 8, "result": "OK", "runtime_seconds": 15.75, "peak_rss_kib": 143332},
+    "total_tests": 26,
+    "covers": [
+      "run per-profile rows reduce to the stored sample-equal summary; digest tampering fails closed",
+      "equal-fold mean with unweighted folds; fold sample SD (ddof=1) and seed sample SD reported in separate columns; sample_equal_pooled recorded but never the headline",
+      "undefined metric values dropped per metric with n_defined counts, never zero-substituted",
+      "condition-mean table carries the replicated-condition count, the non-random-subset caveat text and flag, and tolerates a replicated subset smaller than the primary test population",
+      "per-dose rows name the fold's held dose, its sample count and dose_fold_confounded=true",
+      "paired view-vs-full difference interval built from fold and seed spread; solo-deepest in its own table with a fold-only interval",
+      "Mean_cell rows reused from the accepted Stage 04 delta-space table, reconciled to the frozen truth row counts, with provenance and receipt digests",
+      "CSV bytes identical on re-run",
+      "two fresh isolated python -I processes with separate MPLCONFIGDIR render byte-identical PNGs from a tree holding only render.py and data/",
+      "renderer imports no pandas/numpy/torch and references no .npy/checkpoint/truth product",
+      "tenv suite renders with Tahoe absent and records Tahoe pending; cross/all refuse with an explicit pending message",
+      "cross suite writes only views_effect.png and leaves the accepted tenv PNG digests unchanged"
+    ]
+  },
+  "report_tables": {
+    "metrics_primary.csv": ["source", "view", "arm_type", "fold", "seed", "n_samples", "n_defined_pcc", "n_defined_spearman", "n_defined_rmse", "n_defined_r2", "delta_pcc", "delta_spearman", "delta_rmse", "delta_r2", "constant_truth_count", "constant_prediction_count", "nonfinite_count", "truth", "estimand", "run_manifest_sha256", "run_metrics_sha256"],
+    "fold_spread.csv": ["truth", "source", "view", "arm_type", "seed", "metric", "equal_fold_mean", "fold_sd", "n_defined_folds", "sample_equal_pooled", "estimand"],
+    "seed_spread.csv": ["truth", "source", "view", "arm_type", "metric", "headline", "seed_sd", "n_seeds", "n_folds_total", "sample_equal_pooled", "estimand"],
+    "metrics_condition_mean.csv": ["source", "view", "arm_type", "fold", "seed", "n_conditions", "n_profiles", "n_defined_pcc", "n_defined_spearman", "n_defined_rmse", "n_defined_r2", "delta_pcc", "delta_spearman", "delta_rmse", "delta_r2", "truth_replicated_condition_count", "caveat_flag", "caveat", "truth", "estimand", "run_metrics_sha256"],
+    "metrics_per_dose.csv": ["source", "view", "arm_type", "fold", "seed", "held_dose_um", "held_dose_label", "dose_fold_confounded", "metric", "value", "n_samples", "n_defined", "n_profiles_total", "estimand", "design_note"],
+    "paired_vs_full.csv": ["source", "view", "arm_type", "metric", "delta_mean", "low", "high", "half_width", "fold_sd", "seed_sd", "n_folds", "n_seeds", "n_pairs", "missing_pairs", "interval_estimator", "status"],
+    "paired_vs_full_solo_deepest.csv": ["source", "view", "arm_type", "metric", "delta_mean", "low", "high", "half_width", "fold_sd", "seed_sd", "n_folds", "n_seeds", "n_pairs", "missing_pairs", "interval_estimator", "status"],
+    "baseline_mean_cell.csv": ["source", "view", "view_scope", "fold", "metric", "value", "n_samples", "baseline", "scenario", "seed", "estimand", "provenance_path", "provenance_sha256", "acceptance_receipt", "acceptance_receipt_sha256", "truth_rows_match"],
+    "diagnostics_beside_scores.csv": ["source", "view", "arm_type", "n_seeds", "n_folds", "delta_pcc", "delta_spearman", "delta_rmse", "delta_r2", "noise_floor", "noise_floor_mean", "noise_floor_ddof", "noise_floor_estimand", "pcc_ceiling", "pcc_ceiling_label", "pcc_ceiling_estimand", "pcc_ceiling_input_conditions", "pcc_ceiling_input_profiles", "rmse_minus_noise_floor", "pcc_minus_ceiling", "truth", "status", "source_manifest_sha256", "diagnostics_sha256"],
+    "run_status.csv": ["source", "view", "arm_type", "fold", "seed", "status", "detail", "run_relative"],
+    "learning_curves.csv": ["source", "view", "arm_type", "fold", "seed", "epoch", "train_loss", "validation_mse", "best_validation"],
+    "report_manifest.json": ["schema", "complete_origins", "pending_origins", "sources", "truth_manifest_sha256", "diagnostics_sha256", "mean_cell", "estimands", "tables", "figure_data"]
+  },
+  "figure_data": {
+    "learning_curves.csv": ["source", "view", "arm_type", "fold", "seed", "epoch", "train_loss", "validation_mse", "best_validation"],
+    "learning_curves_mean.csv": ["source", "view", "arm_type", "epoch", "mean_train_loss", "mean_validation_mse", "n_runs"],
+    "metrics_bars.csv": ["source", "view", "arm_type", "metric", "headline", "fold_sd", "seed_sd", "n_folds", "n_seeds", "sd_estimand", "mean_cell", "mean_cell_fold_sd"],
+    "metrics_points.csv": ["source", "view", "arm_type", "fold", "seed", "metric", "value", "x_offset"],
+    "metrics_baseline.csv": ["source", "metric", "mean_cell", "mean_cell_fold_sd", "n_folds", "provenance_sha256"],
+    "metrics_per_dose_bars.csv": ["source", "fold", "held_dose_um", "held_dose_label", "view", "arm_type", "metric", "value", "seed_sd", "n_seeds", "n_samples", "dose_fold_confounded", "design_note"],
+    "metrics_per_dose_points.csv": ["source", "fold", "held_dose_um", "view", "arm_type", "metric", "seed", "value", "x_offset"],
+    "views_effect.csv": ["source", "view", "arm_type", "metric", "delta_mean", "low", "high", "fold_sd", "seed_sd", "n_pairs", "status", "interval_estimator"]
+  },
+  "figures": {
+    "per_source_tenv": ["learning_curves_tenv.png", "metrics_tenv.png", "metrics_per_dose_tenv.png"],
+    "per_source_tahoe": ["learning_curves_tahoe_bulk.png", "metrics_tahoe_bulk.png", "metrics_per_dose_tahoe_bulk.png"],
+    "cross_source": ["views_effect.png"],
+    "suites": {
+      "tenv": "renders the three tenv panels only; render_status.json records tahoe_bulk pending",
+      "tahoe": "renders the three Tahoe panels only; accepted tenv PNGs untouched",
+      "cross": "renders views_effect.png only, requires both sources, writes nothing else",
+      "all": "requires both sources and renders all seven PNGs"
+    },
+    "determinism": {
+      "backend": "Agg before pyplot",
+      "dpi": 150,
+      "figure_size": "explicit figsize per figure and explicit subplots_adjust, never tight_layout",
+      "metadata": {"Software": null},
+      "timestamps": "none",
+      "proof": "test_render.py copies figure/data and execution/render.py into a fresh tree, runs twice under python -I with separate MPLCONFIGDIR, and compares PNG sha256 (and render_status.json bytes)"
+    }
+  },
+  "mean_cell_provenance": {
+    "decision": "reuse the accepted Stage 04 cold-drug-dose Mean_cell rows instead of recomputing",
+    "path": "stage2/04_tsg_dose/execution/historical/report_axis_local/baselines/data/round1_runs.csv",
+    "sha256": "52d209006d0885f92fd792d0071573295abba8f834ef8430de59019c04a6baeb",
+    "acceptance_receipt": "stage2/04_tsg_dose/log/round1-baselines-acceptance.json",
+    "acceptance_receipt_sha256": "f5077771f56299f01729740a73b88cc1f935643766b65e2d62ed18d37814415c",
+    "definition": "Step 04 axis-local Mean_cell: per cell line, the pooled mean of the fitted treated expression plus that cell line's unique original vehicles, scored Delta-space on the same frozen cold-drug-dose test rows",
+    "checks": [
+      "the provenance digest equals the digest pinned in the passed baselines report receipt",
+      "every fold's n_samples equals the frozen truth primary test row count (tenv 469/468/465; Tahoe 6643/6650/7950)",
+      "the rows are Delta-space (Stage 04 score_prediction subtracts the matched control), so they are directly comparable with this study's view metrics"
+    ],
+    "fallback": "none: the frozen truth product publishes delta.npy only, so a missing or changed provenance file raises instead of silently substituting a different baseline"
+  },
+  "diagnostics_contract": {
+    "noise_floor": "median over replicated conditions of sqrt(mean over genes of within-condition Delta variance, ddof=0) -- tenv 0.3425617959827319, Tahoe 0.07025318359737137",
+    "single_sample_ceiling": "profile-weighted mean of sqrt(rho_c); labelled 'heuristic diagnostic' -- tenv 0.3802732892389079, Tahoe 0.42828477670427056",
+    "source": "stage2/tsg_view/output/truth/<source>/diagnostics.json (read-only, schema tsg-view-truth-diagnostics-v1)"
+  },
+  "smoke_checks": {
+    "real_truth_zero_runs": "report.py against stage2/tsg_view/output/truth with an empty runs root wrote every table header and all 45 missing rows in run_status.csv",
+    "real_truth_one_tenv_run": "a synthetic tenv/full/fold-0/seed-42 run evaluated on the canonical truth rows produced baseline_mean_cell n_samples=469, noise_floor=0.342562, ceiling=0.380273, 153 replicated conditions and held dose 0.2 uM",
+    "renderer_preview": "all seven PNGs rendered and were visually inspected from a synthetic 45-run tree"
+  },
+  "health": {
+    "check_paths.sh": {"exit": 0, "result": "PASS - every extracted path literal resolves; stage2 and stage3 audits PASS"},
+    "check_tracked.sh": {"exit": 0, "result": "PASS - all scanned executable files are tracked"},
+    "note": "a git worktree does not carry gitignored payloads; for this health run the item source/local trees were linked read-only from /home/chang/arc, which leaves git status clean. No repository file was changed."
+  },
+  "deviations": [
+    "phase A writes code, tests and this log only; no report CSVs and no PNGs are generated because the 45-fit runs do not exist yet (phase B owns generation)",
+    "the report consumes the accepted Stage 04 cold-drug-dose Mean_cell rows from execution/historical/report_axis_local/baselines/data/round1_runs.csv rather than recomputing them; the file is still the one pinned by the passed round1-baselines report receipt",
+    "the report fails closed when a run artifact digest, run identity, held dose, sample count or primary summary does not reconcile; incomplete runs are listed in run_status.csv rather than silently omitted",
+    "paired intervals use a declared Gaussian 95% half-width assembled from the fold standard error and the seed standard error; with two seeds the seed SD is a two-value sample SD and is declared as such in interval_estimator",
+    "figure/script/render.py is a thin wrapper over execution/render.py; the CSV-only replay copies execution/render.py so the replay tree needs no repository path"
+  ],
+  "blockers": [],
+  "phase_b": {
+    "note": "run after the tenv arms complete for the first pass, then again after the Tahoe arms complete; phase A deliberately wrote no data/PNG products",
+    "publishes": [
+      "stage2/tsg_view/output/report/*.csv",
+      "stage2/tsg_view/figure/data/*.csv",
+      "stage2/tsg_view/figure/{learning_curves,metrics,metrics_per_dose}_{tenv,tahoe_bulk}.png",
+      "stage2/tsg_view/figure/views_effect.png"
+    ]
+  }
+}
