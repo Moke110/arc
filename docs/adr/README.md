@@ -113,3 +113,5 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0080](0080-tenv-kpgt-dose-round1.md) | Compare dose inputs on tenv with frozen Step 03 KPGT representations |
 
 | [0081](0081-transigen-width-and-dose-comparison.md) | Compare TranSiGen width and dose encoding on the frozen tenv cold-drug-dose folds |
+
+| [0082](0082-view-variants-tenv-tahoe-replicate-structure.md) | Test whether within-condition replicate structure explains the tenv–Tahoe gap with eight expression view variants (*study step `stage2/tsg_view`*) |
