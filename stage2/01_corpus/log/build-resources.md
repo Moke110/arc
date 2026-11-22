@@ -38,3 +38,11 @@ deposited profile metadata and every count on the fixed 18,164-gene projection
 against the sealed historical raw release. It used 415,232 KiB peak RSS and
 took 1:17.46. The current native corpus verification additionally replays all
 62,710 native columns directly from source.
+
+Independent Tahoe replay and candidate publication completed in 2:06:59 under
+the same cap with 7,393,328 KiB peak RSS. Source replay compared all 14 plates
+across every native column, covering 67,018 profiles and 95,624,334 source cells.
+The corpus publisher verified its native count payloads, coverage mappings and
+source observations before replacing the release directory. The compact
+[acceptance receipt](acceptance.json) records the resulting manifest and payload
+digests.
