@@ -44,6 +44,9 @@ identities and rolls back the current batch on an error. Keep the plan for
 replay or use `reverse` before restoring the old Git layout. Publish new
 corpus, view and input artifacts to their versioned paths separately.
 
+If an apply or reverse is interrupted, quiesce writers and rerun the same command
+with the original plan. The inode checks recognize already-completed renames.
+
 ## Replay with the original code
 
 Use commit `4080ce9187906ae9b0193e26414f125de45fd09d` for the original five
@@ -68,5 +71,39 @@ inventory and planning ref. Supply those with `--baseline` and `--refs`, or
 place the original inventory in the snapshot. Verify any external sources the
 historical workflow names against their manifests.
 
-If an apply or reverse is interrupted, quiesce writers and rerun the same command
-with the original plan. The inode checks recognize already-completed renames.
+### Verify the deployed ADR 0082 artifacts
+
+The sealed receipt and its health transcripts both pin
+`85b8cd3f5974737400589166c6c04dbf76752c74`. The deployed snapshot `212d3e0`
+contains that receipt and the original study artifacts. Its historical final
+receipt wrapper requires the old health commit to equal the current Git HEAD.
+The aggregate Steps 01–06 check also resolves the live `dev` ref, which now
+includes the migration. Use the original binary verifier in partial mode and
+check the frozen file inventory directly against the detached snapshot. Current
+layout health is verified separately in the materialized migrated checkout.
+
+Run the two verification commands serially under the repository's resource cap.
+Set `EVIDENCE` to a separate existing directory for outputs.
+
+```sh
+BASE="$SNAPSHOT/.scratch/tsg-view/research/baseline"
+SEALED="$SNAPSHOT/stage2/tsg_view/log/acceptance"
+CAP="$CANDIDATE/stage2/01_bases/execution/capped.sh"
+export PYTHONDONTWRITEBYTECODE=1
+cd "$SNAPSHOT"
+"$CAP" python stage2/tsg_view/execution/acceptance.py receipt \
+  --root "$SNAPSHOT" --phase partial --verify-binary \
+  --baseline "$BASE/steps01-06-per-path.sha256" --refs "$BASE/refs.txt" \
+  --preregistration "$SEALED/pre_registration.md" --health-dir "$SEALED/health" \
+  --timestamp "$(jq -r .generated_at "$SEALED/receipt.json")" \
+  --output "$EVIDENCE/adr0082-replayed.json"
+"$CAP" sha256sum --check --strict "$BASE/steps01-06-per-path.sha256" \
+  > "$EVIDENCE/steps01-06-sha256.log"
+```
+
+Check for 45 complete origins, zero pending origins, exact validation and test
+replay evidence, and byte-identical CSV-only figures. Compare the replay's
+inventory, plan and plan manifest digests, input manifest digest,
+pre-registration digest, report script digests, and combined Steps 01–06 digest
+with the original receipt. The [migration acceptance record](../log/layout-acceptance.json)
+contains the comparison and the current layout's offline checks.

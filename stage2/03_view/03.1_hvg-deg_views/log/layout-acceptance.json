@@ -1,0 +1,101 @@
+{
+  "checked_staged_commit": "522ccfe75b316a6493935bccf35fac9806159ad9",
+  "external_manifest_verifiers_passed": 66,
+  "historical_adr0082": {
+    "artifact_replay": {
+      "all_replay_evidence_exact": true,
+      "argv": [
+        "python",
+        "stage2/tsg_view/execution/acceptance.py",
+        "receipt",
+        "--phase",
+        "partial",
+        "--verify-binary"
+      ],
+      "comparison_fields": [
+        "plan_sha256",
+        "plan_manifest_sha256",
+        "input_manifest_sha256",
+        "pre_registration_sha256",
+        "report_scripts_sha256",
+        "inventory"
+      ],
+      "complete_origins": 45,
+      "csv_only_figures_byte_identical": 7,
+      "input_manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+      "log_sha256": "9ebfa50d12e5de822aa769e68b3408a601eba305525466c0d883efc81451115a",
+      "peak_rss_kib": 602136,
+      "pending_origins": 0,
+      "plan_manifest_sha256": "f5b6b249e4801ebc3fa90f34955f402d860a12d4dfe385e0b0ead0dbe890cfab",
+      "plan_sha256": "2f59a8704b416debc8bd8ea9a7bb0acbaa3f0a2bd0fa2f11f4060f6fca44bf29",
+      "pre_registration_sha256": "265d4a7897f9b1d705e362e9722419b7f862127b97221887f3d80aab353fda9d",
+      "report_scripts_sha256": {
+        "execution/render.py": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8",
+        "execution/report.py": "8e66357f2e3f4ed62f0277b25bad5a1b64ccbbc16aed1bca08dafb16d620e15b",
+        "figure/script/render.py": "13f88769d4199335b8d66af4b418097ec27fe2a16b0bb82dcf230f7d642aacf3"
+      },
+      "sealed_inventory_entries_exact": 1522,
+      "sorted_comparison_sha256": "aceddcab86b52d06b1dc113c27e6476522636d9bb2d1af6b33a0178b0f6d6642",
+      "wall_time": "0:57.11"
+    },
+    "deployed_snapshot_commit": "212d3e03af4a3a0cd165495e9c451f46f2f14c2e",
+    "detached_baseline": {
+      "argv": [
+        "sha256sum",
+        "--check",
+        "--strict",
+        ".scratch/tsg-view/research/baseline/steps01-06-per-path.sha256"
+      ],
+      "changed_files": 0,
+      "combined_sha256": "7543867d276d07360c86c2dbf6a49292f8346c7da418f504f6ce4f6dbcb3efa5",
+      "files_exact": 11468,
+      "log_sha256": "e782724acc14fcb49d13aaef422dab611b23aa5d2c98b080ba43578f29d87eca",
+      "manifest_sha256": "e6afc96eb6af7cf4d6c1562e5be01bd3a0e9371913f3afb79eb4c8f60dbb7e89",
+      "peak_rss_kib": 3564,
+      "tracked_worktree_clean": true,
+      "wall_time": "0:31.47"
+    },
+    "legacy_wrapper": {
+      "aggregate_comparison_ref": "dev",
+      "aggregate_steps_01_06_verdict": "CHANGED",
+      "final_wrapper_result": "health commit predates deployed snapshot HEAD",
+      "live_ref_changed_paths": 732,
+      "sealed_health_commit_stale_on_deployed_snapshot": true
+    },
+    "sealed_receipt_head_and_health_commit": "85b8cd3f5974737400589166c6c04dbf76752c74",
+    "sealed_receipt_sha256": "da510e586ed75f113ccd6f18a531082bfb11934d6a6046126011123c63c5bcc1"
+  },
+  "offline_gates": {
+    "check_paths": {
+      "argv": [
+        "bash",
+        "script/check_paths.sh"
+      ],
+      "exit_code": 0,
+      "log_sha256": "8fe174e8d308be525c55ef13c380300790ad110c819d81d8302c9df1b89d4d3a",
+      "peak_rss_kib": 7116,
+      "wall_time": "0:15.27"
+    },
+    "check_tracked": {
+      "argv": [
+        "bash",
+        "script/check_tracked.sh"
+      ],
+      "exit_code": 0,
+      "log_sha256": "5451c43886fd175685b8fc2f9338938377a8e44b6e4b5a96a21061cedeb55d6b",
+      "peak_rss_kib": 4836,
+      "wall_time": "0:00.12"
+    },
+    "verify_all": {
+      "argv": [
+        "bash",
+        "script/verify_all.sh"
+      ],
+      "exit_code": 0,
+      "log_sha256": "612347c214019b29f1459aa8675374b06cff58f0495d8eb25adda4f5abfbbc69",
+      "peak_rss_kib": 79576,
+      "wall_time": "4:51.60"
+    }
+  },
+  "schema": "stage2-layout-acceptance-v1"
+}
