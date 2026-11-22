@@ -3,15 +3,16 @@
 Read [the report](README.md), [Stage 2 routing](../AGENTS.md),
 [ADR 0079](../../docs/adr/0079-stage2-drug-representation-step.md),
 and the [execution environment](../../docs/agents/execution-environment.md).
-Reuse the accepted tenv cold-drug folds and dose conditioning from the
+Reuse the accepted source-local cold-drug folds and dose conditioning from the
 [dose comparison](../04_tsg_dose/AGENTS.md).
 
 ## Representation input freeze
 
 Run `execution/freeze_representations.py --help` to see the required input
-paths. Use the accepted Round 1 tenv freeze at
-`../04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tenv`,
-the dose `output/api`, the vendored KPGT source and its frozen base checkpoint,
+paths. Use the accepted Round 1 source directory under
+`../04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/`.
+Use `tenv` for the 459-parent roster or `tahoe_bulk` for the 352-parent
+roster. Use the dose `output/api`, the vendored KPGT source and its frozen base checkpoint,
 and the official UniMol v1 all-hydrogen checkpoint and molecular dictionary.
 Run the extraction under the dose step's `execution/capped.sh` with
 `/usr/bin/time -v`. Use `e3fp==1.2.7` and `unimol_tools==0.1.5` in the
@@ -41,12 +42,12 @@ files supplied by `unimol_tools`.
 ```
 
 Continue after both SHA-256 checks pass. From the repository root, with the
-two interpreters configured:
+two interpreters configured, set `INPUT_SOURCE` to `tenv` or `tahoe_bulk`:
 
 ```sh
 stage2/04_tsg_dose/execution/capped.sh /usr/bin/time -v \
   "$ARC_PYTHON" stage2/03_tsg_drug_emb/execution/freeze_representations.py \
-  --inputs stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tenv \
+  --inputs "stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/$INPUT_SOURCE" \
   --dose-api stage2/04_tsg_dose/output/api \
   --kpgt-python "$KPGT_PYTHON" \
   --kpgt-source drug_emb_model/KPGT/source \
@@ -65,7 +66,7 @@ candidate to training.
 
 ## Fit and replay
 
-Run `execution/smoke.py` with the accepted tenv input and representation
+Run `execution/smoke.py` with the accepted source-local input and representation
 freeze, the pinned native TranSiGen source, a fresh destination, and
 `--device cuda`. Use the transfer step's `execution/capped_phase.sh` to
 collect resource evidence. The [smoke receipt](log/270-bounded-smoke.json)
@@ -118,7 +119,7 @@ phase is quarantined. Keep the formal plan and all accepted evidence intact.
 ## Report preparation
 
 After `execution/formal.py verify` passes, run `execution/publish_report.py`
-with the formal matrix, frozen tenv inputs and representation candidate as
+with the formal matrix, inputs from the same source and representation candidate as
 `--matrix`, `--inputs` and `--representations`. Give it a fresh `--destination`
 and wrap the command with the same capped launcher. The report builder checks
 the formal receipts and held-out identities, writes the plotted CSVs and
@@ -140,3 +141,23 @@ full registered formal matrix, checkpoints and replays together under
 `execution/checkpoints/formal/` so the report receipt can resolve its original
 acceptance digest. These are checkout-local payloads. The report's README,
 plotted CSVs, three PNGs, acceptance receipt and run inventory are tracked.
+
+For Tahoe, use a separate candidate during coverage and fit. Stop before any
+fit unless all seven matrices pass on the complete 352-parent roster. Install
+the accepted local freeze at `output/representations/tahoe/` and the verified
+fit payload at `execution/checkpoints/formal-tahoe/`. The Tahoe report places
+its receipt and results in `log/tahoe/`, its plotted tables in
+`figure/data/tahoe/` and its three prefixed PNGs in `figure/`. Render using
+`python figure/script/render.py --source tahoe_bulk --prefixed --output <new-directory>`
+from this step.
+
+The original tenv runtime and report renderer are pinned by the historical
+receipts. Check out commit `107bda7` in a separate worktree and pass the
+existing absolute input, representation and run paths to reproduce that
+byte version independently.
+
+Publishing the paired report renames the three original `figure/<name>.png`
+files to `figure/tenv_<name>.png` and moves the sealed `README.md` to
+`log/tenv/README.md` byte for byte. The tenv receipt remains at
+`log/acceptance.json`; `verify-published` resolves those historical names via
+the migration mapping and checks the same digests and CSV-only replay.
