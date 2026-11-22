@@ -1,0 +1,234 @@
+{
+  "alias": {
+    "control": {
+      "correspondence": "matched_control_group is carried verbatim from the integer corpus",
+      "delta": "delta = X - control, elementwise",
+      "rule": "control = arithmetic mean over matched_control_group vehicle rows, each normalized on its own selected-axis library total"
+    },
+    "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+    "normalization": {
+      "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+      "formula": "log1p(count * 10000 / selected_axis_library_total)",
+      "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+      "source": "ADR 0077 five-k-only axis-local normalization"
+    },
+    "outputs": {
+      "library_totals.csv": "eedfd4f2442d6268c9e0adff953a9fd09c843e100c3335a20b3e0f0749d071ab",
+      "tahoe_bulk.h5ad": "6fbd84e5e9b99ec743681ae878af8c350f2b6135fc692a8966826f91779bee33",
+      "tenv.h5ad": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+    },
+    "payload_sha256": {
+      "tahoe_bulk": "6fbd84e5e9b99ec743681ae878af8c350f2b6135fc692a8966826f91779bee33",
+      "tenv": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+    },
+    "recipe": "Stream bounded integer corpus batches; select G_5000 in ascending original gene_index; sum selected counts in int64; normalize every row independently with natural log1p(CP10K); average normalized matched vehicles for control; delta = X - control. Publish float32.",
+    "release": "stage2/01_bases/output/view-5k"
+  },
+  "axis": {
+    "algorithm": "tier-first-deg1000-f1000-four-axes-v3",
+    "ascending": true,
+    "columns_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+    "file": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+    "gene_index_max": 18155,
+    "gene_index_min": 2,
+    "renumbered": false,
+    "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+    "size": 5000
+  },
+  "conditions": 52777,
+  "control_rule": "full-view control; only the label is pooled, delta_kind=pooled",
+  "control_sources": null,
+  "delta_kind": "pooled",
+  "environment": {
+    "anndata": "0.12.16",
+    "data_access": "offline; reads the pinned integer corpus, the G_5000 axis and the accepted view-5k release in bounded windows",
+    "h5py": "3.16.0",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13",
+    "resource_contract": "one heavy job at a time under the repository caps; OMP_NUM_THREADS=2; peak RSS recorded by the driver"
+  },
+  "full": {
+    "alias": {
+      "control": {
+        "correspondence": "matched_control_group is carried verbatim from the integer corpus",
+        "delta": "delta = X - control, elementwise",
+        "rule": "control = arithmetic mean over matched_control_group vehicle rows, each normalized on its own selected-axis library total"
+      },
+      "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+      "normalization": {
+        "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+        "formula": "log1p(count * 10000 / selected_axis_library_total)",
+        "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+        "source": "ADR 0077 five-k-only axis-local normalization"
+      },
+      "outputs": {
+        "library_totals.csv": "eedfd4f2442d6268c9e0adff953a9fd09c843e100c3335a20b3e0f0749d071ab",
+        "tahoe_bulk.h5ad": "6fbd84e5e9b99ec743681ae878af8c350f2b6135fc692a8966826f91779bee33",
+        "tenv.h5ad": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+      },
+      "payload_sha256": {
+        "tahoe_bulk": "6fbd84e5e9b99ec743681ae878af8c350f2b6135fc692a8966826f91779bee33",
+        "tenv": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+      },
+      "recipe": "Stream bounded integer corpus batches; select G_5000 in ascending original gene_index; sum selected counts in int64; normalize every row independently with natural log1p(CP10K); average normalized matched vehicles for control; delta = X - control. Publish float32.",
+      "release": "stage2/01_bases/output/view-5k"
+    },
+    "manifest": {
+      "file": "stage2/tsg_view/output/views/full/tahoe_bulk.json",
+      "sha256": "2903a11f4ac54dd47a4bfee0e627a20c4a4c70c4580ff9b966671d6ce5e71a57"
+    },
+    "payload": {
+      "aliased": true,
+      "bytes": 2942840025,
+      "cols": 5000,
+      "dtype": "float32",
+      "file": "tahoe_bulk.h5ad",
+      "layers": [
+        "X",
+        "control"
+      ],
+      "rows": 66718,
+      "sha256": "6fbd84e5e9b99ec743681ae878af8c350f2b6135fc692a8966826f91779bee33"
+    },
+    "product": "tahoe_bulk-full-5k-view",
+    "profile_ids": {
+      "bytes": 2147877,
+      "file": "tahoe_bulk.profile_ids.csv",
+      "sha256": "f0db5565189e0841661bbdebcd1cd18fd60def756bd28c54806829039eb2b680"
+    },
+    "rows": 66718,
+    "treated": 65318,
+    "view": "full"
+  },
+  "generated_by": "stage2/tsg_view/execution/build.py",
+  "members": {
+    "bytes": 5581903,
+    "columns": [
+      "profile_id",
+      "member_profile_id"
+    ],
+    "file": "tahoe_bulk.members.csv",
+    "rows": 105800,
+    "sha256": "002b46f13db42677a30bb218ad79ed170d5467ffba6cdace9ff38f7cac88408b"
+  },
+  "normalization": {
+    "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+    "formula": "log1p(count * 10000 / selected_axis_library_total)",
+    "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+    "source": "ADR 0077 five-k-only axis-local normalization"
+  },
+  "payload": {
+    "bytes": 1334360128,
+    "cols": 5000,
+    "dtype": "float32",
+    "file": "tahoe_bulk.delta.npy",
+    "kind": "delta",
+    "layers": [
+      "delta"
+    ],
+    "rows": 66718,
+    "sha256": "8b77b9a2b9df604b5054fc0c0337475bbc82645d65e223d775fe904679178c41"
+  },
+  "pooled_label": {
+    "conditions": 52777,
+    "conditions_table": {
+      "bytes": 10903456,
+      "columns": [
+        "condition_key",
+        "merge_profile_id",
+        "cell_line",
+        "drug_parent_inchikey",
+        "dose_um",
+        "member_count",
+        "member_profile_ids",
+        "profile_ids"
+      ],
+      "file": "tahoe_bulk.conditions.csv",
+      "rows": 52777,
+      "sha256": "56103bd75eedb74134bbdd554935c1cbc322a3b282ad8fa692494d235adecb67"
+    },
+    "delta_kind": "pooled",
+    "label_source": {
+      "conditions": 52777,
+      "control_rule": "normalize-of-sum over the union of the members' matched_control_group vehicle counts (never a mean of normalized values)",
+      "layer": "delta",
+      "manifest": {
+        "file": "stage2/tsg_view/output/views/merge/tahoe_bulk.json",
+        "sha256": "e31ca3ade39b5bd9bccb7bdaa0f228a33d6ef0a96975690742974d6499140f40"
+      },
+      "payload": {
+        "bytes": 2093287036,
+        "cols": 5000,
+        "dtype": "float32",
+        "file": "tahoe_bulk.h5ad",
+        "layers": [
+          "control",
+          "delta"
+        ],
+        "rows": 52777,
+        "sha256": "10c2c39db087ad2b4cb3aad81acff8e127ce1f4ee6fcc791e647a7859ec349f8"
+      },
+      "product": "tahoe_bulk-merge-5k-view",
+      "recipe": "Sum the members' retained G_5000 integer counts per condition (int64), normalize the sum on its own selected-axis total; pool the union of the members' matched control groups' vehicle counts the same way; delta = X - control.",
+      "row_key": "cell_line|drug_parent_inchikey|dose_um -> merge::<source>::<cell_line>::<parent>::<dose>",
+      "rows": 52777,
+      "transfer": "treated row delta = the delta layer of the merge row whose (cell_line, drug_parent_inchikey, dose_um) equals the row's condition",
+      "view": "merge"
+    },
+    "member_count": {
+      "max": 16,
+      "median": 1.0,
+      "min": 1,
+      "sum": 65318
+    },
+    "member_count_histogram": {
+      "1": 43036,
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0,
+      "15": 0,
+      "16": 50,
+      "2": 7941,
+      "3": 1400,
+      "4": 350,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0
+    },
+    "transport": "row-aligned float32 .npy; treated rows carry their condition's merge delta; X/control aliased to the accepted full payload digests; delta is not X - control for treated rows by design",
+    "treated_rows": 65318,
+    "vehicle_rows": 1400,
+    "vehicle_rule": "vehicle row: the full view's exact X - control (a vehicle row has no condition)"
+  },
+  "product": "tahoe_bulk-full-pooled-label-5k-view",
+  "profile_ids": {
+    "bytes": 2147877,
+    "file": "tahoe_bulk.profile_ids.csv",
+    "sha256": "f0db5565189e0841661bbdebcd1cd18fd60def756bd28c54806829039eb2b680"
+  },
+  "recipe": "Keep the full view's rows, X and control; replace each treated profile's delta by its condition's merge-recipe pooled delta; publish only the delta payload.",
+  "retained_totals": {
+    "max": 5857939,
+    "median": 388084.5,
+    "min": 78,
+    "sum": 33165097847
+  },
+  "rows": 66718,
+  "schema": "tsg-view-product-v1",
+  "seed": null,
+  "selection": null,
+  "source": "tahoe_bulk",
+  "source_manifests": {
+    "accepted_view": "stage2/01_bases/output/view-5k/manifest.json",
+    "accepted_view_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+    "gene_axis": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+    "gene_axis_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e"
+  },
+  "treated": 65318,
+  "view": "full-pooled-label"
+}
