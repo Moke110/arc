@@ -84,6 +84,7 @@ CATEGORY_LABELS = {'nhf': 'nHF', 'icm': 'ICM', 'af': 'AF',
                    'genetic_cardiomyopathy': 'genetic_cardiomyopathy',
                    'cardiotox_TOP2': 'cardiotox_TOP2',
                    'cardiotox_other': 'cardiotox_other', 'tox': 'TOX'}
+CATEGORY_DISPLAY_LABELS = {**CATEGORY_LABELS, 'genetic_cardiomyopathy': 'Genetic'}
 CATEGORY_RANK_COLUMNS = tuple(f'{category}_rank' for category in RELEASE_CATEGORIES)
 
 #: Declared released axis sizes (ADR 0066). N is chosen, never read off a curve.

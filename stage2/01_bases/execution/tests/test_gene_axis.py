@@ -1417,7 +1417,8 @@ class DocxTests(unittest.TestCase):
         expected = []
         for category in gene_axis.RELEASE_CATEGORIES:
             catalog = json.loads(self.catalogs()[category].read_text(encoding='utf-8'))
-            expected.extend((catalog['category'], dataset) for dataset in catalog['datasets'])
+            expected.extend((gene_axis.CATEGORY_DISPLAY_LABELS[category], dataset)
+                            for dataset in catalog['datasets'])
         self.assertEqual(len(expected), 41)
         for offset, (category_label, dataset) in enumerate(expected, start=1):
             cells = [cell.text for cell in source_document_rows(document)[offset - 1].cells]
@@ -1477,13 +1478,13 @@ class DocxTests(unittest.TestCase):
         by_label = {record['category']: record for record in fusion['diseases']}
         rows = {row.cells[0].text: [cell.text for cell in row.cells]
                 for row in table.rows[1:]}
-        self.assertEqual(list(rows), [gene_axis.CATEGORY_LABELS[category]
+        self.assertEqual(list(rows), [gene_axis.CATEGORY_DISPLAY_LABELS[category]
                                       for category in gene_axis.RELEASE_CATEGORIES])
         for category in gene_axis.RELEASE_CATEGORIES:
             label = gene_axis.CATEGORY_LABELS[category]
             catalog = json.loads(self.catalogs()[category].read_text(encoding='utf-8'))
             record = by_label[label]
-            cells = rows[label]
+            cells = rows[gene_axis.CATEGORY_DISPLAY_LABELS[category]]
             with self.subTest(disease=label):
                 self.assertEqual(int(cells[1]), record['declared_source_count'],
                                  'source-dataset count')
@@ -1498,6 +1499,7 @@ class DocxTests(unittest.TestCase):
                                  'tier path')
         # Data-dependent exclusions and cuts are rendered from this release.
         for label, record in by_label.items():
+            label = gene_axis.CATEGORY_DISPLAY_LABELS.get(label, label)
             self.assertEqual(rows[label][5], 'yes' if record['eligible'] else 'no')
             if not record['eligible']:
                 self.assertIn('100', rows[label][6])

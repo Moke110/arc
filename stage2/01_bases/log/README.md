@@ -54,7 +54,12 @@ reproduction and main-checkout byte preservation. The successor sections of
 - `source_collection_candidate.json` and `tier_first_fusion_candidate.json`: full-source and tier-first fusion candidate evidence from #221/#222.
 - `source_derivation_replay.json`: sixteen genuine per-item refits, current R-worker pins, identical scientific CSV/sample bytes and deterministic gzip intermediates.
 - `four_axes_candidate.json`: #223 independent upstream and per-view replays, bounded public-reader checks, exact axes/nesting/fallback, payload map and recovery evidence.
-- `gene_axis_document_verify.json`: root DOCX and both figure hashes, canonical input/tool pins, deterministic byte replay and every one of thirteen inspected pages.
+- `gene_axis_document_verify.json`: ADR 0073 acceptance snapshot with root DOCX and both figure hashes, canonical input/tool pins, deterministic byte replay and every one of thirteen inspected pages.
+
+The 2026-11-23 display update uses **Genetic** in the source-coverage chart and
+rule document. The chart's renderer applies the label to the pinned CSV at
+display time. All 69 gene-axis tests passed, including byte-for-byte PNG and
+DOCX replay. The DOCX rendered to 13 inspected pages.
 
 The older entries/sections above describe their own dated releases. They keep
 historical names and counts; current contracts/paths are in `../README.md`.
