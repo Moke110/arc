@@ -513,6 +513,27 @@ class ProbeRunTest(unittest.TestCase):
         self.assertIn(verified["full_arm"]["origins"][0]["status"], ("PASS", "DRIFT"))
         self.assertIn(verified["status"], ("PASS", "DRIFT"))
 
+    def test_a_filtered_verify_without_the_anchor_arm_fails_closed(self):
+        """``--only-seed 43`` leaves no seed-42 ``full`` arm: refuse, never a PASS."""
+        candidate = self._candidate("anchor-seeds")
+        report = formal.run_matrix(candidate, **self.arguments(only_seed=(42, 43)),
+                                   sealed=self.sealed, min_ram_kib=0,
+                                   telemetry_seconds=0.05)
+        self.assertEqual(report["complete"], 2)
+        with self.assertRaisesRegex(ValueError, "no anchor-comparable"):
+            formal.verify(candidate, **self.arguments(only_seed=(43,)))
+        # An unfiltered probe still compares the seed-42 anchor, and its status is
+        # decided by that non-empty comparison set.
+        unfiltered = formal.verify(candidate, **self.arguments(only_seed=()))
+        self.assertEqual(unfiltered["full_arm"]["comparisons"], 2)
+        self.assertEqual([entry["origin"]["seed"]
+                          for entry in unfiltered["full_arm"]["origins"]], [42])
+        anchor = (unfiltered["full_arm"]["origins"]
+                  + unfiltered["full_arm"]["fold_mean"])
+        self.assertEqual(len(anchor), 2)
+        self.assertEqual(unfiltered["status"], "PASS" if all(
+            entry["status"] == "PASS" for entry in anchor) else "DRIFT")
+
     def test_resume_after_completion_runs_no_phase_twice(self):
         candidate = self._candidate("resume")
         formal.run_matrix(candidate, **self.arguments(), sealed=self.sealed,
@@ -724,6 +745,29 @@ class FullArmAnchorSeedTest(unittest.TestCase):
         self.assertTrue(all(entry["status"] == "DRIFT" for entry in comparisons))
         self.assertEqual([entry["status"] for entry in full_arm["fold_mean"]], ["DRIFT"])
         self.assertEqual(full_arm["sensitivity"], [])
+
+    def test_a_seed_43_only_arm_records_no_anchor_comparison(self):
+        """A selection that excludes seed 42 has nothing to compare, not a PASS."""
+        full_arm, comparisons = formal.full_arm_evidence(
+            [self._measured(43), self._measured(43, pcc_offset=-0.2)])
+        self.assertEqual(full_arm["comparisons"], 0)
+        self.assertEqual(comparisons, [])
+        self.assertEqual(full_arm["origins"], [])
+        self.assertEqual(full_arm["fold_mean"], [])
+        self.assertEqual([entry["origin"]["seed"]
+                          for entry in full_arm["sensitivity"]
+                          if entry["level"] == "origin"], [43, 43])
+        self.assertEqual([entry["seed"] for entry in full_arm["sensitivity"]
+                          if entry["level"] == "fold_mean"], [43])
+        self.assertTrue(all(entry["status"] == "sensitivity"
+                            for entry in full_arm["sensitivity"]))
+
+    def test_the_comparison_count_is_the_anchor_record_count(self):
+        full_arm, comparisons = formal.full_arm_evidence(
+            [self._measured(42), self._measured(43)])
+        self.assertEqual(full_arm["comparisons"], len(comparisons))
+        self.assertEqual(full_arm["comparisons"], 2)  # the origin and its fold mean
+        self.assertTrue(all(entry["status"] == "PASS" for entry in comparisons))
 
     def test_the_anchor_seed_cannot_be_labelled_a_sensitivity(self):
         with self.assertRaisesRegex(ValueError, "anchor seed"):

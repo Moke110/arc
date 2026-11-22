@@ -421,7 +421,8 @@ class Fixture:
                 "schema": "tsg-view-formal-verify-v1", "status": "PASS",
                 "mode": "formal", "plan_sha256": plan_sha, "origins": len(present),
                 "code_identity": CODE_IDENTITY,
-                "full_arm": {"anchor_seed": 42, "origins": [], "fold_mean": [],
+                "full_arm": {"anchor_seed": 42, "comparisons": 8,
+                             "origins": [], "fold_mean": [],
                              "sensitivity": [{"seed": 43, "note": SENSITIVITY_NOTE}]},
                 "runs": verify_rows})
 
@@ -955,9 +956,26 @@ class CodeIdentityTest(AcceptanceTestCase):
         self.assertEqual(identity["driver_code_drift"], ["formal.py"])
         full_arm = block["full_arm"]
         self.assertEqual(full_arm["anchor_seed"], 42)
+        self.assertEqual(full_arm["comparisons"], 8)  # six seed-42 origins + two fold means
         self.assertEqual(full_arm["sensitivity_seeds"], [43])
         self.assertIn("seed 42", full_arm["statement"])
         self.assertIn("seed-43", full_arm["statement"])
+
+    def test_a_verify_without_anchor_comparisons_fails_closed(self):
+        path = self.root / "stage2/tsg_view/output/runs/formal_verify.json"
+        value = json.loads(path.read_text())
+        value["full_arm"]["comparisons"] = 0
+        write_json(path, value)
+        with self.assertRaisesRegex(acceptance.AcceptanceError, "anchor comparison"):
+            self.receipt()
+
+    def test_the_anchor_seed_must_be_the_sealed_seed_42(self):
+        path = self.root / "stage2/tsg_view/output/runs/formal_verify.json"
+        value = json.loads(path.read_text())
+        value["full_arm"]["anchor_seed"] = 43
+        write_json(path, value)
+        with self.assertRaisesRegex(acceptance.AcceptanceError, "anchor seed 43"):
+            self.receipt()
 
     def test_missing_formal_verify_fails_closed_in_final(self):
         (self.root / "stage2/tsg_view/output/runs/formal_verify.json").unlink()

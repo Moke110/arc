@@ -93,6 +93,8 @@ VIEW_ARMS = {
 }
 FOLDS = (0, 1, 2)
 SEEDS = (42, 43)
+#: The sealed Step 04 no-dose anchors are equal-fold means at this training seed only.
+ANCHOR_SEED = 42
 SOLO_DEEPEST_SEEDS = (42,)
 SOLO_SEED = 20261122
 EXPECTED_FITS = 45
@@ -760,7 +762,9 @@ def _verify_identity(value, label) -> dict:
     rule note verbatim, so a refactor-only drift is never hidden by the receipt.
 
     The seed split is carried alongside it: only the seed-42 ``full`` arms may claim
-    sealed-anchor reproduction, and a seed-43 arm is a labelled sensitivity.
+    sealed-anchor reproduction, and a seed-43 arm is a labelled sensitivity. The report's
+    ``full_arm.comparisons`` count is pinned too, so a receipt can never carry a verify
+    whose anchor comparison set is empty (``formal.verify`` refuses that upstream).
     """
     identity = value.get("code_identity")
     if not isinstance(identity, dict):
@@ -782,8 +786,15 @@ def _verify_identity(value, label) -> dict:
                                       f"({entry['file']}): {label}")
     full_arm = value.get("full_arm") or {}
     anchor = full_arm.get("anchor_seed")
-    if not isinstance(anchor, int):
+    if not isinstance(anchor, int) or isinstance(anchor, bool):
         raise AcceptanceError(f"formal verify has no full-arm anchor seed: {label}")
+    if anchor != ANCHOR_SEED:
+        raise AcceptanceError(f"formal verify full-arm anchor seed {anchor!r} is not the "
+                              f"sealed seed {ANCHOR_SEED}: {label}")
+    comparisons = full_arm.get("comparisons")
+    if not isinstance(comparisons, int) or isinstance(comparisons, bool) or comparisons < 1:
+        raise AcceptanceError(f"formal verify full arm records no anchor comparison "
+                              f"(comparisons {comparisons!r}): {label}")
     sensitivity = sorted({int(item["seed"]) for item in full_arm.get("sensitivity") or []
                           if item.get("seed") is not None})
     notes = sorted({str(item.get("note")) for item in full_arm.get("sensitivity") or []
@@ -799,8 +810,8 @@ def _verify_identity(value, label) -> dict:
                                   for entry in identity.get("driver_code_drift") or []],
             "note": identity.get("note"),
         },
-        "full_arm": {"anchor_seed": anchor, "sensitivity_seeds": sensitivity,
-                     "statement": statement},
+        "full_arm": {"anchor_seed": anchor, "comparisons": comparisons,
+                     "sensitivity_seeds": sensitivity, "statement": statement},
     }
 
 

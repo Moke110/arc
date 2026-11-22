@@ -628,6 +628,10 @@ def full_arm_evidence(measured):
     compared with the sealed anchors (PASS/DRIFT). A non-anchor seed is a sensitivity:
     it carries the anchor, the measured value and the drift, and its status is
     ``"sensitivity"`` so it can never be read as a reproduced sealed score.
+
+    ``comparisons`` is the number of anchor-comparable records returned alongside the
+    block: it is zero when the selection carries no seed-anchor ``full`` arm, which
+    ``verify`` refuses instead of reporting a vacuous PASS.
     """
     origins, fold_mean, sensitivity, comparisons = [], [], [], []
     grouped = {}
@@ -656,7 +660,8 @@ def full_arm_evidence(measured):
             record = sensitivity_record(source, mean, level="fold_mean", seed=seed)
             record.update({"source": source, "folds": len(values)})
             sensitivity.append(record)
-    return ({"anchor_seed": ANCHOR_SEED, "origins": origins, "fold_mean": fold_mean,
+    return ({"anchor_seed": ANCHOR_SEED, "comparisons": len(comparisons),
+             "origins": origins, "fold_mean": fold_mean,
              "sensitivity": sensitivity}, comparisons)
 
 
@@ -707,7 +712,12 @@ def _verify_origin(candidate, origin, sealed_plan, selection_sha256):
 def verify(candidate, *, freezes, truth, native_source, device="cuda", mode="formal",
            probe_rows=None, probe_epochs=None, only_source=(), only_view=(),
            only_fold=(), only_seed=(), repo_root_path=None, record=True):
-    """Verify the sealed plan, runs, receipts, tokens and the full-arm tolerance."""
+    """Verify the sealed plan, runs, receipts, tokens and the full-arm tolerance.
+
+    A verify whose filtered selection leaves no seed-42 ``full`` origin or fold mean to
+    compare with the sealed anchors fails closed: an empty comparison set would otherwise
+    make ``status`` a vacuous PASS. ``full_arm.comparisons`` records the count.
+    """
     candidate = Path(candidate)
     sealed_plan = matrix.load_plan(candidate)
     if mode is not None and sealed_plan["mode"] != mode:
@@ -738,6 +748,15 @@ def verify(candidate, *, freezes, truth, native_source, device="cuda", mode="for
             if origin["view"] == "full":
                 measured.append((origin, verified["metrics"]["primary"]))
     full_arm, comparisons = full_arm_evidence(measured)
+    if not comparisons:
+        # A selection that excludes the seed-42 ``full`` arm has nothing to compare, and
+        # an empty comparison set would make ``status`` a vacuous PASS. The rule is the
+        # formal evidence rule; a probe verify observes it too so the two modes cannot
+        # disagree about what a PASS means.
+        raise ValueError(
+            f"the filtered verify has no anchor-comparable full origin or fold mean: the "
+            f"sealed anchors are measured at seed {ANCHOR_SEED} only, so a selection that "
+            f"excludes the seed-{ANCHOR_SEED} full arm cannot reproduce them")
     status = "PASS" if all(item["status"] == "PASS" for item in comparisons) else "DRIFT"
     report = {"schema": VERIFY_SCHEMA, "status": status,
               "mode": sealed_plan["mode"], "plan_sha256": matrix.plan_sha256(candidate),
