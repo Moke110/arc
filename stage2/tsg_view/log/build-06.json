@@ -119,6 +119,63 @@
         "runs": "runs/<source>/<view>/fold-<f>/seed-<s>",
         "selection": "selection/<source>/fold-<f>.json"
       },
+      "real_input_dry_run": {
+        "caps": {
+          "memory_max": "10G",
+          "memory_swap_max": "8G",
+          "systemd_scope": "systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G",
+          "threads": 2
+        },
+        "code": {
+          "formal.py": "242f88b3a83d1b121396f97219e622b8cc2bbb3297cac486853a68a904d26f6f",
+          "freeze.py": "6f91dc5f6c4921511c41241eaab85a6e6708c238a65df13fd7fd61fd1a4dbb79",
+          "inputs.py": "3ee63ac99142216fbba489476c6843bc74db2c476970ce22d286c3408e790962",
+          "learner.py": "4a03ebc5e9be3c7d4463d343930416b57f28019e82d12a26b96fa1a87d23a54e",
+          "matrix.py": "68da92b8608f3044ed425024b52a85f999e5fcabdfac8573523b967d7fced2b2",
+          "views/__init__.py": "7af35a6b09d1b7f1aec9a11db23a8cb18b142b958b87e8acf8077bf90fa4c165"
+        },
+        "command": "cd /home/chang/arc/stage2/tsg_view && python execution/formal.py plan --candidate /tmp/tsg06-formal/candidate --freezes <staged freeze root> --truth stage2/tsg_view/output/truth --native-source pert_model/TranSiGen/source --device cuda --mode formal --repo-root /home/chang/arc",
+        "freezes": [
+          "full-pooled-label/tenv",
+          "full/tahoe_bulk",
+          "full/tenv",
+          "merge/tahoe_bulk",
+          "merge/tenv",
+          "solo-deepest/tenv",
+          "solo/tahoe_bulk",
+          "solo/tenv"
+        ],
+        "full_arm_tolerance": {
+          "fold_mean": {
+            "pcc_abs": 0.01,
+            "rmse_abs": 0.005
+          },
+          "origin": {
+            "pcc_abs": 0.05,
+            "rmse_abs": 0.02
+          }
+        },
+        "native_source": {
+          "model_sha256": "c328864a040a3c1a1e69b040f31a27572513b1974a93d722e3ff00d4cdd940c7",
+          "path": "pert_model/TranSiGen/source",
+          "source_digest": "c328864a040a3c1a1e69b040f31a27572513b1974a93d722e3ff00d4cdd940c7"
+        },
+        "note": "the dry-run wrote only /tmp/tsg06-formal; no main-checkout or ticket-04/05 product was touched",
+        "origins": 45,
+        "result": "sealed a 45-origin formal plan over the merged dev truth product and the seven real materialised freezes; only full-pooled-label/{tenv,tahoe_bulk} were contract-shaped stubs because ticket 04 has not merged yet, so the Lead's real plan is exactly this with ticket-04's freeze manifests/digests",
+        "truth": [
+          "tahoe_bulk/fold-0",
+          "tahoe_bulk/fold-1",
+          "tahoe_bulk/fold-2",
+          "tenv/fold-0",
+          "tenv/fold-1",
+          "tenv/fold-2"
+        ],
+        "truth_source": [
+          "tahoe_bulk",
+          "tenv"
+        ]
+      },
       "receipt_rule": "selection/<source>/fold-<f>.json enumerates that fold's plan origins with validation_manifest sha256, validation_mse, best_epoch, epochs and parameter_count; it is recomputed and byte-compared before any test truth read, is test-insensitive, and is idempotent-or-fail",
       "schema": "tsg-view-formal-plan-v1",
       "seal_rule": "formal_plan.json plus formal_plan_manifest.json (plan sha256) are written before the first fit; a missing half, a changed plan body or digest, or a plan sealed after runs/selection exist fails closed"
