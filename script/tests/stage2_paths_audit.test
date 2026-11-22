@@ -100,8 +100,23 @@ printf 'width and dose comparison\n' >"$fixture_root/05_tsg_width_dose/AGENTS.md
 printf 'width and dose comparison\n' >"$fixture_root/05_tsg_width_dose/README.md"
 printf 'transfer comparison\n' >"$fixture_root/06_tsg_transfer/AGENTS.md"
 printf 'transfer comparison\n' >"$fixture_root/06_tsg_transfer/README.md"
+# The non-numbered ADR 0082 study step carries its own routing skeleton.
+mkdir -p "$fixture_root/tsg_view"
+printf 'view-variant study\n' >"$fixture_root/tsg_view/AGENTS.md"
+printf 'view-variant study\n' >"$fixture_root/tsg_view/README.md"
 run_root "$fixture_root" "$tmp/list_clean" >/dev/null \
   || fail "the accepted active steps must coexist with routing"
+# The study root requires both owning routing files too.
+for routing in AGENTS.md README.md; do
+  mv "$fixture_root/tsg_view/$routing" "$tmp/view-routing.off"
+  if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
+    fail "the study step without $routing must fail the layout guard"
+  fi
+  printf '%s\n' "$out" | grep -q "missing step routing: .*tsg_view/$routing" \
+    || fail "the missing study routing file must be named in the failure"
+  mv "$tmp/view-routing.off" "$fixture_root/tsg_view/$routing"
+done
+
 # The retired old comparison is rejected.
 mkdir -p "$fixture_root/02_models_tenv"
 if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then

@@ -37,6 +37,12 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   comparison. Follow its [execution workflow](06_tsg_transfer/AGENTS.md) and
   [study report](06_tsg_transfer/README.md).
 
+- `tsg_view/` — study step (ADR 0082), not a pipeline stage: eight expression view
+  variants built from the Bases integer corpus under the cold-drug-dose folds, and native
+  TranSiGen fitted on each, to test how much of the tenv–Tahoe gap within-condition
+  replicate structure explains. See its [execution workflow](tsg_view/AGENTS.md) and
+  [study report](tsg_view/README.md).
+
 Use **ECFP4** and **ECFP4_MLP** in new contracts and reports. See the
 [fingerprint migration record](04_tsg_dose/log/ecfp4-contract.md) for sealed keys.
 
