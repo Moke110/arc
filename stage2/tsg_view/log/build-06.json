@@ -1,7 +1,7 @@
 {
   "base_commit": "ee49738",
   "branch": "impl/tsg-view-06",
-  "dev_merge": "a4500dd (merger verification of ticket 05; frozen truth materialised in the main checkout)",
+  "dev_merge": "fd9763c (ticket 04 merged; the real 45-fit matrix ran on dev at this code state)",
   "deviations": [
     "the bounded probes run against the canonical materialised truth product in the main checkout; the real 45-fit matrix uses the same product and freezes",
     "per-fold truth manifests use tsg-view-truth-fold-v1 (source manifest tsg-view-truth-v1); the loader accepts both instead of assuming one string",
@@ -702,6 +702,143 @@
       "timeline_note": "the first runs of the merged tree showed the known pre-existing failure test_truth.TruthTest.setUpClass (views.HarnessError: the full-freeze parents/morgan differ from the sealed Step 04 freeze) and the suite read 'Ran 73 tests, FAILED (errors=1)'. Ticket 05's separate fix merged into dev as b9d08c3 during this verification and the suite then read 'Ran 90 tests, OK'. Both states are recorded; the final gate is green."
     },
     "tree_state": "tracked tree clean; the untracked stage2/tsg_view/output/views/full-pooled-label/ payload directory belongs to ticket 04 and was left untouched"
+  },
+  "post_run_fix": {
+    "commit": "a2e2970",
+    "fix": {
+      "best_effort_stdout": "one emit_json() helper wraps every driver stdout write (phase events, preflight and the plan/run/verify final reports) and swallows BlockingIOError/OSError; a stdout write can never decide the exit status. A failed report-file write or a genuine phase failure still exits non-zero",
+      "driver_only_plan_drift": "a formal.py-only code fix must resume an already sealed candidate without rewriting its plan: run/verify allow the driver-file digest to drift, record {sealed_sha256,current_sha256} under driver_code_drift in formal_run_report.json / formal_verify.json, and leave formal_plan.json byte-identical; any change to matrix/learner/inputs/freeze/views, freezes, truth, native source or runtime history still fails closed",
+      "durable_report": "main() writes <candidate>/formal_run_report.json with the canonical sorted-key JSON + newline (views.write_json) before emitting anything; the file exists for every completed CLI run and is the evidence contract",
+      "shutdown_flush_guard": "main() is wrapped in try/finally quiet_stdout(): if the final flush of a blocked stream raises, sys.stdout is replaced by a no-op stream so interpreter shutdown cannot turn a successful run into exit code 120"
+    },
+    "pre_fix_reproduction": "with sys.stdout patched to raise BlockingIOError, a resume run on the completed candidate raised BlockingIOError and wrote no formal_run_report.json; the same wrapper also exited 120 from the shutdown flush before the quiet_stdout guard",
+    "real_resume_evidence": {
+      "action_events": 0,
+      "blocked_stdout_subprocess": {
+        "elapsed_seconds": 1.28,
+        "exit_code": 0,
+        "report_unchanged": true
+      },
+      "command": "python stage2/tsg_view/execution/formal.py run --candidate /home/chang/arc/stage2/tsg_view/output/runs --freezes /home/chang/arc/stage2/tsg_view/execution/freezes --truth /home/chang/arc/stage2/tsg_view/output/truth --native-source /home/chang/arc/pert_model/TranSiGen/source --repo-root /home/chang/arc --device cuda --mode formal --no-scope",
+      "exit_code": 0,
+      "refits": 0,
+      "report": {
+        "complete": 45,
+        "driver_code_drift": [
+          {
+            "current_sha256": "3a60dcd849eeae8257af8885e9efddcba0820d52f8b518eee29e6b14934f57ff",
+            "file": "formal.py",
+            "sealed_sha256": "242f88b3a83d1b121396f97219e622b8cc2bbb3297cac486853a68a904d26f6f"
+          }
+        ],
+        "mode": "formal",
+        "runs": 45,
+        "schema": "tsg-view-formal-run-v1",
+        "selected": 45
+      },
+      "report_sha256": "6d8acd45b6e9265edb8d8cd8a809a9161fa8da3bc733c501808730729d08a5fd",
+      "untouched_proof": {
+        "after": {
+          "formal_plan.json": "2f59a8704b416debc8bd8ea9a7bb0acbaa3f0a2bd0fa2f11f4060f6fca44bf29",
+          "formal_plan_manifest.json": "f5b6b249e4801ebc3fa90f34955f402d860a12d4dfe385e0b0ead0dbe890cfab",
+          "record": "cfbc61cf1752e7b245470b6db74e053c071d85931c8b0874bd8ab2ac0149e505",
+          "resources_dirs": 1159,
+          "run_manifest": "0d5d484e97798afdcb755536bf05193815ea5a24ce349e469c7f1e7c5966f48f",
+          "run_records.json": "e6f8b2580f59c5275059bc6ce8a80eaad794a2b485f2a3943e6c3f8dad92d6dd",
+          "selection/tenv/fold-0.json": "01198158eb0158f9796ec473a430a1fa5d0482d0eb845ef034592896c1829d3a"
+        },
+        "before": {
+          "formal_plan.json": "2f59a8704b416debc8bd8ea9a7bb0acbaa3f0a2bd0fa2f11f4060f6fca44bf29",
+          "formal_plan_manifest.json": "f5b6b249e4801ebc3fa90f34955f402d860a12d4dfe385e0b0ead0dbe890cfab",
+          "preexisting_report": false,
+          "record": "cfbc61cf1752e7b245470b6db74e053c071d85931c8b0874bd8ab2ac0149e505",
+          "resources_dirs": 1159,
+          "run_manifest": "0d5d484e97798afdcb755536bf05193815ea5a24ce349e469c7f1e7c5966f48f",
+          "run_records.json": "e6f8b2580f59c5275059bc6ce8a80eaad794a2b485f2a3943e6c3f8dad92d6dd",
+          "selection/tenv/fold-0.json": "01198158eb0158f9796ec473a430a1fa5d0482d0eb845ef034592896c1829d3a"
+        },
+        "result": "all seal/selection/run/record/resource digests unchanged; only the new formal_run_report.json appeared",
+        "same": {
+          "formal_plan.json": true,
+          "formal_plan_manifest.json": true,
+          "record": true,
+          "resources_dirs": true,
+          "run_manifest": true,
+          "run_records.json": true,
+          "selection/tenv/fold-0.json": true
+        }
+      },
+      "wall_seconds": 1.88
+    },
+    "regression_tests": {
+      "new": [
+        "test_formal.FinalReportTest.test_blocked_stdout_does_not_fail_a_completed_run",
+        "test_formal.FinalReportTest.test_blocked_stdout_does_not_fail_verify",
+        "test_formal.FinalReportTest.test_blocked_stdout_does_not_fail_plan",
+        "test_formal.FinalReportTest.test_shutdown_flush_cannot_change_the_exit_status",
+        "test_formal.FinalReportTest.test_a_genuine_phase_failure_still_propagates",
+        "test_formal.DriverCodeDriftTest.test_driver_only_drift_is_reported_and_the_seal_is_not_rewritten",
+        "test_formal.DriverCodeDriftTest.test_scientific_code_or_input_change_still_fails_closed"
+      ],
+      "suite": "test_matrix 13 OK, test_formal 20 OK, test_learner_smoke 3 OK, test_freeze 6 OK, test_harness 8 OK, test_truth 17 OK, test_views_full 4 OK, test_views_merge 8 OK, test_views_solo 10 OK, test_views_pooled_label 8 OK = 97 tests OK"
+    },
+    "root_cause": "after every one of the 45 fits succeeded, formal.py main() wrote the final JSON report to sys.stdout; under a full/non-blocking stdout pipe that write raised BlockingIOError: [Errno 11] write could not complete without blocking, so the driver exited 1 and a completed matrix looked failed to callers/automation. CPython also exits 120 when flushing sys.stdout fails at shutdown, so catching only the in-main write was not sufficient.",
+    "untouched": [
+      "no plan seal, run directory, selection receipt, truth product or freeze was modified; the only new file in the candidate is formal_run_report.json"
+    ],
+    "verify_after_fix": {
+      "command": "same candidate/freeze/truth/native/repo arguments with the verify action",
+      "driver_code_drift": [
+        {
+          "current_sha256": "3a60dcd849eeae8257af8885e9efddcba0820d52f8b518eee29e6b14934f57ff",
+          "file": "formal.py",
+          "sealed_sha256": "242f88b3a83d1b121396f97219e622b8cc2bbb3297cac486853a68a904d26f6f"
+        }
+      ],
+      "exit_code": 0,
+      "formal_verify_json_sha256": "ad3d96beaf8df570ac99683cb7dee07a72520c4a5ddaf5a8f6b6b4f577a640c8",
+      "full_arm_fold_mean": [
+        {
+          "drift": {
+            "pcc": -1.8502421816890546e-12,
+            "rmse": -4.839267875311748e-12
+          },
+          "seed": 42,
+          "source": "tahoe_bulk",
+          "status": "PASS"
+        },
+        {
+          "drift": {
+            "pcc": -0.0009102507333306753,
+            "rmse": -0.0002846856038596912
+          },
+          "seed": 43,
+          "source": "tahoe_bulk",
+          "status": "PASS"
+        },
+        {
+          "drift": {
+            "pcc": -8.21614998258724e-12,
+            "rmse": -3.18774451280035e-11
+          },
+          "seed": 42,
+          "source": "tenv",
+          "status": "PASS"
+        },
+        {
+          "drift": {
+            "pcc": -0.0009266375786070591,
+            "rmse": 0.0012449989389755056
+          },
+          "seed": 43,
+          "source": "tenv",
+          "status": "PASS"
+        }
+      ],
+      "note": "formal_verify.json is the only pre-existing evidence file rewritten by the verify re-run; it now carries the transparent code_identity/driver_code_drift block, while plan, selection, runs, records and resources are byte-identical",
+      "origins": 45,
+      "status": "PASS"
+    }
   },
   "scope": "matrix machinery, formal driver, formal/probe learner path and two bounded GPU probes; the real 45-fit matrix is run by the Lead on dev after tickets 04/05 merge",
   "ticket": "06: the 45-fit formal matrix with replayable runs",

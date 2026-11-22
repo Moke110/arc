@@ -124,6 +124,118 @@ def write_truth(root, freeze_dir, source="tenv", fold=FOLD):
     return Path(root) / source
 
 
+class BlockedStream:
+    """A stdout whose every write fails exactly like a full non-blocking pipe."""
+
+    def write(self, *args, **kwargs):
+        raise BlockingIOError(11, "write could not complete without blocking")
+
+    def flush(self):
+        raise BlockingIOError(11, "write could not complete without blocking")
+
+    def isatty(self):
+        return False
+
+
+class DriverCodeDriftTest(unittest.TestCase):
+    """A driver-only fix resumes a sealed plan; a scientific change fails closed."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name)
+        freezes, truth = _stub_plan_inputs(self.root)
+        self.plan = matrix.frozen_plan(freezes=freezes, truth=truth, source_dir=SOURCE,
+                                       device="cpu", mode="formal", repo_root_path=REPO)
+        self.candidate = self.root / "candidate"
+        matrix.seal_plan(self.candidate, self.plan)
+        self.plan_path = self.candidate / "formal_plan.json"
+        self.before = self.plan_path.read_bytes()
+
+    def test_driver_only_drift_is_reported_and_the_seal_is_not_rewritten(self):
+        drifted = json.loads(json.dumps(self.plan))
+        drifted["code"]["formal.py"] = "f" * 64
+        drift = formal.driver_code_drift(self.plan, drifted)
+        self.assertEqual([entry["file"] for entry in drift], ["formal.py"])
+        self.assertEqual(formal.driver_code_drift(self.plan, self.plan), [])
+        self.assertEqual(matrix.load_plan(self.candidate), self.plan)
+        self.assertEqual(self.plan_path.read_bytes(), self.before)
+
+    def test_scientific_code_or_input_change_still_fails_closed(self):
+        scientific = json.loads(json.dumps(self.plan))
+        scientific["code"]["learner.py"] = "f" * 64
+        self.assertIsNone(formal.driver_code_drift(self.plan, scientific))
+        truth = json.loads(json.dumps(self.plan))
+        truth["truth"]["tenv/fold-0"]["primary"]["manifest_sha256"] = "f" * 64
+        self.assertIsNone(formal.driver_code_drift(self.plan, truth))
+
+
+class FinalReportTest(unittest.TestCase):
+    """A blocked stdout must never decide the driver's exit status."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name)
+        self.candidate = self.root / "candidate"
+        self.candidate.mkdir(parents=True)
+        self.report = {"schema": formal.RUN_REPORT_SCHEMA, "mode": "formal",
+                       "plan_sha256": "0" * 64, "selected": 45, "complete": 45,
+                       "runs": [{"origin": {"source": "tenv", "view": "full",
+                                            "fold": 0, "seed": 42}}],
+                       "driver_code_drift": []}
+
+    def _run_arguments(self):
+        return ["run", "--candidate", str(self.candidate), "--no-scope", "--device", "cpu"]
+
+    def test_blocked_stdout_does_not_fail_a_completed_run(self):
+        with mock.patch.object(formal, "preflight",
+                               return_value={"available_ram_kib": 1, "gpu": None}), \
+                mock.patch.object(formal, "run_matrix", return_value=self.report), \
+                mock.patch.object(sys, "stdout", BlockedStream()):
+            status = formal.main(self._run_arguments())
+        self.assertEqual(status, 0)
+        path = self.candidate / "formal_run_report.json"
+        self.assertTrue(path.is_file())
+        self.assertEqual(json.loads(path.read_text()), self.report)
+        self.assertTrue(path.read_text().endswith("\n"))
+        self.assertIn('"complete": 45', path.read_text())
+
+    def test_blocked_stdout_does_not_fail_verify(self):
+        report = {"schema": formal.VERIFY_SCHEMA, "status": "PASS", "origins": 45}
+        with mock.patch.object(formal, "verify", return_value=report), \
+                mock.patch.object(sys, "stdout", BlockedStream()):
+            status = formal.main(["verify", "--candidate", str(self.candidate)])
+        self.assertEqual(status, 0)
+
+    def test_blocked_stdout_does_not_fail_plan(self):
+        freezes, truth = _stub_plan_inputs(self.root)
+        with mock.patch.object(sys, "stdout", BlockedStream()):
+            status = formal.main([
+                "plan", "--candidate", str(self.candidate / "planned"),
+                "--freezes", str(freezes), "--truth", str(truth),
+                "--native-source", str(SOURCE), "--repo-root", str(REPO),
+                "--device", "cpu"])
+        self.assertEqual(status, 0)
+        self.assertEqual(len(matrix.load_plan(self.candidate / "planned")["origins"]), 45)
+
+    def test_shutdown_flush_cannot_change_the_exit_status(self):
+        with mock.patch.object(sys, "stdout", BlockedStream()):
+            formal.quiet_stdout()
+            self.assertIsInstance(sys.stdout, formal._NullStdout)
+            self.assertEqual(sys.stdout.write("ignored"), 0)
+            sys.stdout.flush()
+
+    def test_a_genuine_phase_failure_still_propagates(self):
+        failure = RuntimeError("a phase really failed")
+        with mock.patch.object(formal, "preflight",
+                               return_value={"available_ram_kib": 1, "gpu": None}), \
+                mock.patch.object(formal, "run_matrix", side_effect=failure):
+            with self.assertRaisesRegex(RuntimeError, "really failed"):
+                formal.main(self._run_arguments())
+        self.assertFalse((self.candidate / "formal_run_report.json").exists())
+
+
 class TelemetryTest(unittest.TestCase):
     def test_meminfo_and_gpu_sample_parsers(self):
         meminfo = ("MemTotal:       24000000 kB\nMemFree: 1 kB\n"
