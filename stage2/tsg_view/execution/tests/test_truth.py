@@ -5,6 +5,7 @@ diagnostic quantities can be recomputed in the test from those literals rather t
 the implementation.
 """
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -458,7 +459,43 @@ class TruthTest(unittest.TestCase):
         source = (EXECUTION / "truth.py").read_text()
         for forbidden in ("torch", "learner", "matrix", "np.random", "random."):
             self.assertNotIn(forbidden, source, forbidden)
-        self.assertNotIn("torch", sys.modules)
+        # Check the import in a fresh interpreter: the suite's discovery may already have
+        # imported the fitting stack through other test modules.
+        command = [sys.executable, "-c",
+                   ("import sys; sys.path.insert(0, %r); import truth; "
+                    "assert not ({'torch', 'tsg_round1.learner'} & set(sys.modules)), "
+                    "'truth import pulled in the fitting stack'" % str(EXECUTION))]
+        result = subprocess.run(command, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_fixture_build_does_not_probe_the_materialised_full_freeze(self):
+        """Fixture isolation: main-checkout geometry must not leak real freezes in.
+
+        The regression scenario is the main checkout, where
+        ``stage2/tsg_view/execution/freezes/full/<source>`` exists next to the real
+        payloads. A fixture build must still use its synthetic sealed directory, never
+        compare against the materialised full freeze.
+        """
+        main = Path("/home/chang/arc")
+        real = main / "stage2/tsg_view/execution/freezes/full/tenv"
+        if not (real / "parents.csv").is_file():
+            self.skipTest("no materialised full freeze in the main checkout")
+        fixture = self.fixture
+        output = self.root / "truth-main-geometry"
+        receipt = truth.build_truth(
+            source="tenv", output_dir=output, repo_root_path=main, size=SIZE,
+            fixture=True, corpus_dir=fixture["written"]["corpus"],
+            axis_dir=fixture["written"]["axis"], accepted_dir=fixture["accepted"],
+            sealed_dir=fixture["sealed"]["tenv"])
+        manifest = json.loads((output / "tenv" / "manifest.json").read_text())
+        self.assertFalse(receipt["merge_cross_check"]["available"],
+                         "a fixture build must not cross-check materialised views")
+        fingerprints = manifest["provenance"]["fingerprints"]
+        self.assertTrue(fingerprints["byte_identical_to_sealed_freeze"])
+        self.assertEqual(fingerprints["parents_sha256"],
+                         views.sha256(fixture["sealed"]["tenv"] / "parents.csv"))
+        self.assertEqual(receipt["counts"]["primary"]["fold-0"],
+                         len(self.population("primary", 0)))
 
     def test_published_truth_reproduces_the_adr_reference_medians(self):
         """The committed real-data products must land on ADR 0082's reference medians."""
