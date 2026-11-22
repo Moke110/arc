@@ -464,5 +464,122 @@
     }
   },
   "schema": "tsg-view-build-05-v1",
-  "ticket": "05 frozen condition-mean truth and noise diagnostics"
+  "ticket": "05 frozen condition-mean truth and noise diagnostics",
+  "merger_verification": {
+    "date": "2026-11-22",
+    "base_dev": "ee497384633afa259212c97780280d3280de7acb",
+    "dev_rev": "3c68308631e45fb114e7be9d294b72ff19a9cc0e",
+    "merge_commit": "3c68308631e45fb114e7be9d294b72ff19a9cc0e",
+    "merge_message": "Merge Stage 2 tsg_view 05: frozen truth and replicate diagnostics",
+    "scope_check": {
+      "command": "git -C /home/chang/arc diff --name-only ee49738..impl/tsg-view-05",
+      "files": 39,
+      "unexpected": [],
+      "result": "PASS",
+      "note": "pre-merge base ee49738; dev..impl is empty after the merge"
+    },
+    "tests": {
+      "command": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+      "result": "FAIL",
+      "ran": 39,
+      "errors": 1,
+      "skipped": 0,
+      "detail": "TruthTest.setUpClass fails with HarnessError('the full-freeze parents/morgan differ from the sealed Step 04 freeze'): fixture builds auto-detect stage2/tsg_view/execution/freezes/full/<source> and compare it with the synthetic sealed fixture whenever the canonical payload is present. The same suite in the payload-free worktree /tmp/arc-tsg-05 is 55 tests OK (skipped=3), and the non-fixture materialisation below passes the same provenance check (byte_identical_to_sealed_freeze=true). No feature code was edited.",
+      "comparison_run": "/tmp/arc-tsg-05: 55 tests OK (skipped=3)",
+      "isolation_gap": "fixture mode must not auto-detect the repo full freeze, or the fixture test must pass full_freeze_dir explicitly"
+    },
+    "materialisation": {
+      "command": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/execution/truth.py --output stage2/tsg_view/output/truth --repo-root /home/chang/arc",
+      "runtime_seconds": 59.99,
+      "peak_rss_kib": 1844772,
+      "git_status_after": "clean",
+      "tracked_products_byte_identical_to_committed": true,
+      "npy_payloads_checked": 24,
+      "fold_manifests_match_log_digests": true,
+      "digests": {
+        "tenv": {
+          "manifest.json": "dfbf9ff20be8f4422901f0f017648b56df1d646e8c860b694101e72437509230",
+          "diagnostics.json": "964f057586fbb0a3880c631e668dbe8d358a6425ca77ce666e042d0de5adfe53",
+          "noise_floor.csv": "13a153ef67fc3b144b67cc0beb11ea48c25264af919f50de327c070b2d3a4c34"
+        },
+        "tahoe_bulk": {
+          "manifest.json": "9160f5f1b46ae6392f136718ff8b13aa83d31a672bfbdafd0e98fccca94e74d8",
+          "diagnostics.json": "5950f303aaf48eb0caaff8f70147f47672bc3f2ea2c583b69d6b0373959442f2",
+          "noise_floor.csv": "834bdc60947939e71b4301f794ac55b7508df48d6531bd8d21ab79304c54bfae"
+        }
+      },
+      "digest_check": "PASS",
+      "counts": {
+        "tenv": {
+          "primary": {
+            "fold-0": 469,
+            "fold-1": 468,
+            "fold-2": 465
+          },
+          "condition_mean": {
+            "fold-0": 153,
+            "fold-1": 153,
+            "fold-2": 153
+          }
+        },
+        "tahoe_bulk": {
+          "primary": {
+            "fold-0": 6643,
+            "fold-1": 6650,
+            "fold-2": 7950
+          },
+          "condition_mean": {
+            "fold-0": 595,
+            "fold-1": 700,
+            "fold-2": 1800
+          }
+        }
+      }
+    },
+    "determinism": {
+      "command": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/execution/truth.py --output /tmp/truth-verify-05 --repo-root /home/chang/arc",
+      "runtime_seconds": 54.15,
+      "peak_rss_kib": 1835732,
+      "files": 60,
+      "byte_identical": true
+    },
+    "health": {
+      "script/check_paths.sh": 0,
+      "script/check_tracked.sh": 0
+    },
+    "gate_failures": [
+      "tests: the suite fails in the main checkout because fixture mode auto-detects the canonical full freeze (diagnosis and comparison run recorded under tests)"
+    ],
+    "consumer_contract": {
+      "root": "stage2/tsg_view/output/truth",
+      "sources": [
+        "tenv",
+        "tahoe_bulk"
+      ],
+      "schema": "tsg-view-truth-v1",
+      "per_source": [
+        "manifest.json",
+        "diagnostics.json",
+        "noise_floor.csv"
+      ],
+      "primary_fold": [
+        "population.csv",
+        "delta.npy",
+        "control.npy",
+        "parents.csv",
+        "morgan.npy",
+        "manifest.json"
+      ],
+      "condition_mean_fold": [
+        "population.csv",
+        "delta.npy",
+        "manifest.json"
+      ],
+      "folds": [
+        "fold-0",
+        "fold-1",
+        "fold-2"
+      ]
+    }
+  }
 }
