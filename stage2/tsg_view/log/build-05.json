@@ -39,11 +39,20 @@
           "fold-2": 7950
         }
       },
-      "diagnostics_sha256": "af82c41cafd7962ba8442813f5bb11eebd29756f8aafaef560e56b94a5f0e00d",
-      "manifest_sha256": "2a8df55e7014318e272c2605a0857387ae69eaa66c98a13e98dd73e72cad686c",
+      "diagnostics_sha256": "5950f303aaf48eb0caaff8f70147f47672bc3f2ea2c583b69d6b0373959442f2",
+      "diagnostics_summary": {
+        "file": "diagnostics.json",
+        "label": "heuristic diagnostic",
+        "noise_floor_median": 0.07025318359737137,
+        "noise_floor_sample_sd_median": 0.09519978877546029,
+        "pcc_ceiling": 0.42828477670427056,
+        "repeat_correlation_median": 0.20664636248036844,
+        "sha256": "5950f303aaf48eb0caaff8f70147f47672bc3f2ea2c583b69d6b0373959442f2"
+      },
+      "manifest_sha256": "9160f5f1b46ae6392f136718ff8b13aa83d31a672bfbdafd0e98fccca94e74d8",
       "noise_floor_csv": {
         "rows": 9741,
-        "sha256": "7ebb628a222a138169405baca7159e5219c1bd299d492fbc11672c6702c01860"
+        "sha256": "834bdc60947939e71b4301f794ac55b7508df48d6531bd8d21ab79304c54bfae"
       },
       "primary_folds": {
         "fold-0": "055aaccc27b30f31254ad9be1acb02f84242c593cabdac6144132389ff24b201",
@@ -89,11 +98,20 @@
           "fold-2": 465
         }
       },
-      "diagnostics_sha256": "470362a68f8506249530355c465ed77e345756495f5785a6ad46118b078e5357",
-      "manifest_sha256": "c8c800bf398583d3ed0aa49d6f49c1ffb4fcc9e6b120b269bd5d77442573b7a5",
+      "diagnostics_sha256": "964f057586fbb0a3880c631e668dbe8d358a6425ca77ce666e042d0de5adfe53",
+      "diagnostics_summary": {
+        "file": "diagnostics.json",
+        "label": "heuristic diagnostic",
+        "noise_floor_median": 0.3425617959827319,
+        "noise_floor_sample_sd_median": 0.41928388933783856,
+        "pcc_ceiling": 0.3802732892389079,
+        "repeat_correlation_median": 0.12001953515317049,
+        "sha256": "964f057586fbb0a3880c631e668dbe8d358a6425ca77ce666e042d0de5adfe53"
+      },
+      "manifest_sha256": "dfbf9ff20be8f4422901f0f017648b56df1d646e8c860b694101e72437509230",
       "noise_floor_csv": {
         "rows": 1377,
-        "sha256": "d953d13eb32f795d39371ac0a19c9eb5d65e288408eb5fa52f49796db5e8732a"
+        "sha256": "13a153ef67fc3b144b67cc0beb11ea48c25264af919f50de327c070b2d3a4c34"
       },
       "primary_folds": {
         "fold-0": "28d4d58d34ff43d96069d960e06bcda2455f5aec7d45e0cec30d217fd016c0b8",
@@ -106,6 +124,7 @@
   "blockers": [],
   "branch": "impl/tsg-view-05",
   "commands": {
+    "all_sources": "/home/chang/miniconda3/envs/arc/bin/python -u stage2/tsg_view/execution/truth.py --source all --output /tmp/arc-tsg-05/output-truth-all --repo-root /home/chang/arc",
     "determinism_replay": "same commands with --output /tmp/arc-tsg-05/output-truth-2",
     "suite": "cd stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p test_*.py",
     "tahoe_bulk": "/home/chang/miniconda3/envs/arc/bin/python -u stage2/tsg_view/execution/truth.py --source tahoe_bulk --output /tmp/arc-tsg-05/output-truth --repo-root /home/chang/arc",
@@ -114,9 +133,9 @@
   },
   "date": "2026-11-22",
   "deviations": [
-    "noise floor: ticket 05 says ddof=1 (tenv 0.4193, Tahoe 0.0952); ADR 0082's 0.343/0.070 references are the ddof=0 population variant (tenv 0.34256, Tahoe 0.07025). Both are published per condition and summarised: `noise_floor` = ticket formula, `noise_floor_population` = ADR-reproducing variant. The report must pick the headline; ADR reproduction only holds for the population variant.",
     "Tahoe pcc ceiling: profile-weighted mean sqrt(rho) is 0.42828, marginally below the ADR 0.43-0.52 range (0.43525 unweighted is inside it); tenv 0.38027 matches ~0.38.",
     "repeat correlation: the ADR median is reproduced by the pair-weighted median of within-condition rho (tenv 0.12002 vs 0.121, Tahoe 0.20665 vs 0.207); the condition-weighted median (tenv 0.11879, Tahoe 0.25928) is published alongside and differs on Tahoe because its 16-member conditions carry many pairs.",
+    "noise floor: headline is the ddof=0 population SD that reproduces ADR 0082; the ddof=1 sample SD is published as `noise_floor_sample_sd` sensitivity only (tenv 0.4193, Tahoe 0.0952) and is never the headline.",
     "merge cross-check is recorded evidence, not a truth input: it is available in this checkout (tenv 459/459, Tahoe 3095/3095 condition-mean rows bit-equal) and would be recorded unavailable where the merge product is absent."
   ],
   "environment": {
@@ -194,16 +213,32 @@
     },
     "c_diagnostics_vs_adr_0082": {
       "tahoe_bulk": {
-        "input_conditions": 9741,
-        "input_profiles": 22282,
+        "condition_population": {
+          "all_conditions": 52777,
+          "member_count_histogram": {
+            "16": 50,
+            "2": 7941,
+            "3": 1400,
+            "4": 350
+          },
+          "note": "the replicated-condition population is not a random subset of the source: repeats concentrate on multi-plate, multi-article conditions",
+          "replicated_conditions": 9741,
+          "replicated_profiles": 22282
+        },
         "noise_floor_adr_reference": 0.07,
-        "noise_floor_ddof1_median": 0.09519978877546029,
-        "noise_floor_population_deviation_from_adr": 0.00025318359737136475,
-        "noise_floor_population_median": 0.07025318359737137,
+        "noise_floor_definition": "sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=0) = RMS deviation from the condition mean; the header noise floor (`noise_floor.csv` column `noise_floor`)",
+        "noise_floor_deviation": 0.00025318359737136475,
+        "noise_floor_headline_median": 0.07025318359737137,
+        "noise_floor_sample_sd_definition": "sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=1); sensitivity only (`noise_floor.csv` column `noise_floor_sample_sd`), cannot reproduce ADR 0082",
+        "noise_floor_sample_sd_deviation": 0.02519978877546028,
+        "noise_floor_sample_sd_median": 0.09519978877546029,
         "pcc_ceiling": 0.42828477670427056,
         "pcc_ceiling_adr_reference": "0.43-0.52",
+        "pcc_ceiling_input_conditions": 9741,
+        "pcc_ceiling_input_profiles": 22282,
+        "pcc_ceiling_label": "heuristic diagnostic",
         "pcc_ceiling_unweighted": 0.43525127861310187,
-        "receipt_manifest_sha256": "2a8df55e7014318e272c2605a0857387ae69eaa66c98a13e98dd73e72cad686c",
+        "pcc_ceiling_weighting": "member-profile count per replicated condition",
         "repeat_correlation_adr_reference": 0.207,
         "repeat_correlation_deviation": -0.00035363751963155,
         "repeat_correlation_median_condition": 0.25928064501270565,
@@ -221,20 +256,34 @@
             "conditions": 1800,
             "profiles": 3900
           }
-        },
-        "runtime_seconds_receipt": 46.523
+        }
       },
       "tenv": {
-        "input_conditions": 1377,
-        "input_profiles": 4206,
+        "condition_population": {
+          "all_conditions": 1377,
+          "member_count_histogram": {
+            "3": 1320,
+            "4": 48,
+            "6": 9
+          },
+          "note": "the replicated-condition population is not a random subset of the source: repeats concentrate on multi-plate, multi-article conditions",
+          "replicated_conditions": 1377,
+          "replicated_profiles": 4206
+        },
         "noise_floor_adr_reference": 0.343,
-        "noise_floor_ddof1_median": 0.41928388933783856,
-        "noise_floor_population_deviation_from_adr": -0.00043820401726812896,
-        "noise_floor_population_median": 0.3425617959827319,
+        "noise_floor_definition": "sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=0) = RMS deviation from the condition mean; the header noise floor (`noise_floor.csv` column `noise_floor`)",
+        "noise_floor_deviation": -0.00043820401726812896,
+        "noise_floor_headline_median": 0.3425617959827319,
+        "noise_floor_sample_sd_definition": "sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=1); sensitivity only (`noise_floor.csv` column `noise_floor_sample_sd`), cannot reproduce ADR 0082",
+        "noise_floor_sample_sd_deviation": 0.07628388933783853,
+        "noise_floor_sample_sd_median": 0.41928388933783856,
         "pcc_ceiling": 0.3802732892389079,
         "pcc_ceiling_adr_reference": "~0.38",
+        "pcc_ceiling_input_conditions": 1377,
+        "pcc_ceiling_input_profiles": 4206,
+        "pcc_ceiling_label": "heuristic diagnostic",
         "pcc_ceiling_unweighted": 0.3817319488260065,
-        "receipt_manifest_sha256": "c8c800bf398583d3ed0aa49d6f49c1ffb4fcc9e6b120b269bd5d77442573b7a5",
+        "pcc_ceiling_weighting": "member-profile count per replicated condition",
         "repeat_correlation_adr_reference": 0.121,
         "repeat_correlation_deviation": -0.0009804648468295096,
         "repeat_correlation_median_condition": 0.11878801759147622,
@@ -252,8 +301,7 @@
             "conditions": 153,
             "profiles": 465
           }
-        },
-        "runtime_seconds_receipt": 4.915
+        }
       }
     },
     "d_determinism": {
@@ -305,9 +353,10 @@
       "tenv": true
     },
     "g_tests": {
-      "full_suite": "54 tests, OK (3 skipped: GPU smoke)",
+      "adr_gate": "test_published_truth_reproduces_the_adr_reference_medians asserts the committed products land within 0.001 of the ADR 0082 median references for both sources",
+      "full_suite": "55 tests, OK (3 skipped: GPU smoke)",
       "no_model_dependency": "test_truth.py asserts no torch/learner import and no np.random/clock in truth.py",
-      "truth_module": "15 tests, OK"
+      "truth_module": "16 tests, OK"
     },
     "h_sealed_full_freeze_cross_check": {
       "tahoe_bulk": {
@@ -356,10 +405,15 @@
       }
     },
     "i_rebuild_evidence": {
-      "after_pairwise_refactor": "both sources rebuilt into /tmp/arc-tsg-05/output-truth-3 and compared byte for byte with the tracked products: identical (30 files each)",
-      "default_cli": "truth.py --source all --output /tmp/arc-tsg-05/output-truth-all --repo-root /home/chang/arc: 62.6 s wall, 1,831,940 KiB peak RSS, both sources byte-identical to the tracked products",
-      "sealed_freeze_confirmation": "primary control/delta bit-identical to the sealed Step 04 axis-local full freeze on every test row"
+      "after_noise_floor_semantics_change": "products rebuilt and recopied; tracked CSV/JSON refreshed",
+      "default_cli_all": "truth.py --source all -> output-truth-all: 58.76 s, 1,812,912 KiB peak RSS, both sources byte-identical to the tracked products",
+      "two_independent_builds": "each source rebuilt twice (output-truth, output-truth-2); every file of both 30-file trees byte-identical"
     }
+  },
+  "headline_decision": {
+    "decided_by": "Lead, 2026-11-22; ticket-05 follow-up",
+    "noise_floor": "population SD (ddof=0), RMS deviation from the condition mean; the headline that reproduces ADR 0082 0.343/0.070",
+    "noise_floor_sample_sd": "sample SD (ddof=1), sensitivity column only; cannot reproduce the ADR reference"
   },
   "inputs": {
     "accepted_view": "stage2/01_bases/output/view-5k (read-only)",
@@ -372,9 +426,13 @@
   "interpreter": "/home/chang/miniconda3/envs/arc/bin/python",
   "python": "3.13.13",
   "resources": {
+    "all_sources_run": {
+      "peak_rss_kib": 1812912,
+      "seconds": 58.76
+    },
     "cap": "all runs below the 4 GiB truth-pipeline target",
     "peak_rss_mib": {
-      "tahoe_bulk": 1760.1,
+      "tahoe_bulk": 1789.6,
       "tenv": 463.1
     },
     "policy": "one heavy job at a time; free -g available >= 12 GiB before each run",
@@ -382,25 +440,25 @@
       "tahoe_bulk": [
         {
           "build": 1,
-          "peak_rss_kib": 1802324,
-          "seconds": 52.81
+          "peak_rss_kib": 1832600,
+          "seconds": 52.24
         },
         {
           "build": 2,
-          "peak_rss_kib": 1534312,
-          "seconds": 57.58
+          "peak_rss_kib": 1831788,
+          "seconds": 51.71
         }
       ],
       "tenv": [
         {
           "build": 1,
-          "peak_rss_kib": 473404,
-          "seconds": 5.25
+          "peak_rss_kib": 474616,
+          "seconds": 5.9
         },
         {
           "build": 2,
-          "peak_rss_kib": 474264,
-          "seconds": 5.53
+          "peak_rss_kib": 474156,
+          "seconds": 8.67
         }
       ]
     }

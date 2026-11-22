@@ -54,7 +54,7 @@ CONDITION_COLUMNS = ("profile_id", "cell_line", "drug_parent", "dose_um", "membe
                      "count", "partition")
 DIAGNOSTIC_COLUMNS = ("source", "condition_key", "condition_index", "cell_line",
                       "drug_parent", "dose_um", "member_count", "n_pairs",
-                      "noise_floor", "noise_floor_population", "rho_mean", "sqrt_rho",
+                      "noise_floor", "noise_floor_sample_sd", "rho_mean", "sqrt_rho",
                       "weight_profile", "fold0_partition", "fold1_partition",
                       "fold2_partition")
 
@@ -86,13 +86,23 @@ def _members(deltas):
 
 
 def noise_floor(deltas):
-    """sqrt(mean over genes of the within-condition per-gene variance, ddof=1)."""
-    return float(np.sqrt(np.mean(np.var(_members(deltas), axis=0, ddof=1))))
+    """Headline Delta noise floor: RMS deviation from the condition mean.
 
-
-def noise_floor_population(deltas):
-    """Population-variance variant (ddof=0); reproduces the ADR 0082 0.343/0.070 refs."""
+    ``sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=0)``
+    -- the glossary's "error a perfect predictor of the condition mean would still show
+    against a single profile", and the variant that reproduces ADR 0082's 0.343/0.070
+    reference medians.
+    """
     return float(np.sqrt(np.mean(np.var(_members(deltas), axis=0, ddof=0))))
+
+
+def noise_floor_sample_sd(deltas):
+    """Sensitivity only: the same per-gene variance with ``ddof=1`` (sample SD).
+
+    It is published beside the headline but cannot reproduce ADR 0082's reference
+    medians, so it is never the headline.
+    """
+    return float(np.sqrt(np.mean(np.var(_members(deltas), axis=0, ddof=1))))
 
 
 def pair_correlations(deltas):
@@ -144,7 +154,7 @@ def condition_diagnostics(deltas):
         "member_count": int(len(deltas)),
         "n_pairs": int(len(deltas) * (len(deltas) - 1) // 2),
         "noise_floor": noise_floor(deltas),
-        "noise_floor_population": noise_floor_population(deltas),
+        "noise_floor_sample_sd": noise_floor_sample_sd(deltas),
         "rho_mean": repeat_correlation(deltas),
     }
 
@@ -439,7 +449,7 @@ class _Truth:
         member_counts = conditions["member_count"].to_numpy(dtype=np.int64)[
             replicated_positions]
         noise = np.empty(len(replicated_positions), dtype=np.float64)
-        noise_population = np.empty(len(replicated_positions), dtype=np.float64)
+        noise_sample_sd = np.empty(len(replicated_positions), dtype=np.float64)
         rhos = np.empty(len(replicated_positions), dtype=np.float64)
         pair_rhos = []
         rows = []
@@ -452,7 +462,7 @@ class _Truth:
             metrics = condition_diagnostics(block)
             pairs = pair_correlations(block)
             noise[position] = metrics["noise_floor"]
-            noise_population[position] = metrics["noise_floor_population"]
+            noise_sample_sd[position] = metrics["noise_floor_sample_sd"]
             rhos[position] = metrics["rho_mean"]
             pair_rhos.extend(pairs.tolist())
             partitions_by_fold = [str(partitions[fold][condition_index])
@@ -467,7 +477,7 @@ class _Truth:
                 "member_count": count,
                 "n_pairs": int(count * (count - 1) // 2),
                 "noise_floor": metrics["noise_floor"],
-                "noise_floor_population": metrics["noise_floor_population"],
+                "noise_floor_sample_sd": metrics["noise_floor_sample_sd"],
                 "rho_mean": metrics["rho_mean"],
                 "sqrt_rho": (float(np.sqrt(np.clip(metrics["rho_mean"], 0.0, 1.0)))
                              if np.isfinite(metrics["rho_mean"]) else float("nan")),
@@ -515,9 +525,18 @@ class _Truth:
                          "the source: repeats concentrate on multi-plate, multi-article "
                          "conditions"),
             },
+            "noise_floor_definition": (
+                "sqrt(mean over genes of the within-condition per-gene variance of "
+                "Delta, ddof=0) = RMS deviation from the condition mean; the header "
+                "noise floor (`noise_floor.csv` column `noise_floor`)"),
+            "noise_floor_sample_sd_definition": (
+                "sqrt(mean over genes of the within-condition per-gene variance of "
+                "Delta, ddof=1); sensitivity only (`noise_floor.csv` column "
+                "`noise_floor_sample_sd`), cannot reproduce ADR 0082"),
             "noise_floor": {
                 "definition": ("sqrt(mean over genes of the within-condition per-gene "
-                               "variance of Delta, ddof=1)"),
+                               "variance of Delta, ddof=0) = RMS deviation from the "
+                               "condition mean"),
                 "unit": "same as Delta RMSE",
                 "median": float(np.median(noise)),
                 "mean": float(np.mean(noise)),
@@ -525,17 +544,17 @@ class _Truth:
                 "adr_reference_median": reference["noise_floor_median"],
                 "deviation": float(np.median(noise) - reference["noise_floor_median"]),
             },
-            "noise_floor_population": {
+            "noise_floor_sample_sd": {
                 "definition": ("sqrt(mean over genes of the within-condition per-gene "
-                               "variance of Delta, ddof=0) = RMS deviation from the "
-                               "condition mean; the variant that reproduces ADR 0082"),
+                               "variance of Delta, ddof=1)"),
                 "unit": "same as Delta RMSE",
-                "median": float(np.median(noise_population)),
-                "mean": float(np.mean(noise_population)),
-                "conditions": int(len(noise_population)),
+                "median": float(np.median(noise_sample_sd)),
+                "mean": float(np.mean(noise_sample_sd)),
+                "conditions": int(len(noise_sample_sd)),
                 "adr_reference_median": reference["noise_floor_median"],
-                "deviation": float(np.median(noise_population)
+                "deviation": float(np.median(noise_sample_sd)
                                    - reference["noise_floor_median"]),
+                "note": "sensitivity only; never the headline",
             },
             "repeat_correlation": {
                 "definition": ("per condition: mean pairwise Pearson correlation of the "
@@ -892,8 +911,8 @@ class _Truth:
                 "file": "diagnostics.json",
                 "sha256": sha256(diagnostics_path),
                 "noise_floor_median": diagnostics["noise_floor"]["median"],
-                "noise_floor_population_median":
-                    diagnostics["noise_floor_population"]["median"],
+                "noise_floor_sample_sd_median":
+                    diagnostics["noise_floor_sample_sd"]["median"],
                 "repeat_correlation_median":
                     diagnostics["repeat_correlation"]["rho_median_pair"],
                 "pcc_ceiling": diagnostics["pcc_ceiling"]["value"],
@@ -920,8 +939,8 @@ class _Truth:
             "counts": counts,
             "diagnostics": {
                 "noise_floor_median": diagnostics["noise_floor"]["median"],
-                "noise_floor_population_median":
-                    diagnostics["noise_floor_population"]["median"],
+                "noise_floor_sample_sd_median":
+                    diagnostics["noise_floor_sample_sd"]["median"],
                 "repeat_correlation_median_pair":
                     diagnostics["repeat_correlation"]["rho_median_pair"],
                 "repeat_correlation_median_condition":

@@ -106,11 +106,11 @@
   "diagnostics": {
     "file": "diagnostics.json",
     "label": "heuristic diagnostic",
-    "noise_floor_median": 0.09519978877546029,
-    "noise_floor_population_median": 0.07025318359737137,
+    "noise_floor_median": 0.07025318359737137,
+    "noise_floor_sample_sd_median": 0.09519978877546029,
     "pcc_ceiling": 0.42828477670427056,
     "repeat_correlation_median": 0.20664636248036844,
-    "sha256": "af82c41cafd7962ba8442813f5bb11eebd29756f8aafaef560e56b94a5f0e00d"
+    "sha256": "5950f303aaf48eb0caaff8f70147f47672bc3f2ea2c583b69d6b0373959442f2"
   },
   "environment": {
     "anndata": "0.12.16",
@@ -134,9 +134,9 @@
     "merge_product_manifest_sha256": "e31ca3ade39b5bd9bccb7bdaa0f228a33d6ef0a96975690742974d6499140f40"
   },
   "noise_floor": {
-    "bytes": 2087912,
+    "bytes": 2087911,
     "file": "noise_floor.csv",
-    "sha256": "7ebb628a222a138169405baca7159e5219c1bd299d492fbc11672c6702c01860"
+    "sha256": "834bdc60947939e71b4301f794ac55b7508df48d6531bd8d21ab79304c54bfae"
   },
   "primary": {
     "fold-0": {

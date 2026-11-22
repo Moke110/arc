@@ -357,15 +357,16 @@ class TruthTest(unittest.TestCase):
                     f"{float(condition['dose_um']):g}"]
         self.assertEqual(len(row), 1)
         deltas = np.asarray(member_delta, dtype=np.float64)
-        expected_noise = float(np.sqrt(np.mean(np.var(deltas, axis=0, ddof=1))))
-        expected_population = float(np.sqrt(np.mean(np.var(deltas, axis=0, ddof=0))))
+        expected_headline = float(np.sqrt(np.mean(np.var(deltas, axis=0, ddof=0))))
+        expected_sample_sd = float(np.sqrt(np.mean(np.var(deltas, axis=0, ddof=1))))
         expected_rho = float(np.mean([
             np.corrcoef(deltas[left], deltas[right])[0, 1]
             for left in range(len(deltas)) for right in range(left + 1, len(deltas))]))
-        self.assertAlmostEqual(float(row["noise_floor"].iloc[0]), expected_noise,
+        self.assertAlmostEqual(float(row["noise_floor"].iloc[0]), expected_headline,
                                places=6)
-        self.assertAlmostEqual(float(row["noise_floor_population"].iloc[0]),
-                               expected_population, places=6)
+        self.assertAlmostEqual(float(row["noise_floor_sample_sd"].iloc[0]),
+                               expected_sample_sd, places=6)
+        self.assertGreater(expected_sample_sd, expected_headline)
         self.assertAlmostEqual(float(row["rho_mean"].iloc[0]), expected_rho, places=6)
         self.assertEqual(int(row["member_count"].iloc[0]), len(deltas))
         self.assertEqual(int(row["weight_profile"].iloc[0]), len(deltas))
@@ -393,6 +394,13 @@ class TruthTest(unittest.TestCase):
                              "replicated_conditions"]))
         self.assertEqual(diagnostics["noise_floor"]["adr_reference_median"],
                          truth.ADR_REFERENCE["tenv"]["noise_floor_median"])
+        self.assertIn("ddof=0", diagnostics["noise_floor_definition"])
+        self.assertIn("ddof=1", diagnostics["noise_floor_sample_sd_definition"])
+        self.assertIn("sensitivity only",
+                      diagnostics["noise_floor_sample_sd_definition"])
+        self.assertAlmostEqual(
+            diagnostics["noise_floor"]["median"],
+            float(self.noise_floor()["noise_floor"].median()), places=8)
         self.assertTrue(np.isfinite(diagnostics["pcc_ceiling"]["value"]))
         manifest = json.loads((self.output() / "manifest.json").read_text())
         self.assertEqual(manifest["schema"], truth.SCHEMA)
@@ -409,7 +417,11 @@ class TruthTest(unittest.TestCase):
 
     def test_diagnostic_helpers_handle_the_identity_reductions(self):
         self.assertAlmostEqual(truth.noise_floor(np.zeros((2, SIZE))), 0.0)
-        self.assertAlmostEqual(truth.noise_floor_population(np.ones((3, SIZE))), 0.0)
+        self.assertAlmostEqual(truth.noise_floor_sample_sd(np.ones((3, SIZE))), 0.0)
+        deltas = np.vstack([np.arange(SIZE, dtype=np.float64),
+                            np.arange(SIZE, dtype=np.float64) * 2.0])
+        self.assertGreater(truth.noise_floor_sample_sd(deltas),
+                           truth.noise_floor(deltas))
         self.assertTrue(np.isnan(truth.repeat_correlation(np.ones((3, SIZE)))))
         replicate = np.vstack([np.arange(SIZE) + 1.0] * 3)
         self.assertAlmostEqual(truth.repeat_correlation(replicate), 1.0)
@@ -447,6 +459,33 @@ class TruthTest(unittest.TestCase):
         for forbidden in ("torch", "learner", "matrix", "np.random", "random."):
             self.assertNotIn(forbidden, source, forbidden)
         self.assertNotIn("torch", sys.modules)
+
+    def test_published_truth_reproduces_the_adr_reference_medians(self):
+        """The committed real-data products must land on ADR 0082's reference medians."""
+        published = HERE.parents[1] / "output/truth"
+        if not (published / "tenv/diagnostics.json").is_file():
+            self.skipTest("the materialised truth product is not in this checkout")
+        for source in ("tenv", "tahoe_bulk"):
+            diagnostics = json.loads((published / source / "diagnostics.json").read_text())
+            reference = truth.ADR_REFERENCE[source]
+            headline = diagnostics["noise_floor"]
+            self.assertLessEqual(
+                abs(headline["median"] - reference["noise_floor_median"]), 0.001,
+                f"{source}: noise floor {headline['median']} misses the ADR reference "
+                f"{reference['noise_floor_median']}")
+            correlation = diagnostics["repeat_correlation"]
+            self.assertLessEqual(
+                abs(correlation["rho_median_pair"]
+                    - reference["repeat_correlation_median"]), 0.001,
+                f"{source}: repeat-correlation median {correlation['rho_median_pair']} "
+                f"misses the ADR reference {reference['repeat_correlation_median']}")
+            self.assertGreater(diagnostics["noise_floor_sample_sd"]["median"],
+                               headline["median"])
+            self.assertTrue(np.isfinite(diagnostics["pcc_ceiling"]["value"]))
+            axis = {"tenv": (0.35, 0.42), "tahoe_bulk": (0.40, 0.55)}[source]
+            self.assertTrue(axis[0] <= diagnostics["pcc_ceiling"]["value"] <= axis[1],
+                            f"{source}: ceiling {diagnostics['pcc_ceiling']['value']} "
+                            f"outside {axis}")
 
     def test_frozen_expectations_match_the_ticket(self):
         self.assertEqual(truth.EXPECTED_TEST_COUNTS["tenv"], (469, 468, 465))

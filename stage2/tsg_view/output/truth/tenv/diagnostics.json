@@ -23,30 +23,33 @@
     "view": "accepted full view-5k"
   },
   "file": {
-    "bytes": 288800,
+    "bytes": 288799,
     "name": "noise_floor.csv",
     "rows": 1377,
-    "sha256": "d953d13eb32f795d39371ac0a19c9eb5d65e288408eb5fa52f49796db5e8732a"
+    "sha256": "13a153ef67fc3b144b67cc0beb11ea48c25264af919f50de327c070b2d3a4c34"
   },
   "label": "heuristic diagnostic",
   "noise_floor": {
+    "adr_reference_median": 0.343,
+    "conditions": 1377,
+    "definition": "sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=0) = RMS deviation from the condition mean",
+    "deviation": -0.00043820401726812896,
+    "mean": 0.318634595773231,
+    "median": 0.3425617959827319,
+    "unit": "same as Delta RMSE"
+  },
+  "noise_floor_definition": "sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=0) = RMS deviation from the condition mean; the header noise floor (`noise_floor.csv` column `noise_floor`)",
+  "noise_floor_sample_sd": {
     "adr_reference_median": 0.343,
     "conditions": 1377,
     "definition": "sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=1)",
     "deviation": 0.07628388933783853,
     "mean": 0.3890408102454411,
     "median": 0.41928388933783856,
+    "note": "sensitivity only; never the headline",
     "unit": "same as Delta RMSE"
   },
-  "noise_floor_population": {
-    "adr_reference_median": 0.343,
-    "conditions": 1377,
-    "definition": "sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=0) = RMS deviation from the condition mean; the variant that reproduces ADR 0082",
-    "deviation": -0.00043820401726812896,
-    "mean": 0.318634595773231,
-    "median": 0.3425617959827319,
-    "unit": "same as Delta RMSE"
-  },
+  "noise_floor_sample_sd_definition": "sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=1); sensitivity only (`noise_floor.csv` column `noise_floor_sample_sd`), cannot reproduce ADR 0082",
   "pcc_ceiling": {
     "adr_reference": "~0.38",
     "definition": "profile-weighted mean of sqrt(rho_c) over replicated conditions",
