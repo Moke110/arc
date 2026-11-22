@@ -67,3 +67,6 @@ receipt uses the original compact `.scratch/tsg-view/research/baseline`
 inventory and planning ref. Supply those with `--baseline` and `--refs`, or
 place the original inventory in the snapshot. Verify any external sources the
 historical workflow names against their manifests.
+
+If an apply or reverse is interrupted, quiesce writers and rerun the same command
+with the original plan. The inode checks recognize already-completed renames.

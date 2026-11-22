@@ -17,7 +17,8 @@ def render(summary_csv, output):
     figure = Figure(figsize=(8, 5), layout="constrained")
     FigureCanvasAgg(figure)
     axes = figure.subplots(2, 2).flat
-    labels = [f"{row['source']}\n{row['scenario']} · {row['fold']}" for row in rows]
+    labels = [f"{row['source']} · {row['representation']} · {row['method']}\n"
+              f"{row['scenario']} · {row['fold']} · {row['seed']} · {row['run_id']}" for row in rows]
     colors = [palette.color(SOURCE_COLORS[row["source"]], palette.FILL_SHADE) for row in rows]
     edges = [palette.color(SOURCE_COLORS[row["source"]], palette.LINE_SHADE) for row in rows]
     for axis, (metric, label) in zip(axes, LABELS.items(), strict=True):

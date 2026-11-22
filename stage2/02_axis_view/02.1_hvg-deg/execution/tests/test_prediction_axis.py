@@ -74,3 +74,20 @@ class PredictionAxisTest(unittest.TestCase):
             seal_corpus(root, {"partial": mapping}, COMMON_SIZE, COMMON_SHA256, {}, {})
             with open_corpus(root) as corpus, self.assertRaisesRegex(ValueError, "fixed common gene axis"):
                 axis.project(corpus, "partial")
+
+    def test_publish_without_native_corpus_keeps_the_previous_release(self):
+        from unittest.mock import patch
+
+        sys.path.insert(0, str(STEP / "execution"))
+        import build_axes
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output = root / "accepted"
+            output.mkdir()
+            marker = output / "manifest.json"
+            marker.write_text("previous release")
+            with patch.object(build_axes, "NATIVE_CORPUS", root / "missing"):
+                with self.assertRaisesRegex(ValueError, "requires a native corpus manifest"):
+                    build_axes.run("publish", root, output)
+            self.assertEqual(marker.read_text(), "previous release")

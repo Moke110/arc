@@ -29,6 +29,8 @@ with open_corpus(corpus_path) as corpus:
 also supports bounded `batches` and requires the corpus to stay open.
 
 Publish from a checkout containing the original materialized HVG evidence.
+Publication checks the canonical native corpus by default. Pass `--corpus`
+when that release is materialized elsewhere.
 Verification uses the bundled ranking and fusion evidence. The full verify
 command also checks the native corpus and complete coverage for tenv and
 Tahoe. Omit `--corpus` for an axis-only replay. Other claimed complete sources

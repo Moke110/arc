@@ -19,16 +19,18 @@ STAGE = STEP.parents[1]
 sys.path[:0] = [str(path) for path in (
     STEP / "output/api",
     STAGE / "01_bases/output/api",
+    STAGE / "util/output/api",
     STAGE / "01_corpus/output/api",
     STAGE / "02_axis_view/02.1_hvg-deg/output/api",
 )]
 
 from bases import release, view as legacy_normalization
-from expression_view import ARMS, DEFAULT, LAYERS, SCHEMA, layer_path, open_view, sha256
+from expression_view import (ARMS, DEFAULT, LAYERS, RECIPE, SCHEMA, SOLO_SEED,
+                             layer_path, open_view, sha256)
 from native_corpus import open_corpus
 from prediction_axis import open_axes
+from stage2_util.publication import publication_lock, publish_candidate
 
-SOLO_SEED = 20261122
 CONDITION = ["cell_line", "drug_parent_inchikey", "dose_um"]
 FULL_FAMILIES = ("full", "full-pooled-label")
 
@@ -224,11 +226,7 @@ def _build(root, corpus, axis, sources):
                        index=pd.Index([str(gene) for gene in axis.gene_indices], name="gene_index_label"))
     for name in sources:
         _build_source(root, name, corpus, axis, tags, var)
-    manifest = {**tags, "axis_size": len(var), "default_family": "full", "sources": list(sources),
-                "solo_seed": SOLO_SEED,
-                "normalization": "sum selected-axis integer counts, then separate CP10K and log1p",
-                "control": "union matched vehicle rows by source observation identity",
-                "delta": "X minus control, or the corresponding merge delta for pooled labels",
+    manifest = {**tags, **RECIPE, "axis_size": len(var), "sources": list(sources),
                 "outputs": {path.relative_to(root).as_posix(): sha256(path)
                             for path in sorted(root.rglob("*")) if path.is_file()}}
     release.write_json(root / "manifest.json", manifest)
@@ -251,13 +249,18 @@ def _verify(root, corpus, axis, sources):
 def publish_views(destination, corpus, axis, *, sources=tuple(ARMS), staging=None):
     if not sources or len(set(sources)) != len(sources) or not set(sources).issubset(ARMS):
         raise ValueError("unknown or duplicate expression sources")
-    return release.publish(destination, lambda root: _build(root, corpus, axis, sources),
-                           lambda root: _verify(root, corpus, axis, sources), root=staging)
+    with publication_lock(destination) as output:
+        return publish_candidate(
+            release, output, lambda root: _build(root, corpus, axis, sources),
+            lambda root: _verify(root, corpus, axis, sources), staging=staging,
+            verify_existing=lambda root: release.check_manifest(root, release.read_json(root / "manifest.json")),
+        )
 
 
 def replay_views(destination, corpus, axis, *, sources=tuple(ARMS), staging=None):
-    return release.replay(destination, lambda root: _build(root, corpus, axis, sources),
-                          lambda root: _verify(root, corpus, axis, sources), root=staging)
+    with publication_lock(destination) as output:
+        return release.replay(output, lambda root: _build(root, corpus, axis, sources),
+                              lambda root: _verify(root, corpus, axis, sources), root=staging)
 
 
 def main():

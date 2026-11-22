@@ -32,11 +32,20 @@ def _coverage(gene_ids, namespace, axis):
 
 def build_count_table(candidate, name, path, metadata, axis, namespace, sep="\t"):
     """Stage one immutable count table and return its measured common-axis coverage."""
+    opener = gzip.open if path.suffix == ".gz" else open
+    with opener(path, "rt", encoding="utf-8-sig", newline="") as header_file:
+        header = next(csv.reader(header_file, delimiter=sep), [])
+    observations = header[1:]
+    if not observations or any(not name for name in observations):
+        raise CorpusError(f"{name}: missing source observation identifiers")
+    if len(set(observations)) != len(observations):
+        raise CorpusError(f"{name}: duplicate source observation identifiers")
     gene_ids = []
     destination = candidate / f"{name}.h5ad"
-    with h5py.File(destination, "w") as handle:
+    with (h5py.File(destination, "w") as handle,
+          pd.read_csv(path, sep=sep, index_col=0, chunksize=GENE_BATCH) as frames):
         handle.attrs.update({"encoding-type": "anndata", "encoding-version": "0.1.0"})
-        for frame in pd.read_csv(path, sep=sep, index_col=0, chunksize=GENE_BATCH):
+        for frame in frames:
             if len(frame.columns) == 0:
                 raise CorpusError(f"{name}: no source observations")
             if not gene_ids:
@@ -61,8 +70,7 @@ def build_count_table(candidate, name, path, metadata, axis, namespace, sep="\t"
             gene_ids.extend(frame.index.astype(str))
         if not gene_ids:
             raise CorpusError(f"{name}: no source genes")
-        # Repeated publisher identifiers are separate native columns. Their common-axis
-        # link remains unresolved, with the original identifiers exposed in var.
+        # Repeated publisher identifiers remain separate native columns.
         var = pd.DataFrame({"source_gene_id": gene_ids},
                            index=pd.Index([f"column-{i}" for i in range(len(gene_ids))],
                                           name="native_id"))

@@ -13,7 +13,8 @@ original vehicle rows and cold-drug and warm-start folds.
 D=stage2/04_models_tenv-5k
 python "$D/execution/raw_first.py" prepare --candidate /path/to/new/inputs
 python "$D/execution/raw_first.py" evaluate --inputs /path/to/new/inputs \
-  --scenario cold-drug --fold 0 --prediction /path/to/prediction.npy \
+  --scenario cold-drug --fold 0 --model ECFP4_MLP --seed 42 --run-id mlp-42 \
+  --prediction /path/to/prediction.npy \
   --prediction-ids /path/to/profile_ids.csv --output /path/to/new/evaluation
 python "$D/figure/raw_first/render.py" --summary /path/to/new/evaluation/summary.csv \
   --output /path/to/new/metrics.png
@@ -21,7 +22,8 @@ python "$D/figure/raw_first/render.py" --summary /path/to/new/evaluation/summary
 
 Supply absolute expression predictions ordered by frozen test row and gene,
 with one `profile_id` column in the identity CSV. Evaluation reports per-well
-and per-parent Δ metrics and renders the per-fold parent summary from CSV.
+and per-parent Δ metrics. CSVs retain the model, seed and run identity so
+plots distinguish runs in the same fold.
 Use `tenv5k_raw_first.workflow.Inputs` to read the new input schema. The
 published results below use the original full-18,164-gene normalization and
 their sealed inputs, metrics and figures remain tied to that generation.

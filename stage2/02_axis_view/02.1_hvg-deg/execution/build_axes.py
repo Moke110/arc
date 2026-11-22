@@ -7,13 +7,17 @@ from dataclasses import replace
 from pathlib import Path
 
 STEP = Path(__file__).resolve().parents[1]
-STAGE2 = STEP.parents[1]
+REPO = next(parent for parent in STEP.parents if (parent / ".git").exists())
+STAGE2 = REPO / "stage2"
+NATIVE_CORPUS = STAGE2 / "01_corpus/output/native"
 sys.path.insert(0, str(STEP / "output/api"))
 sys.path.insert(0, str(STAGE2 / "01_bases/execution"))
 sys.path.insert(0, str(STAGE2 / "01_corpus/output/api"))
+sys.path.insert(0, str(STAGE2 / "util/output/api"))
 
 import build_gene_axis as legacy
 from native_corpus import open_corpus
+from stage2_util.publication import publication_lock, replace_release
 from prediction_axis import COMMON_SHA256, COMMON_SIZE, SCHEMA, open_axes, sha256
 
 OUTPUT = STEP / "output/release"
@@ -72,7 +76,7 @@ def _candidate(source_root, output):
         "common_axis": {"size": COMMON_SIZE, "sha256": COMMON_SHA256},
         "axes": axes,
         "algorithm": legacy.ALGORITHM,
-        "method": {name: sha256(STAGE2.parent / name) for name in METHOD_FILES},
+        "method": {name: sha256(REPO / name) for name in METHOD_FILES},
         "outputs": {name: {"sha256": digest} for name, (_, digest) in products.items()},
     }
     legacy.release.write_json(output / "manifest.json", manifest)
@@ -83,12 +87,12 @@ def verify_release(output):
     published = open_axes(output)
     manifest = published.manifest
     if manifest["algorithm"] != legacy.ALGORITHM or manifest["method"] != {
-        name: sha256(STAGE2.parent / name) for name in METHOD_FILES
+        name: sha256(REPO / name) for name in METHOD_FILES
     }:
         raise ValueError("published HVG-DEG selection method differs")
     legacy.release.check_manifest(output, manifest)
     evidence = output / "evidence"
-    config = replace(legacy.default_config(STAGE2.parent),
+    config = replace(legacy.default_config(REPO),
                      tenv_hvg=evidence / "tenv-hvg/descriptive.csv",
                      fusion_root=evidence / "disease-fusion")
     if sha256(config.genes.parent / "tables/genes.csv") != COMMON_SHA256:
@@ -132,25 +136,33 @@ def verify_coverage(release, corpus_path, required_sources):
 
 
 def run(action, source_root, output, *, corpus=None, required_sources=("tenv", "tahoe_bulk")):
-    candidate = legacy.release.candidate(output) if action == "publish" else None
-    try:
-        released = (_candidate(source_root.resolve(), candidate) if candidate is not None
-                    else verify_release(output))
-        result = {"axes": list(released.sizes), "manifest_sha256": released.manifest_sha256}
-        if corpus is not None:
-            result["corpus"] = verify_coverage(released, corpus, required_sources)
-        if candidate is not None:
-            legacy.release.replace(candidate, output)
-        return result
-    finally:
-        if candidate is not None and candidate.exists():
-            shutil.rmtree(candidate)
+    if action == "publish":
+        corpus = NATIVE_CORPUS if corpus is None else Path(corpus)
+        if not (corpus / "manifest.json").is_file():
+            raise ValueError(f"axis publication requires a native corpus manifest: {corpus}")
+        if Path(output).resolve() == OUTPUT.resolve():
+            required_sources = set(required_sources) | {"tenv", "tahoe_bulk"}
+    with publication_lock(output) as destination:
+        candidate = legacy.release.candidate(destination) if action == "publish" else None
+        try:
+            released = (_candidate(source_root.resolve(), candidate) if candidate is not None
+                        else verify_release(destination))
+            result = {"axes": list(released.sizes), "manifest_sha256": released.manifest_sha256}
+            if corpus is not None:
+                result["corpus"] = verify_coverage(released, corpus, required_sources)
+            if candidate is not None:
+                replace_release(candidate, destination, legacy.release.replace,
+                                verify_existing=verify_release)
+            return result
+        finally:
+            if candidate is not None and candidate.exists():
+                shutil.rmtree(candidate)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("publish", "verify"))
-    parser.add_argument("--source-root", type=Path, default=STAGE2.parent)
+    parser.add_argument("--source-root", type=Path, default=REPO)
     parser.add_argument("--output", type=Path, default=OUTPUT)
     parser.add_argument("--corpus", type=Path)
     parser.add_argument("--required-source", action="append", dest="required_sources")
