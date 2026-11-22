@@ -239,6 +239,9 @@ class TruthTest(unittest.TestCase):
             expected_profiles = {f"merge::tenv::{CELL_LINE['tenv']}::{parent}::{dose:g}"
                                  for parent, dose in expected.index}
             self.assertEqual(set(population["profile_id"]), expected_profiles)
+            primary = set(self.population("primary", fold)["profile_id"])
+            self.assertTrue(set(members) <= primary,
+                            "a condition-mean member is absent from the fold's primary truth")
             self.assertEqual(self.payload("delta.npy", fold, kind="condition_mean").shape,
                              (len(population), SIZE))
             self.assertFalse((self.output() / "condition_mean" / f"fold-{fold}"
