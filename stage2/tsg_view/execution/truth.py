@@ -95,12 +95,8 @@ def noise_floor_population(deltas):
     return float(np.sqrt(np.mean(np.var(_members(deltas), axis=0, ddof=0))))
 
 
-def repeat_correlation(deltas):
-    """Mean pairwise Pearson correlation of the member delta vectors (genes = samples).
-
-    NaN when every pair is degenerate (a member delta constant across genes), the same
-    convention the Step 04 vector metrics use for a constant truth row.
-    """
+def pair_correlations(deltas):
+    """Every member pair's Pearson correlation over genes (NaN for a degenerate pair)."""
     deltas = _members(deltas)
     centered = deltas - deltas.mean(axis=1, keepdims=True)
     norms = np.sqrt(np.sum(centered * centered, axis=1))
@@ -110,7 +106,16 @@ def repeat_correlation(deltas):
             scale = float(norms[left] * norms[right])
             values.append(float(np.dot(centered[left], centered[right]) / scale)
                           if scale > 0 else float("nan"))
-    values = np.asarray(values, dtype=np.float64)
+    return np.asarray(values, dtype=np.float64)
+
+
+def repeat_correlation(deltas):
+    """Mean pairwise Pearson correlation of the member delta vectors (genes = samples).
+
+    NaN when every pair is degenerate (a member delta constant across genes), the same
+    convention the Step 04 vector metrics use for a constant truth row.
+    """
+    values = pair_correlations(deltas)
     return float(np.mean(values)) if np.isfinite(values).any() else float("nan")
 
 
@@ -445,16 +450,11 @@ class _Truth:
             block = np.asarray(diagnostic_table[offset:offset + count], dtype=np.float64)
             offset += count
             metrics = condition_diagnostics(block)
+            pairs = pair_correlations(block)
             noise[position] = metrics["noise_floor"]
             noise_population[position] = metrics["noise_floor_population"]
             rhos[position] = metrics["rho_mean"]
-            centered = block - block.mean(axis=1, keepdims=True)
-            norms = np.sqrt(np.sum(centered * centered, axis=1))
-            for left in range(count):
-                for right in range(left + 1, count):
-                    scale = float(norms[left] * norms[right])
-                    pair_rhos.append(float(np.dot(centered[left], centered[right])
-                                           / scale) if scale > 0 else float("nan"))
+            pair_rhos.extend(pairs.tolist())
             partitions_by_fold = [str(partitions[fold][condition_index])
                                   for fold in self.folds]
             rows.append({
