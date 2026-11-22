@@ -16,7 +16,6 @@ This module owns:
   receipt for one ``(source, fold)`` group, sealed before any test row is read.
 * run-directory, registration-free run-record and resource-attempt paths.
 """
-import json
 import platform
 import sys
 from pathlib import Path
@@ -27,6 +26,9 @@ HERE = Path(__file__).resolve().parent
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
+from common import (SEEDS, SOURCE_ORDER, VIEW_ORDER, VIEW_SEEDS,  # noqa: E402
+                    dumps, read_json, relative, seeds_for)
+from common import views_for as _views_for  # noqa: E402
 from views import SOURCES, VIEWS, repo_root, sha256, write_json  # noqa: E402
 
 PLAN_SCHEMA = "tsg-view-formal-plan-v1"
@@ -40,13 +42,8 @@ TRUTH_SCHEMA = "tsg-view-truth-v1"
 TRUTH_SCHEMAS = (TRUTH_SCHEMA, "tsg-view-truth-fold-v1")
 METHOD = "no-dose"
 SCENARIO = "cold-drug-dose"
-SEEDS = (42, 43)
-SOURCE_ORDER = ("tenv", "tahoe_bulk")
-VIEW_ORDER = {
-    "tenv": ("full", "merge", "solo", "full-pooled-label", "solo-deepest"),
-    "tahoe_bulk": ("full", "merge", "solo"),
-}
-VIEW_SEEDS = {"solo-deepest": (42,)}
+#: The schedule has one source of truth (``common``): the plan, the figure grid and the
+#: report tables all order views and seeds the same way.
 PATIENCE = 50
 MAX_EPOCHS = 1000
 VALIDATION_SEED = 22617
@@ -83,21 +80,11 @@ CODE_FILES = ("matrix.py", "formal.py", "learner.py", "inputs.py", "freeze.py",
               "views/__init__.py")
 
 
-def _read_json(path):
-    return json.loads(Path(path).read_text())
-
-
 # --------------------------------------------------------------------------- #
 # schedule
 # --------------------------------------------------------------------------- #
 def views_for(source):
-    if source not in VIEW_ORDER:
-        raise ValueError(f"unknown source: {source}")
-    return VIEW_ORDER[source]
-
-
-def seeds_for(view):
-    return VIEW_SEEDS.get(view, SEEDS)
+    return _views_for(source)
 
 
 def plan():
@@ -176,8 +163,8 @@ def truth_path(truth, source, fold, kind=("primary", "condition_mean")):
 
 
 def resources_path(root, origin, phase, action, stamp):
-    relative = Path("resources") / run_relative(origin).relative_to("runs")
-    return Path(root) / relative / f"{phase}-{action}-{stamp}"
+    attempt = Path("resources") / run_relative(origin).relative_to("runs")
+    return Path(root) / attempt / f"{phase}-{action}-{stamp}"
 
 
 # --------------------------------------------------------------------------- #
@@ -194,10 +181,10 @@ def _bind_freezes(origins, freezes, root):
         for path in (manifest_path, config_path):
             if not path.is_file():
                 raise ValueError(f"freeze manifest is missing: {path}")
-        manifest = _read_json(manifest_path)
+        manifest = read_json(manifest_path)
         if manifest.get("schema") != FREEZE_SCHEMA:
             raise ValueError(f"freeze schema mismatch: {manifest_path}")
-        config = _read_json(config_path)
+        config = read_json(config_path)
         if (config.get("view"), config.get("source")) != (origin["view"],
                                                           origin["source"]):
             raise ValueError(f"freeze identity mismatch: {directory}")
@@ -205,7 +192,7 @@ def _bind_freezes(origins, freezes, root):
                          "n_treated": int(config["n_treated"]),
                          "manifest_sha256": sha256(manifest_path),
                          "config_sha256": sha256(config_path),
-                         "path": _relative(directory, root)}
+                         "path": relative(directory, root)}
     return bindings
 
 
@@ -217,10 +204,10 @@ def _bind_truth(origins, truth, root):
             source_manifest = Path(truth) / source / "manifest.json"
             if not source_manifest.is_file():
                 raise ValueError(f"truth source manifest is missing: {source_manifest}")
-            if _read_json(source_manifest).get("schema") not in TRUTH_SCHEMAS:
+            if read_json(source_manifest).get("schema") not in TRUTH_SCHEMAS:
                 raise ValueError(f"truth schema mismatch: {source_manifest}")
             source_bindings[source] = {"manifest_sha256": sha256(source_manifest),
-                                       "path": _relative(Path(truth) / source, root)}
+                                       "path": relative(Path(truth) / source, root)}
         key = f"{source}/fold-{fold}"
         if key in bindings:
             continue
@@ -230,7 +217,7 @@ def _bind_truth(origins, truth, root):
             manifest_path = directory / "manifest.json"
             if not manifest_path.is_file():
                 raise ValueError(f"{kind} truth manifest is missing: {manifest_path}")
-            manifest = _read_json(manifest_path)
+            manifest = read_json(manifest_path)
             if manifest.get("schema") not in TRUTH_SCHEMAS:
                 raise ValueError(f"{kind} truth schema mismatch: {manifest_path}")
             if (manifest.get("source"), int(manifest.get("fold", -1)), manifest.get("kind")
@@ -238,16 +225,9 @@ def _bind_truth(origins, truth, root):
                 raise ValueError(f"{kind} truth identity mismatch: {manifest_path}")
             entry[kind] = {"manifest_sha256": sha256(manifest_path),
                            "rows": manifest.get("rows"),
-                           "path": _relative(directory, root)}
+                           "path": relative(directory, root)}
         bindings[key] = entry
     return bindings, source_bindings
-
-
-def _relative(path, root):
-    try:
-        return Path(path).resolve().relative_to(Path(root).resolve()).as_posix()
-    except (ValueError, OSError):
-        return Path(path).name
 
 
 def _code_bindings():
@@ -322,7 +302,7 @@ def frozen_plan(*, freezes, truth, source_dir, device="cuda", mode="formal",
         "truth_source": truth_source,
         "code": _code_bindings(),
         "learner_runtime": learner.runtime_identity(root),
-        "native_source": {"path": _relative(source_dir, root),
+        "native_source": {"path": relative(source_dir, root),
                           "model_sha256": sha256(model_path),
                           "source_digest": native.SOURCE_DIGEST},
         "environment": _environment(device),
@@ -392,7 +372,7 @@ def seal_plan(candidate, plan_value):
             "mode": plan_value["mode"]})
         return plan_path
     load_plan(candidate)
-    if _read_json(plan_path) != plan_value:
+    if read_json(plan_path) != plan_value:
         raise ValueError("sealed formal plan differs from the frozen plan")
     return plan_path
 
@@ -404,12 +384,12 @@ def load_plan(candidate):
     manifest_path = candidate / "formal_plan_manifest.json"
     if not plan_path.is_file() or not manifest_path.is_file():
         raise ValueError("the sealed formal plan is missing")
-    manifest = _read_json(manifest_path)
+    manifest = read_json(manifest_path)
     if manifest.get("schema") != PLAN_MANIFEST_SCHEMA:
         raise ValueError("formal plan manifest schema mismatch")
     if manifest.get("plan_sha256") != sha256(plan_path):
         raise ValueError("formal plan digest does not match its manifest")
-    value = _read_json(plan_path)
+    value = read_json(plan_path)
     _validate_plan(value)
     if int(manifest.get("origins", -1)) != len(value["origins"]):
         raise ValueError("formal plan manifest origin count mismatch")
@@ -467,17 +447,17 @@ def selection_evidence(candidate, source, fold):
         terminal_path = run / "terminal.json"
         if not terminal_path.is_file():
             raise ValueError(f"validation is not trained: {run}")
-        terminal = _read_json(terminal_path)
+        terminal = read_json(terminal_path)
         if terminal.get("status") not in ("validation-complete", "test-awaiting-replay",
                                           "complete"):
             raise ValueError(f"validation is not sealed for {run}: {terminal.get('status')}")
         validation_path = run / "validation_manifest.json"
         if not validation_path.is_file():
             raise ValueError(f"the fold's validation seal is missing: {validation_path}")
-        validation = _read_json(validation_path)
+        validation = read_json(validation_path)
         if validation.get("schema") != VALIDATION_SCHEMA:
             raise ValueError(f"validation seal schema mismatch: {validation_path}")
-        config = _read_json(run / "config.json")
+        config = read_json(run / "config.json")
         if (config.get("origin") or {}).get("view") != origin["view"] or (
                 config.get("origin") or {}).get("seed") != origin["seed"]:
             raise ValueError(f"run config identity mismatch: {run}")
@@ -506,7 +486,7 @@ def write_selection(path, value):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n")
+    temporary.write_text(dumps(value) + "\n")
     temporary.replace(path)
     return path
 
@@ -516,7 +496,7 @@ def lock_selection(candidate, source, fold):
     path = selection_path(candidate, source, fold)
     evidence = selection_evidence(candidate, source, fold)
     if path.is_file():
-        existing = _read_json(path)
+        existing = read_json(path)
         if existing != evidence:
             raise ValueError("sealed validation selection receipt changed; refuse to "
                              "re-open the test partition")
@@ -531,10 +511,10 @@ def run_record(candidate, origin, phases=()):
     """The C4 per-run record: seed, epochs, best epoch, hashes, device, cost."""
     candidate = Path(candidate)
     run = run_path(candidate, origin)
-    config = _read_json(run / "config.json")
-    terminal = _read_json(run / "terminal.json")
-    manifest = _read_json(run / "manifest.json")
-    metrics = _read_json(run / "test_metrics.json")
+    config = read_json(run / "config.json")
+    terminal = read_json(run / "terminal.json")
+    manifest = read_json(run / "manifest.json")
+    metrics = read_json(run / "test_metrics.json")
     peak_rss = [int(terminal.get("peak_rss_kib") or 0)]
     peak_gpu = [0]
     runtime = float(terminal.get("elapsed_seconds") or 0.0)

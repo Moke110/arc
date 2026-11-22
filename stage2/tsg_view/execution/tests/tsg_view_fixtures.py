@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import h5py
@@ -17,6 +18,11 @@ import numpy as np
 import pandas as pd
 from anndata.io import write_elem
 
+#: Environment overrides for the two genuinely external dependencies. Tests never
+#: hard-code a checkout path: a worktree carries the tracked sources only, so the
+#: gitignored native source and payloads are named explicitly or found next to the repo.
+NATIVE_SOURCE_ENV = "TSG_NATIVE_SOURCE"
+PAYLOAD_ROOT_ENV = "TSG_PAYLOAD_ROOT"
 AXIS_SIZE = 18164
 DEFAULT_PARENT = {"tenv": "LFQSCWFLJHTTHZ-UHFFFAOYSA-N", "tahoe_bulk": "LFQSCWFLJHTTHZ-UHFFFAOYSA-N"}
 DEFAULT_SMILES = {"tenv": "CCO", "tahoe_bulk": "CCO"}
@@ -296,3 +302,32 @@ def write_sealed(root, source, population):
     np.save(destination / "morgan.npy",
             rng.integers(0, 2, size=(len(parents), 2048), dtype=np.uint8))
     return destination
+
+
+def native_source(root):
+    """The TranSiGen source under ``root``, or the one named by ``TSG_NATIVE_SOURCE``.
+
+    Returns the path the caller should expect (never silently another checkout): when the
+    dependency is absent the caller skips with a message naming this path.
+    """
+    explicit = os.environ.get(NATIVE_SOURCE_ENV)
+    if explicit:
+        return Path(explicit).resolve()
+    return Path(root) / "pert_model/TranSiGen/source"
+
+
+def payload_root(root):
+    """The checkout holding the gitignored payloads (freezes, runs, published views).
+
+    A worktree shares git objects but not ignored payloads, so a test that needs a
+    materialised product points ``TSG_PAYLOAD_ROOT`` at the checkout that has it.
+    """
+    explicit = os.environ.get(PAYLOAD_ROOT_ENV)
+    if explicit:
+        return Path(explicit).resolve()
+    return Path(root)
+
+
+def dependency_message(what, path):
+    return (f"needs {what} at {path}; materialise it there, or point "
+            f"{NATIVE_SOURCE_ENV}/{PAYLOAD_ROOT_ENV} at the checkout that has it")

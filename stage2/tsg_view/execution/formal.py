@@ -58,22 +58,71 @@ RUN_REPORT_FILE = "formal_run_report.json"
 DRIVER_CODE_FILES = ("formal.py",)
 
 
+#: The plan's two code-digest blocks: the driver/verifier files (``code``) and the worker
+#: plus reused shared modules the runs were fitted with (``learner_runtime``).
+CODE_SECTIONS = ("code", "learner_runtime")
+
+
+def code_drift(sealed, current):
+    """``(entries, inputs_identical)`` for every formal code digest that moved.
+
+    ``inputs_identical`` is ``True`` only when the two plans agree on everything except
+    the two code blocks, i.e. the plan body, freezes, truth, native source, runtime
+    environment and schedule are unchanged. That distinction keeps the fail-closed rule
+    about *inputs* while letting a verified refactor be reported instead of refused.
+    """
+    sealed_copy = json.loads(json.dumps(sealed))
+    current_copy = json.loads(json.dumps(current))
+    entries = []
+    for section in CODE_SECTIONS:
+        before_block = sealed_copy.pop(section, None) or {}
+        after_block = current_copy.pop(section, None) or {}
+        for name in sorted(set(before_block) | set(after_block)):
+            before, after = before_block.get(name), after_block.get(name)
+            if before != after:
+                entries.append({"section": section, "file": name,
+                                "sealed_sha256": before, "current_sha256": after})
+    return entries, sealed_copy == current_copy
+
+
 def driver_code_drift(sealed, current):
     """Return the driver-only code drift, ``[]`` if identical, or ``None`` (fail closed)."""
     if sealed == current:
         return []
-    sealed_copy = json.loads(json.dumps(sealed))
-    current_copy = json.loads(json.dumps(current))
-    drift = []
-    for name in DRIVER_CODE_FILES:
-        before = (sealed_copy.get("code") or {}).pop(name, None)
-        after = (current_copy.get("code") or {}).pop(name, None)
-        if before != after:
-            drift.append({"file": name, "sealed_sha256": before,
-                          "current_sha256": after})
-    if sealed_copy != current_copy:
+    entries, identical = code_drift(sealed, current)
+    if not identical:
         return None
-    return drift
+    driver = [entry for entry in entries
+              if entry["section"] == "code" and entry["file"] in DRIVER_CODE_FILES]
+    if len(driver) != len(entries):
+        return None
+    return driver
+
+
+def code_identity(sealed, current):
+    """The transparency block for a verify pass, or ``None`` when an input moved.
+
+    ``verify`` must be able to run on newer code than the one that produced the runs --
+    otherwise no refactor could ever be verified -- so it records every code file that
+    moved (``code_drift``) instead of refusing. A change to anything the runs were
+    fitted against still fails closed. ``run``/resume keeps the stricter driver-only rule.
+    """
+    entries, identical = code_drift(sealed, current)
+    if not identical:
+        return None
+    return {"sealed": sealed.get("code"), "current": current.get("code"),
+            "sealed_runtime": sealed.get("learner_runtime"),
+            "current_runtime": current.get("learner_runtime"),
+            "status": "MATCH" if not entries else "CODE_DRIFT",
+            "code_drift": entries,
+            "driver_code_drift": [entry for entry in entries
+                                  if entry["section"] == "code"
+                                  and entry["file"] in DRIVER_CODE_FILES],
+            "note": ("verify records every code digest that moved since the plan was "
+                     "sealed (both the driver/verifier files and the learner runtime); the "
+                     "refactor-only drift is reported here and never hidden. Any non-code "
+                     "input change still fails closed, a replay still refuses a moved "
+                     "learner runtime, and run/resume keeps the driver-file-only allowance")}
 
 
 def emit_json(value, *, pretty=False):
@@ -553,6 +602,64 @@ def run_matrix(candidate, *, freezes, truth, native_source, device="cuda", mode=
 # --------------------------------------------------------------------------- #
 # verify
 # --------------------------------------------------------------------------- #
+#: The sealed Step 04 anchors are equal-fold means at this training seed only. The matrix
+#: runs ``full`` at both seeds, so only the seed-42 arms may claim anchor reproduction.
+ANCHOR_SEED = 42
+
+
+def sensitivity_record(source, metrics, *, level, seed, anchor_seed=ANCHOR_SEED):
+    """A non-anchor ``full`` arm: its distance to the anchor, with no PASS/DRIFT claim."""
+    if int(seed) == int(anchor_seed):
+        raise ValueError(f"the anchor seed {anchor_seed} cannot be labelled a sensitivity")
+    record = matrix.compare_full_arm(source, metrics, level=level)
+    record.update({
+        "status": "sensitivity", "anchor_seed": int(anchor_seed), "seed": int(seed),
+        "note": (f"the sealed anchor was measured at seed {int(anchor_seed)}; this "
+                 f"seed-{int(seed)} arm is reported for transparency and claims no anchor "
+                 "reproduction")})
+    return record
+
+
+def full_arm_evidence(measured):
+    """Split the ``full`` arm into the sealed-anchor check and a labelled sensitivity.
+
+    ``measured`` is a list of ``(origin, primary_metrics)``. Every outcome is recorded --
+    drift is never hidden -- but only the anchor seed's origins and fold means are
+    compared with the sealed anchors (PASS/DRIFT). A non-anchor seed is a sensitivity:
+    it carries the anchor, the measured value and the drift, and its status is
+    ``"sensitivity"`` so it can never be read as a reproduced sealed score.
+    """
+    origins, fold_mean, sensitivity, comparisons = [], [], [], []
+    grouped = {}
+    for origin, primary in measured:
+        source, seed = origin["source"], int(origin["seed"])
+        grouped.setdefault((source, seed), []).append(primary)
+        if seed == ANCHOR_SEED:
+            record = matrix.compare_full_arm(source, primary)
+            record.update({"origin": origin, "anchor_seed": ANCHOR_SEED})
+            origins.append(record)
+            comparisons.append(record)
+        else:
+            record = sensitivity_record(source, primary, level="origin", seed=seed)
+            record["origin"] = origin
+            sensitivity.append(record)
+    for (source, seed), values in sorted(grouped.items()):
+        mean = {key: sum(item[key] for item in values) / len(values)
+                for key in ("pcc", "rmse")}
+        if seed == ANCHOR_SEED:
+            record = matrix.compare_full_arm(source, mean, level="fold_mean")
+            record.update({"source": source, "seed": seed, "folds": len(values),
+                           "anchor_seed": ANCHOR_SEED})
+            fold_mean.append(record)
+            comparisons.append(record)
+        else:
+            record = sensitivity_record(source, mean, level="fold_mean", seed=seed)
+            record.update({"source": source, "folds": len(values)})
+            sensitivity.append(record)
+    return ({"anchor_seed": ANCHOR_SEED, "origins": origins, "fold_mean": fold_mean,
+             "sensitivity": sensitivity}, comparisons)
+
+
 def _verify_origin(candidate, origin, sealed_plan, selection_sha256):
     run = matrix.run_path(candidate, origin)
     manifest = learner.verify(run)
@@ -605,20 +712,17 @@ def verify(candidate, *, freezes, truth, native_source, device="cuda", mode="for
     sealed_plan = matrix.load_plan(candidate)
     if mode is not None and sealed_plan["mode"] != mode:
         raise ValueError(f"the sealed plan is a {sealed_plan['mode']} plan, not {mode}")
-    code_identity = None
+    identity = None
     if sealed_plan["mode"] == "formal":
         current = plan_for(freezes=freezes, truth=truth, native_source=native_source,
                            device=device, mode="formal", repo_root_path=repo_root_path)
-        code_drift = driver_code_drift(sealed_plan, current)
-        if code_drift is None:
+        identity = code_identity(sealed_plan, current)
+        if identity is None:
             raise ValueError("sealed formal plan, runtime or input identity changed")
-        code_identity = {"sealed": sealed_plan["code"], "current": current["code"],
-                         "driver_code_drift": code_drift}
     selected = matrix.filter_origins(sealed_plan["origins"], only_source=only_source,
                                      only_view=only_view, only_fold=only_fold,
                                      only_seed=only_seed)
-    evidence, full_arm = [], {"origins": [], "fold_mean": []}
-    metrics_by_source = {}
+    evidence, measured = [], []
     for group in groups_of(selected):
         source, fold = group[0]["source"], int(group[0]["fold"])
         receipt = matrix.selection_path(candidate, source, fold)
@@ -632,24 +736,12 @@ def verify(candidate, *, freezes, truth, native_source, device="cuda", mode="for
             verified = _verify_origin(candidate, origin, sealed_plan, choice_sha256)
             evidence.append(verified)
             if origin["view"] == "full":
-                primary = verified["metrics"]["primary"]
-                comparison = matrix.compare_full_arm(origin["source"], primary)
-                comparison["origin"] = origin
-                evidence_origin_record = comparison
-                full_arm["origins"].append(evidence_origin_record)
-                metrics_by_source.setdefault((origin["source"], origin["seed"]), []).append(
-                    comparison["measured"])
-    for (source, seed), measured in sorted(metrics_by_source.items()):
-        mean = {key: sum(item[key] for item in measured) / len(measured)
-                for key in ("pcc", "rmse")}
-        comparison = matrix.compare_full_arm(source, mean, level="fold_mean")
-        comparison.update({"source": source, "seed": int(seed), "folds": len(measured)})
-        full_arm["fold_mean"].append(comparison)
-    status = "PASS" if all(item["status"] == "PASS" for item in
-                           full_arm["origins"] + full_arm["fold_mean"]) else "DRIFT"
+                measured.append((origin, verified["metrics"]["primary"]))
+    full_arm, comparisons = full_arm_evidence(measured)
+    status = "PASS" if all(item["status"] == "PASS" for item in comparisons) else "DRIFT"
     report = {"schema": VERIFY_SCHEMA, "status": status,
               "mode": sealed_plan["mode"], "plan_sha256": matrix.plan_sha256(candidate),
-              "origins": len(evidence), "full_arm": full_arm, "code_identity": code_identity,
+              "origins": len(evidence), "full_arm": full_arm, "code_identity": identity,
               "runs": [{"origin": item["origin"],
                         "run_manifest_sha256": item["run_manifest_sha256"],
                         "selection_sha256": item["selection_sha256"]} for item in evidence]}

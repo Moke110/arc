@@ -28,10 +28,12 @@ import matrix  # noqa: E402
 import views  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[4]
-SOURCE = next(candidate for candidate in (
-    REPO / "pert_model/TranSiGen/source",
-    Path("/home/chang/arc/pert_model/TranSiGen/source"))
-    if (candidate / "src/model.py").is_file())
+#: Repo-relative (or TSG_NATIVE_SOURCE) discovery: no checkout is hard-coded and a
+#: worktree, which does not carry the gitignored native source, skips explicitly.
+SOURCE = fixtures.native_source(REPO)
+NEEDS_SOURCE = unittest.skipUnless(
+    (SOURCE / "src/model.py").is_file(),
+    fixtures.dependency_message("the TranSiGen source", SOURCE))
 SIZE = 5000
 FOLD = 0
 
@@ -137,6 +139,7 @@ class BlockedStream:
         return False
 
 
+@NEEDS_SOURCE
 class DriverCodeDriftTest(unittest.TestCase):
     """A driver-only fix resumes a sealed plan; a scientific change fails closed."""
 
@@ -208,6 +211,7 @@ class FinalReportTest(unittest.TestCase):
             status = formal.main(["verify", "--candidate", str(self.candidate)])
         self.assertEqual(status, 0)
 
+    @NEEDS_SOURCE
     def test_blocked_stdout_does_not_fail_plan(self):
         freezes, truth = _stub_plan_inputs(self.root)
         with mock.patch.object(sys, "stdout", BlockedStream()):
@@ -304,6 +308,7 @@ class PreflightTest(unittest.TestCase):
         self.assertIn("MemorySwapMax=8G", text)
 
 
+@NEEDS_SOURCE
 class PlanBindingTest(unittest.TestCase):
     def test_formal_plan_binds_every_freeze_truth_and_code_digest(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -404,8 +409,7 @@ class ScoreDeltaTest(unittest.TestCase):
         self.assertEqual(int(samples["count"].iloc[0]), 2)
 
 
-@unittest.skipUnless(SOURCE.is_dir() and (SOURCE / "src/model.py").is_file(),
-                     "the TranSiGen source is unavailable")
+@NEEDS_SOURCE
 class ProbeRunTest(unittest.TestCase):
     """One bounded CPU probe through the whole formal path, then its verification."""
 
@@ -606,6 +610,201 @@ class ProbeRunTest(unittest.TestCase):
             self.assertIn("truth", failed.stderr.lower())
         finally:
             moved.rename(self.root / "truth")
+
+
+class TruthBlockColumnTest(unittest.TestCase):
+    """The truth block reads only the columns truth.py emits.
+
+    The emitter publishes ``drug_parent`` (primary) and ``members`` (condition-mean). The
+    block used to accept two undocumented spellings of each; a truth product written under
+    a different name is not the frozen product, so it must fail closed instead of being
+    silently reinterpreted.
+    """
+
+    def _block(self, root, columns, kind, value):
+        import hashlib
+        directory = Path(root) / kind
+        directory.mkdir(parents=True)
+        frame = pd.DataFrame([value], columns=columns)
+        frame.to_csv(directory / "population.csv", index=False)
+        rng = np.random.default_rng(0)
+        delta = rng.standard_normal((1, SIZE)).astype(np.float32)
+        np.save(directory / "delta.npy", delta)
+        if kind == "primary":
+            np.save(directory / "control.npy", delta)
+            pd.DataFrame({"drug_parent_inchikey": ["PARENT"]}).to_csv(
+                directory / "parents.csv", index=False)
+            np.save(directory / "morgan.npy",
+                    np.zeros((1, 2048), dtype=np.uint8))
+        population_sha = hashlib.sha256(
+            (directory / "population.csv").read_bytes()).hexdigest()
+        _write_json(directory / "manifest.json", {
+            "schema": matrix.TRUTH_SCHEMA, "source": "tenv", "kind": kind, "fold": 0,
+            "rows": 1, "outputs": {"population.csv": {"sha256": population_sha},
+                                   "delta.npy": {"sha256": hashlib.sha256(
+                                       (directory / "delta.npy").read_bytes()).hexdigest()}}})
+        return directory
+
+    def _primary(self, root, parent_column):
+        return self._block(
+            root, ["profile_id", "cell_line", parent_column, "dose_um"], "primary",
+            {"profile_id": "p0", "cell_line": "line", parent_column: "PARENT",
+             "dose_um": 1.0})
+
+    def test_canonical_primary_columns_are_accepted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = self._primary(tmp, "drug_parent")
+            block = learner.TruthBlock(directory, "tenv", 0, "primary")
+            self.assertEqual(block.population["drug_parent"].tolist(), ["PARENT"])
+
+    def test_an_alternate_parent_spelling_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = self._primary(tmp, "parent")
+            with self.assertRaisesRegex(learner.ScientificFailure, "drug_parent"):
+                learner.TruthBlock(directory, "tenv", 0, "primary")
+
+    def test_an_alternate_members_spelling_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = self._block(
+                tmp, ["profile_id", "cell_line", "drug_parent", "dose_um",
+                      "member_profile_ids"], "condition_mean",
+                {"profile_id": "c0", "cell_line": "line", "drug_parent": "PARENT",
+                 "dose_um": 1.0, "member_profile_ids": "p0"})
+            with self.assertRaisesRegex(learner.ScientificFailure, "members"):
+                learner.TruthBlock(directory, "tenv", 0, "condition_mean")
+
+    def test_the_canonical_members_column_is_accepted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = self._block(
+                tmp, ["profile_id", "cell_line", "drug_parent", "dose_um", "members"],
+                "condition_mean",
+                {"profile_id": "c0", "cell_line": "line", "drug_parent": "PARENT",
+                 "dose_um": 1.0, "members": "p0"})
+            block = learner.TruthBlock(directory, "tenv", 0, "condition_mean")
+            self.assertEqual(block.members.tolist(), [["p0"]])
+
+
+class FullArmAnchorSeedTest(unittest.TestCase):
+    """The sealed anchors are equal-fold means at seed 42; seed 43 is a sensitivity.
+
+    The matrix runs every ``full`` origin at both training seeds, but the Step 04 anchors
+    were measured at seed 42 only. Comparing a seed-43 origin against them and printing
+    PASS would claim a reproduction that was never measured, so the seed-43 arms are
+    recorded as a labelled sensitivity that never contributes to the verify status.
+    """
+
+    def _measured(self, seed, pcc_offset=0.0, rmse_offset=0.0):
+        anchor = matrix.FULL_ANCHORS["tenv"]
+        return ({"source": "tenv", "view": "full", "fold": 0, "seed": seed},
+                {"pcc": anchor["pcc"] + pcc_offset, "rmse": anchor["rmse"] + rmse_offset})
+
+    def test_only_seed_42_is_compared_and_seed_43_is_a_sensitivity(self):
+        measured = [self._measured(42), self._measured(43, pcc_offset=0.3)]
+        full_arm, comparisons = formal.full_arm_evidence(measured)
+        self.assertEqual(full_arm["anchor_seed"], 42)
+        self.assertEqual([entry["origin"]["seed"] for entry in full_arm["origins"]], [42])
+        self.assertEqual(len(full_arm["fold_mean"]), 1)
+        self.assertEqual(full_arm["fold_mean"][0]["seed"], 42)
+        origins_only = [entry for entry in full_arm["sensitivity"]
+                        if entry["level"] == "origin"]
+        self.assertEqual([entry["origin"]["seed"] for entry in origins_only], [43])
+        self.assertEqual(len(full_arm["sensitivity"]), 2)  # the origin and its fold mean
+        for entry in full_arm["sensitivity"]:
+            self.assertEqual(entry["status"], "sensitivity")
+            self.assertEqual(entry["anchor_seed"], 42)
+            self.assertIn("measured", entry)
+        self.assertTrue(all(entry["status"] == "PASS" for entry in comparisons))
+        # The far seed-43 arm must not turn the anchor verdict into a DRIFT.
+        self.assertTrue(all(entry["status"] == "PASS" for entry in comparisons))
+
+    def test_a_drifting_seed_42_origin_is_reported_as_drift(self):
+        full_arm, comparisons = formal.full_arm_evidence(
+            [self._measured(42, pcc_offset=0.3)])
+        self.assertEqual([entry["status"] for entry in full_arm["origins"]], ["DRIFT"])
+        self.assertTrue(all(entry["status"] == "DRIFT" for entry in comparisons))
+        self.assertEqual([entry["status"] for entry in full_arm["fold_mean"]], ["DRIFT"])
+        self.assertEqual(full_arm["sensitivity"], [])
+
+    def test_the_anchor_seed_cannot_be_labelled_a_sensitivity(self):
+        with self.assertRaisesRegex(ValueError, "anchor seed"):
+            formal.sensitivity_record(
+                "tenv", {"pcc": 0.2, "rmse": 0.4}, level="origin", seed=42)
+        record = formal.sensitivity_record(
+            "tenv", {"pcc": 0.2, "rmse": 0.4}, level="origin", seed=43)
+        self.assertEqual(record["status"], "sensitivity")
+        self.assertEqual(record["anchor_seed"], 42)
+        self.assertNotIn(record["status"], ("PASS", "DRIFT"))
+
+
+@NEEDS_SOURCE
+class CodeIdentityTest(unittest.TestCase):
+    """Verify records code drift and still fails closed on any non-code input change.
+
+    The de-duplication refactor changes module bytes without changing a product byte, so
+    the verifier may not refuse to run; it has to say which modules moved. Everything the
+    runs were actually fitted against (plan body, freezes, truth, native source, runtime)
+    keeps the fail-closed rule.
+    """
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        root = Path(self._tmp.name)
+        freezes, truth = _stub_plan_inputs(root)
+        self.plan = matrix.frozen_plan(freezes=freezes, truth=truth, source_dir=SOURCE,
+                                       device="cpu", mode="formal", repo_root_path=REPO)
+
+    def drifted(self, *files, section=None):
+        value = json.loads(json.dumps(self.plan))
+        if section is not None:
+            section(value)
+            return value
+        for name in files:
+            value["code"][name] = "f" * 64
+        return value
+
+    def test_matching_code_is_reported_as_a_match(self):
+        self.assertEqual(formal.code_drift(self.plan, self.plan), ([], True))
+        identity = formal.code_identity(self.plan, self.plan)
+        self.assertEqual(identity["status"], "MATCH")
+        self.assertEqual(identity["code_drift"], [])
+
+    def test_a_refactor_digest_is_recorded_and_does_not_hide_the_file(self):
+        drifted = self.drifted("learner.py")
+        entries, identical = formal.code_drift(self.plan, drifted)
+        self.assertTrue(identical)
+        self.assertEqual([entry["file"] for entry in entries], ["learner.py"])
+        identity = formal.code_identity(self.plan, drifted)
+        self.assertEqual(identity["status"], "CODE_DRIFT")
+        self.assertEqual(identity["code_drift"], entries)
+        self.assertEqual(identity["driver_code_drift"], [])
+        self.assertIn("refactor", identity["note"])
+
+    def test_the_learner_runtime_drift_is_recorded_too(self):
+        drifted = self.drifted()
+        drifted["learner_runtime"]["learner.py"] = "f" * 64
+        entries, identical = formal.code_drift(self.plan, drifted)
+        self.assertTrue(identical)
+        self.assertEqual([(entry["section"], entry["file"]) for entry in entries],
+                         [("learner_runtime", "learner.py")])
+        identity = formal.code_identity(self.plan, drifted)
+        self.assertEqual(identity["status"], "CODE_DRIFT")
+        self.assertEqual(identity["driver_code_drift"], [])
+        # run/resume is still refused: a moved worker runtime is not driver-only drift.
+        self.assertIsNone(formal.driver_code_drift(self.plan, drifted))
+
+    def test_a_non_code_input_change_still_fails_closed(self):
+        def move_truth(value):
+            value["truth"]["tenv/fold-0"]["primary"]["manifest_sha256"] = "f" * 64
+        self.assertIsNone(formal.code_identity(self.plan, self.drifted(section=move_truth)))
+
+    def test_the_run_path_keeps_the_driver_only_rule(self):
+        """Resuming a fit under changed scientific code must stay refused."""
+        self.assertIsNone(formal.driver_code_drift(self.plan, self.drifted("learner.py")))
+        self.assertEqual(formal.driver_code_drift(self.plan, self.drifted("formal.py")),
+                         [{"section": "code", "file": "formal.py",
+                           "sealed_sha256": self.plan["code"]["formal.py"],
+                           "current_sha256": "f" * 64}])
 
 
 if __name__ == "__main__":

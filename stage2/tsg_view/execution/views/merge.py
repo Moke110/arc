@@ -14,6 +14,8 @@ product manifest and records the pooling-identity probe that proves the sum-base
 import numpy as np
 import pandas as pd
 
+from common import released_conditions, released_histogram
+
 from . import (BATCH, CONTROL_RULE, RECIPE, HarnessError, condition_table,
                control_source_table, merge_profile_id, merge_rows, member_table,
                pooled_condition_blocks, pooled_condition_counts, pooled_control,
@@ -22,11 +24,12 @@ from . import (BATCH, CONTROL_RULE, RECIPE, HarnessError, condition_table,
 # Released-replica expectations from the reconnaissance (notes-bases-views §0/§5). They are
 # asserted only for a non-fixture build: a released corpus change must fail closed here
 # rather than silently publish a differently shaped view.
-EXPECTED_CONDITIONS = {"tenv": 1377, "tahoe_bulk": 52777}
+EXPECTED_CONDITIONS = released_conditions()
+#: The released histogram without its zero buckets (``special_conditions`` only emits
+#: buckets that occur, so the comparison drops the empty ones on both sides).
 EXPECTED_MEMBER_HISTOGRAM = {
-    "tenv": {"3": 1320, "4": 48, "6": 9},
-    "tahoe_bulk": {"1": 43036, "2": 7941, "3": 1400, "4": 350, "16": 50},
-}
+    source: {members: count for members, count in released_histogram(source).items() if count}
+    for source in released_conditions()}
 EXPECTED_CROSS_PLATE = {"tenv": 6, "tahoe_bulk": 8741}
 EXPECTED_TRAPS = {"tenv": {"four_well": 48, "six_well": 9}}
 IDENTITY_SAMPLE = 256

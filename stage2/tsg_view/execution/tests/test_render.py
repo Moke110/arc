@@ -43,10 +43,15 @@ def sha256(path):
 
 
 def run_isolated(base, data, suite, name="run", output=None):
-    """Render in a fresh process in a tree holding only render.py, data/ and output/."""
+    """Render in a fresh process in a tree holding only the renderer, data/ and output/.
+
+    ``common.py`` is the renderer's whole import closure beyond the standard library
+    (the schedule constants); it imports no science stack and holds no payload.
+    """
     isolated = Path(base) / name
     isolated.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(EXECUTION / "render.py", isolated / "render.py")
+    for module in ("render.py", "common.py"):
+        shutil.copy2(EXECUTION / module, isolated / module)
     shutil.copytree(data, isolated / "data")
     environment = dict(os.environ, MPLCONFIGDIR=str(isolated / "mpl"))
     environment.pop("PYTHONPATH", None)
@@ -113,17 +118,19 @@ class TestCsvOnlyRerender(unittest.TestCase):
                     if path.suffix in (".npy", ".pt", ".h5ad", ".pkl")]
         self.assertEqual(payloads, [])
         source = (EXECUTION / "render.py").read_text()
-        tree = ast.parse(source)
         imported = set()
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                imported.update(alias.name.split(".")[0] for alias in node.names)
-            elif isinstance(node, ast.ImportFrom) and node.module:
-                imported.add(node.module.split(".")[0])
+        for module in ("render.py", "common.py"):
+            tree = ast.parse((EXECUTION / module).read_text())
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    imported.update(alias.name.split(".")[0] for alias in node.names)
+                elif isinstance(node, ast.ImportFrom) and node.module:
+                    imported.add(node.module.split(".")[0])
         self.assertLessEqual(imported, {"argparse", "csv", "hashlib", "json", "sys", "pathlib",
-                                        "matplotlib", "__future__"})
+                                        "matplotlib", "__future__", "common"})
         for forbidden in (".npy", "checkpoint.pt", "torch", "pandas", "numpy", "output/truth"):
             self.assertNotIn(forbidden, source)
+            self.assertNotIn(forbidden, (EXECUTION / "common.py").read_text())
         self.assertIn('metadata={"Software": None}', source)
         self.assertIn("matplotlib.use(\"Agg\")", source)
 

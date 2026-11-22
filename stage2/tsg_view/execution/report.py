@@ -56,16 +56,16 @@ if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
 import matrix  # noqa: E402
+from common import SOURCE_ORDER, read_json, repo_root  # noqa: E402
 from views import SOURCES, sha256, write_json  # noqa: E402
 
 SCHEMA = "tsg-view-report-v1"
 METRICS = ("pcc", "spearman", "rmse", "r2")
 METRIC_COLUMNS = tuple(f"delta_{metric}" for metric in METRICS)
-SOURCE_ORDER = ("tenv", "tahoe_bulk")
 VIEW_ORDER = matrix.VIEW_ORDER
-ALL_VIEWS = ("full", "merge", "solo", "full-pooled-label", "solo-deepest")
+ALL_VIEWS = VIEW_ORDER["tenv"]
 FOLDS = (0, 1, 2)
-MAIN_SEEDS = (42, 43)
+MAIN_SEEDS = matrix.SEEDS
 ARM_MAIN = "main"
 ARM_SOLO_DEEPEST = "solo-deepest sensitivity"
 ERROR_LEVEL = 1.96
@@ -186,10 +186,6 @@ class ReportError(ValueError):
 # --------------------------------------------------------------------------- #
 # small deterministic helpers
 # --------------------------------------------------------------------------- #
-def read_json(path):
-    return json.loads(Path(path).read_text())
-
-
 def read_csv(path):
     return pd.read_csv(Path(path), float_precision="round_trip")
 
@@ -938,9 +934,10 @@ def figure_data(runs, seeds, fold_spread, per_dose, paired, solo_paired, baselin
             if row["source"] not in sources_present:
                 continue
             effects.append({key: row[key] for key in FIGURE_COLUMNS["views_effect"]})
+    curves = learning_curves(runs)
     return {
-        "learning_curves": learning_curves(runs),
-        "learning_curves_mean": learning_curve_means(learning_curves(runs)),
+        "learning_curves": curves,
+        "learning_curves_mean": learning_curve_means(curves),
         "metrics_bars": pd.DataFrame(bars, columns=FIGURE_COLUMNS["metrics_bars"]),
         "metrics_points": pd.DataFrame(points, columns=FIGURE_COLUMNS["metrics_points"]),
         "metrics_baseline": pd.DataFrame(baseline_rows,
@@ -1057,10 +1054,6 @@ def report_manifest(result, files):
         "figure_data": {name: digest for name, digest in sorted(files.items())
                         if name.startswith("figure/")},
     }
-
-
-def repo_root():
-    return Path(__file__).resolve().parents[3]
 
 
 def main(argv=None):
