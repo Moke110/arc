@@ -118,10 +118,12 @@ class LearnerSmokeTest(unittest.TestCase):
         self.assertEqual(self.terminal()["status"], "complete")
 
     def test_smoke_driver_bounds_the_fit_and_records_resources(self):
+        receipt_path = self.root / "smoke-receipt.json"
         receipt = smoke.smoke(view="full", source="tenv", freeze=self.freeze,
                               output=self.root / "smoke", rows=4, epochs=1, device="cpu",
                               repo_root_path=REPO, sealed=self.sealed,
-                              source_dir=SOURCE)
+                              source_dir=SOURCE, record=receipt_path)
+        self.assertTrue(receipt_path.is_file())
         self.assertEqual(receipt["status"], "complete")
         self.assertEqual(receipt["epochs_run"], 1)
         self.assertEqual([phase["phase"] for phase in receipt["phases"]],

@@ -22,6 +22,7 @@ this module calls ``bases.view.library_totals`` and ``bases.view.log1p_cp10k``.
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import platform
 import sys
@@ -138,8 +139,10 @@ def sha256(path):
 
 
 def write_json(path, value):
-    """The repository's canonical deterministic JSON form."""
-    modules()["release"].write_json(path, value)
+    """The repository's canonical deterministic JSON form (no binding required)."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
     return path
 
 
