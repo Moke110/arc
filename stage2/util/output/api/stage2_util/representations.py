@@ -20,9 +20,9 @@ PARENT_COLUMNS = ["drug_parent_inchikey", "drug_parent_smiles"]
 
 # Exact manifest bytes of the accepted ADR 0079 representation releases.
 ACCEPTED = {
-    "tenv": ("stage2/03_tsg_drug_emb/output/representations",
+    "tenv": ("stage2/util/output/representations",
              "bc10c6af897b1b0d939a685aa198e03b22a3392e3891b721f70cc49f1f028678"),
-    "tahoe_bulk": ("stage2/03_tsg_drug_emb/output/representations/tahoe",
+    "tahoe_bulk": ("stage2/util/output/representations/tahoe",
                    "4d00b23d6dcf0ddfbba4f60725b7f32701103a475f278e1db94eeebb968fbeac"),
 }
 

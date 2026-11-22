@@ -99,7 +99,10 @@ main() {
   # The retired step roots, then the retired bundle name handled per line.
   local step_pattern='stage2/[[:alnum:]_./+@-]+'
 
-  local active_roots=(01_bases 02_models_tenv-5k 03_tsg_drug_emb 04_tsg_dose 05_tsg_width_dose 06_tsg_transfer tsg_view)
+  local active_roots=(util 01_corpus 02_axis_view 03_view 04_models_tenv-5k 05_tsg_drug_emb 06_tsg_dose 07_tsg_width_dose 08_tsg_transfer)
+  # Bases retains the original published paths for sealed receipts and external derivation workers.
+  local recovery_roots=(01_bases)
+  local registered_roots=("${active_roots[@]}" "${recovery_roots[@]}")
 
   # Layout guard: fail closed on retired step entries.  Only the active step
   # directories and the Stage 2 routing document stage2/AGENTS.md (present at the
@@ -113,7 +116,7 @@ main() {
   for entry in "$stage2_root"/* "$stage2_root"/.[!.]* "$stage2_root"/..?*; do
     [ -e "$entry" ] || [ -L "$entry" ] || continue
     active=0
-    for root in "${active_roots[@]}"; do
+    for root in "${registered_roots[@]}"; do
       if [ "$entry" = "$stage2_root/$root" ] && [ -d "$entry" ] && [ ! -L "$entry" ]; then
         active=1
         break
@@ -126,7 +129,7 @@ main() {
     echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
     return 1
   done
-  for root in "${active_roots[@]}"; do
+  for root in "${registered_roots[@]}"; do
     for entry in "$stage2_root/$root/AGENTS.md" "$stage2_root/$root/README.md"; do
       if [ ! -f "$entry" ]; then
         echo "RESULT: FAIL — missing step routing: $entry" >&2
@@ -161,7 +164,7 @@ main() {
       lineno="${hit%%:*}"
       literal="${hit#*:}"
       local active_literal=0
-      for root in "${active_roots[@]}"; do
+      for root in "${registered_roots[@]}"; do
         case "$literal" in "stage2/$root" | "stage2/$root"/*) active_literal=1 ;; esac
       done
       [ "$active_literal" -eq 1 ] && continue

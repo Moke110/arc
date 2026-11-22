@@ -134,7 +134,7 @@ def load_gene_table(directory=None):
     from ._paths import repository
 
     if directory is None:
-        directory = repository() / "stage2/01_bases/output/gene-identity"
+        directory = repository() / "stage2/util/output/gene-identity"
     payload = (Path(directory) / "genes.csv").read_bytes()
     expected = "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57"
     if hashlib.sha256(payload).hexdigest() != expected:
