@@ -589,10 +589,11 @@
     "verify": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/execution/formal.py verify --candidate stage2/tsg_view/execution/checkpoints/formal"
   },
   "merger_verification": {
-    "blocked_on_ticket_04": "only the execution/freezes/full-pooled-label/tenv freeze is missing before the Lead can seal the real 45-origin plan; the view product itself is already published",
+    "blocked_on_ticket_04": "none after ticket 04's freeze landed; the real 45-origin plan now seals over all eight real freezes and all six truth folds",
     "date": "2026-11-22",
     "dev_at_verification": "108841c (ticket 04 merged on top of 02fa594 while verification ran; 02fa594 is an ancestor)",
     "dev_before_merge": "a4500dd (also the merge base, so the merge was conflict-free)",
+    "evidence_revision": "the plan_dry_run block above was updated after ticket 04 materialised the full-pooled-label/tenv freeze; the tests and health results were unchanged by that (evidence-only) update",
     "health": {
       "check_paths": {
         "fix": "rewrote that one prose sentence in the health.check_paths_worktree.detail field to name the payload trees without a non-resolving literal. No measured value, no test, and no feature code changed; JSON re-validated and the suite re-run afterwards.",
@@ -608,42 +609,64 @@
     "merge_result": "no conflicts; git reported 6 files changed, 3205 insertions(+), 68 deletions(-); no manual resolution was needed",
     "not_run": [
       "the real 45-fit matrix (Lead)",
-      "any fit or probe in this verification (plan only)",
-      "a real-input sealed 45-origin plan (blocked by the ticket-04 freeze)"
+      "any fit or probe in this verification (plan only)"
     ],
     "plan_dry_run": {
-      "canonical_command": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/execution/formal.py plan --candidate /tmp/tsg06-merger/plan-full --freezes stage2/tsg_view/execution/freezes --truth stage2/tsg_view/output/truth --native-source pert_model/TranSiGen/source --device cuda --mode formal --repo-root /home/chang/arc",
-      "canonical_result": "FAIL CLOSED (exit 1): ValueError: freeze manifest is missing: stage2/tsg_view/execution/freezes/full-pooled-label/tenv/manifest.json",
+      "canonical_command": "cd /home/chang/arc && /home/chang/miniconda3/envs/arc/bin/python stage2/tsg_view/execution/formal.py plan --candidate <candidate> --freezes stage2/tsg_view/execution/freezes --truth stage2/tsg_view/output/truth --native-source pert_model/TranSiGen/source --device cuda --mode formal --repo-root /home/chang/arc",
       "filters": "matrix.frozen_plan refuses every --only-* filter for action=plan ('the formal plan is fixed at 45 origins; filters apply to run'), so a partial-source plan cannot be sealed by construction",
-      "interpretation": "correct behaviour, not a ticket-06 defect: the ticket-04 view product is published under output/views/full-pooled-label but its freeze has not been materialised in the main checkout, so the 45-origin plan cannot bind all eight freezes. No candidate root was written and no fit was started.",
-      "static_enumeration": {
-        "method": "import matrix; matrix.plan()",
-        "order": "27 tenv origins then 18 tahoe_bulk origins; first origin tenv/full/fold-0/seed-42, origin 27 is tahoe_bulk/full/fold-0/seed-42, last is tahoe_bulk/solo/fold-2/seed-43",
+      "first_attempt": {
+        "error": "ValueError: freeze manifest is missing: stage2/tsg_view/execution/freezes/full-pooled-label/tenv/manifest.json",
+        "result": "FAIL CLOSED (exit 1)",
+        "why": "at that moment ticket 04's full-pooled-label view product was published but its freeze had not been materialised in the main checkout. This is the matrix working as designed, not a ticket-06 defect: it refused to seal a partial plan and no candidate root or fit was created."
+      },
+      "interim_stub": "before the ticket-04 freeze landed, a second dry run over /tmp symlinked real freezes plus one contract-shaped stub also sealed 45 origins (plan_sha256 3c0acda2903c28481fce57390a06b926d6226e4715269ab703941d62cf9476eb); it is superseded by the fully real seal above and touched no tracked file or ticket-04/05 product",
+      "no_fit_started": true,
+      "real_seal": {
+        "candidate": "/tmp/tsg06-merger/plan-real (disposable; the Lead seals their own candidate root)",
+        "freeze_keys": [
+          "full-pooled-label/tenv",
+          "full/tahoe_bulk",
+          "full/tenv",
+          "merge/tahoe_bulk",
+          "merge/tenv",
+          "solo-deepest/tenv",
+          "solo/tahoe_bulk",
+          "solo/tenv"
+        ],
+        "freezes_bound": 8,
+        "full_pooled_label_freeze": {
+          "config_sha256": "12e82d4fbd4221fcc9ee9a21fbc1de133e2c557231990f4512a8e81afe71d5c3",
+          "manifest_sha256": "e6fc59c1402086282df73e38a2b555297094580e5711e8a07fd860b212a7a843",
+          "n_treated": 4206
+        },
+        "order": "27 tenv origins then 18 tahoe_bulk origins; tenv runs are full, merge, solo, full-pooled-label, solo-deepest per fold (solo-deepest seed 42 only); first origin tenv/full/fold-0/seed-42, origin 27 is tahoe_bulk/full/fold-0/seed-42, last is tahoe_bulk/solo/fold-2/seed-43",
         "origins": 45,
         "per_source": {
           "tahoe_bulk": 18,
           "tenv": 27
         },
-        "per_source_view": {
-          "tahoe_bulk/full": 6,
-          "tahoe_bulk/merge": 6,
-          "tahoe_bulk/solo": 6,
-          "tenv/full": 6,
-          "tenv/full-pooled-label": 6,
-          "tenv/merge": 6,
-          "tenv/solo": 6,
-          "tenv/solo-deepest": 3
-        },
+        "plan_sha256": "2f59a8704b416debc8bd8ea9a7bb0acbaa3f0a2bd0fa2f11f4060f6fca44bf29",
+        "result": "PASS (exit 0) once ticket 04's merger materialised the full-pooled-label/tenv freeze; the identical command then sealed a fully real plan",
+        "stubs": 0,
+        "truth_folds_bound": [
+          "tahoe_bulk/fold-0",
+          "tahoe_bulk/fold-1",
+          "tahoe_bulk/fold-2",
+          "tenv/fold-0",
+          "tenv/fold-1",
+          "tenv/fold-2"
+        ],
         "unique_identities": 45
       },
-      "stub_seal": {
-        "bindings": "all six real truth folds and the seven real freezes were digested from the canonical main-checkout products; only the ticket-04 freeze entry is a stub",
-        "command": "same plan command with --freezes /tmp/tsg06-merger/stub-freezes (7 real freeze dirs symlinked, plus a contract-shaped full-pooled-label/tenv stub under /tmp only)",
-        "note": "no ticket-04 or ticket-05 product and no tracked file was touched; the stub exists only under /tmp",
+      "static_enumeration": {
+        "method": "import matrix; matrix.plan()",
         "order_check": "27 tenv then 18 tahoe_bulk",
         "origins": 45,
-        "plan_sha256": "3c0acda2903c28481fce57390a06b926d6226e4715269ab703941d62cf9476eb",
-        "result": "PASS, exit 0"
+        "per_source": {
+          "tahoe_bulk": 18,
+          "tenv": 27
+        },
+        "unique_identities": 45
       }
     },
     "scope_check": {
