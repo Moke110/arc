@@ -92,3 +92,32 @@ class ExpressionViewTest(unittest.TestCase):
             output.write(b"unexpected")
         with self.assertRaisesRegex(ValueError, "payload digest"):
             open_view(self.output, source="tenv")
+
+    def test_canonical_reader_rejects_stale_corpus_and_coherent_wrong_recipe(self):
+        import json
+        from unittest.mock import patch
+        import expression_view
+
+        candidate = self.root / "coherent"
+        candidate.mkdir()
+        corpus = self.root / "accepted-corpus.json"
+        corpus.write_text('{"schema":"stage2-native-corpus-v1"}')
+        previous_digest = "a" * 64
+        manifest = {
+            "schema": expression_view.SCHEMA, "axis_sha256": "b" * 64,
+            "corpus_sha256": previous_digest, "default_family": "full",
+            "normalization": "sum selected-axis integer counts, then separate CP10K and log1p",
+            "control": "union matched vehicle rows by source observation identity",
+            "delta": "X minus control, or the corresponding merge delta for pooled labels",
+            "solo_seed": 20261122,
+        }
+        path = candidate / "manifest.json"
+        path.write_text(json.dumps(manifest))
+        with (patch.object(expression_view, "DEFAULT", candidate),
+              patch.object(expression_view, "CORPUS_MANIFEST", corpus)):
+            with self.assertRaisesRegex(ValueError, "requested corpus or axis"):
+                open_view(source="tenv")
+        manifest["normalization"] = "average normalized vehicles"
+        path.write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(ValueError, "expression view recipe"):
+            open_view(candidate, source="tenv", corpus_sha256=previous_digest)

@@ -40,3 +40,12 @@ class CardiacSourceTableTest(unittest.TestCase):
                 self.assertEqual(data.counts(0, 2).tolist(), [[11, 2, 0], [0, 13, 1]])
                 self.assertFalse(data.shared_axis_complete)
                 self.assertEqual(data.matched_control_rows(0), (1,))
+
+    def test_rejects_duplicate_publisher_well_ids(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "duplicate.csv"
+            source.write_text("feature,well1,well1\nENSG0001,1,2\n")
+            with self.assertRaisesRegex(ValueError, "duplicate source observation"):
+                build_count_table(root, "example", source, lambda _: None,
+                                  pd.DataFrame(), "ensembl_id", ",")

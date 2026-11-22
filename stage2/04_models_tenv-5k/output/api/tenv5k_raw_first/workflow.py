@@ -24,6 +24,7 @@ SCHEMA = "tenv5k-raw-first-inputs-v1"
 SPLIT_SEED = 226
 AXIS_SIZE = 5000
 DOSE = 1
+MODELS = ("PRnet", "TranSiGen", "ECFP4_MLP", "Mean", "Mean_cell", "Mean_drug")
 TABLES = ("population", "all_obs", "genes", "parents", "splits")
 ARRAYS = ("expression", "control", "delta", "morgan")
 FILES = {*(f"{name}.csv" for name in TABLES), *(f"{name}.npy" for name in ARRAYS),
@@ -172,8 +173,8 @@ def _freeze(source, destination, axis, representations):
 
 def prepare(destination, *, view_path=None, representations=None, representation_sha256=None):
     destination = Path(destination)
-    view_path = DEFAULT if view_path is None else Path(view_path)
-    if destination.exists() or view_path.resolve() in destination.resolve().parents:
+    root = DEFAULT if view_path is None else Path(view_path)
+    if destination.exists() or root.resolve() in destination.resolve().parents:
         raise ValueError("single-dose preparation needs a fresh destination outside the view")
     axis = open_axes().axis(AXIS_SIZE)
     table = RepresentationTable(representations, source="tenv", manifest_sha256=representation_sha256)
@@ -205,8 +206,12 @@ def score_prediction(obs, truth, prediction, control):
     return pd.DataFrame(per_well), pd.DataFrame(per_parent)
 
 
-def evaluate(inputs, prediction_path, identity_path, output, *, scenario, fold):
+def evaluate(inputs, prediction_path, identity_path, output, *, scenario, fold, model, seed, run_id):
     data = Inputs(inputs)
+    if (model not in MODELS or (model == "Mean_drug" and scenario == "cold-drug")
+            or seed not in data.config["training_seeds"] or not run_id.strip()):
+        raise ValueError("unregistered single-dose model, seed or run identity")
+    identity = {"model": model, "seed": seed, "run_id": run_id}
     output = Path(output)
     rows = data.rows(scenario, fold, "test")
     ids = read_csv(identity_path)
@@ -224,10 +229,10 @@ def evaluate(inputs, prediction_path, identity_path, output, *, scenario, fold):
     with TemporaryDirectory(prefix=".single-dose-score-", dir=output.parent) as temp:
         staging = Path(temp) / "report"
         staging.mkdir()
-        per_well.to_csv(staging / "per_well.csv", index=False)
-        per_parent.to_csv(staging / "per_parent.csv", index=False)
+        per_well.assign(**identity).to_csv(staging / "per_well.csv", index=False)
+        per_parent.assign(**identity).to_csv(staging / "per_parent.csv", index=False)
         provenance = data.config["view_generation"]
-        pd.DataFrame([{"scenario": scenario, "fold": fold, "n_parents": len(per_parent),
+        pd.DataFrame([{**identity, "scenario": scenario, "fold": fold, "n_parents": len(per_parent),
                        "view_sha256": provenance["view_sha256"], "axis_sha256": provenance["axis_sha256"],
                        **{name: per_parent[name].mean() for name in LABELS}}]).to_csv(
                            staging / "summary.csv", index=False)
@@ -244,11 +249,14 @@ def render(summary, output):
         raise ValueError("single-dose summary CSV is empty")
     figure = Figure(figsize=(8, 5), layout="constrained")
     FigureCanvasAgg(figure)
-    labels = [f"{row['scenario']} · {row['fold']}" for row in rows]
+    labels = [f"{row['model']} · {row['seed']} · {row['run_id']}\n{row['scenario']} · {row['fold']}"
+              for row in rows]
     colors = [palette.color("blue" if row["scenario"] == "cold-drug" else "orange", palette.FILL_SHADE)
               for row in rows]
     for axis, (metric, label) in zip(figure.subplots(2, 2).flat, LABELS.items(), strict=True):
-        axis.bar(labels, [float(row[metric]) if row[metric] else np.nan for row in rows], color=colors)
+        axis.bar(range(len(rows)), [float(row[metric]) if row[metric] else np.nan for row in rows],
+                 color=colors)
+        axis.set_xticks(range(len(rows)), labels, rotation=25, ha="right")
         axis.set_title(f"Δ {label}")
         axis.grid(axis="y", color=palette.color("gray", 8))
         axis.set_axisbelow(True)

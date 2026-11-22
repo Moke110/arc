@@ -13,6 +13,15 @@ from anndata.io import read_elem
 
 SCHEMA = "stage2-hvg-deg-views-raw-first-v1"
 DEFAULT = Path(__file__).resolve().parents[1] / "raw-first-v1"
+REPO = next(parent for parent in DEFAULT.parents if (parent / ".git").exists())
+CORPUS_MANIFEST = REPO / "stage2/01_corpus/output/native/manifest.json"
+CANONICAL_AXIS = REPO / "stage2/02_axis_view/02.1_hvg-deg/output/release/gene_axis_5000.csv"
+NORMALIZATION = "sum selected-axis integer counts, then separate CP10K and log1p"
+CONTROL = "union matched vehicle rows by source observation identity"
+DELTA = "X minus control, or the corresponding merge delta for pooled labels"
+SOLO_SEED = 20261122
+RECIPE = {"default_family": "full", "normalization": NORMALIZATION, "control": CONTROL,
+          "delta": DELTA, "solo_seed": SOLO_SEED}
 MAX_ROWS = 256
 ARMS = {
     "tenv": ("full", "merge", "solo", "solo-deepest", "full-pooled-label"),
@@ -43,6 +52,8 @@ class View:
             corpus_sha256 is not None and manifest["corpus_sha256"] != corpus_sha256
         ) or (axis_sha256 is not None and manifest["axis_sha256"] != axis_sha256):
             raise ValueError("expression view generation does not match the requested corpus or axis")
+        if any(manifest.get(key) != value for key, value in RECIPE.items()):
+            raise ValueError("expression view recipe differs from the accepted raw-first recipe")
         self.manifest = manifest
         self.manifest_sha256 = hash_bytes(payload).hexdigest()
         self.source = source
@@ -123,4 +134,18 @@ class View:
 
 
 def open_view(path=None, *, source, family="full", corpus_sha256=None, axis_sha256=None):
-    return View(DEFAULT if path is None else Path(path), source, family, corpus_sha256, axis_sha256)
+    root = DEFAULT if path is None else Path(path)
+    if root.resolve() == DEFAULT.resolve():
+        corpus = CORPUS_MANIFEST.read_bytes()
+        if json.loads(corpus).get("schema") != "stage2-native-corpus-v1":
+            raise ValueError("canonical native corpus provenance is missing")
+        axis = sha256(CANONICAL_AXIS)
+        axis_manifest = json.loads(CANONICAL_AXIS.with_name("manifest.json").read_bytes())
+        if axis_manifest["axes"]["5000"] != axis:
+            raise ValueError("canonical prediction axis payload digest differs")
+        canonical = (hash_bytes(corpus).hexdigest(), axis)
+        specified = (corpus_sha256, axis_sha256)
+        if any(pin is not None and pin != current for pin, current in zip(specified, canonical, strict=True)):
+            raise ValueError("requested corpus or axis does not match the canonical release inputs")
+        corpus_sha256, axis_sha256 = canonical
+    return View(root, source, family, corpus_sha256, axis_sha256)

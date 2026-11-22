@@ -18,7 +18,8 @@ python "$D/execution/raw_first.py" prepare --candidate /path/to/new/pair
 python "$D/execution/raw_first.py" prepare-kpgt \
   --tenv /path/to/new/pair/tenv --candidate /path/to/new/kpgt
 python "$D/execution/raw_first.py" evaluate --inputs /path/to/new/pair/tenv \
-  --scenario cold-drug-dose --fold 0 --prediction /path/to/prediction.npy \
+  --scenario cold-drug-dose --fold 0 --method no-dose --seed 42 --run-id no-dose-42 \
+  --prediction /path/to/prediction.npy \
   --prediction-ids /path/to/profile_ids.csv --output /path/to/new/evaluation
 python "$D/figure/raw_first/render.py" --summary /path/to/new/evaluation/summary.csv \
   --output /path/to/new/metrics.png
@@ -27,7 +28,7 @@ python "$D/figure/raw_first/render.py" --summary /path/to/new/evaluation/summary
 Predictions are absolute expression vectors in the frozen test row and gene
 order. The identity CSV has one `profile_id` column. `evaluate` computes
 sample-equal Δ metrics using the shared Stage 2 formulas and writes per-sample
-scores and the versioned summary CSV. Pass `--kpgt` when evaluating with the
+scores and the versioned summary CSV, including method, representation, seed and run identity. Pass `--kpgt` when evaluating with the
 KPGT wrapper. Parity checks may prepare one source explicitly with `--source`.
 
 The dose public API is `tsg_raw_first.inputs.Inputs` for a source in the pair

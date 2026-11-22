@@ -18,6 +18,9 @@ def main():
     evaluate = commands.add_parser("evaluate")
     evaluate.add_argument("--scenario", choices=("cold-drug", "warm-start"), required=True)
     evaluate.add_argument("--fold", type=int, choices=range(workflow.FOLDS), required=True)
+    evaluate.add_argument("--model", choices=workflow.MODELS, required=True)
+    evaluate.add_argument("--seed", type=int, choices=workflow.read_seeds(), required=True)
+    evaluate.add_argument("--run-id", required=True)
     for field in ("inputs", "prediction", "prediction-ids", "output"):
         evaluate.add_argument(f"--{field}", type=Path, required=True)
     render = commands.add_parser("render")
@@ -28,7 +31,8 @@ def main():
         workflow.prepare(args.candidate, view_path=args.view, representations=args.representations)
     elif args.command == "evaluate":
         workflow.evaluate(args.inputs, args.prediction, args.prediction_ids, args.output,
-                          scenario=args.scenario, fold=args.fold)
+                          scenario=args.scenario, fold=args.fold, model=args.model,
+                          seed=args.seed, run_id=args.run_id)
     else:
         workflow.render(args.summary, args.output)
 

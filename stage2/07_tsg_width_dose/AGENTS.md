@@ -8,7 +8,7 @@ and [ADR 0080](../../docs/adr/0080-tenv-kpgt-dose-round1.md).
 
 Use `execution/raw_first.py prepare|evaluate|render` for the current
 full raw-first release, verified tenv KPGT vectors and cold-drug-dose split.
-Run `python -m unittest discover -s stage2/05_tsg_width_dose/execution/tests`
+Run `python -m unittest discover -s stage2/07_tsg_width_dose/execution/tests`
 for fixed-prediction and CSV-only plotting verification.
 
 For historical replay, reuse the original Step 04 tenv KPGT freeze and

@@ -16,10 +16,13 @@ import pyarrow.parquet as pq
 
 STEP = Path(__file__).resolve().parents[1]
 REPO = next(parent for parent in STEP.parents if (parent / ".git").exists())
-sys.path[:0] = [str(STEP / "output/api"), str(REPO / "stage2/01_bases/output/api")]
+sys.path[:0] = [str(path) for path in (
+    STEP / "output/api", REPO / "stage2/01_bases/output/api", REPO / "stage2/util/output/api",
+)]
 
 from bases import corpus as legacy_corpus, native, raw, raw_counts, release
 from cardiac_sources import build_cardiac_sources
+from stage2_util.publication import publication_lock, publish_candidate
 import native_tahoe as tahoe
 from native_corpus import CorpusError, open_corpus, seal_corpus, sha256
 
@@ -203,13 +206,13 @@ def main():
                     artifacts=("tenv_probe_mapping.csv", "tenv_manifest.json"))
 
     args.staging.mkdir(parents=True, exist_ok=True)
-    with (args.staging / "native-corpus.lock").open("a") as lock:
+    with publication_lock(args.output) as output, (args.staging / "native-corpus.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         if args.action == "publish":
-            release.publish(args.output, build, verify_product, root=args.staging)
+            publish_candidate(release, output, build, verify_product, staging=args.staging)
         else:
-            release.replay(args.output, build, verify_product, root=args.staging)
-    print(verify_product(args.output))
+            release.replay(output, build, verify_product, root=args.staging)
+        print(verify_product(output))
 
 
 if __name__ == "__main__":

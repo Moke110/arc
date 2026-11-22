@@ -14,7 +14,7 @@ import pandas as pd
 STEP = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(STEP / "output/api"))
 from tenv5k_raw_first import workflow
-from expression_view import SCHEMA
+from expression_view import RECIPE, SCHEMA
 from prediction_axis import open_axes
 from stage2_util import metrics, palette, plotting
 from stage2_util.representations import ARMS, SCHEMA as REPRESENTATIONS, WIDTHS
@@ -51,8 +51,8 @@ def fixtures(root):
         handle.attrs.update(tags, source="tenv", family="full")
     exclusions = view / "tenv.exclusions.csv"
     exclusions.write_text("profile_id,role,reason\n")
-    (view / "manifest.json").write_text(json.dumps(dict(tags, axis_size=5000, sources=["tenv"],
-        default_family="full", outputs={str(p.relative_to(view)): digest(p) for p in (source, exclusions)})))
+    (view / "manifest.json").write_text(json.dumps(dict(tags, **RECIPE, axis_size=5000, sources=["tenv"],
+        outputs={str(p.relative_to(view)): digest(p) for p in (source, exclusions)})))
 
     vectors = root / "representations"
     vectors.mkdir()
@@ -94,15 +94,25 @@ class RawFirstSingleDoseTest(unittest.TestCase):
             pd.DataFrame({"profile_id": data.obs.index[rows]}).to_csv(identities, index=False)
             report = root / "report"
             with patch.object(metrics, "vector_metrics", wraps=metrics.vector_metrics) as calls:
-                workflow.evaluate(directory, prediction, identities, report, scenario="warm-start", fold=0)
+                workflow.evaluate(directory, prediction, identities, report, scenario="warm-start", fold=0, model="Mean", seed=42, run_id="mean-42")
                 self.assertGreater(calls.call_count, 2 * len(rows))
+            summary = pd.read_csv(report / "summary.csv")
+            self.assertEqual(summary.loc[0, ["model", "seed", "run_id"]].tolist(), ["Mean", 42, "mean-42"])
             per_parent = pd.read_csv(report / "per_parent.csv")
             self.assertTrue(per_parent.rmse.eq(0).all())
             self.assertEqual(per_parent.n_wells.sum(), len(rows))
+            comparison = root / "comparison.csv"
+            pd.concat([summary, summary.assign(model="PRnet", run_id="prnet-42")]).to_csv(comparison, index=False)
             image = root / "figure.png"
             with (patch.object(plotting, "read_rows", wraps=plotting.read_rows) as read,
-                  patch.object(palette, "color", wraps=palette.color) as color):
-                workflow.render(report / "summary.csv", image)
+                  patch.object(palette, "color", wraps=palette.color) as color,
+                  patch.object(plotting, "save_figure", wraps=plotting.save_figure) as save):
+                workflow.render(comparison, image)
                 read.assert_called_once()
                 self.assertGreater(color.call_count, 0)
+                figure = save.call_args.args[0]
+                self.assertEqual(len(figure.axes[0].patches), 2)
+                labels = [tick.get_text() for tick in figure.axes[0].get_xticklabels()]
+                self.assertIn("Mean · 42 · mean-42", labels[0])
+                self.assertIn("PRnet · 42 · prnet-42", labels[1])
             self.assertTrue(image.read_bytes().startswith(b"\x89PNG"))

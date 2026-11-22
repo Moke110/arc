@@ -75,7 +75,9 @@ def make_views(root):
     manifest = {"schema": SCHEMA, "axis_sha256": axis.sha256, "axis_size": 5000,
                 "corpus_sha256": "a" * 64, "default_family": "full", "sources": list(ARMS),
                 "normalization": "sum selected-axis integer counts, then separate CP10K and log1p",
-                "control": "union matched vehicle rows by source observation identity", "outputs": {}}
+                "control": "union matched vehicle rows by source observation identity",
+                "delta": "X minus control, or the corresponding merge delta for pooled labels",
+                "solo_seed": 20261122, "outputs": {}}
     for source in ARMS:
         ids = [f"{source}-vehicle-0"]
         rows = [("vehicle", "", "", 0.)]
@@ -158,6 +160,7 @@ class RawFirstEvaluationTest(unittest.TestCase):
             pd.DataFrame({"profile_id": data.obs.index[rows]}).to_csv(ids, index=False)
             report = root / "report"
             args = ["evaluate", "--inputs", str(data.directory), "--scenario", "cold-drug", "--fold", "0",
+                    "--method", "no-dose", "--seed", "42", "--run-id", "no-dose-42",
                     "--prediction", str(prediction), "--prediction-ids", str(ids), "--output", str(report)]
             with patch.object(metrics, "vector_metrics", wraps=metrics.vector_metrics) as called:
                 raw_first.main(args)
@@ -166,6 +169,7 @@ class RawFirstEvaluationTest(unittest.TestCase):
             self.assertEqual(first_truth[:3].tolist(), [1., 2., 5.])
             self.assertTrue(np.array_equal(first_truth, first_predicted))
             summary = pd.read_csv(report / "summary.csv")
+            self.assertEqual(summary.loc[0, ["method", "seed", "run_id"]].tolist(), ["no-dose", 42, "no-dose-42"])
             self.assertEqual(summary.iloc[0].rmse, 0.)
             self.assertEqual(summary.iloc[0].r2, 1.)
             self.assertEqual(summary.iloc[0].n_samples, len(rows))

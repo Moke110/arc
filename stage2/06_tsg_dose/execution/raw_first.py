@@ -13,12 +13,22 @@ from tsg_raw_first import preparation
 from tsg_raw_first.evaluation import score
 from tsg_raw_first.inputs import Inputs, KPGTInputs, SOURCES, read_csv
 from tsg_raw_first.reporting import render
-from tsg_round1.protocol import SCENARIOS
+from tsg_dose.protocol import METHODS
+from tsg_round1.protocol import SCENARIOS, TRAINING_SEED
+
+
+COMPARISONS = (*METHODS, "ECFP4_MLP", "KPGT_MLP", "Mean_cell")
 
 
 def evaluate(args):
     reader = KPGTInputs if args.kpgt else Inputs
     data = reader(args.inputs, expected_pair_sha256=args.pair_sha256)
+    if (args.seed != TRAINING_SEED or not args.run_id.strip()
+            or (args.method == "ECFP4_MLP" and args.kpgt)
+            or (args.method == "KPGT_MLP" and not args.kpgt)):
+        raise ValueError("unregistered dose method, representation, seed or run identity")
+    identity = {"method": args.method, "representation": "KPGT" if args.kpgt else "ECFP4",
+                "seed": args.seed, "run_id": args.run_id}
     predictions = np.load(args.prediction, mmap_mode="r")
     identities = read_csv(args.prediction_ids)
     if list(identities) != ["profile_id"]:
@@ -31,9 +41,9 @@ def evaluate(args):
     with TemporaryDirectory(prefix=".evaluate-", dir=args.output.parent) as temp:
         candidate = Path(temp) / "report"
         candidate.mkdir()
-        samples.to_csv(candidate / "per_sample.csv", index=False)
+        samples.assign(**identity).to_csv(candidate / "per_sample.csv", index=False)
         generation = data.config["view_generation"]
-        fields = {"source": data.source, "scenario": args.scenario, "fold": args.fold,
+        fields = {**identity, "source": data.source, "scenario": args.scenario, "fold": args.fold,
                   "partition": args.partition, "pair_sha256": data.pair_sha256,
                   "view_sha256": generation["view_sha256"], "axis_sha256": generation["axis_sha256"]}
         pd.DataFrame([{**fields, **metrics}]).to_csv(candidate / "summary.csv", index=False)
@@ -57,6 +67,9 @@ def main(argv=None):
     evaluate_parser.add_argument("--inputs", type=Path, required=True)
     evaluate_parser.add_argument("--pair-sha256")
     evaluate_parser.add_argument("--kpgt", action="store_true")
+    evaluate_parser.add_argument("--method", choices=COMPARISONS, required=True)
+    evaluate_parser.add_argument("--seed", type=int, choices=(TRAINING_SEED,), required=True)
+    evaluate_parser.add_argument("--run-id", required=True)
     evaluate_parser.add_argument("--scenario", choices=SCENARIOS, required=True)
     evaluate_parser.add_argument("--fold", type=int, choices=range(3), required=True)
     evaluate_parser.add_argument("--partition", choices=("validation", "test"), default="test")
