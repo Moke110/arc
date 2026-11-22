@@ -258,6 +258,138 @@
   },
   "interpreter": "/home/chang/miniconda3/envs/arc/bin/python",
   "merge_commit": "5d904cc4a2601ac5c5fb37228c98dd29f8a485ff",
+  "merger_verification": {
+    "commands": {
+      "health": [
+        "cd /home/chang/arc && bash script/check_paths.sh",
+        "cd /home/chang/arc && bash script/check_tracked.sh"
+      ],
+      "merge": "cd /home/chang/arc && git merge --no-ff impl/tsg-view-08 -m \"Merge Stage 2 tsg_view 08: pre-registered report, acceptance receipt and step documentation\"",
+      "tests": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v"
+    },
+    "date": "2026-11-22",
+    "dev_rev": "339c7cfa1bd3829bacfc9de04372a9d9a4d0bcc2",
+    "dev_rev_short": "339c7cf",
+    "doc_checks": {
+      "figures_linked_distinct": 7,
+      "pre_registration_block_verbatim_in_readme": true,
+      "pre_registration_pinned_file": "stage2/tsg_view/log/acceptance/pre_registration.md",
+      "readme_links_all_resolve": true,
+      "readme_pre_registration_before_results": true,
+      "report_tables_linked_distinct": 11,
+      "stage2_agents_routes_tsg_view_as_non_numbered_study_step": true,
+      "tests": "test_docs.py passes in the same 166-test run",
+      "tsg_view_agents_describes_final_workflow": true,
+      "tsg_view_agents_has_no_first_draft_marker": true,
+      "verdict_says_not_supported": true
+    },
+    "health": {
+      "check_paths": {
+        "command": "bash script/check_paths.sh",
+        "exit": 0,
+        "maxrss_kib": 6604,
+        "result": "PASS",
+        "seconds": 12.84
+      },
+      "check_tracked": {
+        "command": "bash script/check_tracked.sh",
+        "exit": 0,
+        "maxrss_kib": 4796,
+        "result": "PASS",
+        "seconds": 0.1
+      },
+      "verify_all": {
+        "exit": 0,
+        "items": "66/66 PASS",
+        "preflight_available_gib": 20,
+        "preflight_timestamp": "2026-11-22T21:59:51+08:00",
+        "reason": "not re-run: the committed transcript is the evidence and verify_all is heavy; it was run alone at 21:59-22:04 with 20 GiB available",
+        "rerun_by_merger": false,
+        "seconds": 281.094,
+        "transcript": "stage2/tsg_view/log/acceptance/health/verify_all.sh.log"
+      }
+    },
+    "merge_commit": "339c7cfa1bd3829bacfc9de04372a9d9a4d0bcc2",
+    "merge_message": "Merge Stage 2 tsg_view 08: pre-registered report, acceptance receipt and step documentation",
+    "not_run": [
+      "no fit, matrix run, rebuild or verify_all run by the merger",
+      "no feature code, doc or receipt was edited to make a gate pass"
+    ],
+    "notes_for_final_receipt_refresh": [
+      "the review-fix branch merges after this ticket; it will change stage2/tsg_view/output/runs/formal_verify.json and therefore the receipt's formal_verify sha256 and, if it touches frozen inputs, the Steps 01-06 invariance block",
+      "the refresh pass must re-pin receipt.json and this file's receipt block rather than trusting the current 9e1842e9 digest",
+      "the committed verify_all transcript predates the ticket-08 merge and must be re-captured in the same refresh"
+    ],
+    "pre_merge_scope": {
+      "allowlist_match": true,
+      "command": "git -C /home/chang/arc diff --name-only dev..impl/tsg-view-08",
+      "files": 15,
+      "out_of_scope": [],
+      "verdict": "all 15 pre-merge paths sit inside the ticket-08 allowlist: stage2/tsg_view/README.md, stage2/tsg_view/AGENTS.md, stage2/AGENTS.md, execution/acceptance.py, execution/tests/test_acceptance.py, execution/tests/test_docs.py, log/acceptance/pre_registration.md, log/acceptance/receipt.json, log/acceptance/health/* and log/build-08.json; nothing outside, no Steps 01-06 file, no runs/truth payload"
+    },
+    "receipt": {
+      "caps": {
+        "memory_max": "10G",
+        "memory_swap_max": "8G",
+        "telemetry_seconds": 10.0
+      },
+      "complete_origins": 45,
+      "csv_only_replay": {
+        "byte_identical": true,
+        "dpi": 150,
+        "figures": 7
+      },
+      "formal_verify": {
+        "origins": 45,
+        "path": "stage2/tsg_view/output/runs/formal_verify.json",
+        "sha256": "ad3d96beaf8df570ac99683cb7dee07a72520c4a5ddaf5a8f6b6b4f577a640c8",
+        "status": "PASS"
+      },
+      "parses": true,
+      "path": "stage2/tsg_view/log/acceptance/receipt.json",
+      "pending_origins": 0,
+      "phase": "final",
+      "replay_all_exact": true,
+      "scenario": "cold-drug-dose",
+      "schema": "tsg-view-acceptance-v1",
+      "sha256": "9e1842e9d77e1fcf0d3faf2b15a3cfd9d3ba90e0f6cf284a9aff62c88ddf5a5f",
+      "sha256_expected": "9e1842e9d77e1fcf0d3faf2b15a3cfd9d3ba90e0f6cf284a9aff62c88ddf5a5f",
+      "sha256_match": true,
+      "status": "passed",
+      "steps01_06_invariance": {
+        "changed_paths": 0,
+        "git_diff_b048687_to_dev_empty": true,
+        "per_step": {
+          "01_bases": "PASS",
+          "02_models_tenv-5k": "PASS",
+          "03_tsg_drug_emb": "PASS",
+          "04_tsg_dose": "PASS",
+          "05_tsg_width_dose": "PASS",
+          "06_tsg_transfer": "PASS"
+        },
+        "verdict": "PASS"
+      }
+    },
+    "role": "merger",
+    "steps01_06_diff": {
+      "command": "git -C /home/chang/arc diff --name-only b048687..dev -- stage2/01_bases stage2/02_models_tenv-5k stage2/03_tsg_drug_emb stage2/04_tsg_dose stage2/05_tsg_width_dose stage2/06_tsg_transfer",
+      "empty": true,
+      "paths": [],
+      "worktree_status_empty": true
+    },
+    "tests": {
+      "comparison_to_implementer": "the worktree run recorded in this file ran 166 / 163 passed / 3 skipped; the main checkout has the accepted payloads, so the same 166 tests all execute and pass here and nothing is skipped",
+      "errors": 0,
+      "failures": 0,
+      "passed": 166,
+      "ran": 166,
+      "result": "OK",
+      "runtime_seconds": 102.439,
+      "skipped": 0,
+      "suite": "execution/tests/test_*.py",
+      "tree": "339c7cf (dev after the ticket-08 merge)"
+    }
+  },
   "note": "Phase A builds and unit-tests the acceptance receipt builder and the Steps 01-06 invariance proof only. The final report, step README/AGENTS prose and the sealed --phase final receipt are phase B.",
   "phase": "A+B",
   "phase_a_evidence_dir": "/tmp/tsg-view-08-phaseA",
