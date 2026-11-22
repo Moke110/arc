@@ -5,7 +5,6 @@ so the suite never touches the accepted multi-gigabyte products, a GPU, or the n
 """
 import hashlib
 import json
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -547,11 +546,6 @@ class Fixture:
     def _figures(self):
         figure = self.step("figure")
         renderer = write(self.step("execution/render.py"), RENDERER)
-        # The replay copies the declared closure, so the fixture tree must carry a sibling
-        # module for every declared entry even though this stand-in renderer imports none.
-        write(self.step("execution/common.py"),
-              "SOURCES = (\"tenv\", \"tahoe_bulk\")\nVIEW_ORDER = {}\n"
-              "def seeds_for(view):\n    return (42,)\n")
         write(self.step("figure/script/render.py"),
               "#!/usr/bin/env python3\nfrom pathlib import Path\n"
               "import sys\nsys.path.insert(0, str(Path(__file__).resolve().parents[2]"
@@ -896,6 +890,11 @@ class FigureReplayTest(AcceptanceTestCase):
         with self.assertRaisesRegex(acceptance.AcceptanceError, "re-render"):
             acceptance.figure_replay(self.root, self.step_figure())
 
+    def test_missing_declared_closure_module_fails_closed(self):
+        (self.root / "stage2/tsg_view/execution/render.py").unlink()
+        with self.assertRaisesRegex(acceptance.MissingArtifact, "renderer module"):
+            acceptance.figure_replay(self.root, self.step_figure())
+
     def step_figure(self):
         return self.root / "stage2/tsg_view/figure"
 
@@ -1015,44 +1014,32 @@ class StaleHealthPartialTest(AcceptanceTestCase):
 
 
 class RealRendererReplayTest(unittest.TestCase):
-    """The replay seam against the real renderer and the real ``figure/data`` payloads.
+    """The replay seam against the real renderer and the real committed figure product.
 
     ``FigureReplayTest`` runs a synthetic renderer that imports nothing, which is exactly
-    how the ``render.py`` -> ``common`` regression slipped through.  This test renders with
-    the real module and the real CSVs, then asks ``figure_replay`` to reproduce those bytes
-    from a closure-only copy under ``python -I``; an import the copy forgets fails here.
+    how the ``render.py`` -> ``common`` regression slipped through: the synthetic renderer
+    could never reproduce the real failure.  Here ``figure_replay`` re-renders the committed
+    ``figure/data`` CSVs with the real ``execution/render.py`` and must reproduce both the
+    committed PNGs and ``render_status.json`` byte for byte.
     """
 
-    def test_csv_only_replay_reproduces_the_real_renderer(self):
+    def test_csv_only_replay_reproduces_the_committed_figure_product(self):
         figure = REPO / "stage2/tsg_view/figure"
         source = REPO / "stage2/tsg_view/execution/render.py"
         data = sorted((figure / "data").glob("*.csv"))
-        if not data or not source.is_file():
-            self.skipTest(f"real figure payloads are absent: {figure / 'data'}")
-        with tempfile.TemporaryDirectory() as temporary:
-            staged = Path(temporary) / "figure"
-            (staged / "data").mkdir(parents=True)
-            (staged / "home").mkdir()
-            for path in data:
-                shutil.copyfile(path, staged / "data" / path.name)
-            environment = {"PATH": "/usr/bin:/bin",
-                           "MPLCONFIGDIR": str(staged / "mpl"),
-                           "PYTHONHASHSEED": "0",
-                           "PYTHONDONTWRITEBYTECODE": "1",
-                           "HOME": str(staged / "home")}
-            completed = subprocess.run(
-                [sys.executable, "-I", str(source), "--data", str(staged / "data"),
-                 "--output", str(staged), "--suite", "all"],
-                env=environment, capture_output=True, text=True, timeout=600)
-            self.assertEqual(completed.returncode, 0, completed.stderr[-2000:])
-            status = json.loads((staged / "render_status.json").read_text())
-            replayed = acceptance.figure_replay(REPO, staged)
-            self.assertTrue(replayed["byte_identical"])
-            self.assertEqual(replayed["figures"], status["figures"])
-            self.assertGreaterEqual(len(replayed["figures"]), 1)
-            closure = replayed["renderer_closure_sha256"]
-            self.assertEqual(sorted(closure), sorted(acceptance.RENDERER_MODULES))
-            self.assertEqual(closure["render.py"], sha(source))
+        if not data or not (figure / "render_status.json").is_file() or \
+                not source.is_file():
+            self.skipTest(f"real figure payloads are absent: {figure}")
+        status = json.loads((figure / "render_status.json").read_text())
+        replayed = acceptance.figure_replay(REPO, figure)
+        self.assertTrue(replayed["byte_identical"])
+        self.assertEqual(replayed["figures"], status["figures"])
+        self.assertEqual(replayed["render_status_sha256"],
+                         sha(figure / "render_status.json"))
+        closure = replayed["renderer_closure_sha256"]
+        self.assertEqual(sorted(closure), sorted(acceptance.RENDERER_MODULES))
+        for name in acceptance.RENDERER_MODULES:
+            self.assertEqual(closure[name], sha(REPO / "stage2/tsg_view/execution" / name))
 
 
 class InvarianceTest(AcceptanceTestCase):

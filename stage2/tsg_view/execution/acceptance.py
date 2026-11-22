@@ -71,11 +71,13 @@ SMOKE_SCHEMA = "tsg-view-smoke-v1"
 
 #: The figure renderer's import closure: every ``execution`` module ``render.py`` needs at
 #: run time, relative to ``execution/``.  ``figure_replay`` copies *all* of these into the
-#: isolated ``work/script/`` tree; copying the entry point alone is what broke the gate when
-#: ``render.py`` started importing ``common`` for the shared schedule.  The closure is
-#: re-derived from the renderer's own imports by ``test_acceptance.ClosureTest``, so a new
-#: import fails that test instead of failing the receipt at run time.
-RENDERER_MODULES = ("render.py", "common.py")
+#: isolated ``work/script/`` tree, so the replay is a closed world rather than a copy of the
+#: entry point.  The sealed renderer is standalone today (its de-duplication is deferred
+#: because the sealed ``render_status.json`` pins its bytes), hence the one-entry closure;
+#: when a renderer import is added, the module belongs here.  ``ClosureTest`` re-derives the
+#: closure from the renderer's own imports, so a forgotten entry fails the suite instead of
+#: the receipt -- exactly the ``render.py`` -> ``common`` break this mechanism exists for.
+RENDERER_MODULES = ("render.py",)
 
 STUDY = "stage2/tsg_view"
 SCENARIO = "cold-drug-dose"
