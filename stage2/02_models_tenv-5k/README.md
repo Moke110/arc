@@ -1,14 +1,30 @@
 # Single-dose tenv 5k model comparison
 
-**Normalization generation:** all accepted frozen inputs, weights, metrics and
-figures here use the historical full-18,164-gene denominator (`stage2-view-v2`).
-They are preserved and do not establish results on the ADR0077 5k-local scale.
-Replay them with their preserved frozen inputs. Future input preparation uses
-`execution/axis_local/prepare.py --view ../01_bases/output/view-5k --candidate
-<fresh-empty-directory>`; this records actual schema, recipe, normalization,
-axis and payload digests. New-scale training or rescoring needs separate work.
-The original root `execution/prepare.py` remains frozen historical source.
+## Raw-first inputs, evaluation and figures
 
+New inputs use the full HVG-DEG expression view. The freeze records the actual
+corpus, view, payload and axis digests and reads shared parent identities,
+ECFP4 vectors and seeds. The single-dose comparison retains its 1 µM filter,
+original vehicle rows and cold-drug and warm-start folds.
+
+```bash
+D=stage2/02_models_tenv-5k
+python "$D/execution/raw_first.py" prepare --candidate /path/to/new/inputs
+python "$D/execution/raw_first.py" evaluate --inputs /path/to/new/inputs \
+  --scenario cold-drug --fold 0 --prediction /path/to/prediction.npy \
+  --prediction-ids /path/to/profile_ids.csv --output /path/to/new/evaluation
+python "$D/figure/raw_first/render.py" --summary /path/to/new/evaluation/summary.csv \
+  --output /path/to/new/metrics.png
+```
+
+Supply absolute expression predictions ordered by frozen test row and gene,
+with one `profile_id` column in the identity CSV. Evaluation reports per-well
+and per-parent Δ metrics and renders the per-fold parent summary from CSV.
+Use `tenv5k_raw_first.workflow.Inputs` to read the new input schema. The
+published results below use the original full-18,164-gene normalization and
+their sealed inputs, metrics and figures remain tied to that generation.
+
+## Historical comparison protocol
 
 Implementation of approved [#226](https://github.com/Moke110/arc/issues/226).
 The new step uses the released Bases G_5000 view, 1 µM treated wells and
@@ -87,10 +103,10 @@ python figure/script/render_figures.py --figure-data figure/data --out-dir figur
 
 The candidate, inputs and Means are preserved in the canonical checkout with
 hash verification; [the final receipt](log/231-final-acceptance.json) records
-resources, tests, preservation and replay scope. To reconstruct rather than
-replay, prepare a new empty input directory through `execution/axis_local/prepare.py`,
-run `execution/means.py`, then use `execution/run_matrix.py --all` with a new
-empty candidate. `--resume` accepts only matching current-protocol identities.
+resources, tests, preservation and replay scope. The ADR0077 intermediate
+input generation used `execution/axis_local/prepare.py` and its own versioned inputs.
+The original `execution/prepare.py` and `execution/run_matrix.py` retain the
+historical matrix contracts.
 
 ## Data and native model contract
 
