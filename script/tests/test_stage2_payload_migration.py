@@ -30,6 +30,8 @@ class PayloadMigrationTest(unittest.TestCase):
                 self.assertEqual(result.returncode == 0, success, result.stderr)
                 return result
 
+            unlisted_old = root / "stage2/tsg_view/execution/checkpoints/merger-03/staging"
+            unlisted_old.mkdir(parents=True)
             run("plan")
             new.parent.mkdir(parents=True)
             new.write_bytes(b"collision")
@@ -38,6 +40,10 @@ class PayloadMigrationTest(unittest.TestCase):
             new.unlink()
             run("apply")
             self.assertFalse((root / "stage2/04_tsg_dose").exists())
+            self.assertFalse((root / "stage2/tsg_view").exists())
+            unlisted_old.mkdir(parents=True)
+            run("apply")
+            self.assertFalse((root / "stage2/tsg_view").exists())
             self.assertEqual(new.stat().st_ino, inode)
             snapshot = root.parent / "snapshot"
             subprocess.run(["git", "init", "-q", str(snapshot)], check=True)
@@ -49,7 +55,15 @@ class PayloadMigrationTest(unittest.TestCase):
             self.assertEqual(replay.read_bytes(), b"original checkpoint")
             replay.write_bytes(b"new replay output")
             self.assertEqual(new.read_bytes(), b"original checkpoint")
+            unlisted_new = root / "stage2/07_tsg_width_dose/execution/checkpoints/unused"
+            unlisted_new.mkdir(parents=True)
+            preserved = snapshot / "untouched"
+            preserved.mkdir()
+            (new.parent / "linked").symlink_to(preserved, target_is_directory=True)
             run("reverse")
+            self.assertTrue((new.parent / "linked").is_symlink())
+            self.assertTrue(preserved.is_dir())
+            self.assertFalse((root / "stage2/07_tsg_width_dose").exists())
             self.assertEqual(old.stat().st_ino, inode)
             self.assertFalse(new.exists())
 

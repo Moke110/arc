@@ -113,15 +113,14 @@ def move(root, entries, reverse):
             target.rename(source)
         raise
     retired = ({ROOTS[old] for old in retired_roots} if reverse else retired_roots)
-    roots = [root / name for name in retired]
-    old_directories = {parent for entry in entries
-                       for parent in checked_path(
-                           root, destination(entry["old"]) if reverse else entry["old"]
-                       ).parents
-                       if any(parent.is_relative_to(directory) for directory in roots)}
-    for directory in sorted(old_directories, key=lambda path: -len(path.parts)):
-        if directory.is_dir() and not directory.is_symlink() and not any(directory.iterdir()):
-            directory.rmdir()
+    for name in sorted(retired):
+        directory = checked_path(root, name)
+        if directory.is_symlink() or not directory.is_dir():
+            continue
+        for current, _, _ in os.walk(directory, topdown=False, followlinks=False):
+            candidate = Path(current)
+            if not candidate.is_symlink() and not any(candidate.iterdir()):
+                candidate.rmdir()
 
 
 def stage(root, entries, checkout, snapshot):
