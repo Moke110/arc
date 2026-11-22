@@ -36,15 +36,6 @@ CONTROL_RULE = {
 }
 
 
-def _read_rows(dataset, positions):
-    positions = np.asarray(positions, dtype=np.int64)
-    order = np.argsort(positions, kind="stable")
-    block = np.asarray(dataset[list(positions[order])], dtype=np.float32)
-    restored = np.empty_like(block)
-    restored[order] = block
-    return restored
-
-
 class _Product:
     """The product row space plus a bounded expression/control provider."""
 
@@ -97,18 +88,22 @@ class _Product:
             if self.delta.shape != (len(self.rows), int(manifest["payload"]["cols"])):
                 raise HarnessError("the delta payload shape differs from the product manifest")
 
-    def __call__(self, start, stop):
-        """Population rows ``[start, stop)`` as ``(expression, control)`` float32."""
+    def window(self, start, stop):
+        """A contiguous product-row window as ``(expression, control)`` float32.
+
+        A sequential read touches each gzip chunk once; indexing scattered population rows
+        would re-decompress the same chunk for every treated run.
+        """
         import h5py
 
-        positions = self.population_positions[start:stop]
+        start, stop = int(start), int(stop)
         with h5py.File(self.payload_path, "r") as handle:
-            control = _read_rows(handle["layers/control"], positions)
+            control = np.asarray(handle["layers/control"][start:stop], dtype=np.float32)
             if self.mode == "delta":
-                delta = np.asarray(self.delta[positions], dtype=np.float64)
+                delta = np.asarray(self.delta[start:stop], dtype=np.float64)
                 expression = (control.astype(np.float64) + delta).astype(np.float32)
             else:
-                expression = _read_rows(handle["X"], positions)
+                expression = np.asarray(handle["X"][start:stop], dtype=np.float32)
         return expression, control
 
 
@@ -222,20 +217,30 @@ def freeze_product(*, view, source, views_root, destination, repo_root_path=None
     controls.to_csv(destination / COMPANION, index=False, lineterminator="\n")
 
     rows = len(population)
+    target = np.full(len(product.rows), -1, dtype=np.int64)
+    target[product.population_positions] = np.arange(rows)
     expression = np.lib.format.open_memmap(destination / "expression.npy", mode="w+",
                                            dtype=np.float32, shape=(rows, 5000))
     control = np.lib.format.open_memmap(destination / "control.npy", mode="w+",
                                         dtype=np.float32, shape=(rows, 5000))
-    for start in range(0, rows, BATCH):
-        stop = min(start + BATCH, rows)
-        x, c = product(start, stop)
+    written = 0
+    for start in range(0, len(product.rows), BATCH):
+        stop = min(start + BATCH, len(product.rows))
+        selected = target[start:stop] >= 0
+        if not selected.any():
+            continue
+        x, c = product.window(start, stop)
         if x.shape != (stop - start, 5000) or c.shape != (stop - start, 5000):
             raise HarnessError("the product provider returned the wrong shape")
-        expression[start:stop] = x
-        control[start:stop] = c
+        destination_rows = target[start:stop][selected]
+        expression[destination_rows] = x[selected]
+        control[destination_rows] = c[selected]
+        written += int(selected.sum())
     expression.flush()
     control.flush()
     del expression, control
+    if written != rows:
+        raise HarnessError(f"the freeze wrote {written} of {rows} population rows")
 
     generation = {
         "schema": manifest["schema"],

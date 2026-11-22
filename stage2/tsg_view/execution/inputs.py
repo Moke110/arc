@@ -263,38 +263,44 @@ class Inputs:
         return json.loads((self.directory / name).read_text())
 
     def _check_control_composition(self):
-        """Prove the control/expression recipe from the stored arrays alone.
+        """Prove the control/expression recipe from the stored arrays alone, chunked.
 
         A normalized expression row is a CP10K composition (``sum(expm1(X)) == 10000``).
         A pooled-sum control is the same composition evaluated on the summed retained
         integer counts, so it recovers near-integer counts on the recorded total; a
         mean-of-normalized-vehicles control is a mean of log compositions and therefore
-        only has to stay below the CP10K bound.
+        only has to stay below the CP10K bound. Every check streams 256 rows so a Tahoe
+        freeze never materializes a dense float64 matrix.
         """
-        control = np.asarray(self.control, dtype=np.float64)
-        if not np.isfinite(control).all() or (control < 0).any():
-            raise HarnessError("a view freeze control value is negative or non-finite")
-        composition = np.expm1(control).sum(axis=1)
-        if (composition > 10000.0 * (1 + 1e-4)).any():
-            raise HarnessError("a view freeze control exceeds a CP10K composition")
         pooled = self.controls_sources["control_rule"].eq("pooled-sum").to_numpy()
-        if pooled.any():
-            if not np.allclose(composition[pooled], 10000.0, rtol=1e-5, atol=1.0):
-                raise HarnessError("a pooled-sum control is not a CP10K composition")
-            totals = self.controls_sources["pooled_retained_total"].to_numpy(dtype=float)[
-                pooled]
-            if not np.isfinite(totals).all() or (totals <= 0).any():
-                raise HarnessError("a pooled-sum control has no retained total")
-            counts = np.expm1(control[pooled]) * totals[:, None] / 10000.0
-            if (counts < 0).any() or not np.allclose(counts, np.round(counts), rtol=1e-5,
-                                                      atol=1e-3):
-                raise HarnessError(
-                    "a pooled-sum control does not recover integer retained counts")
-        if self.config["delta_kind"] == "expression_minus_control":
-            expression = np.expm1(np.asarray(self.expression, dtype=np.float64)).sum(axis=1)
-            if not np.allclose(expression, 10000.0, rtol=1e-5, atol=1.0):
-                raise HarnessError(
-                    "a view freeze expression row is not a CP10K composition")
+        totals = self.controls_sources["pooled_retained_total"].to_numpy(dtype=float)
+        for start in range(0, len(self.population), 256):
+            stop = min(start + 256, len(self.population))
+            control = np.asarray(self.control[start:stop], dtype=np.float64)
+            if not np.isfinite(control).all() or (control < 0).any():
+                raise HarnessError("a view freeze control value is negative or non-finite")
+            recovered = np.expm1(control)
+            composition = recovered.sum(axis=1)
+            if (composition > 10000.0 * (1 + 1e-4)).any():
+                raise HarnessError("a view freeze control exceeds a CP10K composition")
+            local = pooled[start:stop]
+            if local.any():
+                if not np.allclose(composition[local], 10000.0, rtol=1e-5, atol=1.0):
+                    raise HarnessError("a pooled-sum control is not a CP10K composition")
+                local_totals = totals[start:stop][local]
+                if not np.isfinite(local_totals).all() or (local_totals <= 0).any():
+                    raise HarnessError("a pooled-sum control has no retained total")
+                counts = recovered[local] * local_totals[:, None] / 10000.0
+                if (counts < 0).any() or not np.allclose(counts, np.round(counts),
+                                                          rtol=1e-5, atol=1e-3):
+                    raise HarnessError(
+                        "a pooled-sum control does not recover integer retained counts")
+            if self.config["delta_kind"] == "expression_minus_control":
+                expression = np.expm1(np.asarray(self.expression[start:stop],
+                                                 dtype=np.float64)).sum(axis=1)
+                if not np.allclose(expression, 10000.0, rtol=1e-5, atol=1.0):
+                    raise HarnessError(
+                        "a view freeze expression row is not a CP10K composition")
 
     def rows(self, scenario, fold, partition):
         splits = self.splits
