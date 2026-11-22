@@ -186,6 +186,231 @@
     }
   },
   "interpreter": "/home/chang/miniconda3/envs/arc/bin/python",
+  "merger_verification": {
+    "branch": "dev",
+    "checkout": "/home/chang/arc",
+    "commands": [
+      "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+      "systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- <python> execution/build.py --view full --source {tenv,tahoe_bulk} --output output/views --staging execution/checkpoints/merger-01/staging --repo-root /home/chang/arc --record <receipt>",
+      "systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- <python> execution/freeze.py --view full --source {tenv,tahoe_bulk} --views output/views --destination execution/freezes/full/<source> --repo-root /home/chang/arc --record <receipt>",
+      "systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- <python> execution/smoke.py --view full --source tenv --freeze execution/freezes/full/tenv --output execution/checkpoints/merger-01/smoke --rows 64 --epochs 2 --device cuda --seed 42 --repo-root /home/chang/arc --sealed /home/chang/arc/stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tenv --record <receipt>",
+      "cmp stage2/tsg_view/execution/freezes/full/<source>/splits.csv stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/<source>/splits.csv",
+      "bash script/check_paths.sh",
+      "bash script/check_tracked.sh"
+    ],
+    "date": "2026-11-22T16:47:05+08:00",
+    "gates": {
+      "a_full_digest_equal_rebuild": {
+        "payload_files_under_output": 0,
+        "rebuilt_products_byte_identical_to_tracked": true,
+        "result": "PASS",
+        "tahoe_bulk": {
+          "accepted_manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+          "conditions": 52777,
+          "digest_equal": true,
+          "elapsed_seconds": 105.612,
+          "peak_rss_kib": 490784,
+          "product_manifest_file": "stage2/tsg_view/output/views/full/tahoe_bulk.json",
+          "product_manifest_sha256": "2903a11f4ac54dd47a4bfee0e627a20c4a4c70c4580ff9b966671d6ce5e71a57",
+          "profile_ids_sha256": "f0db5565189e0841661bbdebcd1cd18fd60def756bd28c54806829039eb2b680",
+          "rebuilt_manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+          "result": "PASS",
+          "rows": 66718,
+          "staging_removed": true,
+          "treated": 65318
+        },
+        "tenv": {
+          "accepted_manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+          "conditions": 1377,
+          "digest_equal": true,
+          "elapsed_seconds": 107.116,
+          "peak_rss_kib": 501676,
+          "product_manifest_file": "stage2/tsg_view/output/views/full/tenv.json",
+          "product_manifest_sha256": "e35b38661560f2c93f4a58ec6099968cf1f492310b080a779f267aebe38df40c",
+          "profile_ids_sha256": "ee6b9bfedb681586eddb9b993ea259ab07d0a14469d4421e3468e18bc834a338",
+          "rebuilt_manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+          "result": "PASS",
+          "rows": 4478,
+          "staging_removed": true,
+          "treated": 4206
+        },
+        "tracked_alias_products": [
+          "stage2/tsg_view/output/views/full/tenv.json",
+          "stage2/tsg_view/output/views/full/tenv.profile_ids.csv",
+          "stage2/tsg_view/output/views/full/tahoe_bulk.json",
+          "stage2/tsg_view/output/views/full/tahoe_bulk.profile_ids.csv"
+        ]
+      },
+      "b_full_freeze_matches_sealed_splits": {
+        "memory_cap": "systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G",
+        "peak_rss": {
+          "note": "measured by one /usr/bin/time -v freeze of tahoe_bulk into a scratch destination; its outputs, manifest (ac0e84e6...) and splits were digest-identical to the canonical freeze, then the scratch copy was removed",
+          "tahoe_bulk_probe_gib": 3.15,
+          "tahoe_bulk_probe_kib": 3303224
+        },
+        "probe_reproduced_identical_digests": true,
+        "result": "PASS",
+        "runtimes": {
+          "basis": "freeze receipts carry no elapsed/peak fields; canonical runtimes bounded from receipt mtimes, the tahoe probe timed with /usr/bin/time -v",
+          "tahoe_bulk_seconds_approx": 33,
+          "tenv_seconds_approx": 11,
+          "timed_probe_tahoe_bulk_seconds": 38.6
+        },
+        "tahoe_bulk": {
+          "conditions": 52777,
+          "delta_kind": "expression_minus_control",
+          "destination": "stage2/tsg_view/execution/freezes/full/tahoe_bulk",
+          "independent_cmp_exit": 0,
+          "manifest_sha256": "ac0e84e667d0fb467ea53b7ebca79248a607e6da2a8a0383d70a0cbee78791c5",
+          "outputs": {
+            "all_obs.csv": "01becc92d8a17fdfe79ea62d469bc8400afc10ceefc92f67abfe350f0e838cbd",
+            "config.json": "8ca06afd372cffca793785a57574c2ad8231c2aab8144f3b9468911a0815282b",
+            "control.npy": "3baff8f41d9e9c036178d3977b10fcaba9b9bc77b1a285de18db2b342b43876b",
+            "control_sources.csv": "1c83909c0c674126f09454f6048e1058b4c95c80272f3b54d5c2c8dfe78cd6c5",
+            "expression.npy": "8d751c44cae7800b280b0f680923d596960a683e425231945531461e08e5a090",
+            "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+            "matched_controls.json": "2f900f07681b7a94c72b38444c410c13a72e314db7cd2e5dfafde3ad1735ad3f",
+            "morgan.npy": "f61b3979ed6cb234b7af6a19bf48008cb873029c63dcdba2359e36278be4bf3e",
+            "parents.csv": "f5164f16e5c5b719b35b00812003946c91d65829051a51dc8c830c5dac8de139",
+            "population.csv": "c69ef0096194f495c2c2a4fbd3b5cfc47be93607ae19ea2e2ef2090b0784790e",
+            "splits.csv": "cf5306d073e373c25477a3463c0c3b843cb35db869c64cd33ddf6d9345f2ffb2"
+          },
+          "result": "PASS",
+          "rows": 65318,
+          "sealed_splits_sha256": "cf5306d073e373c25477a3463c0c3b843cb35db869c64cd33ddf6d9345f2ffb2",
+          "splits_byte_equal_to_sealed": true,
+          "splits_sha256": "cf5306d073e373c25477a3463c0c3b843cb35db869c64cd33ddf6d9345f2ffb2",
+          "verified": true,
+          "verified_rows": 65318
+        },
+        "tenv": {
+          "conditions": 1377,
+          "delta_kind": "expression_minus_control",
+          "destination": "stage2/tsg_view/execution/freezes/full/tenv",
+          "independent_cmp_exit": 0,
+          "manifest_sha256": "92c3438b772b1dc2ad702736e680deaf7d335c07e4a07bc99bede804a4c76dbb",
+          "outputs": {
+            "all_obs.csv": "425e301cda821117bc79e1b2f2790dabbd85506764b80f610f320103830c005b",
+            "config.json": "2bad39d64f1715d63193e71b42751c34244617f222a7c071e2015a6e766ddecd",
+            "control.npy": "1f3849d7c67db56925b5772ce1ccf87e344f2a372101c5ab34d6b91f29eb3965",
+            "control_sources.csv": "8ca70a2d114c4d298718f95b03b019ef86ade508141ff44e2c3b49039a6eb1f5",
+            "expression.npy": "c70ae9b4adef88f57b08bacea8d72cb3bac430029d289777202cb6d25b46cdd3",
+            "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+            "matched_controls.json": "a385a3fc3b4503fc0b0a7031470206652757f405d6e377399ced84e3026770f0",
+            "morgan.npy": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+            "parents.csv": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+            "population.csv": "eb24326f5d37ca5aecfaaf9c7a9e95d7a14847eddf43b4d473edd9acd641e15b",
+            "splits.csv": "0fa5ea4b4edd36a6a00b229afb3ffd5257d5f088bf0dd964ff521a14016dd17b"
+          },
+          "result": "PASS",
+          "rows": 4206,
+          "sealed_splits_sha256": "0fa5ea4b4edd36a6a00b229afb3ffd5257d5f088bf0dd964ff521a14016dd17b",
+          "splits_byte_equal_to_sealed": true,
+          "splits_sha256": "0fa5ea4b4edd36a6a00b229afb3ffd5257d5f088bf0dd964ff521a14016dd17b",
+          "verified": true,
+          "verified_rows": 4206
+        }
+      },
+      "c_bounded_gpu_smoke_fit": {
+        "best_epoch": 2,
+        "checkpoint_sha256": null,
+        "children_peak_rss_kib": 1842880,
+        "device": "cuda",
+        "driver_elapsed_seconds": 14.5,
+        "epochs": 2,
+        "epochs_run": 2,
+        "exact_replay": "exact fresh-process native sampled prediction",
+        "fold": 0,
+        "phases": [
+          {
+            "elapsed_seconds": 3.932,
+            "phase": "train",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.494,
+            "phase": "replay",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.517,
+            "phase": "test",
+            "returncode": 0
+          },
+          {
+            "elapsed_seconds": 3.557,
+            "phase": "replay",
+            "returncode": 0
+          }
+        ],
+        "replay_enforced_by": "np.array_equal on every registered prediction, fresh process per phase (learner.py); a mismatch raises ScientificFailure",
+        "replay_process_token": "ab5c0b19e14342f5b5f76dbce1e58a2b478f5ac92706fdccf14f3dd023337875",
+        "result": "PASS",
+        "rows": 64,
+        "run_dir": "execution/checkpoints/merger-01/smoke/tenv/full/fold-0/seed-42",
+        "run_manifest_sha256": "5559aa4f5a2d4c052ea5489b9963460b780bf95c641e7085b592507769919533",
+        "seed": 42,
+        "test_metrics": {
+          "constant_prediction_count": 0,
+          "constant_truth_count": 0,
+          "n_samples": 64,
+          "nonfinite_count": 0,
+          "pcc": 0.1122550689734696,
+          "r2": -1.525350951509792,
+          "rmse": 0.7834753868423925,
+          "spearman": 0.22863541627237305,
+          "undefined_pcc_count": 0,
+          "undefined_r2_count": 0,
+          "undefined_rmse_count": 0,
+          "undefined_spearman_count": 0
+        },
+        "training_elapsed_seconds": 3.064,
+        "training_peak_rss_kib": 1842880,
+        "validation_mse": 0.6170246601104736
+      },
+      "d_health_checks": {
+        "check_paths": {
+          "command": "bash script/check_paths.sh",
+          "elapsed_seconds": 15.99,
+          "exit": 0,
+          "maxrss_kib": 7244,
+          "tail": [
+            "RESULT: PASS \u2014 every extracted path literal resolves",
+            "stage2 retired-step-path audit: PASS",
+            "exit: 0"
+          ]
+        },
+        "check_tracked": {
+          "command": "bash script/check_tracked.sh",
+          "elapsed_seconds": 0.07,
+          "exit": 0,
+          "maxrss_kib": 4784,
+          "tail": [
+            "RESULT: PASS \u2014 all scanned executable files are tracked (or documented expected-ignored)",
+            "exit: 0"
+          ]
+        },
+        "result": "PASS"
+      },
+      "unit_tests_on_dev": {
+        "command": "python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+        "elapsed_seconds": 28.785,
+        "ran": 21,
+        "result": "OK"
+      }
+    },
+    "implementer_head": "142ecde282b7434394a5f1993f75350a52517895",
+    "interpreter": "/home/chang/miniconda3/envs/arc/bin/python",
+    "merge_commit": "1454e166e0f57faaaf779ca195efec766150118d",
+    "merged_dev_parent": "b04868769e9bbf924a7a73b59005491568b96c9c",
+    "notes": [
+      "Merger ran on merged dev in the main checkout against the native gitignored payloads (no --sealed symlink shim needed; the one --sealed flag was passed explicitly and resolves inside the checkout).",
+      "Freeze config.json digests differ from the ticket worktree evidence because view_product.file is repo-relative in the main checkout but bare in the worktree; every array/table/split digest is identical, and splits.csv is byte-equal to the sealed Step 04 freeze.",
+      "Freezes and smoke runs are gitignored under execution/freezes/ and execution/checkpoints/; only manifests, splits and evidence are tracked."
+    ],
+    "schema": "tsg-view-merger-verification-v1",
+    "working_tree_after_materialisation": "clean"
+  },
   "note": "Ran in the ticket worktree against the accepted payloads of /home/chang/arc; the full view publishes only alias manifests, derived payloads do not exist in ticket 01.",
   "schema": "tsg-view-build-evidence-v1",
   "ticket": "01-scaffold-and-full-view"
