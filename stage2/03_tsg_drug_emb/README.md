@@ -32,3 +32,36 @@ Run `python figure/script/render.py --output <new-directory>` from this step to
 reproduce the plots using the checked-in CSV files.
 
 The [Tahoe comparison](log/tahoe/README.md) uses the three frozen Tahoe cold-drug folds.
+
+## Raw-first inputs, evaluation and figures
+
+New comparisons use the [raw-first dose input pair](../04_tsg_dose/README.md#raw-first-inputs-evaluation-and-figures)
+prepared from the default [HVG-DEG full view](../03_view/03.1_hvg-deg_views/README.md).
+Prepare the pair once, then select its `tenv` or `tahoe_bulk` source.
+A comparison receipt pins the source's pair, expression payload, view, corpus,
+ordered G_5000 axis, training seed and shared representation manifest. The
+representation reader aligns unchanged vectors at native width to the verified
+drug-parent identities. Each source retains its original cold-drug fold protocol.
+
+```sh
+D=stage2/03_tsg_drug_emb
+python "$D/execution/raw_first.py" prepare --inputs /path/to/new/pair/tenv \
+  --receipt /path/to/new/comparison.json
+python "$D/execution/raw_first.py" evaluate --inputs /path/to/new/pair/tenv \
+  --receipt /path/to/new/comparison.json --arm ECFP4C --fold 0 \
+  --prediction /path/to/prediction.npy --prediction-ids /path/to/profile_ids.csv \
+  --output /path/to/new/evaluation
+python "$D/execution/raw_first.py" render --summary /path/to/new/evaluation/summary.csv \
+  --output /path/to/new/metrics.png
+```
+
+Predictions contain absolute expression values in fold order, with one
+`profile_id` CSV row per prediction and columns in the published axis order.
+Evaluation uses the new matched-control matrix and preserves the study's
+parent-equal Δ Pearson summary. Rendering reads only that recorded CSV.
+For a separate materialized checkout, pass its accepted representation
+directory using `--representations` on both input commands.
+
+The reported historical results above remain tied to their original input
+and feature receipts. Use the historical workflow in [AGENTS.md](AGENTS.md)
+for their replay.
