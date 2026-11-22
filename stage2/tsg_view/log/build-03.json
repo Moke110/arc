@@ -724,6 +724,64 @@
     }
   },
   "note": "Ran in the ticket worktree against the accepted payloads and sealed Step 04 checkpoints of /home/chang/arc. Payloads and freezes are worktree-local ignored artifacts; the merger re-materialises them from dev code. Every product row is a verbatim accepted full-view row, so no accepted digest is re-derived. tahoe_bulk solo-deepest is intentionally not built: the gate lists tenv solo-deepest and tahoe_bulk solo only (plan C4 fits tenv solo-deepest).",
+  "post_review_evidence": {
+    "arms": {
+      "deepest": {
+        "tenv": {
+          "conditions": 1377,
+          "discarded_members": 2829,
+          "member_count_histogram": {
+            "3": 1320,
+            "4": 48,
+            "6": 9
+          }
+        }
+      },
+      "draw": {
+        "tahoe_bulk": {
+          "conditions": 52777,
+          "discarded_members": 12541,
+          "member_count_histogram": {
+            "1": 43036,
+            "16": 50,
+            "2": 7941,
+            "3": 1400,
+            "4": 350
+          }
+        },
+        "tenv": {
+          "conditions": 1377,
+          "discarded_members": 2829,
+          "member_count_histogram": {
+            "3": 1320,
+            "4": 48,
+            "6": 9
+          }
+        }
+      }
+    },
+    "columns": [
+      "source",
+      "profile_id",
+      "chosen_member_id",
+      "member_count",
+      "discarded_count",
+      "selection_rule"
+    ],
+    "file": "stage2/tsg_view/log/ticket-03-discarded-members.csv",
+    "generator": "execution/evidence.py --views output/views --output log/ticket-03-discarded-members.csv",
+    "independent_reconciliation": "execution/tests/test_evidence.py recomputes every per-condition member_count from the independently built merge member table (a different product) and checks the discarded total against the released population constants; regeneration from the published members.csv companions is byte-identical",
+    "product_bytes_unchanged": "reads the published solo/solo-deepest members.csv companions only; no view manifest, payload, freeze, truth product or run is modified",
+    "reads": [
+      "output/views/solo/tenv.members.csv",
+      "output/views/solo/tahoe_bulk.members.csv",
+      "output/views/solo-deepest/tenv.members.csv"
+    ],
+    "rows": 55531,
+    "schema": "tsg-view-discarded-members-evidence-v1",
+    "sha256": "d533e2c4d24681a372d6649ab35448abb823c7a66ed6427580a7ac8e27611dc5",
+    "test": "stage2/tsg_view/execution/tests/test_evidence.py"
+  },
   "schema": "tsg-view-build-evidence-v1",
   "ticket": "03-solo-views",
   "worktree": "/tmp/arc-tsg-03"
