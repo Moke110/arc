@@ -87,7 +87,8 @@ def _check_released(source, conditions, special):
         raise HarnessError(
             f"{source}: the released corpus yields {observed} conditions, expected "
             f"{EXPECTED_CONDITIONS[source]}")
-    histogram = special["member_count_histogram"]
+    histogram = {key: value for key, value in
+                 special["member_count_histogram"].items() if value}
     if histogram != EXPECTED_MEMBER_HISTOGRAM[source]:
         raise HarnessError(
             f"{source}: the member-count histogram {histogram} differs from "
