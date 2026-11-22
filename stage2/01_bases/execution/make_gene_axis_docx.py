@@ -540,6 +540,10 @@ def build(coverage_path, figure_path, output_path, catalogs=None, metadata=None,
     disease_rows = read_disease_table_rows(catalogs, fusion, fusion_catalog, symbols)
     _check_coverage_denominators(table, disease_rows)
 
+    display_labels = gene_axis.CATEGORY_DISPLAY_LABELS
+    for row in disease_rows:
+        row['disease'] = display_labels.get(row['disease'], row['disease'])
+
     document = Document()
     section = document.sections[0]
     section.page_width = Cm(21)
@@ -589,11 +593,12 @@ def build(coverage_path, figure_path, output_path, catalogs=None, metadata=None,
         records = [row for row in source_rows if row['category'] == category]
         if not records:
             raise ValueError(f'source table category {category!r} has no rows')
-        caption = document.add_paragraph(f'表 1 {index}　{category}' + (' 非疾病来源' if category == TENV_HVG_ROW['category'] else ' 来源数据集'))
+        caption = document.add_paragraph(f'表 1 {index}　{display_labels.get(category, category)}' + (' 非疾病来源' if category == TENV_HVG_ROW['category'] else ' 来源数据集'))
         caption.alignment = WD_ALIGN_PARAGRAPH.CENTER
         caption.paragraph_format.keep_with_next = True
         _grid(document, SOURCE_TABLE_COLUMNS,
-              [[record[name] for name in SOURCE_TABLE_COLUMNS] for record in records],
+              [[display_labels.get(category, category) if name == 'category' else record[name]
+                for name in SOURCE_TABLE_COLUMNS] for record in records],
               font_size=8.5)
         if category != TENV_HVG_ROW['category']:
             catalog_category = next(key for key in gene_axis.RELEASE_CATEGORIES
@@ -626,7 +631,7 @@ def build(coverage_path, figure_path, output_path, catalogs=None, metadata=None,
     _heading(document, '5 四档轴的疾病覆盖率').paragraph_format.page_break_before = True
     _body(document, coverage_note(disease_rows))
     coverage_rows = [
-        [str(int(record.N)), record.group_label, ('excluded' if pd.isna(record.numerator) else str(int(record.numerator))),
+        [str(int(record.N)), display_labels.get(record.group, record.group_label), ('excluded' if pd.isna(record.numerator) else str(int(record.numerator))),
          ('—' if pd.isna(record.denominator) else str(int(record.denominator))), ('—' if pd.isna(record.rate) else _percent(record.rate))]
         for record in table.itertuples(index=False)
     ]

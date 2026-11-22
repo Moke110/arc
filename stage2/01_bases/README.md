@@ -109,7 +109,7 @@ keeps the `deg_rank` re-export contract the accepted gene-axis evidence and
 ### Complete disease evidence (ADR 0073)
 
 The five category directories under `output/disease-deg/` contain 41 dataset
-records: nHF 8, ICM 5, AF 5, genetic_cardiomyopathy 11 and TOX 12. These are
+records: nHF 8, ICM 5, AF 5, Genetic 11 and TOX 12. These are
 **dataset records, not 41 independent physical studies**: shared control groups,
 disease arms and per-donor pooling are explicit in each catalog. All qualifying
 declared tiers are processed without a cumulative DEG-count stop. Dated
@@ -158,7 +158,7 @@ original `gene_index` ascending, and assign contiguous ranks `1..n_d`.
 | nHF | 8 | 1,785 | 1,000 | yes |
 | ICM | 5 | 1,671 | 1,000 | yes |
 | AF | 5 | 25 | 25 | no, fewer than 100 |
-| genetic_cardiomyopathy | 11 | 4,399 | 1,000 | yes |
+| Genetic | 11 | 4,399 | 1,000 | yes |
 | TOX | 12 | 9,589 | 1,000 | yes |
 
 AF exclusion is a measured gate result, not a permanent category exception.

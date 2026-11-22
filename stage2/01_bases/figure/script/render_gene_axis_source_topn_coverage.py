@@ -41,6 +41,7 @@ _API_ROOT = Path(__file__).resolve().parents[2] / 'output' / 'api'
 if str(_API_ROOT) not in sys.path:
     sys.path.insert(0, str(_API_ROOT))
 from bases.palette import FILL_SHADE, LINE_SHADE, color  # noqa: E402
+from bases.gene_axis import CATEGORY_DISPLAY_LABELS  # noqa: E402
 
 RECORDS = ('panel', 'bar')
 #: The numeric columns a panel may draw; every bar carries both.
@@ -150,7 +151,8 @@ def render(panels, series, groups, values, output):
                          edgecolor=edge, linewidth=0.6)
                 handles.append(Patch(facecolor=fill, edgecolor=edge, label=label))
             axis.set_xticks(centres)
-            axis.set_xticklabels([label for _, label in groups], rotation=30,
+            axis.set_xticklabels([CATEGORY_DISPLAY_LABELS.get(label, label)
+                                 for _, label in groups], rotation=30,
                                  ha='right', fontsize=8)
             axis.set(ylabel=panel['y_label'], title=panel['title'])
             axis.set_ylim(0, top * 1.12)
