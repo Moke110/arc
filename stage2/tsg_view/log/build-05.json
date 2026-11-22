@@ -308,6 +308,52 @@
       "full_suite": "54 tests, OK (3 skipped: GPU smoke)",
       "no_model_dependency": "test_truth.py asserts no torch/learner import and no np.random/clock in truth.py",
       "truth_module": "15 tests, OK"
+    },
+    "h_sealed_full_freeze_cross_check": {
+      "tahoe_bulk": {
+        "all_equal": true,
+        "note": "primary control/delta are bit-identical to the sealed Step 04 axis-local full freeze: control == control.npy[test rows], delta == expression.npy[test rows] - control.npy[test rows]",
+        "per_fold": {
+          "fold-0": {
+            "control_equals_sealed": true,
+            "delta_equals_sealed_expression_minus_control": true,
+            "rows": 6643
+          },
+          "fold-1": {
+            "control_equals_sealed": true,
+            "delta_equals_sealed_expression_minus_control": true,
+            "rows": 6650
+          },
+          "fold-2": {
+            "control_equals_sealed": true,
+            "delta_equals_sealed_expression_minus_control": true,
+            "rows": 7950
+          }
+        },
+        "sealed_freeze": "stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tahoe_bulk"
+      },
+      "tenv": {
+        "all_equal": true,
+        "note": "primary control/delta are bit-identical to the sealed Step 04 axis-local full freeze: control == control.npy[test rows], delta == expression.npy[test rows] - control.npy[test rows]",
+        "per_fold": {
+          "fold-0": {
+            "control_equals_sealed": true,
+            "delta_equals_sealed_expression_minus_control": true,
+            "rows": 469
+          },
+          "fold-1": {
+            "control_equals_sealed": true,
+            "delta_equals_sealed_expression_minus_control": true,
+            "rows": 468
+          },
+          "fold-2": {
+            "control_equals_sealed": true,
+            "delta_equals_sealed_expression_minus_control": true,
+            "rows": 465
+          }
+        },
+        "sealed_freeze": "stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tenv"
+      }
     }
   },
   "inputs": {

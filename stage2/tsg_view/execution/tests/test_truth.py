@@ -5,7 +5,6 @@ diagnostic quantities can be recomputed in the test from those literals rather t
 the implementation.
 """
 import json
-import shutil
 import sys
 import tempfile
 import unittest
