@@ -190,7 +190,7 @@ def freeze_product(*, view, source, views_root, destination, repo_root_path=None
     for row, row_groups in enumerate(groups):
         offsets = sorted({tail_index[int(position)] for group in row_groups
                           for position in control_groups[group]})
-        matched[row] = offsets
+        matched[str(row)] = offsets
 
     # -- write the freeze --------------------------------------------------- #
     destination.mkdir(parents=True, exist_ok=True)
