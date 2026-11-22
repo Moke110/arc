@@ -65,6 +65,11 @@ def materialize(context, *, rule, selection, seed, recipe, control_rule):
         groups = selected_groups(reader, positions)
         ordered = _ordered_conditions(conditions, order, groups)
         rows = selected_rows(reader, positions)
+        # Per-condition audit columns: the chosen identity is the row's profile_id, and the
+        # discarded count is explicit next to the declared member table.
+        rows = rows.copy()
+        rows["member_count"] = ordered["member_count"].to_numpy(dtype=np.int64)
+        rows["discarded_members"] = rows["member_count"].to_numpy(dtype=np.int64) - 1
         members = member_table(ordered, identities)
         controls = control_source_table(ordered, identities, control_rule)
         if not len(rows) == len(identities) == len(conditions):

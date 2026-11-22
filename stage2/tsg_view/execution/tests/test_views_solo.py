@@ -304,7 +304,10 @@ class SoloManifestReconciliationTest(SoloFixture):
         self.assertEqual(manifest["members"]["rows"], len(table))
         self.assertEqual(len(table), int(conditions["member_count"].sum()))
         self.assertEqual(manifest["treated"], manifest["rows"])
-        # Per condition: exactly one chosen id, the discarded count is member_count - 1.
+        # Per condition: exactly one chosen id, the discarded count is member_count - 1,
+        # and the product row states both numbers next to the declared member table.
+        self.assertIn("member_count", obs.columns)
+        self.assertIn("discarded_members", obs.columns)
         discarded = []
         for condition in conditions.itertuples():
             chosen = [profile for profile in table["profile_id"].unique()
@@ -313,6 +316,9 @@ class SoloManifestReconciliationTest(SoloFixture):
             self.assertIn(chosen[0], list(condition.profile_ids))
             listed = set(table.loc[table["profile_id"] == chosen[0], "member_profile_id"])
             self.assertEqual(listed, set(condition.profile_ids))
+            row = obs.loc[obs["profile_id"] == chosen[0]].iloc[0]
+            self.assertEqual(int(row["member_count"]), len(listed))
+            self.assertEqual(int(row["discarded_members"]), len(listed) - 1)
             discarded.append(len(listed) - 1)
         self.assertEqual(sum(discarded), manifest["members"]["rows"] - manifest["rows"])
         self.assertEqual(sum(discarded), receipt["evidence"]["discarded_members"])
