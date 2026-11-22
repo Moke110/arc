@@ -41,7 +41,41 @@ Report undefined PCC counts alongside scores. Transfer − tenv-only is the
 effect of the initialization under this fixed protocol. Transfer − Tahoe-only
 is the effect of tenv adaptation from the same Tahoe checkpoint.
 
-## Reproduction
+## Raw-first inputs and assessment
+
+Use `execution/raw_first.py prepare` for new input freezes. It opens the
+accepted full view by default via the dose step and verifies both sources
+in one pair. Pass `--pair` to reuse an existing raw-first pair or `--view`
+to prepare from an explicit raw-first view release. The transfer receipt pins
+the pair and its view, axis and corpus digests, both representation manifests,
+the shared seed values and both split tables. Tahoe validation uses the
+original condition-grouped split computed from Tahoe only.
+
+```bash
+STEP=stage2/06_tsg_transfer
+python "$STEP/execution/raw_first.py" prepare --candidate "$PREPARED"
+python "$STEP/execution/raw_first.py" evaluate --prepared "$PREPARED" \
+  --fold 0 --path transfer --prediction "$PREDICTIONS" \
+  --prediction-ids "$PROFILE_IDS" --output "$ASSESSMENT"
+python "$STEP/execution/raw_first.py" compare --output "$COMPARISON" "${ASSESSMENTS[@]}"
+python "$STEP/execution/raw_first.py" render --data "$COMPARISON" --output "$FIGURE"
+```
+
+For an existing pair, supply `--pair "$PAIR"` to both preparation and
+evaluation. Prediction arrays use treated-expression float32 values in the
+order of `PROFILE_IDS`, a one-column CSV headed `profile_id`. The evaluator
+uses shared metrics with the matched-control layer. Pass the nine assessment
+directories for the three folds and three paths as `ASSESSMENTS`. Comparison
+retains sample-equal test summaries and equal-fold means. The renderer reads
+only the two exported panel CSV files through shared plotting and palette APIs.
+
+Targeted fixture test from the repository root:
+
+```bash
+python -m unittest discover -s "$STEP/execution/tests" -p test_raw_first_transfer.py
+```
+
+## Historical reproduction
 
 Use the repository's `arc` environment. Set `PAIR` to the verified Step 04
 input freeze, `SOURCE` to the pinned native TranSiGen checkout, `CANDIDATE`
