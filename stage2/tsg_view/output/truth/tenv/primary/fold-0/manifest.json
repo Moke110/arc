@@ -1,0 +1,73 @@
+{
+  "accepted_view": {
+    "accepted_view": "stage2/01_bases/output/view-5k/manifest.json",
+    "accepted_view_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+    "gene_axis": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+    "gene_axis_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e"
+  },
+  "axis_size": 5000,
+  "columns": [
+    "profile_id",
+    "cell_line",
+    "drug_parent",
+    "dose_um",
+    "partition",
+    "fold",
+    "scenario"
+  ],
+  "conditions": 153,
+  "control_definition": "mean of the matched_control_group vehicle rows, each normalized on its own selected-axis total",
+  "delta_definition": "delta = full-view X - matched control, float32",
+  "delta_equals_view_delta_layer": true,
+  "fingerprints": {
+    "byte_identical_to_sealed_freeze": true,
+    "dir": "stage2/tsg_view/execution/freezes/full/tenv",
+    "morgan_sha256": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+    "parents_sha256": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426"
+  },
+  "fold": 0,
+  "generated_by": "stage2/tsg_view/execution/truth.py",
+  "kind": "primary",
+  "outputs": {
+    "control.npy": {
+      "bytes": 9380128,
+      "file": "control.npy",
+      "sha256": "2ece5746ffaedfe4ac0d4854db7d9d991bd52fb6918ecf22fe39dc75b52bd1ea"
+    },
+    "delta.npy": {
+      "bytes": 9380128,
+      "file": "delta.npy",
+      "sha256": "894c78c7ca24af2779efd5a810c2eb27eab7622584d0f938b57f8a9dae4dff78"
+    },
+    "morgan.npy": {
+      "bytes": 940160,
+      "file": "morgan.npy",
+      "sha256": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7"
+    },
+    "parents.csv": {
+      "bytes": 30016,
+      "file": "parents.csv",
+      "sha256": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426"
+    },
+    "population.csv": {
+      "bytes": 39642,
+      "file": "population.csv",
+      "sha256": "5a46b8680c04be58d69b715ba33cdd8ba2a3fc9aafd0ab80a0202dfd61a703bd"
+    }
+  },
+  "partition": "test",
+  "rows": 469,
+  "scenario": "cold-drug-dose",
+  "schema": "tsg-view-truth-fold-v1",
+  "source": "tenv",
+  "split_provenance": {
+    "file": "stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tenv",
+    "fold": 0,
+    "morgan_sha256": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+    "parents_sha256": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+    "partition": "test",
+    "population_sha256": "eb24326f5d37ca5aecfaaf9c7a9e95d7a14847eddf43b4d473edd9acd641e15b",
+    "scenario": "cold-drug-dose",
+    "splits_sha256": "0fa5ea4b4edd36a6a00b229afb3ffd5257d5f088bf0dd964ff521a14016dd17b"
+  }
+}
