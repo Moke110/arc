@@ -1,6 +1,40 @@
 # TranSiGen dose-input optimization — round1
 
-## tenv KPGT dose comparison
+## Raw-first inputs, evaluation and figures
+
+The [HVG-DEG full expression view](../03_view/03.1_hvg-deg_views/README.md) is the
+default input for new comparisons. The paired input receipt pins the view
+manifest, common corpus generation, ordered G_5000 axis and source-specific
+payloads. Each source retains its own matched vehicle rows and study folds.
+The `control` matrix carries the view's raw-summed, normalized matched control
+for each treated profile. The baseline uses the individually normalized
+vehicle expression rows in `expression`.
+
+```bash
+D=stage2/04_tsg_dose
+python "$D/execution/raw_first.py" prepare --candidate /path/to/new/pair
+python "$D/execution/raw_first.py" prepare-kpgt \
+  --tenv /path/to/new/pair/tenv --candidate /path/to/new/kpgt
+python "$D/execution/raw_first.py" evaluate --inputs /path/to/new/pair/tenv \
+  --scenario cold-drug-dose --fold 0 --prediction /path/to/prediction.npy \
+  --prediction-ids /path/to/profile_ids.csv --output /path/to/new/evaluation
+python "$D/figure/raw_first/render.py" --summary /path/to/new/evaluation/summary.csv \
+  --output /path/to/new/metrics.png
+```
+
+Predictions are absolute expression vectors in the frozen test row and gene
+order. The identity CSV has one `profile_id` column. `evaluate` computes
+sample-equal Δ metrics using the shared Stage 2 formulas and writes per-sample
+scores and the versioned summary CSV. Pass `--kpgt` when evaluating with the
+KPGT wrapper. Parity checks may prepare one source explicitly with `--source`.
+
+The dose public API is `tsg_raw_first.inputs.Inputs` for a source in the pair
+and `tsg_raw_first.inputs.KPGTInputs` for the tenv wrapper. The wrapper copies
+the pair manifest and its tenv input, keeping Tahoe provenance without copying
+the Tahoe arrays. The original runtime, inputs, metrics and figure recipes below
+remain available for historical replay.
+
+## Historical tenv KPGT dose comparison
 
 [ADR 0080](../../docs/adr/0080-tenv-kpgt-dose-round1.md) fixes the accepted
 2304-dimensional float32 Step 03 KPGT representation for all 459 tenv drug
