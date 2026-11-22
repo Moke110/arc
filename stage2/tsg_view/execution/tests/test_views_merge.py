@@ -6,7 +6,6 @@ mean of its members' normalized values; its control is the log-normalized sum of
 of its matched vehicle wells, never a mean of the plate-level controls.
 """
 import json
-import math
 import sys
 import tempfile
 import unittest
@@ -140,7 +139,6 @@ class MergeViewBuildTest(unittest.TestCase):
     def test_cross_plate_repeat_pools_into_one_profile(self):
         self.build("tenv")
         obs, _, _, _ = self.product("tenv")
-        repeats = obs[obs["member_count"] > 1] if "member_count" in obs else obs
         self.assertTrue("member_count" in obs)                # materialized obs records it
         self.assertEqual(int(obs["member_count"].max()), 2)
         self.assertEqual(obs["profile_id"].nunique(), len(obs))
