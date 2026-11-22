@@ -34,8 +34,14 @@ def build_count_table(candidate, name, path, metadata, axis, namespace, sep="\t"
     """Stage one immutable count table and return its measured common-axis coverage."""
     opener = gzip.open if path.suffix == ".gz" else open
     with opener(path, "rt", encoding="utf-8-sig", newline="") as header_file:
-        header = next(csv.reader(header_file, delimiter=sep), [])
-    observations = header[1:]
+        reader = csv.reader(header_file, delimiter=sep)
+        header, first_counts = next(reader, []), next(reader, [])
+    if len(first_counts) == len(header) + 1:
+        observations = header
+    elif len(first_counts) == len(header):
+        observations = header[1:]
+    else:
+        raise CorpusError(f"{name}: count row width differs from its publisher header")
     if not observations or any(not name for name in observations):
         raise CorpusError(f"{name}: missing source observation identifiers")
     if len(set(observations)) != len(observations):
@@ -46,8 +52,8 @@ def build_count_table(candidate, name, path, metadata, axis, namespace, sep="\t"
           pd.read_csv(path, sep=sep, index_col=0, chunksize=GENE_BATCH) as frames):
         handle.attrs.update({"encoding-type": "anndata", "encoding-version": "0.1.0"})
         for frame in frames:
-            if len(frame.columns) == 0:
-                raise CorpusError(f"{name}: no source observations")
+            if frame.columns.tolist() != observations:
+                raise CorpusError(f"{name}: parsed source observation identifiers differ")
             if not gene_ids:
                 obs = metadata(frame.columns)
                 write_elem(handle, "obs", obs)

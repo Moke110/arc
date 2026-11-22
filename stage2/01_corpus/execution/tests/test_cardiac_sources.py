@@ -49,3 +49,12 @@ class CardiacSourceTableTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "duplicate source observation"):
                 build_count_table(root, "example", source, lambda _: None,
                                   pd.DataFrame(), "ensembl_id", ",")
+
+    def test_rejects_duplicate_first_well_when_feature_header_is_omitted(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "duplicate.tsv"
+            source.write_text("well1\twell1\nENSG0001\t1\t2\n")
+            with self.assertRaisesRegex(ValueError, "duplicate source observation"):
+                build_count_table(root, "example", source, lambda _: None,
+                                  pd.DataFrame(), "ensembl_id")

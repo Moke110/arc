@@ -25,3 +25,24 @@ The historical Tahoe HDF5 SHA256 is
 `a830a34a11759d060fb31697df9281ad6f7667b8051616e1bfea4fbeea64ea15`.
 This check covers one plate's common projection. The native release gate
 independently replays all native genes on all plates.
+
+The full native Tahoe build completed under the same 10 GiB virtual cap in
+1:38:26 at 5,588,400 KiB peak RSS. WSL reported 24,612,504 KiB total memory
+(23.47 GiB). The builder aggregated 95,624,334 cells across 3,388 immutable
+shards into 67,018 bulk profiles on 62,710 native genes. The HDF5 contains
+4,328,037,534 bytes and SHA256
+`e67bfff5299878933f506f395b4bca0f4e9085af3f3cc96b6b2c456e3332cf80`.
+
+The 128-row parity audit matched all 67,018 ordered observations, their full
+deposited profile metadata and every count on the fixed 18,164-gene projection
+against the sealed historical raw release. It used 415,232 KiB peak RSS and
+took 1:17.46. The current native corpus verification additionally replays all
+62,710 native columns directly from source.
+
+Independent Tahoe replay and candidate publication completed in 2:06:59 under
+the same cap with 7,393,328 KiB peak RSS. Source replay compared all 14 plates
+across every native column, covering 67,018 profiles and 95,624,334 source cells.
+The corpus publisher verified its native count payloads, coverage mappings and
+source observations before replacing the release directory. The compact
+[acceptance receipt](acceptance.json) records the resulting manifest and payload
+digests.

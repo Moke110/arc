@@ -1,0 +1,405 @@
+{
+  "artifacts": {
+    "dtoxs_ipsc_conv.h5ad": {
+      "bytes": 46984202,
+      "sha256": "762268ed2396c59bc10aaea2b60eef4ac3096fd722437ea4f2f0589ecb9c99fc"
+    },
+    "dtoxs_ipsc_dge.h5ad": {
+      "bytes": 10127237,
+      "sha256": "c42a7fdae703c2f8cb263b90b2701513b9ecd803870e1126fa246d2cfc09a17d"
+    },
+    "dtoxs_primary_01.h5ad": {
+      "bytes": 4641674,
+      "sha256": "682c6851db8c302bd710556fc63bf591e23bdf7f0dc81a1ba3eb8bc1e218e156"
+    },
+    "dtoxs_primary_02.h5ad": {
+      "bytes": 5142496,
+      "sha256": "59e846cb4245fc3b75f8d2870555d85178ce760484a537d9b98632c1fd913d1c"
+    },
+    "dtoxs_primary_03.h5ad": {
+      "bytes": 10695552,
+      "sha256": "bb19997a0a0cc55c3131e3e8375075bb1141904a8814fca54a9e0004de280116"
+    },
+    "dtoxs_primary_04.h5ad": {
+      "bytes": 11289503,
+      "sha256": "9d128b4f8972e2c7f0be12715dbf81ab1b38b1996d9f80732d5d1df0f41b363d"
+    },
+    "dtoxs_primary_05.h5ad": {
+      "bytes": 4559893,
+      "sha256": "bbb7d4ab486e63cb2714d7f15c5a18cf5cf8bbb0dcf47f690ba126d6e9c5c7fc"
+    },
+    "dtoxs_primary_06.h5ad": {
+      "bytes": 4439936,
+      "sha256": "6cef409046e2068261523ea82d5fe66120cce458665a7f27686e8339de4897fe"
+    },
+    "dtoxs_primary_07.h5ad": {
+      "bytes": 4465253,
+      "sha256": "c29f5fc32a7796d49759a55e2a88bca7294123d66874c1a2a6200a33b83d7fae"
+    },
+    "dtoxs_primary_08.h5ad": {
+      "bytes": 4347197,
+      "sha256": "6fc7faf54387e50c9a542a712371814267576845ba2bb32884813e8e15fcc7b3"
+    },
+    "gse247541.h5ad": {
+      "bytes": 7162476,
+      "sha256": "7d304106d2dcae75cee75764fb78381b70876b3fc37edd0c0e12da6525d063d5"
+    },
+    "screen_ctox.h5ad": {
+      "bytes": 61475661,
+      "sha256": "969b251b330fce05fb21611898093a313bed5c452a03568060889b96a51b0c60"
+    },
+    "tahoe_bulk.h5ad": {
+      "bytes": 4328037534,
+      "sha256": "e67bfff5299878933f506f395b4bca0f4e9085af3f3cc96b6b2c456e3332cf80"
+    },
+    "tahoe_bulk.obs.h5": {
+      "bytes": 56658058,
+      "sha256": "642b5d8919a8b473b38908c603aed4da574fd897fb966ce244e78a55f52e782e"
+    },
+    "tenv.h5ad": {
+      "bytes": 78574803,
+      "sha256": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502"
+    },
+    "tenv.obs.h5": {
+      "bytes": 3875456,
+      "sha256": "c26b9f64645e04a74136e0cb2bca31caf0f9297a9b9b732e570385b9cd87a1a0"
+    },
+    "tenv_manifest.json": {
+      "bytes": 3189,
+      "sha256": "e0941b240985ed0c77687d363c8e2ba1b069d86f1227b1d512afad6c4897aa5b"
+    },
+    "tenv_probe_mapping.csv": {
+      "bytes": 799000,
+      "sha256": "f3e3dfcd3e60442dedaadc126887c409fb6dedd52831f2f3811c796b457b0485"
+    }
+  },
+  "common_axis": {
+    "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "size": 18164
+  },
+  "date": "2026-11-23",
+  "exclusions": {
+    "Annotation": "Reference metadata only, with no measured perturbation profiles.",
+    "XPert-L1000": "Landmark-gene expression profiles lack verified native raw integer counts."
+  },
+  "release": {
+    "manifest_sha256": "a4cd6c42165569f77765a9c65de0d9d7e7292c192fdc7d25b455b78fdb50b4e4",
+    "path": "stage2/01_corpus/output/native",
+    "schema": "stage2-native-corpus-v1"
+  },
+  "resources": {
+    "common_projection_parity": {
+      "elapsed": "1:17.46",
+      "peak_rss_kib": 415232
+    },
+    "heavy_job_virtual_cap_kib": 10485760,
+    "native_source_replay_and_publish": {
+      "elapsed": "2:06:59",
+      "peak_rss_kib": 7393328
+    },
+    "native_tahoe_build": {
+      "elapsed": "1:38:26",
+      "peak_rss_kib": 5588400
+    },
+    "wsl_total_kib": 24612504
+  },
+  "result": "PASS",
+  "schema": "stage2-native-corpus-acceptance-v1",
+  "source_manifest_sha256": {
+    "Annotation": "711927b3efc4df9b9138d717700ae7f77174feaf0f1021267844b42f0e156d16",
+    "DToxS-iPSC": "b2bd831ea42b4bb0080daa4638e3e1734ed941830eb07238850145c231116515",
+    "GSE244740": "df44b23a5c6ec1cd8b7bfae70ea10703573206a06fdc439251cfb968a6ed38cf",
+    "GSE247541": "0a6971a13ecec4b72a3d4ca25792fd263480c1ab0e33475455ccb257c264c1e7",
+    "GSE262419": "9f57a8d25562332ebf69d80d89dd3eabd7ab7ca55abdbd842469fe3a0293540a",
+    "LINCS-LDS-1593": "a9243ebb9e0c303d64142294ab1e946614438279ee567f86719ff4eeedb8d4d2",
+    "Tahoe-100M": "de9e3c36908cf5d15400b64f67ed55ecca0343157040b8e93cbb5a97b02fa353",
+    "XPert-L1000": "61f6ff15e5335b09a26690ee70d1e4f56bc6e46ee0242edaee8ab91e56246ba2"
+  },
+  "sources": {
+    "dtoxs_ipsc_conv": {
+      "common_genes_measured": 17112,
+      "match_status_counts": {
+        "matched": 1108,
+        "vehicle": 63
+      },
+      "shape": [
+        1171,
+        38478
+      ],
+      "shared_axis_complete": false
+    },
+    "dtoxs_ipsc_dge": {
+      "common_genes_measured": 17112,
+      "match_status_counts": {
+        "matched": 328,
+        "vehicle": 16
+      },
+      "shape": [
+        344,
+        38478
+      ],
+      "shared_axis_complete": false
+    },
+    "dtoxs_primary_01": {
+      "common_genes_measured": 17112,
+      "match_status_counts": {
+        "matched": 41,
+        "vehicle": 15
+      },
+      "shape": [
+        56,
+        38478
+      ],
+      "shared_axis_complete": false
+    },
+    "dtoxs_primary_02": {
+      "common_genes_measured": 17112,
+      "match_status_counts": {
+        "unmatched": 63,
+        "vehicle": 8
+      },
+      "shape": [
+        71,
+        38478
+      ],
+      "shared_axis_complete": false
+    },
+    "dtoxs_primary_03": {
+      "common_genes_measured": 17112,
+      "match_status_counts": {
+        "unmatched": 303,
+        "vehicle": 45
+      },
+      "shape": [
+        348,
+        38478
+      ],
+      "shared_axis_complete": false
+    },
+    "dtoxs_primary_04": {
+      "common_genes_measured": 17112,
+      "match_status_counts": {
+        "unmatched": 294,
+        "vehicle": 34
+      },
+      "shape": [
+        328,
+        38478
+      ],
+      "shared_axis_complete": false
+    },
+    "dtoxs_primary_05": {
+      "common_genes_measured": 17112,
+      "match_status_counts": {
+        "unmatched": 16,
+        "vehicle": 26
+      },
+      "shape": [
+        42,
+        38478
+      ],
+      "shared_axis_complete": false
+    },
+    "dtoxs_primary_06": {
+      "common_genes_measured": 17112,
+      "match_status_counts": {
+        "unmatched": 12,
+        "vehicle": 26
+      },
+      "shape": [
+        38,
+        38478
+      ],
+      "shared_axis_complete": false
+    },
+    "dtoxs_primary_07": {
+      "common_genes_measured": 17112,
+      "match_status_counts": {
+        "unmatched": 13,
+        "vehicle": 26
+      },
+      "shape": [
+        39,
+        38478
+      ],
+      "shared_axis_complete": false
+    },
+    "dtoxs_primary_08": {
+      "common_genes_measured": 17112,
+      "match_status_counts": {
+        "unmatched": 8,
+        "vehicle": 26
+      },
+      "shape": [
+        34,
+        38478
+      ],
+      "shared_axis_complete": false
+    },
+    "gse247541": {
+      "common_genes_measured": 18160,
+      "match_status_counts": {
+        "matched": 12,
+        "vehicle": 3
+      },
+      "shape": [
+        15,
+        60656
+      ],
+      "shared_axis_complete": false
+    },
+    "screen_ctox": {
+      "common_genes_measured": 18164,
+      "match_status_counts": {
+        "matched": 2520,
+        "vehicle": 552
+      },
+      "shape": [
+        3072,
+        44154
+      ],
+      "shared_axis_complete": true
+    },
+    "tahoe_bulk": {
+      "common_genes_measured": 18164,
+      "match_status_counts": {
+        "matched": 65618,
+        "vehicle": 1400
+      },
+      "shape": [
+        67018,
+        62710
+      ],
+      "shared_axis_complete": true
+    },
+    "tenv": {
+      "common_genes_measured": 18164,
+      "match_status_counts": {
+        "blank": 32,
+        "matched": 4206,
+        "vehicle": 272
+      },
+      "shape": [
+        4510,
+        19613
+      ],
+      "shared_axis_complete": true
+    }
+  },
+  "tahoe": {
+    "all_common_projection_parity": {
+      "historical_common_sha256": "a830a34a11759d060fb31697df9281ad6f7667b8051616e1bfea4fbeea64ea15",
+      "historical_manifest_sha256": "e02e5a1bcba262afbb5594b03dd305a88f71af58ebe287c62d88db41bdf6f406",
+      "matched_common_genes": 18164,
+      "native_genes": 62710,
+      "native_sha256": "e67bfff5299878933f506f395b4bca0f4e9085af3f3cc96b6b2c456e3332cf80",
+      "profiles": 67018,
+      "result": "PASS"
+    },
+    "independent_source_replay": {
+      "h5ad_sha256": "e67bfff5299878933f506f395b4bca0f4e9085af3f3cc96b6b2c456e3332cf80",
+      "input_sha256": "871f75a5772d389ff734903fbf7cacc327cd66358ad624785bde98e4a07c1d17",
+      "schema": "bases-tahoe-shared-counts-v1",
+      "verified_cells": 95624334,
+      "verified_profiles": 67018
+    },
+    "native_mapping_sha256": "e4bc072d6dcfba170246c21d783a97a1cea503cf06be38d09dbd1b1dd70897e0",
+    "plates": 14,
+    "source_shards": 3388
+  },
+  "tenv": {
+    "files": {
+      "tenv.h5ad": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502",
+      "tenv_probe_mapping.csv": "f3e3dfcd3e60442dedaadc126887c409fb6dedd52831f2f3811c796b457b0485"
+    },
+    "inputs": {
+      "GSE262419_Plate01.csv.gz": {
+        "bytes": 4994586,
+        "sha256": "2118f97e43582274feb557eb1cdedf19a0108e56fc9fb4371eceb07634d21f9c"
+      },
+      "GSE262419_Plate02.csv.gz": {
+        "bytes": 5017041,
+        "sha256": "046597c03db34eabdbab198f0f68a7ff21d45e4849f42cd4adda0f8cfdb70da5"
+      },
+      "GSE262419_Plate03.csv.gz": {
+        "bytes": 5284480,
+        "sha256": "ad0dffc6233c226110c3dca70d8af753600aa0fd6f0ae552589b233f2a8d5aac"
+      },
+      "GSE262419_Plate04.csv.gz": {
+        "bytes": 4692637,
+        "sha256": "e31424b84155136a6c15c22f4814714fe0a5e8a0cbd28a6010b236c6465a9ed1"
+      },
+      "GSE262419_Plate05.csv.gz": {
+        "bytes": 5298448,
+        "sha256": "5a57e11386a50f52745a4f085e4c4716f031851b980c910158ce8d068b495131"
+      },
+      "GSE262419_Plate06.csv.gz": {
+        "bytes": 5195744,
+        "sha256": "249e38ea2ab85aa69dfee3ea0bef81ae53c3e18412df6581d14b07ac59f9f0e6"
+      },
+      "GSE262419_Plate07.csv.gz": {
+        "bytes": 5171824,
+        "sha256": "9d2c8f7cc2a367de2c4f4b04013086127f0a171be1b2652e1fa5e70c53a6871f"
+      },
+      "GSE262419_Plate08.csv.gz": {
+        "bytes": 5328557,
+        "sha256": "8c828dc8f85f3c85182998b38ce8a15e75bcf2e60b39d68fba2e4d1b682cd021"
+      },
+      "GSE262419_Plate09.csv.gz": {
+        "bytes": 6019870,
+        "sha256": "3ea6ff3fb4a788051a6d264062e1d923e8ccd2fb109eb26508c64011a5ceece6"
+      },
+      "GSE262419_Plate10.csv.gz": {
+        "bytes": 6032852,
+        "sha256": "dea68378a8036fb784b8c17f69fac7947b413c383282bb9d8eb1138dd0fa9b9b"
+      },
+      "GSE262419_Plate11.csv.gz": {
+        "bytes": 4754219,
+        "sha256": "d4e30ee70466569e3edf591d2009954372831e2da51cae44664c14b09c02e59a"
+      },
+      "GSE262419_Plate12.csv.gz": {
+        "bytes": 4758524,
+        "sha256": "c1400f7cfe3e43bc0ce96d91d38fe86d1a71ef515951e8332249451df15c3cd9"
+      },
+      "GSE262419_Plate13.csv.gz": {
+        "bytes": 5365823,
+        "sha256": "b12cd6d9dbd0d81c7626aae3b6ddf9a16c66fdc1e1c8e579ab01a01c51f4cec4"
+      },
+      "GSE262419_Plate14.csv.gz": {
+        "bytes": 5137457,
+        "sha256": "708c1f6d49f141f812c382bb354a6efb50597b9072518312c1918137899f4a74"
+      },
+      "GSE262419_Plate15.csv.gz": {
+        "bytes": 5255515,
+        "sha256": "e42d78e081e5f08c5172b0b888701ba2a918cf3bcdb2c167ab7f00baec8dd72c"
+      },
+      "GSE262419_Plate16.csv.gz": {
+        "bytes": 4945764,
+        "sha256": "280d0ad830021064381d4ccd6af628921cec2490d83cabc61844e4214c3766df"
+      },
+      "GSE262419_hash.csv.gz": {
+        "bytes": 47637,
+        "sha256": "dbdaadfc357fabfadb291d2818d5ce242bba52486b3d8ec86460b61457d57f3c"
+      },
+      "cm_compound_annotation.csv": {
+        "bytes": 116967,
+        "sha256": "b3e09205156bfc5adeeda2cdc8647dd87c1ead920cc257de316af5ffb0dbfd46"
+      },
+      "hgnc_complete_set.txt": {
+        "bytes": 16982321,
+        "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+      }
+    },
+    "populations": {
+      "blank": 32,
+      "control": 272,
+      "treated": 4206
+    },
+    "schema": "stage2-bases-native-tenv-v1",
+    "shape": [
+      4510,
+      19613
+    ]
+  },
+  "timezone": "Asia/Shanghai"
+}

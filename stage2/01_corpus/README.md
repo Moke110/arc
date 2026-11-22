@@ -18,8 +18,9 @@ The builder rejects an incomplete common axis for tenv and Tahoe.
 
 XPert-L1000 has no verified native raw integer count publication in the
 materialized source. Annotation is reference metadata with no observations.
-The additional cardiac sources are inventoried in the release manifest and
-do not change the existing tenv/Tahoe view protocol.
+The additional cardiac sources are inventoried in the release manifest.
+The [acceptance receipt](log/acceptance.json) records released populations,
+coverage, source replay and payload digests.
 
 ```python
 from native_corpus import open_corpus
