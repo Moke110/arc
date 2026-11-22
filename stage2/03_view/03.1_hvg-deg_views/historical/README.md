@@ -54,13 +54,15 @@ commits use the original path names.
 ```sh
 SNAPSHOT=/path/to/replay/worktree
 git -C "$MATERIALIZED" worktree add --detach "$SNAPSHOT" 212d3e0
-python "$CANDIDATE/script/migrate_stage2_payloads.py" link-snapshot \
-  --root "$MATERIALIZED" --plan "$PLAN" --target "$SNAPSHOT"
+python "$CANDIDATE/script/migrate_stage2_payloads.py" copy-snapshot \
+  --root "$MATERIALIZED" --plan "$PLAN" --target "$SNAPSHOT" \
+  --paths-from /path/to/receipt-and-baseline-payloads.txt
 ```
 
-Replay links retain the original names and physical file identities on the
-same filesystem. Follow the snapshot's owning AGENTS.md. Run read-only checks against linked
-files and write figures and receipts to separate candidate paths. The ADR 0082
+Copies use the original names and independent file storage. Build the paths
+list by intersecting the migration plan with the sealed receipt inventory and
+the original baseline inventory. Space is checked before copying. Follow the
+snapshot's owning AGENTS.md and write results to separate candidate paths. The ADR 0082
 receipt uses the original compact `.scratch/tsg-view/research/baseline`
 inventory and planning ref. Supply those with `--baseline` and `--refs`, or
 place the original inventory in the snapshot. Verify any external sources the

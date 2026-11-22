@@ -9,7 +9,7 @@ SCRIPT = Path(__file__).resolve().parents[1] / "migrate_stage2_payloads.py"
 
 
 class PayloadMigrationTest(unittest.TestCase):
-    def test_preflight_conflict_then_move_link_and_restore(self):
+    def test_preflight_conflict_then_move_copy_and_restore(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / "active"
             root.mkdir()
@@ -41,10 +41,14 @@ class PayloadMigrationTest(unittest.TestCase):
             self.assertEqual(new.stat().st_ino, inode)
             snapshot = root.parent / "snapshot"
             subprocess.run(["git", "init", "-q", str(snapshot)], check=True)
-            run("link-snapshot", "--target", snapshot)
+            paths = root.parent / "paths.txt"
+            paths.write_text(old.relative_to(root).as_posix() + "\n")
+            run("copy-snapshot", "--target", snapshot, "--paths-from", paths)
             replay = snapshot / old.relative_to(root)
-            self.assertTrue(os.path.samefile(replay, new))
-            self.assertEqual(replay.resolve(), replay)
+            self.assertFalse(os.path.samefile(replay, new))
+            self.assertEqual(replay.read_bytes(), b"original checkpoint")
+            replay.write_bytes(b"new replay output")
+            self.assertEqual(new.read_bytes(), b"original checkpoint")
             run("reverse")
             self.assertEqual(old.stat().st_ino, inode)
             self.assertFalse(new.exists())

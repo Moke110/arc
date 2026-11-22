@@ -4,8 +4,10 @@ import argparse
 import json
 import os
 from pathlib import Path
+import shutil
 import stat
 import subprocess
+from tempfile import NamedTemporaryFile
 
 # Longer prefixes first so formerly study-owned feature bytes move to util.
 ROOTS = {
@@ -122,10 +124,10 @@ def move(root, entries, reverse):
             directory.rmdir()
 
 
-def link(root, entries, checkout, historical):
+def stage(root, entries, checkout, snapshot):
     if checkout == root or not (checkout / ".git").exists():
-        raise ValueError("link target must be a separate Git checkout")
-    links = []
+        raise ValueError("staging target must be a separate Git checkout")
+    pending = []
     for entry in entries:
         old = entry["old"]
         if "__pycache__" in Path(old).parts or Path(old).suffix in {".pyc", ".pyo"}:
@@ -136,40 +138,70 @@ def link(root, entries, checkout, historical):
             source = checked_path(root, old)
         if identity(source) != entry["identity"]:
             raise ValueError(f"source changed: {source}")
-        target = checked_path(checkout, old if historical else new)
+        target = checked_path(checkout, old if snapshot else new)
         if present(target):
-            if (historical and target.is_file() and not target.is_symlink()
-                    and target.samefile(source)) or (not historical and target.is_symlink()
-                                                     and target.resolve() == source):
+            if not snapshot and target.is_symlink() and target.resolve() == source:
                 continue
             raise ValueError(f"destination exists: {target}")
-        links.append((source, target))
-    linked = []
+        pending.append((source, target, entry["identity"]))
+    if snapshot:
+        required = sum(info[2] for _, _, info in pending)
+        available = shutil.disk_usage(checkout).free
+        if required > available:
+            raise ValueError(f"snapshot needs {required} bytes but only {available} bytes are free")
+    created = []
     try:
-        for source, target in links:
+        for source, target, info in pending:
             target.parent.mkdir(parents=True, exist_ok=True)
-            if historical:
-                target.hardlink_to(source)
+            if snapshot:
+                with NamedTemporaryFile(dir=target.parent, delete=False) as stream:
+                    temporary = Path(stream.name)
+                try:
+                    shutil.copy2(source, temporary)
+                    if identity(source) != info or temporary.stat().st_size != info[2]:
+                        raise ValueError(f"source changed during snapshot copy: {source}")
+                    if present(target):
+                        raise ValueError(f"destination exists: {target}")
+                    temporary.rename(target)
+                finally:
+                    temporary.unlink(missing_ok=True)
             else:
                 target.symlink_to(source)
-            linked.append(target)
-    except OSError:
-        for target in reversed(linked):
+            created.append(target)
+    except (OSError, ValueError, KeyboardInterrupt):
+        for target in reversed(created):
             target.unlink()
         raise
 
 
+def select(entries, path_list):
+    if path_list is None:
+        return entries
+    entries_by_path = {entry["old"]: entry for entry in entries}
+    requested = path_list.read_text().splitlines()
+    if not requested or len(requested) != len(set(requested)):
+        raise ValueError("expected a nonempty list of distinct original paths")
+    missing = set(requested).difference(entries_by_path)
+    if missing:
+        raise ValueError(f"path is outside the migration plan: {min(missing)}")
+    return [entries_by_path[path] for path in requested]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("plan", "apply", "reverse", "link-snapshot", "link-active"))
+    parser.add_argument("action", choices=("plan", "apply", "reverse", "copy-snapshot", "link-active"))
     parser.add_argument("--root", required=True, type=Path)
     parser.add_argument("--plan", required=True, type=Path)
     parser.add_argument("--target", type=Path)
+    parser.add_argument("--paths-from", type=Path, help="copy only these original paths")
     args = parser.parse_args()
+    if args.paths_from is not None and args.action != "copy-snapshot":
+        parser.error("--paths-from requires copy-snapshot")
     root = args.root.resolve()
     try:
         if args.action == "plan":
             record = plan(root)
+            entries = record["entries"]
             with args.plan.open("x") as stream:
                 json.dump(record, stream, indent=2)
                 stream.write("\n")
@@ -186,10 +218,11 @@ def main():
             else:
                 if args.target is None:
                     raise ValueError("--target is required for replay links")
-                link(root, entries, args.target.resolve(), args.action == "link-snapshot")
+                entries = select(entries, args.paths_from)
+                stage(root, entries, args.target.resolve(), args.action == "copy-snapshot")
     except (OSError, ValueError, subprocess.CalledProcessError) as error:
         parser.exit(1, f"{error}\n")
-    print(f"{args.action}: {len(record['entries'])} Stage 2 payloads")
+    print(f"{args.action}: {len(entries)} Stage 2 payloads")
 
 
 if __name__ == "__main__":
