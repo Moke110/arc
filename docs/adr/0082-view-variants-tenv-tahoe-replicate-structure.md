@@ -36,7 +36,8 @@ from the Bases integer corpus and the ADR 0077 axis-local recipe, the TranSiGen 
 each view, and the report. It is a non-numbered study step: it produces comparison
 evidence, holds no downstream weight release, and changes no product of Steps 01–06.
 
-The builder publishes eight view products on the frozen G_5000 axis, all under the same
+The builder publishes nine view products on the frozen G_5000 axis — the four views on
+each source plus the tenv-only `solo-deepest` sensitivity — all under the same
 ADR 0078 cold-drug-dose folds (split seed 226, training seed 42, tenv doses 0.2/1/10 µM
 and Tahoe doses 0.05/0.5/5 µM). Every view keeps the source's treated profiles and
 matched-control pairing except where named.

@@ -141,11 +141,11 @@ random subset of the source.
 | Tahoe `merge` | 0.4095 | 0.4283 | -0.0188 | 0.1570 | 0.0703 | +0.0867 |
 | Tahoe `solo` | 0.4148 | 0.4283 | -0.0135 | 0.1565 | 0.0703 | +0.0862 |
 
-Tenv `full` sits **0.1153** below the ceiling; Tahoe `full` sits **0.0061** below it, i.e.
-near its ceiling. The sample-SD sensitivity variants are 0.4193 (tenv) / 0.0952 (Tahoe) for
-the noise floor. Tahoe's heuristic ceiling estimate 0.4283 sits 0.0017 below the ADR 0082 band
-0.43–0.52; it is reported as a moved heuristic estimate, **not as agreement with that band**,
-and it was not tuned. Sources:
+Tenv `full` sits **0.1153** below the ceiling. Tahoe `full` sits **0.0061** below its own
+heuristic estimate — near that estimate, *not* near the ADR 0082 band: the estimate itself
+(0.4283) is 0.0017 below the band floor of 0.43, so this is a moved heuristic estimate,
+**not agreement with the 0.43–0.52 band**, and it was not tuned. The sample-SD sensitivity
+variants are 0.4193 (tenv) / 0.0952 (Tahoe) for the noise floor. Sources:
 [diagnostics_beside_scores.csv](output/report/diagnostics_beside_scores.csv),
 `output/truth/<source>/diagnostics.json`. Panels:
 [metrics_tenv.png](figure/metrics_tenv.png),
@@ -235,8 +235,10 @@ code-only move instead of refusing it, while `run`/resume keeps the driver-file-
 allowance, and any non-code input change still fails closed. A fresh-process replay refuses a
 moved learner runtime by design (regenerating predictions would need the pre-refactor
 worker), so the sealed runs' replay evidence is the in-run, same-runtime evidence recorded in
-`output/runs/formal_run_report.json` and the per-origin run records. The acceptance receipt
-is regenerated at this documentation HEAD and the re-pin is recorded in
+`output/runs/formal_run_report.json` and the per-origin run records. A filtered `verify` that
+selects no seed-42 `full` arm has no anchor comparison to make, so it now fails closed instead
+of reporting a vacuous `PASS`; `full_arm.comparisons` records the count. The acceptance receipt
+is regenerated after the review fixes; the re-pin is recorded in
 [log/build-08.json](log/build-08.json) under `final_refresh`.
 
 ## Limitations and confounders not attributed
@@ -264,9 +266,9 @@ is regenerated at this documentation HEAD and the re-pin is recorded in
 ## Reusable products, figures and tables
 
 - **View manifests** (tracked): `output/views/<view>/<source>.json` for `full`, `merge`,
-  `solo`, `solo-deepest` and `full-pooled-label` over tenv and `tahoe_bulk`. They pin the
-  recipe, members, row/condition counts and payload digests; the multi-GB payloads and
-  freezes remain gitignored products in the materialised checkout.
+  `solo` and `full-pooled-label` over both sources plus `solo-deepest` over tenv only —
+  nine products. They pin the recipe, members, row/condition counts and payload digests;
+  the multi-GB payloads and freezes remain gitignored products in the materialised checkout.
 - **Frozen truth** (view-independent): `output/truth/<source>/primary/`,
   `condition_mean/` and `diagnostics.json` — reused by every view, byte-identical on a
   re-run.
@@ -321,11 +323,13 @@ telemetry), and never beside a fit.
 PY=/home/chang/miniconda3/envs/arc/bin/python
 cd /home/chang/arc/stage2/tsg_view
 
-# 1. Build the eight view products, one view/source at a time.
+# 1. Build the nine view products (four views on each source plus the tenv-only
+#    solo-deepest: 4 + 4 + 1), one view/source at a time.
 #    (tickets 01-04 recorded these in log/build-01.json .. log/build-04.json)
 $PY execution/build.py --view full --source tenv --output output/views \
     --staging execution/checkpoints --repo-root /home/chang/arc --record log/build-01.json
-#    repeat for (merge, solo, solo-deepest, full-pooled-label) x (tenv, tahoe_bulk)
+#    repeat for full on tahoe_bulk; merge/solo/full-pooled-label on both sources; and
+#    solo-deepest on tenv alone (there is no solo-deepest tahoe_bulk product)
 
 # 2. Freeze each product into the Step 04 input format.
 $PY execution/freeze.py --view full --source tenv --views output/views \

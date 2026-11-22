@@ -768,6 +768,7 @@
       "other_code_files_identical": "freeze.py, inputs.py, learner.py, matrix.py and views/__init__.py match the seal exactly; formal.py is the only drift",
       "runs": 45,
       "status": "PASS",
+      "superseded_by": "review-fix verify: seed-43 full origins are recorded as sensitivity, anchor_seed=42",
       "wall_seconds": 5.59
     },
     "date": "2026-11-22",
@@ -1119,7 +1120,8 @@
       ],
       "note": "formal_verify.json is the only pre-existing evidence file rewritten by the verify re-run; it now carries the transparent code_identity/driver_code_drift block, while plan, selection, runs, records and resources are byte-identical",
       "origins": 45,
-      "status": "PASS"
+      "status": "PASS",
+      "superseded_by": "review-fix verify: seed-43 full origins are recorded as sensitivity, anchor_seed=42"
     }
   },
   "scope": "matrix machinery, formal driver, formal/probe learner path and two bounded GPU probes; the real 45-fit matrix is run by the Lead on dev after tickets 04/05 merge",
