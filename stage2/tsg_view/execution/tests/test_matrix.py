@@ -12,12 +12,15 @@ for path in (str(EXECUTION), str(HERE)):
         sys.path.insert(0, path)
 
 import matrix  # noqa: E402
+import tsg_view_fixtures as fixtures  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[4]
-SOURCE = next(candidate for candidate in (
-    REPO / "pert_model/TranSiGen/source",
-    Path("/home/chang/arc/pert_model/TranSiGen/source"))
-    if (candidate / "src/model.py").is_file())
+#: Repo-relative (or TSG_NATIVE_SOURCE) discovery; a worktree does not carry the
+#: gitignored native source, so the dependent classes skip with the path they need.
+SOURCE = fixtures.native_source(REPO)
+NEEDS_SOURCE = unittest.skipUnless(
+    (SOURCE / "src/model.py").is_file(),
+    fixtures.dependency_message("the TranSiGen source", SOURCE))
 
 # The intended schedule, spelled out independently of matrix.plan(): every tenv fit
 # first (the report's tenv pass must publish first), then every Tahoe fit. Within a
@@ -139,6 +142,7 @@ class PlanEnumerationTest(unittest.TestCase):
                     matrix.next_action(broken, phase)
 
 
+@NEEDS_SOURCE
 class PlanSealTest(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
@@ -207,6 +211,7 @@ class PlanSealTest(unittest.TestCase):
             matrix.check_plan(self.candidate, other)
 
 
+@NEEDS_SOURCE
 class SelectionReceiptTest(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()

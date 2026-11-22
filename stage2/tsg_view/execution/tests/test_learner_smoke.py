@@ -19,7 +19,8 @@ import tsg_view_fixtures as fixtures  # noqa: E402
 import views  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[4]
-SOURCE = REPO / "pert_model/TranSiGen/source"
+#: Repo-relative (or TSG_NATIVE_SOURCE) discovery; no checkout is hard-coded.
+SOURCE = fixtures.native_source(REPO)
 WORKER = EXECUTION / "learner.py"
 SIZE = 5000
 
@@ -30,7 +31,7 @@ def run(*arguments):
 
 
 @unittest.skipUnless((SOURCE / "src/model.py").is_file(),
-                     "the TranSiGen source is unavailable")
+                     fixtures.dependency_message("the TranSiGen source", SOURCE))
 class LearnerSmokeTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

@@ -26,6 +26,9 @@ import tsg_view_fixtures as fixtures  # noqa: E402
 import views  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[4]
+#: The materialised full freeze lives only in the checkout that built the payload (a
+#: worktree shares git objects, not ignored payloads), so it is named explicitly there.
+FULL_FREEZE = fixtures.payload_root(REPO) / "stage2/tsg_view/execution/freezes/full/tenv"
 SIZE = 3
 GENES = [0, 3, 4]
 CELL_LINE = {"tenv": "hiPSC-CM", "tahoe_bulk": "line1"}
@@ -468,6 +471,9 @@ class TruthTest(unittest.TestCase):
         result = subprocess.run(command, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    @unittest.skipUnless(
+        (FULL_FREEZE / "parents.csv").is_file(),
+        fixtures.dependency_message("a materialised full freeze", FULL_FREEZE))
     def test_fixture_build_does_not_probe_the_materialised_full_freeze(self):
         """Fixture isolation: main-checkout geometry must not leak real freezes in.
 
@@ -476,10 +482,7 @@ class TruthTest(unittest.TestCase):
         payloads. A fixture build must still use its synthetic sealed directory, never
         compare against the materialised full freeze.
         """
-        main = Path("/home/chang/arc")
-        real = main / "stage2/tsg_view/execution/freezes/full/tenv"
-        if not (real / "parents.csv").is_file():
-            self.skipTest("no materialised full freeze in the main checkout")
+        main = fixtures.payload_root(REPO)
         fixture = self.fixture
         output = self.root / "truth-main-geometry"
         receipt = truth.build_truth(
