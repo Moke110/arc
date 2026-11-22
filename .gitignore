@@ -191,6 +191,7 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 /stage2/03_tsg_drug_emb/output/api/**/*.py[cod]
 /stage2/03_tsg_drug_emb/execution/checkpoints/
 !/stage2/03_tsg_drug_emb/figure/data/*.csv
+!/stage2/03_tsg_drug_emb/figure/data/tahoe/*.csv
 
 /stage2/04_tsg_dose/execution/checkpoints/
 # Independent all-dose TranSiGen public implementation (ADR0075).

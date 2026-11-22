@@ -1,4 +1,4 @@
-"""Read the seven parent-aligned representation matrices for frozen tenv folds."""
+"""Read the seven parent-aligned representation matrices for frozen source-local folds."""
 import hashlib
 import json
 from pathlib import Path
@@ -52,12 +52,14 @@ class RepresentationInputs:
         directory = Path(directory)
         self.manifest = json.loads((directory / "manifest.json").read_text())
         required = {"parents.csv", "e3fp_conformers.csv", *(f"{arm}.npy" for arm in ARMS)}
-        if (inputs.source != "tenv" or self.manifest.get("schema") != SCHEMA
+        if (inputs.source not in ("tenv", "tahoe_bulk")
+                or self.manifest.get("source", "tenv") != inputs.source
+                or self.manifest.get("schema") != SCHEMA
                 or self.manifest.get("inputs_sha256") != sha256(inputs.directory / "manifest.json")
                 or self.manifest.get("widths") != WIDTHS
                 or self.manifest.get("coverage") != fold_coverage(inputs)
                 or set(self.manifest.get("files", ())) != required):
-            raise ValueError("representation freeze does not match accepted tenv inputs")
+            raise ValueError("representation freeze does not match accepted source inputs")
         for name, digest in self.manifest["files"].items():
             if sha256(directory / name) != digest:
                 raise ValueError(f"representation freeze digest mismatch: {name}")

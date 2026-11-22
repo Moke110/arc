@@ -22,11 +22,13 @@ and gives each parent equal weight. The paired result uses profiles with defined
 scores for both arms before averaging within parent. Fold SD describes dispersion
 across the three folds for this single seed.
 
-- [Per-fold metrics](figure/data/runs.csv) and [equal-fold summary](figure/metrics.png)
-- [Native training loss and validation MSE](figure/learning_curves.png)
-- [Test metrics by measured dose](figure/metrics_cold_drug_dose.png)
+- [Per-fold metrics](figure/data/runs.csv) and [equal-fold summary](figure/tenv_metrics.png)
+- [Native training loss and validation MSE](figure/tenv_learning_curves.png)
+- [Test metrics by measured dose](figure/tenv_metrics_cold_drug_dose.png)
 - [Primary pooled result](figure/data/pooled.csv) and [paired effects](figure/data/paired.csv)
 - [Run inventory](log/run_inventory.json) and [acceptance](log/acceptance.json)
 
 Run `python figure/script/render.py --output <new-directory>` from this step to
 reproduce the plots using the checked-in CSV files.
+
+The [Tahoe comparison](log/tahoe/README.md) uses the three frozen Tahoe cold-drug folds.

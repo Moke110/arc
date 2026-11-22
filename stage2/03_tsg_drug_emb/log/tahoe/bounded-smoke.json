@@ -1,0 +1,488 @@
+{
+  "device": "cuda",
+  "fits": [
+    {
+      "arm": "ECFP4C",
+      "best_epoch": 2,
+      "downstream_sha256": "fcecd6b9f45eb3c6c381291866c6d89e0e42d1de7c81ce6d17b208c063f29083",
+      "history_epochs": 2,
+      "optimizer_steps": 2,
+      "phase_sha256": {
+        "fit": "9f38eb83cac9c2a7fba2a15e4995bf86f43776d4dbc409a042b08bd82b92e210",
+        "test": "90ba7d2f893df7314f3e0c09c135ca76d7be487a3fc712a8bfe2ea92daa7e9c7",
+        "test-replay": "de8da9317519332bca90dd2286674ff1181284b033bf97ac9f46c41465baa23b",
+        "validation-replay": "ea08673b9feaed6b9c6bdf298c3a70a201b1ff56d2b9e168a0e499e7772721cf"
+      },
+      "rng_sha256": {
+        "cpu": "9bb5b2fdb303ac592498e281beb91a5a6b23b2b19e3f4f469d9db8fe8d1548c9",
+        "cuda": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "split_order": {
+        "test": [
+          100,
+          101,
+          102,
+          103,
+          4639,
+          4640,
+          4641,
+          4642,
+          9322,
+          9323,
+          9324,
+          9325
+        ],
+        "train": [
+          0,
+          1,
+          2,
+          3,
+          4543,
+          4544,
+          4545,
+          4546,
+          9222,
+          9223,
+          9224,
+          9225
+        ],
+        "validation": [
+          1397,
+          1398,
+          1399,
+          1400,
+          5989,
+          5990,
+          5991,
+          5992,
+          10672,
+          10673,
+          10674,
+          10675
+        ]
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.30102999350681725,
+        "std": 0.8164965782857506
+      },
+      "validation_mse": 0.8872522711753845,
+      "width": 2048
+    },
+    {
+      "arm": "ECFP6C",
+      "best_epoch": 2,
+      "downstream_sha256": "fcecd6b9f45eb3c6c381291866c6d89e0e42d1de7c81ce6d17b208c063f29083",
+      "history_epochs": 2,
+      "optimizer_steps": 2,
+      "phase_sha256": {
+        "fit": "10c0ecce82a5d514072ee7e220a2f6d5fa7446a2045909881f033833b4730d4a",
+        "test": "a61a264ccf8efce9d92a3a134a434f8ed2d87092abd9be54be43cc13fe80d7ea",
+        "test-replay": "dc7ef99ccde0b303d0e676d82744d5049902fb981299e7cd0c1f141616efa55a",
+        "validation-replay": "a99a1cdb0147443484e92112d0c6c1ddbfd16f894090ea9954afc7bec894203a"
+      },
+      "rng_sha256": {
+        "cpu": "9bb5b2fdb303ac592498e281beb91a5a6b23b2b19e3f4f469d9db8fe8d1548c9",
+        "cuda": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "split_order": {
+        "test": [
+          100,
+          101,
+          102,
+          103,
+          4639,
+          4640,
+          4641,
+          4642,
+          9322,
+          9323,
+          9324,
+          9325
+        ],
+        "train": [
+          0,
+          1,
+          2,
+          3,
+          4543,
+          4544,
+          4545,
+          4546,
+          9222,
+          9223,
+          9224,
+          9225
+        ],
+        "validation": [
+          1397,
+          1398,
+          1399,
+          1400,
+          5989,
+          5990,
+          5991,
+          5992,
+          10672,
+          10673,
+          10674,
+          10675
+        ]
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.30102999350681725,
+        "std": 0.8164965782857506
+      },
+      "validation_mse": 0.8873632550239563,
+      "width": 2048
+    },
+    {
+      "arm": "FCFP4C",
+      "best_epoch": 2,
+      "downstream_sha256": "fcecd6b9f45eb3c6c381291866c6d89e0e42d1de7c81ce6d17b208c063f29083",
+      "history_epochs": 2,
+      "optimizer_steps": 2,
+      "phase_sha256": {
+        "fit": "caee6137da1aedf1a60c7ae49c4ea4d3d491c951e76a31e9b74b12bc0b6b2760",
+        "test": "d01461030176eaa180ee2e60b5a5364d536990eb5e3ebeffc4973ff5f0941572",
+        "test-replay": "ec7099876a09ff246f5f5872ab8f7e46bc50de8214790dccdbaf2a032d50a76f",
+        "validation-replay": "899e07f425e67290c5d1111bc1b28692b8df98938edf9253f844dfb3cf0e0977"
+      },
+      "rng_sha256": {
+        "cpu": "9bb5b2fdb303ac592498e281beb91a5a6b23b2b19e3f4f469d9db8fe8d1548c9",
+        "cuda": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "split_order": {
+        "test": [
+          100,
+          101,
+          102,
+          103,
+          4639,
+          4640,
+          4641,
+          4642,
+          9322,
+          9323,
+          9324,
+          9325
+        ],
+        "train": [
+          0,
+          1,
+          2,
+          3,
+          4543,
+          4544,
+          4545,
+          4546,
+          9222,
+          9223,
+          9224,
+          9225
+        ],
+        "validation": [
+          1397,
+          1398,
+          1399,
+          1400,
+          5989,
+          5990,
+          5991,
+          5992,
+          10672,
+          10673,
+          10674,
+          10675
+        ]
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.30102999350681725,
+        "std": 0.8164965782857506
+      },
+      "validation_mse": 0.8872789144515991,
+      "width": 2048
+    },
+    {
+      "arm": "FCFP6C",
+      "best_epoch": 2,
+      "downstream_sha256": "fcecd6b9f45eb3c6c381291866c6d89e0e42d1de7c81ce6d17b208c063f29083",
+      "history_epochs": 2,
+      "optimizer_steps": 2,
+      "phase_sha256": {
+        "fit": "bf9124a69d4078879f0586598b8e1029926b5ecfcb83e49ad4e492cab26e2eff",
+        "test": "54c74b5a50f1cc91510fa180dfc8a878daacca4e7831c3c6a7ede3daccac42b4",
+        "test-replay": "16b9a7b14d212472856b7c730e0e5a35caac1361f92942331db4ffce70b3de03",
+        "validation-replay": "ce78491fdf0b916c9570e7ab6c1b79d2f4046287a900a408d64abd884a6b321c"
+      },
+      "rng_sha256": {
+        "cpu": "9bb5b2fdb303ac592498e281beb91a5a6b23b2b19e3f4f469d9db8fe8d1548c9",
+        "cuda": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "split_order": {
+        "test": [
+          100,
+          101,
+          102,
+          103,
+          4639,
+          4640,
+          4641,
+          4642,
+          9322,
+          9323,
+          9324,
+          9325
+        ],
+        "train": [
+          0,
+          1,
+          2,
+          3,
+          4543,
+          4544,
+          4545,
+          4546,
+          9222,
+          9223,
+          9224,
+          9225
+        ],
+        "validation": [
+          1397,
+          1398,
+          1399,
+          1400,
+          5989,
+          5990,
+          5991,
+          5992,
+          10672,
+          10673,
+          10674,
+          10675
+        ]
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.30102999350681725,
+        "std": 0.8164965782857506
+      },
+      "validation_mse": 0.8872047662734985,
+      "width": 2048
+    },
+    {
+      "arm": "E3FP",
+      "best_epoch": 2,
+      "downstream_sha256": "fcecd6b9f45eb3c6c381291866c6d89e0e42d1de7c81ce6d17b208c063f29083",
+      "history_epochs": 2,
+      "optimizer_steps": 2,
+      "phase_sha256": {
+        "fit": "f569c2a8cec5169d8a5e340af60494fbcaccb382d29378d237e8057b1de6f085",
+        "test": "12c9bfd49c33b284ce9577ff9ce61eef01564356bcdbc297af94b259a46bfe33",
+        "test-replay": "6a86daf3f18a721b5004c46b76790128f8196143340e824a7ee2961d5641f98e",
+        "validation-replay": "17441b29faaafa99460d86f7c0f4327eaeea60a4f2c86ea8d24c3204a5986b0d"
+      },
+      "rng_sha256": {
+        "cpu": "9bb5b2fdb303ac592498e281beb91a5a6b23b2b19e3f4f469d9db8fe8d1548c9",
+        "cuda": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "split_order": {
+        "test": [
+          100,
+          101,
+          102,
+          103,
+          4639,
+          4640,
+          4641,
+          4642,
+          9322,
+          9323,
+          9324,
+          9325
+        ],
+        "train": [
+          0,
+          1,
+          2,
+          3,
+          4543,
+          4544,
+          4545,
+          4546,
+          9222,
+          9223,
+          9224,
+          9225
+        ],
+        "validation": [
+          1397,
+          1398,
+          1399,
+          1400,
+          5989,
+          5990,
+          5991,
+          5992,
+          10672,
+          10673,
+          10674,
+          10675
+        ]
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.30102999350681725,
+        "std": 0.8164965782857506
+      },
+      "validation_mse": 0.8868778347969055,
+      "width": 1024
+    },
+    {
+      "arm": "KPGT",
+      "best_epoch": 2,
+      "downstream_sha256": "fcecd6b9f45eb3c6c381291866c6d89e0e42d1de7c81ce6d17b208c063f29083",
+      "history_epochs": 2,
+      "optimizer_steps": 2,
+      "phase_sha256": {
+        "fit": "1b133a30f676590f87d70d513db5fd29a4a5fcbf5071ebb63bcac0d5ab43ac20",
+        "test": "72750f0bbd20db20e1fb8879952f25b93bc0e8e8f3b09f8e20dd748a13f57c5d",
+        "test-replay": "06e8d5d16a6738608260867d1c3da1f4aa1cea88c6f53153f6cc6cc46ee73e28",
+        "validation-replay": "35abf6153b6b21eadcf699df5d19ac2c7575f2715f862ef9671436d36cacd93f"
+      },
+      "rng_sha256": {
+        "cpu": "9bb5b2fdb303ac592498e281beb91a5a6b23b2b19e3f4f469d9db8fe8d1548c9",
+        "cuda": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "split_order": {
+        "test": [
+          100,
+          101,
+          102,
+          103,
+          4639,
+          4640,
+          4641,
+          4642,
+          9322,
+          9323,
+          9324,
+          9325
+        ],
+        "train": [
+          0,
+          1,
+          2,
+          3,
+          4543,
+          4544,
+          4545,
+          4546,
+          9222,
+          9223,
+          9224,
+          9225
+        ],
+        "validation": [
+          1397,
+          1398,
+          1399,
+          1400,
+          5989,
+          5990,
+          5991,
+          5992,
+          10672,
+          10673,
+          10674,
+          10675
+        ]
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.30102999350681725,
+        "std": 0.8164965782857506
+      },
+      "validation_mse": 0.8796659708023071,
+      "width": 2304
+    },
+    {
+      "arm": "UniMol",
+      "best_epoch": 2,
+      "downstream_sha256": "fcecd6b9f45eb3c6c381291866c6d89e0e42d1de7c81ce6d17b208c063f29083",
+      "history_epochs": 2,
+      "optimizer_steps": 2,
+      "phase_sha256": {
+        "fit": "ed02d8c0a29a28500fc354f22032d41ac3ffe90a63803e4bb3a5db974d84a571",
+        "test": "1b65d7a303170e0c2b4a0141b38832e4db9ffa2ea2baff17b962c295a90dbbe2",
+        "test-replay": "298e9cb9b21754e89b432aa6c766a39f798dc171d0dbe7f088e4d3d6c22db229",
+        "validation-replay": "5026236d6e41505d6d8649042b2ff8579284ac55339a90ba054b86cd15d7044f"
+      },
+      "rng_sha256": {
+        "cpu": "9bb5b2fdb303ac592498e281beb91a5a6b23b2b19e3f4f469d9db8fe8d1548c9",
+        "cuda": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "split_order": {
+        "test": [
+          100,
+          101,
+          102,
+          103,
+          4639,
+          4640,
+          4641,
+          4642,
+          9322,
+          9323,
+          9324,
+          9325
+        ],
+        "train": [
+          0,
+          1,
+          2,
+          3,
+          4543,
+          4544,
+          4545,
+          4546,
+          9222,
+          9223,
+          9224,
+          9225
+        ],
+        "validation": [
+          1397,
+          1398,
+          1399,
+          1400,
+          5989,
+          5990,
+          5991,
+          5992,
+          10672,
+          10673,
+          10674,
+          10675
+        ]
+      },
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.30102999350681725,
+        "std": 0.8164965782857506
+      },
+      "validation_mse": 0.885307788848877,
+      "width": 512
+    }
+  ],
+  "fold": 0,
+  "formal_fits": 0,
+  "inputs_sha256": "aace570ca8d066cebc7152ba989b7653f1aa794d1b39bbe96014834524082b1d",
+  "representations_sha256": "4d00b23d6dcf0ddfbba4f60725b7f32701103a475f278e1db94eeebb968fbeac",
+  "schema": "tsg-drug-emb-bounded-smoke-v1",
+  "status": "PASS",
+  "train_seed": 42
+}

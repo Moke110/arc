@@ -29,6 +29,11 @@ FIGURES = ("metrics.png", "learning_curves.png", "metrics_cold_drug_dose.png")
 RENDERER = STEP / "figure/script/render.py"
 
 
+def figure_names(source):
+    prefix = "tahoe_" if source == "tahoe_bulk" else ""
+    return tuple(f"{prefix}{figure}" for figure in FIGURES)
+
+
 def parent_pcc(scores):
     result = scores.assign(pcc=scores.pcc.where(np.isfinite(scores.pcc)))
     return result.groupby(["fold", "drug_parent"], as_index=False).pcc.agg(
@@ -77,6 +82,7 @@ def read_matrix(matrix, data, representations, accepted):
             or set(expected_fits) != {(fold, arm) for fold in FOLDS for arm in ARMS}
             or len(accepted["mean_cell"]) != 3 or set(expected_baseline) != set(FOLDS)):
         raise ValueError("formal acceptance does not bind precisely 21 fits and 3 baseline rows")
+    origin = dict(ORIGIN, source=data.source)
     scores = {arm: [] for arm in METHODS}
     curves, runs = [], []
     for fold in FOLDS:
@@ -130,7 +136,7 @@ def read_matrix(matrix, data, representations, accepted):
                     or fit["validation_mse"] != float(best.validation_mse)
                     or fit["optimizer_steps"] != int(learning.optimizer_steps.iloc[-1])):
                 raise ValueError(f"learning history does not match restored selection: {run}")
-            curves.append(learning.assign(**ORIGIN, fold=fold, method=arm))
+            curves.append(learning.assign(**origin, fold=fold, method=arm))
             runs.append(dict(fold=fold, arm=arm, width=config["width"], seed=42,
                              fit_epochs=fit["epochs"], optimizer_steps=fit["optimizer_steps"],
                              best_epoch=fit["best_epoch"], elapsed_seconds=fit["elapsed_seconds"],
@@ -144,14 +150,14 @@ def read_matrix(matrix, data, representations, accepted):
                 or frame.drug_parent.nunique() != len(data.parents)
                 or frame.groupby("drug_parent").fold.nunique().max() != 1
                 or frame.nonfinite.any()):
-            raise ValueError(f"outer replay coverage differs from the complete tenv roster: {arm}")
+            raise ValueError(f"outer replay coverage differs from the complete {data.source} roster: {arm}")
     return scores, pooled, pd.concat(curves, ignore_index=True), runs
 
 
-def report_tables(scores, pooled, curves):
+def report_tables(scores, pooled, curves, source="tenv"):
     dots, spreads, doses, parents, primary, pairs, effects = [], [], [], [], [], [], []
     for arm in METHODS:
-        group = dict(**ORIGIN, method=arm)
+        group = dict(ORIGIN, source=source, method=arm)
         folds = [summary(scores[arm][fold]) for fold in FOLDS]
         dots += [dict(**group, fold=fold, **record) for fold, record in enumerate(folds)]
         for metric in METRICS:
@@ -180,12 +186,20 @@ def report_tables(scores, pooled, curves):
             "paired": pd.DataFrame(effects)}
 
 
-def report_readme(tables):
+def report_readme(tables, source="tenv"):
     primary = tables["pooled"].set_index("method")
     paired = tables["paired"].loc[lambda frame: frame.fold.eq("all")].set_index("method")
+    source_label = "Tahoe" if source == "tahoe_bulk" else "tenv"
+    num_parents = primary.parents.iloc[0]
+    relative = "../../" if source == "tahoe_bulk" else ""
+    plots = f"{relative}figure"
+    data = f"{plots}/data" + ("/tahoe" if source == "tahoe_bulk" else "")
+    log = "" if source == "tahoe_bulk" else "log/"
+    metrics, learning, dose = figure_names(source)
+    renderer_args = " --source tahoe_bulk --prefixed" if source == "tahoe_bulk" else ""
     lines = [
         "# TranSiGen drug representation comparison", "",
-        "Seven representations were compared on all 459 tenv parents across three cold-drug",
+        f"Seven representations were compared on all {num_parents} {source_label} parents across three cold-drug",
         "folds at seed 42. Each arm used FiLM, the same G_5000 input, and the same fold rows.",
         "The first drug-encoder layer accepted the native feature width for each arm and",
         "produced 400 outputs. Later layers shared architecture and initialization. Each",
@@ -201,12 +215,12 @@ def report_readme(tables):
         "and gives each parent equal weight. The paired result uses profiles with defined",
         "scores for both arms before averaging within parent. Fold SD describes dispersion",
         "across the three folds for this single seed.", "",
-        "- [Per-fold metrics](figure/data/runs.csv) and [equal-fold summary](figure/metrics.png)",
-        "- [Native training loss and validation MSE](figure/learning_curves.png)",
-        "- [Test metrics by measured dose](figure/metrics_cold_drug_dose.png)",
-        "- [Primary pooled result](figure/data/pooled.csv) and [paired effects](figure/data/paired.csv)",
-        "- [Run inventory](log/run_inventory.json) and [acceptance](log/acceptance.json)", "",
-        "Run `python figure/script/render.py --output <new-directory>` from this step to",
+        f"- [Per-fold metrics]({data}/runs.csv) and [equal-fold summary]({plots}/{metrics})",
+        f"- [Native training loss and validation MSE]({plots}/{learning})",
+        f"- [Test metrics by measured dose]({plots}/{dose})",
+        f"- [Primary pooled result]({data}/pooled.csv) and [paired effects]({data}/paired.csv)",
+        f"- [Run inventory]({log}run_inventory.json) and [acceptance]({log}acceptance.json)", "",
+        f"Run `python figure/script/render.py{renderer_args} --output <new-directory>` from this step to",
         "reproduce the plots using the checked-in CSV files.", "",
     ]
     return "\n".join(lines)
@@ -224,29 +238,38 @@ def prepare(args):
     RepresentationInputs(inputs, args.representations)
     scores, pooled, curves, inventory = read_matrix(
         args.matrix, inputs, args.representations, accepted)
-    tables = report_tables(scores, pooled, curves)
+    source = inputs.source
+    tahoe = source == "tahoe_bulk"
+    tables = report_tables(scores, pooled, curves, source)
     target = args.destination
     data = target / "figure/data"
+    log = target / "log"
+    if tahoe:
+        data /= "tahoe"
+        log /= "tahoe"
     data.mkdir(parents=True)
-    (target / "log").mkdir()
+    log.mkdir(parents=True)
     for name, frame in tables.items():
         frame.to_csv(data / f"{name}.csv", index=False)
     renderer = run_path(str(RENDERER))
-    renderer["prepare_axes"](data)
+    renderer["prepare_axes"](data, source)
     for output in (target / "figure", None):
         with TemporaryDirectory() as replay:
-            subprocess.run([sys.executable, str(RENDERER), "--data", str(data),
-                            "--output", str(output or replay)], check=True)
+            command = [sys.executable, str(RENDERER), "--data", str(data),
+                       "--output", str(output or replay), "--source", source]
+            if tahoe:
+                command.append("--prefixed")
+            subprocess.run(command, check=True)
             if output is None:
-                for name in FIGURES:
+                for name in figure_names(source):
                     if sha256(Path(replay) / name) != sha256(target / "figure" / name):
                         raise ValueError(f"fresh-process renderer differs: {name}")
-    (target / "README.md").write_text(report_readme(tables))
-    write_json(target / "log/run_inventory.json", dict(fits=inventory, mean_cell=accepted["mean_cell"]))
+    ((log if tahoe else target) / "README.md").write_text(report_readme(tables, source))
+    write_json(log / "run_inventory.json", dict(fits=inventory, mean_cell=accepted["mean_cell"]))
     files = {str(path.relative_to(target)): sha256(path)
              for path in sorted(target.rglob("*")) if path.is_file()}
-    write_json(target / "log/acceptance.json", dict(
-        schema="tsg-drug-emb-report-candidate-v1", status="candidate", files=files,
+    write_json(log / "acceptance.json", dict(
+        schema="tsg-drug-emb-report-candidate-v1", status="candidate", files=files, source=source,
         formal_acceptance_sha256=sha256(acceptance),
         inputs_sha256=sha256(args.inputs / "manifest.json"),
         representations_sha256=sha256(args.representations / "manifest.json"),

@@ -1,0 +1,28 @@
+{
+  "candidate_receipt_sha256": "d82402544cfe5b1029c0de75dc643913d269743a0c620853ce99fc22895022c6",
+  "files": {
+    "figure/data/tahoe/axis_segments.csv": "e49a1f9f32442d89eca20869d2ed692020aca143619a5da17c5fee9908b7f7c1",
+    "figure/data/tahoe/curves.csv": "cdd1f62a7218bead0cd06e54613d81105950602ada394573defa76766f185d65",
+    "figure/data/tahoe/dose.csv": "b2575f98db536922d9ffe946a6fc11ce0d6106e83cfc47089a5059eb1a6a40d5",
+    "figure/data/tahoe/paired.csv": "5b94cfa1f1d430d1dea65c512a4930e6c29c0235db436af5725149caab1e56bf",
+    "figure/data/tahoe/paired_parents.csv": "8d18819858a74b4cb003e2d197332414d1b54783df4606e2692c7d50256b1dfe",
+    "figure/data/tahoe/parent_pcc.csv": "451ed80667acf5132cac87162877e0c0e6f354e740b51671bffa5e848b2b13dc",
+    "figure/data/tahoe/pooled.csv": "f5de431368607f003d69274ca2a5b5abf8c0c7e8b313d11f72b282f1d6316d59",
+    "figure/data/tahoe/runs.csv": "11569bbe269fa7331fa0a317bcc94b4f74d863eab802f4cbc82c740daeaaaf91",
+    "figure/data/tahoe/summary.csv": "89f7c1a202b44ecb579619c501b937e51159c8409dd87a558ca646811fa888cc",
+    "figure/tahoe_learning_curves.png": "856015d7138922164ea22b4b245e21fe7c7bf64f940152029008d2f6f6ede0dc",
+    "figure/tahoe_metrics.png": "fa2eef0e2a6a2d5b643294e57862fefc0530b77a2f06a6aa03e3994472e1db17",
+    "figure/tahoe_metrics_cold_drug_dose.png": "071865ce305c9d1bcdc2ecf64108c3b133052224c0a87a1550d89fa626ada68a",
+    "log/tahoe/README.md": "8176ab53a61b497831d97fa9bdb07bae9de6ed56ff1b3d422da6bc96eacf3b3a",
+    "log/tahoe/run_inventory.json": "5f62f3bc674fa9d34263aa20690c7210d2ee5abb7d1ed33337c41164d5da85af"
+  },
+  "formal_acceptance_sha256": "46436a17ab9b2f229ab8063dfcb78079bafff4cad833d2b852c6c36b1996643b",
+  "fresh_csv_only_replay": "PASS",
+  "inputs_sha256": "aace570ca8d066cebc7152ba989b7653f1aa794d1b39bbe96014834524082b1d",
+  "renderer_sha256": "e824c0a3581db95c1dc716ac7a91cf9a1c975ca4a89a08f14a81f2167240eafd",
+  "representations_sha256": "4d00b23d6dcf0ddfbba4f60725b7f32701103a475f278e1db94eeebb968fbeac",
+  "schema": "tsg-drug-emb-report-acceptance-v1",
+  "source": "tahoe_bulk",
+  "status": "PASS",
+  "visual_review": "Reviewed all three actual Tahoe PNGs at readable scale. The aggregate chart shows four metrics with ordered arms and three fold dots. The eight learning panels distinguish training and validation and retain readable legends. The four dose panels label the measured 0.05, 0.5 and 5 \u00b5M concentrations. Axis breaks, titles and labels are visible."
+}
