@@ -832,6 +832,159 @@
       "run_records_json": "e6f8b2580f59c5275059bc6ce8a80eaad794a2b485f2a3943e6c3f8dad92d6dd"
     }
   },
+  "merger_verification_06_review_fixes": {
+    "branch": "impl/tsg-view-fixes",
+    "byte_stability": {
+      "changed_files": 0,
+      "command": "git diff --name-only dev~1..dev -- stage2/tsg_view/output/views stage2/tsg_view/output/truth stage2/tsg_view/output/report stage2/tsg_view/figure",
+      "pinned_digests": {
+        "formal_plan.json": "2f59a8704b416debc8bd8ea9a7bb0acbaa3f0a2bd0fa2f11f4060f6fca44bf29",
+        "formal_plan_manifest.json": "f5b6b249e4801ebc3fa90f34955f402d860a12d4dfe385e0b0ead0dbe890cfab",
+        "run_records.json": "e6f8b2580f59c5275059bc6ce8a80eaad794a2b485f2a3943e6c3f8dad92d6dd"
+      },
+      "result": "empty",
+      "verdict": "every product digest equals the sealed value the implementer reported; the review fixes are byte-neutral for views, truth, report and figures"
+    },
+    "code_identity": {
+      "moved_digests": [
+        {
+          "current_sha256": "93142306dd76f048601a3a0b5d467239bdb2a2bd75ad544b2091cb4a3f7a81ad",
+          "file": "formal.py",
+          "sealed_sha256": "242f88b3a83d1b121396f97219e622b8cc2bbb3297cac486853a68a904d26f6f",
+          "section": "code"
+        },
+        {
+          "current_sha256": "5aea9cffb9bf67a014e74c33b3f44b6a1829d53bedef198d169056c373e2b746",
+          "file": "learner.py",
+          "sealed_sha256": "4a03ebc5e9be3c7d4463d343930416b57f28019e82d12a26b96fa1a87d23a54e",
+          "section": "code"
+        },
+        {
+          "current_sha256": "1e5dbc5bbc0a0b79c795fb4832c01aad2ad9ca9bc15bbfe541d4f285493327f5",
+          "file": "matrix.py",
+          "sealed_sha256": "68da92b8608f3044ed425024b52a85f999e5fcabdfac8573523b967d7fced2b2",
+          "section": "code"
+        },
+        {
+          "current_sha256": "a46da414c3e4fffa4dd56bac38161ead68ad32b3118f91d87e43ec0b677c8da3",
+          "file": "views/__init__.py",
+          "sealed_sha256": "7af35a6b09d1b7f1aec9a11db23a8cb18b142b958b87e8acf8077bf90fa4c165",
+          "section": "code"
+        },
+        {
+          "current_sha256": "a46da414c3e4fffa4dd56bac38161ead68ad32b3118f91d87e43ec0b677c8da3",
+          "file": "__init__.py",
+          "sealed_sha256": "7af35a6b09d1b7f1aec9a11db23a8cb18b142b958b87e8acf8077bf90fa4c165",
+          "section": "learner_runtime"
+        },
+        {
+          "current_sha256": "5aea9cffb9bf67a014e74c33b3f44b6a1829d53bedef198d169056c373e2b746",
+          "file": "learner.py",
+          "sealed_sha256": "4a03ebc5e9be3c7d4463d343930416b57f28019e82d12a26b96fa1a87d23a54e",
+          "section": "learner_runtime"
+        }
+      ],
+      "note": "the drift is the reviewed deduplication/refactor change (formal.py, learner.py, matrix.py, views/__init__.py); verify reports it instead of hiding it. A replay still refuses the moved learner runtime: documented behaviour, not a regression.",
+      "status": "CODE_DRIFT",
+      "unchanged": "freeze.py and inputs.py match the seal exactly in both the code and learner-runtime inventories"
+    },
+    "date": "2026-11-22",
+    "dev_before_merge": "dd8361b",
+    "health": {
+      "check_paths": "PASS (exit 0): 7739 external-data literals, 0 unresolved; stage2 retired-step audit PASS",
+      "check_tracked": "PASS (exit 0): all scanned executable files tracked or documented expected-ignored"
+    },
+    "health_fix": {
+      "after": "check_paths.sh and check_tracked.sh both exit 0; the full suite is 192 OK again",
+      "commit": "49b2a49",
+      "finding": "the reviewed branch's new test_common.py used the synthetic fixture literal stage2/x.csv, which the stage2 retired-step audit flags as a stale step path (2 occurrences, line 67). check_paths.sh was red on the merged tree.",
+      "rejected_alternative": "a script/stage2_path_whitelist.txt entry was not used: that whitelist is reserved for frozen recorded evidence, and test_common.py is live code.",
+      "remedy": "test-fixture only: the synthetic path became some/dir/x.csv, so the audit no longer reads it as a retired step root. The assertion still checks that a repo-relative path is returned as-is; no feature code, product, test intent or assertion count changed."
+    },
+    "merge_commit": "1bf889e",
+    "merge_result": "no conflicts; 'ort' strategy; 22 files changed, 56711 insertions(+), 211 deletions(-); no manual resolution",
+    "merged_commits": [
+      "3aabb8f",
+      "8f3250a",
+      "4253c86",
+      "8352e26",
+      "4e51b27"
+    ],
+    "note_for_receipt_refresh": "the final acceptance receipt must be refreshed because formal_verify.json changed; replays of the sealed runs now refuse a moved learner runtime (documented CODE_DRIFT behaviour), and the plan/run records are unchanged",
+    "scope_check": {
+      "command": "git diff --name-only dev..impl/tsg-view-fixes",
+      "content": "execution code (common, evidence, formal, learner, matrix, render, report, truth, views/*), tests (test_common, test_evidence, plus updated formal/learner/matrix/render/truth/fixtures), log/REVIEW_FIXES.md, log/ticket-03-discarded-members.csv and log/build-03.json",
+      "files": 22,
+      "forbidden_paths": "none: no change under output/views, output/truth, output/report, figure or execution/freezes",
+      "gitignored_candidate_note": "output/runs/formal_verify.json cannot appear in a tracked diff: stage2/tsg_view/output/runs/ is gitignored (.gitignore:229). The regenerated report is an untracked candidate artifact in the main checkout."
+    },
+    "tests": {
+      "suite": {
+        "command": "/home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+        "note": "run once on the merge commit and again after the test-fixture path fix below",
+        "ran": 192,
+        "result": "OK",
+        "wall_seconds": [
+          99.164,
+          101.662
+        ]
+      },
+      "test_common": {
+        "ran": 7,
+        "result": "OK"
+      },
+      "test_evidence": {
+        "ran": 7,
+        "result": "OK"
+      }
+    },
+    "untracked_artifact": {
+      "meaning": "the artifact changed only because verify now records the two extra moved digests (learner-runtime inventory); products, runs and the PINNED plan/run_records digests are unchanged",
+      "path": "stage2/tsg_view/output/runs/formal_verify.json",
+      "sha256": "c0cbafd9d1881eb06b1af7bc1bc1ca87a4b42401d1f44f353b5e35059fa04bbe",
+      "was": "ad3d96beaf8df570ac99683cb7dee07a72520c4a5ddaf5a8f6b6b4f577a640c8"
+    },
+    "verify": {
+      "command": "python stage2/tsg_view/execution/formal.py verify --candidate stage2/tsg_view/output/runs --freezes stage2/tsg_view/execution/freezes --truth stage2/tsg_view/output/truth --native-source pert_model/TranSiGen/source --device cuda",
+      "determinism": "a second identical run rewrote the report byte-identically (cmp clean) with the same sha256, so the verify artifact is deterministic",
+      "exit_code": 0,
+      "formal_verify_json_sha256": "c0cbafd9d1881eb06b1af7bc1bc1ca87a4b42401d1f44f353b5e35059fa04bbe",
+      "full_arm": {
+        "anchor_fold_mean": {
+          "count": 2,
+          "pass": 2,
+          "sources": [
+            "tahoe_bulk",
+            "tenv"
+          ]
+        },
+        "anchor_origins": {
+          "count": 6,
+          "pass": 6,
+          "statuses": [
+            "PASS"
+          ]
+        },
+        "anchor_seed": 42,
+        "sensitivity_by_level": {
+          "fold_mean": 2,
+          "origin": 6
+        },
+        "sensitivity_count": 8,
+        "sensitivity_seeds": [
+          43
+        ],
+        "sensitivity_status": [
+          "sensitivity"
+        ]
+      },
+      "mode": "formal",
+      "origins": 45,
+      "plan_sha256": "2f59a8704b416debc8bd8ea9a7bb0acbaa3f0a2bd0fa2f11f4060f6fca44bf29",
+      "sha_matches_implementer_claim": true,
+      "status": "PASS"
+    }
+  },
   "post_run_fix": {
     "commit": "a2e2970",
     "fix": {
