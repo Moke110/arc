@@ -109,6 +109,8 @@ class SoloViewTest(SoloFixture):
                                                              "layers"}),
                          [])
         # One row per condition, so nine unique condition keys.
+        # Deterministic product ordering by the chosen profile_id.
+        self.assertEqual(list(obs["profile_id"]), sorted(obs["profile_id"]))
         keys = np.asarray([views.condition_key(row.cell_line, row.drug_parent_inchikey,
                                                row.dose_um)
                            for row in obs.itertuples()])
