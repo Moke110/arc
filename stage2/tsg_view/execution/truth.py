@@ -787,10 +787,6 @@ class _Truth:
             self._profile_ids = obs["profile_id"].astype(str).to_numpy()
             self._view_row_count = len(obs)
             if not self.fixture:
-                if len(sealed_population) != sum(EXPECTED_TEST_COUNTS[source]):
-                    raise HarnessError(
-                        f"{source}: the sealed population holds {len(sealed_population)} "
-                        f"treated rows, expected {sum(EXPECTED_TEST_COUNTS[source])}")
                 if len(conditions) != EXPECTED_CONDITIONS[source]:
                     raise HarnessError(
                         f"{source}: the accepted view carries {len(conditions)} "

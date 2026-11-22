@@ -1,0 +1,56 @@
+{
+  "columns": [
+    "profile_id",
+    "cell_line",
+    "drug_parent",
+    "dose_um",
+    "members",
+    "count",
+    "partition"
+  ],
+  "conditions": 153,
+  "control_rule": "normalize-of-sum over the union of the members' matched_control_group vehicle counts (never a mean of normalized values)",
+  "coverage": {
+    "fold_test_profiles": 469,
+    "replicated_test_conditions": 153,
+    "replicated_test_profiles": 469
+  },
+  "delta_definition": "pooled X - pooled control, float32 elementwise; pooled X = log1p_cp10k of the summed member retained counts on their own selected-axis total",
+  "fold": 0,
+  "generated_by": "stage2/tsg_view/execution/truth.py",
+  "kind": "condition_mean",
+  "merge_cross_check": {
+    "available": true,
+    "checked_conditions": 153,
+    "equal": true,
+    "merge_product_manifest_sha256": "8bb9bfb781ada22237b5a16a3dfc88e4c831876f27fb50492d5c00d3666df257"
+  },
+  "outputs": {
+    "delta.npy": {
+      "bytes": 3060128,
+      "file": "delta.npy",
+      "sha256": "1244750d80397e5706d951dab18f8fb3179546ceb0c508812e3e8fc7ce4be769"
+    },
+    "population.csv": {
+      "bytes": 26007,
+      "file": "population.csv",
+      "sha256": "cc744f5893732d8b0968b84c234c34da9ae30989fdff125b1c9fad7ac57ea9e8"
+    }
+  },
+  "partition": "test",
+  "partition_purity": "every member of every listed condition is in the test partition of this fold",
+  "pooling_rule": "Sum the members' retained G_5000 integer counts per condition (int64), normalize the sum on its own selected-axis total; pool the union of the members' matched control groups' vehicle counts the same way; delta = X - control.",
+  "profiles": 469,
+  "scenario": "cold-drug-dose",
+  "schema": "tsg-view-truth-fold-v1",
+  "source": "tenv",
+  "split_provenance": {
+    "file": "stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tenv",
+    "fold": 0,
+    "morgan_sha256": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+    "parents_sha256": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+    "population_sha256": "eb24326f5d37ca5aecfaaf9c7a9e95d7a14847eddf43b4d473edd9acd641e15b",
+    "scenario": "cold-drug-dose",
+    "splits_sha256": "0fa5ea4b4edd36a6a00b229afb3ffd5257d5f088bf0dd964ff521a14016dd17b"
+  }
+}

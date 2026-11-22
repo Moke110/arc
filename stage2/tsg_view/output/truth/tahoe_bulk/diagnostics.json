@@ -1,0 +1,89 @@
+{
+  "condition_population": {
+    "all_conditions": 52777,
+    "member_count_histogram": {
+      "16": 50,
+      "2": 7941,
+      "3": 1400,
+      "4": 350
+    },
+    "note": "the replicated-condition population is not a random subset of the source: repeats concentrate on multi-plate, multi-article conditions",
+    "replicated_conditions": 9741,
+    "replicated_profiles": 22282
+  },
+  "delta_source": {
+    "accepted_view_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+    "definition": "delta = X - matched control (mean of normalized vehicles)",
+    "sealed": {
+      "file": "stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tahoe_bulk",
+      "morgan_sha256": "f61b3979ed6cb234b7af6a19bf48008cb873029c63dcdba2359e36278be4bf3e",
+      "parents_sha256": "f5164f16e5c5b719b35b00812003946c91d65829051a51dc8c830c5dac8de139",
+      "population_sha256": "c69ef0096194f495c2c2a4fbd3b5cfc47be93607ae19ea2e2ef2090b0784790e",
+      "splits_sha256": "cf5306d073e373c25477a3463c0c3b843cb35db869c64cd33ddf6d9345f2ffb2"
+    },
+    "view": "accepted full view-5k"
+  },
+  "file": {
+    "bytes": 2087912,
+    "name": "noise_floor.csv",
+    "rows": 9741,
+    "sha256": "7ebb628a222a138169405baca7159e5219c1bd299d492fbc11672c6702c01860"
+  },
+  "label": "heuristic diagnostic",
+  "noise_floor": {
+    "adr_reference_median": 0.07,
+    "conditions": 9741,
+    "definition": "sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=1)",
+    "deviation": 0.02519978877546028,
+    "mean": 0.14080319217381793,
+    "median": 0.09519978877546029,
+    "unit": "same as Delta RMSE"
+  },
+  "noise_floor_population": {
+    "adr_reference_median": 0.07,
+    "conditions": 9741,
+    "definition": "sqrt(mean over genes of the within-condition per-gene variance of Delta, ddof=0) = RMS deviation from the condition mean; the variant that reproduces ADR 0082",
+    "deviation": 0.00025318359737136475,
+    "mean": 0.10259702766174636,
+    "median": 0.07025318359737137,
+    "unit": "same as Delta RMSE"
+  },
+  "pcc_ceiling": {
+    "adr_reference": "0.43-0.52",
+    "definition": "profile-weighted mean of sqrt(rho_c) over replicated conditions",
+    "input_condition_population": "every replicated condition of the source",
+    "input_conditions": 9741,
+    "input_profiles": 22282,
+    "label": "heuristic diagnostic",
+    "note": "heuristic diagnostic, not a measurement-error model; the input conditions are not a random subset of the source",
+    "unweighted_mean_sqrt_rho": 0.43525127861310187,
+    "value": 0.42828477670427056,
+    "weighting": "member-profile count per replicated condition"
+  },
+  "repeat_correlation": {
+    "adr_reference_median": 0.207,
+    "conditions_with_defined_rho": 9741,
+    "definition": "per condition: mean pairwise Pearson correlation of the member Delta vectors over genes; per source: the median",
+    "deviation": -0.00035363751963155,
+    "pairs": 20241,
+    "rho_median_condition": 0.25928064501270565,
+    "rho_median_pair": 0.20664636248036844
+  },
+  "replicated_test_conditions": {
+    "fold-0": {
+      "conditions": 595,
+      "profiles": 1340
+    },
+    "fold-1": {
+      "conditions": 700,
+      "profiles": 1500
+    },
+    "fold-2": {
+      "conditions": 1800,
+      "profiles": 3900
+    }
+  },
+  "scenario": "cold-drug-dose",
+  "schema": "tsg-view-truth-diagnostics-v1",
+  "source": "tahoe_bulk"
+}
