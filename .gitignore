@@ -183,6 +183,14 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2/02_models_tenv-5k/figure/data/*.csv
 !/stage2/02_models_tenv-5k/log/frozen-inputs/*.csv
 
+# HVG-DEG axes and compact selection evidence. Keep candidates local.
+!/stage2/02_axis_view/02.1_hvg-deg/output/
+/stage2/02_axis_view/02.1_hvg-deg/output/*
+!/stage2/02_axis_view/02.1_hvg-deg/output/api/
+!/stage2/02_axis_view/02.1_hvg-deg/output/release/
+!/stage2/02_axis_view/02.1_hvg-deg/output/release/**/*.csv
+/stage2/02_axis_view/02.1_hvg-deg/execution/checkpoints/
+
 !/stage2/03_tsg_drug_emb/output/
 /stage2/03_tsg_drug_emb/output/*
 !/stage2/03_tsg_drug_emb/output/api/

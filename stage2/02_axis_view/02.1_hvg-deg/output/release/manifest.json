@@ -1,0 +1,86 @@
+{
+  "algorithm": "tier-first-deg1000-f1000-four-axes-v3",
+  "axes": {
+    "2000": "cdbac4a64dfd2d4faa1fd353a479a54775a51bfbb8dd312ed41d8b22233dce57",
+    "3000": "105b7c40b8d19a7f361bfef4d36745fd3c9122c8a62af0a240d8ff8efadc7245",
+    "4000": "26c5bd988e87ed7d516133df91eebd0ee285a038be89ec006f876efdf3d23680",
+    "5000": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e"
+  },
+  "common_axis": {
+    "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "size": 18164
+  },
+  "method": {
+    "stage2/01_bases/execution/build_gene_axis.py": "d51864890c68a2877dcc29662b7fafdebe90db1bcd809b2eb79a89bb77303262",
+    "stage2/01_bases/output/api/bases/gene_axis.py": "3ef0efd0bee18a2f3126d613fdddc00cf3f6cddee3ca18bb5b25241fcd2c737d"
+  },
+  "outputs": {
+    "evidence/disease-fusion/af.deg1000.csv": {
+      "sha256": "c0aad01fcb93f70831c84fe51d9371847fecdbfd1bbe6becec1b9ccd135ef177"
+    },
+    "evidence/disease-fusion/af.union.csv": {
+      "sha256": "c0aad01fcb93f70831c84fe51d9371847fecdbfd1bbe6becec1b9ccd135ef177"
+    },
+    "evidence/disease-fusion/catalog.json": {
+      "sha256": "6beb71773c59e70c2cca0a77eed12356d0f608506b960d1aad5322564af039b1"
+    },
+    "evidence/disease-fusion/genetic_cardiomyopathy.deg1000.csv": {
+      "sha256": "12e41d14fbd6987cdc83eab13821923c0e61f097d121b20f7b4e1c6fb450261b"
+    },
+    "evidence/disease-fusion/genetic_cardiomyopathy.union.csv": {
+      "sha256": "9725293ae4a4d41d4cee9f909cc5cb8e9efc3eef2851255a297f09a62170a5f5"
+    },
+    "evidence/disease-fusion/icm.deg1000.csv": {
+      "sha256": "284ed941f9acf197b9be7a7cc2c9d8e0ade636794240a1144a13e858222c999f"
+    },
+    "evidence/disease-fusion/icm.union.csv": {
+      "sha256": "3eb31909fc6b2341d7dc20469a590a6fa3a39dbb5437d66ff6223de2294d4351"
+    },
+    "evidence/disease-fusion/manifest.json": {
+      "sha256": "f871d423870df0d60a72aa27796ff0d1184b8c19b7df93b3a3fda6748a05c4ca"
+    },
+    "evidence/disease-fusion/nhf.deg1000.csv": {
+      "sha256": "a19d69a872b9d6d9d7e7df23dc221e76b319bd3a49fbfee2c1325acef14b0789"
+    },
+    "evidence/disease-fusion/nhf.union.csv": {
+      "sha256": "acb02efa6efb351c3cbedcdb2a3289c6fcde5e24f60ecbb3be06742022b70442"
+    },
+    "evidence/disease-fusion/tox.deg1000.csv": {
+      "sha256": "04ae9a8451d18e49df525244c924ac0b2e5ab21823715be2478d441b577bf02b"
+    },
+    "evidence/disease-fusion/tox.union.csv": {
+      "sha256": "6978944f1f4cbb76a73f6feb3af4784be712cf816865e586820f4d51e467e0e6"
+    },
+    "evidence/gene-axis/accepted_manifest.json": {
+      "sha256": "187de15ed2eecbd6357cad6fa2aef2c792f4eafe1fdd4467cde4370b64ea2ff8"
+    },
+    "evidence/gene-axis/axis_composition.csv": {
+      "sha256": "6aaa7116f2d9d3dae87a306e64bafaeea0e3ca97a1dfdd943c22f9eff0ffc331"
+    },
+    "evidence/gene-axis/candidate_rank_sum.csv": {
+      "sha256": "a5f8255488ad011e8153b7782ff9e899f2edd12257f8553c04e131378a3de10e"
+    },
+    "evidence/gene-axis/source_topn_coverage.csv": {
+      "sha256": "54c15623dd65c988e3a7d813ae778beb44df8fe03a7f8d9262f95c42c66a70c4"
+    },
+    "evidence/tenv-hvg/descriptive.csv": {
+      "sha256": "1291385e559cf8f5a04c958acc7ec9241113d89aaeb783482b77332ce7f423ca"
+    },
+    "evidence/tenv-hvg/manifest.json": {
+      "sha256": "953103a1093e4364158075553dcb036c560c14fa61ea95fa8f4157a8a881c3a6"
+    },
+    "gene_axis_2000.csv": {
+      "sha256": "cdbac4a64dfd2d4faa1fd353a479a54775a51bfbb8dd312ed41d8b22233dce57"
+    },
+    "gene_axis_3000.csv": {
+      "sha256": "105b7c40b8d19a7f361bfef4d36745fd3c9122c8a62af0a240d8ff8efadc7245"
+    },
+    "gene_axis_4000.csv": {
+      "sha256": "26c5bd988e87ed7d516133df91eebd0ee285a038be89ec006f876efdf3d23680"
+    },
+    "gene_axis_5000.csv": {
+      "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e"
+    }
+  },
+  "schema": "stage2-hvg-deg-axes-v1"
+}
