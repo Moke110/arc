@@ -14,7 +14,7 @@
     "a_solo_view_builds": {
       "solo-tahoe": {
         "conditions": 52777,
-        "elapsed_seconds": 82.576,
+        "elapsed_seconds": 84.556,
         "evidence": {
           "chosen_profile_id_sha256": "ee072251a697dc11be3a90ac3f5e69d6794da335281952a34acb280b6b9ea6fa",
           "discarded_members": 12541,
@@ -31,12 +31,12 @@
             "sha256": "9261d799dcddbf607209d89ff3a409e8a3a0f104340f201682575b46bc1cc308"
           },
           "tahoe_bulk.h5ad": {
-            "bytes": 2327784462,
-            "sha256": "c65c50e0bde5119d349d756783bf9fb1be1232be96da206f01940fe14fa53015"
+            "bytes": 2328629910,
+            "sha256": "d689a4c74b194918f6dfc7029ea77684e3769e91cc85962bb4b788d7c3b1eb56"
           },
           "tahoe_bulk.json": {
             "bytes": 3413,
-            "sha256": "f4ed5b3634592c486ea0887607a11b976f3b329b396812533b1d192f714f60d4"
+            "sha256": "d4448fbb361ba109c10a5e3d8c5fc6da40c13d379d3f5e30d0d32411669fdf71"
           },
           "tahoe_bulk.members.csv": {
             "bytes": 3443734,
@@ -47,15 +47,15 @@
             "sha256": "5b06a394f67d80e723e1c6e79df2167ef8f4ae09bbb3c839b7ece62fe97785da"
           }
         },
-        "manifest_sha256": "f4ed5b3634592c486ea0887607a11b976f3b329b396812533b1d192f714f60d4",
+        "manifest_sha256": "d4448fbb361ba109c10a5e3d8c5fc6da40c13d379d3f5e30d0d32411669fdf71",
         "mode": "payload",
         "payload": {
           "tahoe_bulk.h5ad": {
-            "bytes": 2327784462,
-            "sha256": "c65c50e0bde5119d349d756783bf9fb1be1232be96da206f01940fe14fa53015"
+            "bytes": 2328629910,
+            "sha256": "d689a4c74b194918f6dfc7029ea77684e3769e91cc85962bb4b788d7c3b1eb56"
           }
         },
-        "peak_rss_kib": 581588,
+        "peak_rss_kib": 576620,
         "product_manifest_file": "stage2/tsg_view/output/views/solo/tahoe_bulk.json",
         "rows": 52777,
         "source": "tahoe_bulk",
@@ -65,7 +65,7 @@
       },
       "solo-tenv": {
         "conditions": 1377,
-        "elapsed_seconds": 4.475,
+        "elapsed_seconds": 4.673,
         "evidence": {
           "chosen_profile_id_sha256": "40d3c6e0880edde29bb63d9909f395e1713c9f9bebbfffa807701208e30b3bd2",
           "discarded_members": 2829,
@@ -82,12 +82,12 @@
             "sha256": "c82baef3498f0f3e1828b651bd1a51f6b3df50e01db275faed95dcc3c4fa8d1e"
           },
           "tenv.h5ad": {
-            "bytes": 42891392,
-            "sha256": "5e83752a9f72af1f9dad2c00f12b2c5c7131432ebb2257b157cdbc551a1fbdcd"
+            "bytes": 42914440,
+            "sha256": "5f4c537e64a387158391312d92a93401225037c093f655204b1938f3b7dc7b86"
           },
           "tenv.json": {
             "bytes": 3365,
-            "sha256": "48a46f4893ace05d746a59444b380f6714c6fb00bf324d1a2411767722ca6327"
+            "sha256": "63418c90dff97a5253072b962ca6e9ef00dfc28aa94dd7f15f34d559eb785c2f"
           },
           "tenv.members.csv": {
             "bytes": 180368,
@@ -98,15 +98,15 @@
             "sha256": "65b474ae23f487a072156ac091e4d29d185dcac09ecdf3c0b67803836e0bb92c"
           }
         },
-        "manifest_sha256": "48a46f4893ace05d746a59444b380f6714c6fb00bf324d1a2411767722ca6327",
+        "manifest_sha256": "63418c90dff97a5253072b962ca6e9ef00dfc28aa94dd7f15f34d559eb785c2f",
         "mode": "payload",
         "payload": {
           "tenv.h5ad": {
-            "bytes": 42891392,
-            "sha256": "5e83752a9f72af1f9dad2c00f12b2c5c7131432ebb2257b157cdbc551a1fbdcd"
+            "bytes": 42914440,
+            "sha256": "5f4c537e64a387158391312d92a93401225037c093f655204b1938f3b7dc7b86"
           }
         },
-        "peak_rss_kib": 364304,
+        "peak_rss_kib": 363956,
         "product_manifest_file": "stage2/tsg_view/output/views/solo/tenv.json",
         "rows": 1377,
         "source": "tenv",
@@ -117,7 +117,7 @@
     },
     "b_solo_deepest_view_builds": {
       "conditions": 1377,
-      "elapsed_seconds": 4.307,
+      "elapsed_seconds": 4.539,
       "evidence": {
         "chosen_profile_id_sha256": "da21475242e812068650f9cfa249c7d894fa335e24818e93836ab473cb9d65ac",
         "discarded_members": 2829,
@@ -134,12 +134,12 @@
           "sha256": "5445d95163100cd455c63a595c43082528ead7b6f41ea2bb271c06d6de468570"
         },
         "tenv.h5ad": {
-          "bytes": 43645212,
-          "sha256": "9caa04c8885eaf25658dcc9ee02f723da748f6c5cac27fcbe6ec2b5e24c40ae8"
+          "bytes": 43668260,
+          "sha256": "13bb2d24f032b65bf0c49fdce70379aca39fec89e137ca6743f45eb66c088f83"
         },
         "tenv.json": {
           "bytes": 3335,
-          "sha256": "03875da5825d4e77cb71737b065b89856006cd6da528c385903aa4dcee1feb29"
+          "sha256": "04193b9e05507e0c6d3d625aee7d71a86c30af734abbe22d25e49aacf7a69166"
         },
         "tenv.members.csv": {
           "bytes": 180356,
@@ -150,15 +150,15 @@
           "sha256": "85f1d4cae3465523eaa356b6c4e5bb06a96f94892b1ddaa17b5222efde55ac51"
         }
       },
-      "manifest_sha256": "03875da5825d4e77cb71737b065b89856006cd6da528c385903aa4dcee1feb29",
+      "manifest_sha256": "04193b9e05507e0c6d3d625aee7d71a86c30af734abbe22d25e49aacf7a69166",
       "mode": "payload",
       "payload": {
         "tenv.h5ad": {
-          "bytes": 43645212,
-          "sha256": "9caa04c8885eaf25658dcc9ee02f723da748f6c5cac27fcbe6ec2b5e24c40ae8"
+          "bytes": 43668260,
+          "sha256": "13bb2d24f032b65bf0c49fdce70379aca39fec89e137ca6743f45eb66c088f83"
         }
       },
-      "peak_rss_kib": 364188,
+      "peak_rss_kib": 363160,
       "product_manifest_file": "stage2/tsg_view/output/views/solo-deepest/tenv.json",
       "rows": 1377,
       "source": "tenv",
@@ -171,12 +171,12 @@
         "condition_partition_map_equal_to_sealed": true,
         "conditions": 1377,
         "delta_kind": "expression_minus_control",
-        "elapsed_seconds": 5.77,
+        "elapsed_seconds": 3.0,
         "freeze_dir": "execution/freezes/solo-deepest/tenv (worktree-local ignored payload)",
-        "manifest_sha256": "14f5028536886b64d3190036d065c733a57f9fa9fc6f6c7091d6faacc9e99ec1",
+        "manifest_sha256": "322ad2b4b205a70b2d0cf09911fde9ba296a89a33369fc871b9292ff593d1a53",
         "outputs": {
           "all_obs.csv": "c8bfc2ec22db52e748ea504773d0681c33bba732936bf9d043095df686b968e1",
-          "config.json": "486f32c8548630b62500e11b0c7ced960d896be67f0c62015f79fa84dfc20915",
+          "config.json": "3249b91a7ffdbdd4e5f16a871fff5e904080ea351627a6988d0258f67998218a",
           "control.npy": "a85a983246ae9c81636ab318f8bdd6f495408e62d1e43a3f6497f1a15161d367",
           "control_sources.csv": "91fe2b25e804ee75a05d5f7ddf975a35c3e2f2090d0c1377839805bd9cd6ac2b",
           "expression.npy": "6ecd16a9a604439130c12ba085e6a8c4cbe821a4997483403605cefcd7056e44",
@@ -187,7 +187,7 @@
           "population.csv": "e4a63bf224524cbb8efae4c67291ee2d2ab863aa751665a21952995edb2cd167",
           "splits.csv": "6e17e8d3d535c9848bdddaef6add5cbfa7934df8e2560324f24feb1e83a9ab05"
         },
-        "peak_rss_kib": 379420,
+        "peak_rss_kib": 382524,
         "rows": 1377,
         "sealed_keys_covered": 8262,
         "source": "tenv",
@@ -197,16 +197,16 @@
         "view": "solo-deepest",
         "worktree_artifact": "/tmp/arc-tsg-03/output-freezes/solo-deepest/tenv"
       },
-      "solo-tahoe": {
+      "solo-tahoe_bulk": {
         "condition_partition_map_equal_to_sealed": true,
         "conditions": 52777,
         "delta_kind": "expression_minus_control",
-        "elapsed_seconds": 25.3,
+        "elapsed_seconds": 27.04,
         "freeze_dir": "execution/freezes/solo/tahoe_bulk (worktree-local ignored payload)",
-        "manifest_sha256": "08dc80144deb34aad022cc3bd44cfe1a59cfbb20efdd675d0db22c1b2abf88a2",
+        "manifest_sha256": "7932e88111ef7b0965d0c6adbee1e377193e658ccd039e50b9293a10c978075f",
         "outputs": {
           "all_obs.csv": "96e647003d6f8a399aff8707e6076ae2db7c3acd9d6ef14037c8c45da55d2bd9",
-          "config.json": "da59855b297f95dff7b55bc3791f294890119471525b9a676b45e4d6cfd091f3",
+          "config.json": "77e76aeee16f36886a49a3a5193973ff9a80bb4a1d5b7a876634e87aa03f9189",
           "control.npy": "5f4d4effb37d860ad1cc4311d7841a950539aa56039785ca226caaaa5fdd0970",
           "control_sources.csv": "08229dc7de7626c87c01593c287a7e75c465c7c0ccd803435c2b9b08373cde60",
           "expression.npy": "b4e340d6ae7bfe53e861e44254842864ac52577338ae5e6293228f3308385f01",
@@ -217,7 +217,7 @@
           "population.csv": "7615bf869f06aed5bd8a6c7f0a2f7b707a6de2e9018a7f455c6e3c6ef79d1dbc",
           "splits.csv": "429c9dcbf343dfc2c5c9986a2f1ac92475dd308e161aae1ee5e15c7d78ee36d1"
         },
-        "peak_rss_kib": 2775444,
+        "peak_rss_kib": 2786072,
         "rows": 52777,
         "sealed_keys_covered": 6336,
         "source": "tahoe_bulk",
@@ -233,10 +233,10 @@
         "delta_kind": "expression_minus_control",
         "elapsed_seconds": 3.03,
         "freeze_dir": "execution/freezes/solo/tenv (worktree-local ignored payload)",
-        "manifest_sha256": "bf63c45845ea39b17074ae2a3fce955feeccd0ee27f15843887ed4920da8c86a",
+        "manifest_sha256": "f2f0e5565b9e7be8385569474e741c3323d3a475f1286f6145997a41f42525b8",
         "outputs": {
           "all_obs.csv": "5a7792d6e9ca7ca660c3a25ed6c6733fb26f484ad66529853bf633fa91a962f6",
-          "config.json": "9f637ce9b17d9fabcddc2232f02cfb005a1f72086cd3a231d57947aff8c07870",
+          "config.json": "32ddfc4794b9258e18d76d991dd2cacbc01a57eb0a96adc9bbb3a1116a7844f2",
           "control.npy": "8a34bc21656a3ea167f682a3da47d7632fd1d777ec8e87efaf4b10debbb4005c",
           "control_sources.csv": "8a618788ede4e8e07c02dd48cccdd7a5e3e0a0d5d04734d729bcea6c0af78ecf",
           "expression.npy": "f44de3878d04ea2a2837843bf0144f30227de5870e097c169274b42139d3c072",
@@ -247,7 +247,7 @@
           "population.csv": "f8584d31450b65aeff181682b4962cfd328bbb9e5ad75bb84adc5473bdb0eb2d",
           "splits.csv": "76f394a5978f6fe5f43a65891335f37021ee52ad4d59a608d48fd0e233486aa7"
         },
-        "peak_rss_kib": 379360,
+        "peak_rss_kib": 379420,
         "rows": 1377,
         "sealed_keys_covered": 8262,
         "source": "tenv",
@@ -261,89 +261,91 @@
     "d_bounded_gpu_smoke_fits": {
       "solo": {
         "best_epoch": 2,
-        "children_peak_rss_kib": 1809984,
+        "children_peak_rss_kib": 1810444,
         "device": "cuda",
-        "driver_elapsed_seconds": 14.372,
+        "driver_elapsed_seconds": 13.973,
         "epochs": 2,
         "epochs_run": 2,
         "fold": 0,
         "freeze": "execution/freezes/solo/tenv",
-        "freeze_manifest_sha256": "bf63c45845ea39b17074ae2a3fce955feeccd0ee27f15843887ed4920da8c86a",
+        "freeze_manifest_sha256": "f2f0e5565b9e7be8385569474e741c3323d3a475f1286f6145997a41f42525b8",
         "phases": [
           {
-            "elapsed_seconds": 4.388,
+            "elapsed_seconds": 3.735,
             "phase": "train",
             "returncode": 0
           },
           {
-            "elapsed_seconds": 3.273,
+            "elapsed_seconds": 3.384,
             "phase": "replay",
             "returncode": 0
           },
           {
-            "elapsed_seconds": 3.195,
+            "elapsed_seconds": 3.424,
             "phase": "test",
             "returncode": 0
           },
           {
-            "elapsed_seconds": 3.495,
+            "elapsed_seconds": 3.429,
             "phase": "replay",
             "returncode": 0
           }
         ],
-        "replay": "train -> replay -> test -> replay in fresh processes; every phase exits 0 (the learner rejects any non-bit-exact replay)",
+        "replay": "train -> replay -> test -> replay in fresh processes; every phase exits 0 and the learner rejects a non-bit-exact replay",
         "rows": 64,
-        "run_manifest_sha256": "332d4b99ce5583160cd36f32fed767a7168f5c33aa769aea7057428d80303734",
+        "run_manifest_sha256": "90aa2a631f71bedf534a881542775001a0fd44791217bb119602f679ccb5796a",
         "seed": 42,
         "source": "tenv",
         "status": "complete",
-        "training_elapsed_seconds": 3.586,
-        "training_peak_rss_kib": 1726628,
+        "training_elapsed_seconds": 2.837,
+        "training_peak_rss_kib": 1726924,
         "validation_mse": 0.6100605130195618,
-        "view": "solo"
+        "view": "solo",
+        "view_product_sha256": "63418c90dff97a5253072b962ca6e9ef00dfc28aa94dd7f15f34d559eb785c2f"
       },
       "solo-deepest": {
         "best_epoch": 2,
-        "children_peak_rss_kib": 1810588,
+        "children_peak_rss_kib": 1810684,
         "device": "cuda",
-        "driver_elapsed_seconds": 13.739,
+        "driver_elapsed_seconds": 14.232,
         "epochs": 2,
         "epochs_run": 2,
         "fold": 0,
         "freeze": "execution/freezes/solo-deepest/tenv",
-        "freeze_manifest_sha256": "14f5028536886b64d3190036d065c733a57f9fa9fc6f6c7091d6faacc9e99ec1",
+        "freeze_manifest_sha256": "322ad2b4b205a70b2d0cf09911fde9ba296a89a33369fc871b9292ff593d1a53",
         "phases": [
           {
-            "elapsed_seconds": 3.749,
+            "elapsed_seconds": 3.797,
             "phase": "train",
             "returncode": 0
           },
           {
-            "elapsed_seconds": 3.298,
+            "elapsed_seconds": 3.514,
             "phase": "replay",
             "returncode": 0
           },
           {
-            "elapsed_seconds": 3.3,
+            "elapsed_seconds": 3.487,
             "phase": "test",
             "returncode": 0
           },
           {
-            "elapsed_seconds": 3.391,
+            "elapsed_seconds": 3.435,
             "phase": "replay",
             "returncode": 0
           }
         ],
-        "replay": "train -> replay -> test -> replay in fresh processes; every phase exits 0 (the learner rejects any non-bit-exact replay)",
+        "replay": "train -> replay -> test -> replay in fresh processes; every phase exits 0 and the learner rejects a non-bit-exact replay",
         "rows": 64,
-        "run_manifest_sha256": "57f925241d1d53bc7e4a07dbb9f77f6472033a66bbcbb4d05fdef2b853232a77",
+        "run_manifest_sha256": "05f956b1469b74b9d4255ecd7351ede25d4684aa12fc0439ab7acf78048cce24",
         "seed": 42,
         "source": "tenv",
         "status": "complete",
-        "training_elapsed_seconds": 2.857,
-        "training_peak_rss_kib": 1726872,
+        "training_elapsed_seconds": 2.9,
+        "training_peak_rss_kib": 1727072,
         "validation_mse": 0.5280459523200989,
-        "view": "solo-deepest"
+        "view": "solo-deepest",
+        "view_product_sha256": "04193b9e05507e0c6d3d625aee7d71a86c30af734abbe22d25e49aacf7a69166"
       }
     },
     "e_health_checks": {
@@ -384,11 +386,13 @@
         "deepest_total_less_than_solo": 0,
         "delta_equals_x_minus_control": true,
         "discarded_members": 2829,
+        "member_count_columns_match_member_table": true,
         "member_counts": {
           "3": 1320,
           "4": 48,
           "6": 9
         },
+        "per_condition_columns_present": true,
         "retained_total_sum_solo": 481664915,
         "retained_total_sum_solo_deepest": 682243371,
         "rows": 1377,
