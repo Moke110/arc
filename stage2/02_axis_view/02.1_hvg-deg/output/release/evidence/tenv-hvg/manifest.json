@@ -1,0 +1,45 @@
+{
+  "cohorts": {
+    "algorithm": "SHA256(seed|parent) sorted buckets; 10% remaining parents validation",
+    "file": "cohorts.csv",
+    "seed": "bases-cold-parent-v1",
+    "sha256": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc"
+  },
+  "gene_count": 18164,
+  "populations": {
+    "descriptive": {
+      "kind": "descriptive",
+      "n_wells": 4206,
+      "population_sha256": "542c0c6d793563dc7af0a45ec9aab2edb10384a4156b17c587192f47f3f8f077",
+      "ranking": "descriptive.csv",
+      "sha256": "1291385e559cf8f5a04c958acc7ec9241113d89aaeb783482b77332ce7f423ca"
+    },
+    "fold_0": {
+      "fold": 0,
+      "kind": "train-only",
+      "n_wells": 2508,
+      "population_sha256": "ce5fd147222f1a77d6e462abe90f1759b50b7af6036e449732e8d2f5d56f6ec9",
+      "ranking": "fold_0.csv",
+      "sha256": "3ccdf60b990da16fef7c305b5d47036782cde3ec5c7eb73dcdafb9ec2f29d6a7"
+    },
+    "fold_1": {
+      "fold": 1,
+      "kind": "train-only",
+      "n_wells": 2508,
+      "population_sha256": "d7c77864ac9dda28f07e2b404fd88715862f5d283d4dbf9b3fc8ea07ed2b28ca",
+      "ranking": "fold_1.csv",
+      "sha256": "6318f575c65a81f38f8f3e4bdb94691f51bdf918bef56cb1123f8b25bc21fc49"
+    },
+    "fold_2": {
+      "fold": 2,
+      "kind": "train-only",
+      "n_wells": 2535,
+      "population_sha256": "c8bc6a62bb0cdda5f91d519b5b3c3651947e4588e5077e3bd7d280b9c2710aff",
+      "ranking": "fold_2.csv",
+      "sha256": "2844c6d0262b0b98bebef101151bf024bdd5a96e692da1c32b84bc26028e6791"
+    }
+  },
+  "recipe": "linear CP10K recovered by expm1 of published float32 log1p X; sample variance / mean; log dispersion normalized in 20 equal-width log1p-mean bins; gene-index tie-break",
+  "schema": "stage2-indexed-hvg-v1",
+  "training_sha256": "bab4140c055297370c9694f9d367cc8a73326c77cde2836c32959738be73c830"
+}
