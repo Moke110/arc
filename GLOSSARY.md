@@ -405,6 +405,48 @@ A fixed reference expression profile derived from eligible training CM vehicle c
 _Avoid_: matched control, Stage 1 baseline transcriptome
 
 
+### Stage 2 view variants
+
+**Within-condition replicate**:
+A treated profile sharing one condition — `(cell_line, drug_parent_inchikey, dose_um)` — with another treated profile of the same source. Tenv has them for every condition (about three same-plate wells each); most Tahoe conditions have none. They are repeated wells, not biological replicates.
+_Avoid_: biological replicate, technical replicate (unqualified), repeat (unqualified, when the Stage 3 replicate index is meant)
+
+**Replicate pooling**:
+Combining member profiles by summing their retained integer counts and normalizing the sum on its own selected-axis total; never the mean of normalized values. The pooled profile's matched control is pooled the same way.
+_Avoid_: averaged profile, mean expression, pseudobulk (unqualified — a tenv well is already a pseudobulk)
+
+**Full view** (`{source}-full-5k-view`):
+The view that preserves every corpus profile under the axis-local 5k recipe; it is the digest-equal alias of the accepted 01 expression release, not a re-derivative.
+_Avoid_: baseline view, original view, raw view
+
+**Merged view** (`{source}-merge-5k-view`):
+One replicate-pooled profile per condition, with its control pooled from the union of the member profiles' matched control groups.
+_Avoid_: mean view, deduplicated view, collapsed view
+
+**Solo view** (`{source}-solo-5k-view`):
+One treated profile per condition, drawn once per source by a seed frozen before any fit and independent of folds; its control is unchanged from the full view.
+_Avoid_: singleton view, single-replicate view, subsampled view
+
+**Pooled-label view** (`{source}-full-pooled-label-5k-view`):
+The full view's profiles and inputs with each treated profile's Delta replaced by its condition's pooled Delta; it isolates label noise from profile count.
+_Avoid_: target-averaged view, relabelled view
+
+**TSG view study** (`stage2/tsg_view`):
+The Stage 2 study that builds the expression view variants from corpus integers and fits TranSiGen on each under the cold-drug-dose protocol, to test how much of the tenv–Tahoe performance gap within-condition replicate structure explains.
+_Avoid_: view step, replicate study, noise study
+
+**Delta noise floor**:
+The within-condition per-gene standard deviation of Delta for a replicated condition, in the same units as Delta RMSE; it is the error a perfect predictor of the condition mean would still show against a single profile.
+_Avoid_: noise level, variance floor
+
+**Single-sample Delta PCC ceiling**:
+A heuristic bound on the Delta PCC a predictor can reach against one noisy profile: the profile-weighted mean of the within-condition repeat-correlation square root, `mean(sqrt(rho_c))`. It is a diagnostic, not a measurement-error model, and its input conditions are not a random subset of a source.
+_Avoid_: noise ceiling (unqualified), maximum performance
+
+**Condition-mean truth**:
+The replicate-pooled Delta of a test condition, used as a secondary evaluator truth that removes test-side replicate noise; the primary truth stays the per-sample Delta.
+_Avoid_: averaged truth, denoised truth
+
 ### Stage 2 benchmark
 
 **Tenv highly variable genes (tenv HVG)**:
