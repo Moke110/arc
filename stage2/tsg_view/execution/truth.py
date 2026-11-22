@@ -234,8 +234,14 @@ class _Truth:
         self.root = repo_root(repo_root_path)
         self.modules = bind(self.root)
         self.output = Path(output_dir) / source
-        self.views_root = Path(views_root) if views_root else (
-            self.root / "stage2/tsg_view/output/views")
+        if views_root is not None:
+            self.views_root = Path(views_root)
+        elif self.fixture:
+            # A hermetic fixture must not cross-check against materialised products that
+            # happen to sit in the checkout it borrows the Bases API from.
+            self.views_root = self.output.parent / ".fixture-views"
+        else:
+            self.views_root = self.root / "stage2/tsg_view/output/views"
         self.context = Context(
             view="full", source=source, output_dir=self.output,
             staging_dir=self.output / ".staging", repo_root_path=self.root,
@@ -256,6 +262,10 @@ class _Truth:
                 raise HarnessError(
                     f"--full-freeze does not carry parents.csv/morgan.npy: {path}")
             return path
+        # Hermetic fixtures must never probe the materialised checkout: their sealed
+        # directory is synthetic, so comparing it with a real full freeze is meaningless.
+        if self.fixture:
+            return None
         candidate = self.root / "stage2/tsg_view/execution/freezes/full" / self.source
         if (candidate / "parents.csv").is_file() and (candidate / "morgan.npy").is_file():
             return candidate
