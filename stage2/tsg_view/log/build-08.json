@@ -539,6 +539,149 @@
       "tree": "339c7cf (dev after the ticket-08 merge)"
     }
   },
+  "merger_verification_receipt_fix": {
+    "role": "merger",
+    "ticket": "receipt-closure fix (renderer closure, code-identity pins and health freshness)",
+    "branch": "impl/tsg-view-receipt-fix",
+    "worktree": "/tmp/arc-tsg-receipt-fix",
+    "date": "2026-11-22",
+    "source_commits": {
+      "closure_copy_and_pins": "2e4fb16",
+      "dev_merge": "cffbe20",
+      "sealed_renderer_alignment": "f30eb6f",
+      "merge_base_with_dev": "1d57c6c"
+    },
+    "dev_rev": "466079e6c7429592a0db49e1fb7904f1016d6d71",
+    "dev_rev_short": "466079e",
+    "merge_commit": "341d969cc703abd13e24f4d383b24e0fbd172780",
+    "merge_commit_short": "341d969",
+    "merge_message": "Merge Stage 2 tsg_view receipt closure: renderer closure, code-identity pins and health freshness",
+    "pre_merge_scope": {
+      "command": "git -C /home/chang/arc diff --name-status dev..impl/tsg-view-receipt-fix",
+      "branch_side_command": "git diff --name-status 1d57c6c..impl/tsg-view-receipt-fix",
+      "branch_side_files": [
+        "stage2/tsg_view/execution/acceptance.py",
+        "stage2/tsg_view/execution/tests/test_acceptance.py"
+      ],
+      "verdict": "the branch-side diff is exactly the two feature files; the other five paths in the two-dot diff (log/acceptance/receipt.json, the three health transcripts, log/build-08.json) are dev's own 466079e re-pin and appear only because the branch merged dev at 1d57c6c",
+      "out_of_scope": [],
+      "receipt_docs_figures_render_untouched": "git log 1d57c6c..impl/tsg-view-receipt-fix -- stage2/tsg_view/log/acceptance/receipt.json stage2/tsg_view/log/acceptance/health stage2/tsg_view/log/build-08.json is empty; no docs/, figure/ or execution/render.py path appears on the branch"
+    },
+    "merge": {
+      "command": "cd /home/chang/arc && git merge --no-ff impl/tsg-view-receipt-fix -m \"Merge Stage 2 tsg_view receipt closure: renderer closure, code-identity pins and health freshness\"",
+      "stat": "2 files changed, 331 insertions(+), 12 deletions(-)",
+      "receipt_json_untouched": "git diff --name-status 466079e..341d969 lists only execution/acceptance.py and execution/tests/test_acceptance.py; log/acceptance/receipt.json is byte-identical to pre-merge dev 466079e"
+    },
+    "tests": {
+      "step_suite": {
+        "command": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+        "ran": 207,
+        "passed": 207,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "result": "OK",
+        "runtime_seconds": 103.58,
+        "note": "the main checkout holds the accepted payloads, so the gated real-artifact tests all execute and nothing skips (the 25-skips expectation belongs to a payload-less checkout)"
+      },
+      "acceptance_alone": {
+        "command": "python -m unittest execution.tests.test_acceptance -v",
+        "ran": 46,
+        "passed": 46,
+        "failed": 0,
+        "result": "OK",
+        "runtime_seconds": 14.876
+      }
+    },
+    "closed_defect": {
+      "name": "figure_replay renderer closure",
+      "symptom": "the CSV-only replay copied execution/render.py alone into its closed world; when the renderer imported an in-package module (common.py) the replay raised ModuleNotFoundError, and copying that module ad hoc left render_status.json differing only by renderer_sha256",
+      "fix": "RENDERER_MODULES is now a declaration checked against renderer_import_closure(), which AST-walks transitive in-package imports of execution/render.py; figure_replay copies the declared set as a closed world and pins both renderer_sha256 and the whole closure in renderer_closure_sha256; ClosureTest fails the suite when render.py imports an undeclared execution module, and a real-renderer replay integration test exercises the closure end to end",
+      "today": "a45ebaf restored the sealed standalone renderer, so the closure is exactly ('render.py',)"
+    },
+    "new_receipt_fields": {
+      "csv_only_replay.renderer_closure_sha256": {
+        "render.py": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8"
+      },
+      "csv_only_replay.renderer_sha256": "7a252bcdb2936c965dd2e763356e96e59e486eae58ecd0cbf19f04ac550b68d8",
+      "formal_verify.code_identity": {
+        "status": "CODE_DRIFT",
+        "driver_code_drift": [
+          "formal.py"
+        ],
+        "moved": 6,
+        "note": "informational: every code digest that moved since the plan was sealed is reported, never hidden; non-code input changes still fail closed"
+      },
+      "formal_verify.full_arm": {
+        "anchor_seed": 42,
+        "sensitivity_seeds": [
+          43
+        ],
+        "statement": "the sealed anchor was measured at seed 42; this seed-43 arm is reported for transparency and claims no anchor reproduction"
+      },
+      "health": "adds commit, head and health_commit_stale; a final receipt fails closed when health.commit != git.head, and a final receipt also requires verify_all evidence and a formal_verify PASS"
+    },
+    "partial_gate_sanity": {
+      "command": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/acceptance.py receipt --root /home/chang/arc --phase partial --output /tmp/receipt-partial.json",
+      "exit": 0,
+      "committed_receipt_overwritten": false,
+      "output": "/tmp/receipt-partial.json (964254 bytes, generated_at 2026-11-22T15:11:07Z)",
+      "reported": {
+        "status": "partial",
+        "schema": "tsg-view-acceptance-v1",
+        "complete_origins": 45,
+        "pending_origins": 0,
+        "steps01_06": "PASS",
+        "csv_only_replay": true,
+        "replay_all_exact": true,
+        "figures_byte_identical": 7
+      },
+      "health_block": {
+        "commit": "1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0",
+        "head": "341d969cc703abd13e24f4d383b24e0fbd172780",
+        "health_commit_stale": true
+      },
+      "final_gate_fails_closed_with": "health transcripts predate HEAD: health.commit '1d57c6c682d7145ce9ffcd5e8c5f16939370f7a0' != git.head '341d969cc703abd13e24f4d383b24e0fbd172780'; re-run `acceptance.py health` at the current commit, then rebuild the receipt",
+      "why_partial_exits_zero": "read_health raises on staleness only for phase == final; a partial receipt records health_commit_stale=true so an in-flight run can report it without claiming fresh evidence (execution/acceptance.py read_health)",
+      "conclusion": "expected pre-refresh state: the committed health/verify evidence still names 1d57c6c, so no final receipt can be sealed at this HEAD until the closer re-runs health at the final commit"
+    },
+    "health": {
+      "check_paths": {
+        "command": "bash script/check_paths.sh",
+        "exit": 0,
+        "result": "PASS"
+      },
+      "check_tracked": {
+        "command": "bash script/check_tracked.sh",
+        "exit": 0,
+        "result": "PASS"
+      }
+    },
+    "closer_final_refresh": {
+      "order": [
+        "confirm the tree is clean and every code/evidence commit has landed; this entry is the last merger commit, so health and receipt must be captured at that final HEAD",
+        "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/acceptance.py health --root /home/chang/arc --output log/acceptance/health --verify-all --timeout 1200",
+        "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python execution/acceptance.py receipt --root /home/chang/arc --phase final --verify-binary --preregistration log/acceptance/pre_registration.md --health-dir log/acceptance/health --output log/acceptance/receipt.json",
+        "/home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+        "cd /home/chang/arc && bash script/check_paths.sh && bash script/check_tracked.sh",
+        "commit log/acceptance/receipt.json, log/acceptance/health/* and the refreshed build-08 evidence block"
+      ],
+      "expected_receipt_fields": [
+        "csv_only_replay.renderer_closure_sha256 = {'render.py': '7a252bcd...'}",
+        "csv_only_replay.renderer_sha256 = '7a252bcd...'",
+        "formal_verify.code_identity.status = CODE_DRIFT with driver_code_drift ['formal.py'] and six moved entries",
+        "formal_verify.full_arm = {anchor_seed 42, sensitivity_seeds [43]}",
+        "formal_verify.status = PASS (final fails closed otherwise)",
+        "health.commit = health.head = the final pre-pin HEAD and health.health_commit_stale = false; the receipt git.head names the pre-pin HEAD, as with 1d57c6c committed by 466079e"
+      ],
+      "note": "the receipt records the HEAD it was generated at; the commit that carries the refreshed receipt therefore advances HEAD past that value, which is the accepted convention for this receipt"
+    },
+    "not_run": [
+      "no receipt regeneration, no --phase final receipt and no --verify-binary run by the merger",
+      "no fit, matrix, render or verify_all run by the merger; no figure, report, view, truth, run or freeze byte touched",
+      "no feature code was edited to make a gate pass"
+    ]
+  },
   "note": "Phase A builds and unit-tests the acceptance receipt builder and the Steps 01-06 invariance proof only. The final report, step README/AGENTS prose and the sealed --phase final receipt are phase B.",
   "phase": "A+B",
   "phase_a_evidence_dir": "/tmp/tsg-view-08-phaseA",
