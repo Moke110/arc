@@ -591,6 +591,7 @@
   "merger_verification": {
     "blocked_on_ticket_04": "none after ticket 04's freeze landed; the real 45-origin plan now seals over all eight real freezes and all six truth folds",
     "date": "2026-11-22",
+    "dev_at_final_verification": "3b59faf plus this evidence commit; b9d08c3 (ticket 05 fixture fix) and 108841c (ticket 04) both landed after merge commit 02fa594",
     "dev_at_verification": "108841c (ticket 04 merged on top of 02fa594 while verification ran; 02fa594 is an ancestor)",
     "dev_before_merge": "a4500dd (also the merge base, so the merge was conflict-free)",
     "evidence_revision": "the plan_dry_run block above was updated after ticket 04 materialised the full-pooled-label/tenv freeze; the tests and health results were unchanged by that (evidence-only) update",
@@ -684,28 +685,23 @@
     },
     "tests": {
       "command": "cd stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
-      "full_suite": "Ran 73 tests, FAILED (errors=1) -- the single error is the known pre-existing test_truth.TruthTest.setUpClass fixture mismatch",
-      "known_pre_existing_failure": {
-        "detail": "test_truth.TruthTest.setUpClass raises views.HarnessError: the full-freeze parents/morgan differ from the sealed Step 04 freeze. The fixture auto-detects the real execution/freezes/full/<source> payload in the main checkout and compares it to a synthetic fixture. Ticket 05's implementer is fixing this on a separate branch.",
-        "excluded_from_gate": true,
-        "result": "ERROR (1)"
-      },
-      "regression_modules": {
+      "full_suite_final": "Ran 90 tests, OK (green; no errors, no failures)",
+      "module_counts": {
+        "test_formal": "13 OK (ticket 06)",
         "test_freeze": "6 OK",
         "test_harness": "8 OK",
         "test_learner_smoke": "3 OK",
+        "test_matrix": "13 OK (ticket 06)",
+        "test_truth": "17 OK",
         "test_views_full": "4 OK",
         "test_views_merge": "8 OK",
-        "test_views_pooled_label": "8 OK (ticket 04, already on dev)",
+        "test_views_pooled_label": "8 OK",
         "test_views_solo": "10 OK"
       },
-      "ticket_06_modules": {
-        "test_formal": "13 OK",
-        "test_matrix": "13 OK"
-      },
-      "tickets_01_06_subtotal": "65 OK plus test_formal/test_matrix run individually: 13 OK and 13 OK"
+      "ticket_06_command_alone": "test_matrix: Ran 13 tests, OK; test_formal: Ran 13 tests, OK",
+      "timeline_note": "the first runs of the merged tree showed the known pre-existing failure test_truth.TruthTest.setUpClass (views.HarnessError: the full-freeze parents/morgan differ from the sealed Step 04 freeze) and the suite read 'Ran 73 tests, FAILED (errors=1)'. Ticket 05's separate fix merged into dev as b9d08c3 during this verification and the suite then read 'Ran 90 tests, OK'. Both states are recorded; the final gate is green."
     },
-    "tree_state": "clean apart from the untracked ticket-04 output/views/full-pooled-label payload directory, which belongs to the ticket-04 merger and was left alone"
+    "tree_state": "tracked tree clean; the untracked stage2/tsg_view/output/views/full-pooled-label/ payload directory belongs to ticket 04 and was left untouched"
   },
   "scope": "matrix machinery, formal driver, formal/probe learner path and two bounded GPU probes; the real 45-fit matrix is run by the Lead on dev after tickets 04/05 merge",
   "ticket": "06: the 45-fit formal matrix with replayable runs",
