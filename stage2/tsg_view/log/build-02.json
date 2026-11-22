@@ -1974,6 +1974,323 @@
     }
   },
   "interpreter": "/home/chang/miniconda3/envs/arc/bin/python",
+  "merger_verification": {
+    "branch": "dev",
+    "checkout": "/home/chang/arc",
+    "commands": [
+      "git -C /home/chang/arc diff --name-only dev..impl/tsg-view-02",
+      "git -C /home/chang/arc merge --no-ff impl/tsg-view-02 -m 'Merge Stage 2 tsg_view 02: replicate-pooled merge view and pooled controls'",
+      "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+      "../01_bases/execution/capped.sh /usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python execution/build.py --view merge --source {tenv,tahoe_bulk} --output output/views --staging execution/checkpoints/merger-02/staging --repo-root /home/chang/arc --record execution/checkpoints/merger-02/build-merge-<source>.json",
+      "../01_bases/execution/capped.sh /usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python execution/freeze.py --view merge --source <source> --views output/views --destination execution/freezes/merge/<source> --repo-root /home/chang/arc --record execution/checkpoints/merger-02/freeze-merge-<source>.json",
+      "../01_bases/execution/capped.sh /usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python execution/smoke.py --view merge --source tenv --freeze execution/freezes/merge/tenv --output execution/checkpoints/merger-02/smoke --rows 64 --epochs 2 --device cuda --seed 42 --repo-root /home/chang/arc --sealed /home/chang/arc/stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tenv --record execution/checkpoints/merger-02/smoke-merge-tenv.json",
+      "/home/chang/miniconda3/envs/arc/bin/python /tmp/verify_merge_pooling.py   # independent merger reconciliation from the integer corpus",
+      "bash script/check_paths.sh",
+      "bash script/check_tracked.sh"
+    ],
+    "date": "2026-11-22",
+    "digest_reconciliation": {
+      "freeze_metadata_divergence": "EXPECTED, benign - config.json and manifest.json differ by exactly one semantic field, config.view_product.file (bare name in the implementer worktree vs canonical repo-relative path in the main checkout; the manifest embeds the config digest, so it moves too). The worktree artifacts /tmp/tsg02-scratch/freezes/merge/<source> still reproduce the implementer config/manifest digests exactly. No data byte differs.",
+      "freezes": "PASS for data - expression.npy, control.npy, morgan.npy, parents.csv, splits.csv, population.csv, all_obs.csv, genes.csv, matched_controls.json and control_sources.csv are digest-equal to the implementer record for both sources.",
+      "products": "PASS - every payload, manifest and companion-file digest and byte count equals the implementer's log/build-02.json values (merge/tenv payload 27f39cc7... 53,851,602 B; merge/tahoe_bulk payload 10c2c39d... 2,093,287,036 B).",
+      "splits": "merge splits.csv is NOT byte-equal to the sealed splits.csv by design (C2: only `full` is). The sealed condition->partition map is equal, the sealed parent/dose population is covered and each condition sits in exactly one partition, which Inputs.check_splits verifies."
+    },
+    "gates": {
+      "bounded_gpu_smoke_fits": {
+        "merge/tenv": {
+          "best_epoch": 2,
+          "children_peak_rss_kib": 1799996,
+          "device": "cuda",
+          "driver_elapsed_seconds": 13.767,
+          "epochs": 2,
+          "epochs_run": 2,
+          "fold": 0,
+          "phases": [
+            {
+              "elapsed_seconds": 3.957,
+              "phase": "train",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.366,
+              "phase": "replay",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.237,
+              "phase": "test",
+              "returncode": 0
+            },
+            {
+              "elapsed_seconds": 3.207,
+              "phase": "replay",
+              "returncode": 0
+            }
+          ],
+          "replay": "train -> replay -> test -> replay, one process per phase",
+          "result": "PASS - train -> replay -> test -> replay, one fresh process per phase; every phase exits 0 and the learner rejects a non-bit-exact replay",
+          "rows": 64,
+          "run_dir": "stage2/tsg_view/execution/checkpoints/merger-02/smoke/tenv/merge/fold-0/seed-42",
+          "run_manifest_sha256": "bbdf55ab38629f024ce5b17c80a53e23306aa08f7822634fea966217e0157b98",
+          "seed": 42,
+          "status": "complete",
+          "test_metrics": {
+            "constant_prediction_count": 0,
+            "constant_truth_count": 0,
+            "n_samples": 64,
+            "nonfinite_count": 0,
+            "pcc": 0.15490288307347955,
+            "r2": -9.689554510206914,
+            "rmse": 0.738155010928391,
+            "spearman": 0.2313826119767551,
+            "undefined_pcc_count": 0,
+            "undefined_r2_count": 0,
+            "undefined_rmse_count": 0,
+            "undefined_spearman_count": 0
+          },
+          "test_metrics_match_implementer_record": true,
+          "training_elapsed_seconds": 3.045,
+          "training_peak_rss_kib": 1721172,
+          "validation_mse": 0.5469114184379578,
+          "validation_mse_matches_implementer_record": true
+        }
+      },
+      "freeze_verification_with_inputs": {
+        "checks_covered": [
+          "manifest schema and the exact Step 04 REQUIRED+control_sources file set",
+          "sha256 digest of every declared freeze output",
+          "G_5000 axis identity and genes.csv digest",
+          "sealed Step 04 parents/morgan byte identity and sealed-digest binding",
+          "sealed condition->partition map equality, sealed parent/dose coverage, one partition per condition key, partition disjointness and full coverage",
+          "matched-control/control_sources composition; pooled-sum controls recover integer retained counts on the recorded totals; expression rows are CP10K compositions"
+        ],
+        "method": "fresh process: sys.path.insert(0,'execution'); Inputs(execution/freezes/merge/<source>, repo_root='/home/chang/arc') for tenv and tahoe_bulk",
+        "result": "PASS - both freezes load with no HarnessError",
+        "results": {
+          "merge/tahoe_bulk": "PASS (52,777 rows)",
+          "merge/tenv": "PASS (1,377 rows)"
+        }
+      },
+      "health_checks": {
+        "check_paths": {
+          "command": "bash script/check_paths.sh",
+          "exit": 0,
+          "result": "RESULT: PASS - every extracted path literal resolves; stage2 retired-step-path audit: PASS",
+          "wall_seconds": 13
+        },
+        "check_tracked": {
+          "command": "bash script/check_tracked.sh",
+          "exit": 0,
+          "result": "RESULT: PASS - all scanned executable files are tracked (or documented expected-ignored)",
+          "wall_seconds": 1
+        },
+        "result": "PASS"
+      },
+      "materialised_products": {
+        "merge/tahoe_bulk": {
+          "companion_files": {
+            "tahoe_bulk.control_sources.csv": "15e7cb8c09bfe83e309da96110d2a5e5ac6407244dd7892aff84b3589b3de336",
+            "tahoe_bulk.json": "e31ca3ade39b5bd9bccb7bdaa0f228a33d6ef0a96975690742974d6499140f40",
+            "tahoe_bulk.members.csv": "ebff8550dc92d92e32018f9aa3e06bb60b74bb67241fc5396dbb9c3877379b9d",
+            "tahoe_bulk.profile_ids.csv": "6f6253ee34210bf03733505cbf6b814c4be8da45c6ae38c223a748726ef6c2cb"
+          },
+          "conditions": 52777,
+          "freeze_dir": "stage2/tsg_view/execution/freezes/merge/tahoe_bulk",
+          "freeze_manifest_sha256": "a4eb303c60f33561318c4c62767fe72101d2209b8a585ccfacadcde1c849c453",
+          "freeze_metadata_divergence": {
+            "data_files_identical_to_implementer": true,
+            "implementer_config_sha256": "c8d0bed3d11dae9c8068fb00fd631992486e9c26cd7eb56e523353d70eb8c6da",
+            "note": "config.json and manifest.json differ from the implementer record in exactly one semantic field: config.view_product.file. In the implementer worktree /tmp/arc-tsg-02 the product manifest sat outside that worktree's bind root, so relative() fell back to the bare file name; in the main checkout it is the canonical repo-relative path. The manifest digests differ only because the manifest embeds the config digest. Every data file is digest-equal. The still-present worktree artifacts reproduce the implementer digests exactly.",
+            "worktree_artifacts": "/tmp/tsg02-scratch/freezes/merge/tahoe_bulk",
+            "worktree_config_sha256": "c8d0bed3d11dae9c8068fb00fd631992486e9c26cd7eb56e523353d70eb8c6da",
+            "worktree_manifest_sha256": "741b79ae16798aba83a2e15024e1ea2079dc726d054c880f3fa40282e8b0d29a"
+          },
+          "freeze_outputs": {
+            "all_obs.csv": "03ff0ab82e9451fd6d28879c81333d86b44c96f10ee11eb5b1fdb22238cfc36b",
+            "config.json": "4e949ffdec3574053c1c70e61ee95bbdeb7aadfc0618328d85f4429f37ec72ce",
+            "control.npy": "3f9eb4e39f8c5977535bc3a7ac1e530911c4ac3889afd2f3966b2a04077b1bcd",
+            "control_sources.csv": "15e7cb8c09bfe83e309da96110d2a5e5ac6407244dd7892aff84b3589b3de336",
+            "expression.npy": "636bd0761e04354c4be93761fa533bb348067431630c45403e64c4e7da8d8482",
+            "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+            "matched_controls.json": "b3409c461a34be599a754fe8b748cbeecd21a3a7604956e1ca08c792228cc4cd",
+            "morgan.npy": "f61b3979ed6cb234b7af6a19bf48008cb873029c63dcdba2359e36278be4bf3e",
+            "parents.csv": "f5164f16e5c5b719b35b00812003946c91d65829051a51dc8c830c5dac8de139",
+            "population.csv": "9a062617a892af5a6f6edbd6eded67f3a8d88df64e31bbaad88dab47dc87371c",
+            "splits.csv": "c8193e9db9e3265e2594c67364b7ba0f73e1303f20a4f58e45b0f662a324591a"
+          },
+          "freeze_peak_rss_kib": 2818180,
+          "freeze_runtime_seconds": 26.4,
+          "freeze_splits_byte_equal_to_sealed": false,
+          "freeze_splits_sha256": "c8193e9db9e3265e2594c67364b7ba0f73e1303f20a4f58e45b0f662a324591a",
+          "freeze_verified_by_inputs": true,
+          "freeze_verified_rows": 52777,
+          "implementer_freeze_manifest_sha256": "741b79ae16798aba83a2e15024e1ea2079dc726d054c880f3fa40282e8b0d29a",
+          "implementer_manifest_sha256": "e31ca3ade39b5bd9bccb7bdaa0f228a33d6ef0a96975690742974d6499140f40",
+          "implementer_payload_sha256": "10c2c39db087ad2b4cb3aad81acff8e127ce1f4ee6fcc791e647a7859ec349f8",
+          "manifest": "e31ca3ade39b5bd9bccb7bdaa0f228a33d6ef0a96975690742974d6499140f40",
+          "mode": "payload",
+          "payload": {
+            "bytes": 2093287036,
+            "cols": 5000,
+            "dtype": "float32",
+            "file": "tahoe_bulk.h5ad",
+            "layers": [
+              "control",
+              "delta"
+            ],
+            "rows": 52777,
+            "sha256": "10c2c39db087ad2b4cb3aad81acff8e127ce1f4ee6fcc791e647a7859ec349f8"
+          },
+          "payload_and_files_match_implementer_record": true,
+          "peak_rss_kib": 3746156,
+          "product_dir": "stage2/tsg_view/output/views/merge",
+          "rows": 52777,
+          "runtime_seconds": 95.861,
+          "wall_seconds": 105.05
+        },
+        "merge/tenv": {
+          "companion_files": {
+            "tenv.control_sources.csv": "3f04c2d122d2958931254af7a6d41422dbf2d7096bedcce08b834bb556b444aa",
+            "tenv.json": "8bb9bfb781ada22237b5a16a3dfc88e4c831876f27fb50492d5c00d3666df257",
+            "tenv.members.csv": "9bcc191e0cdf8b1017eee55cf42ca4ae3e8e1e7f4dc4ddadc305b84f76191dfb",
+            "tenv.profile_ids.csv": "d5f359d69e1fae41b91a931567d3d642cf29bd3f1d0d1b7ce957140a3df26a21"
+          },
+          "conditions": 1377,
+          "freeze_dir": "stage2/tsg_view/execution/freezes/merge/tenv",
+          "freeze_manifest_sha256": "5b56a373f23ffcb3a1ce9128b41e1db56feb337fdcc358002861e6eaccf2143b",
+          "freeze_metadata_divergence": {
+            "data_files_identical_to_implementer": true,
+            "implementer_config_sha256": "4d870b48da73942f3dbea623bcb168c53797b4e5e91d20940d227b9900cb810d",
+            "note": "config.json and manifest.json differ from the implementer record in exactly one semantic field: config.view_product.file. In the implementer worktree /tmp/arc-tsg-02 the product manifest sat outside that worktree's bind root, so relative() fell back to the bare file name; in the main checkout it is the canonical repo-relative path. The manifest digests differ only because the manifest embeds the config digest. Every data file is digest-equal. The still-present worktree artifacts reproduce the implementer digests exactly.",
+            "worktree_artifacts": "/tmp/tsg02-scratch/freezes/merge/tenv",
+            "worktree_config_sha256": "4d870b48da73942f3dbea623bcb168c53797b4e5e91d20940d227b9900cb810d",
+            "worktree_manifest_sha256": "7b208b542724fa0c1f949b02ecec6e72487108890867c9a33fa48462acad50ee"
+          },
+          "freeze_outputs": {
+            "all_obs.csv": "6ab59eeeaa260a925c7b5c746d10ac137b334f23802301a5effecb3fb102930c",
+            "config.json": "6394a83799c33b0301da7b747d56fcf6f20fae71bb7b3a1534ffe2e63eaba79b",
+            "control.npy": "92c4b09334084b8a004144931806e608a25e56346eae09e6748b8c583a7e15c5",
+            "control_sources.csv": "3f04c2d122d2958931254af7a6d41422dbf2d7096bedcce08b834bb556b444aa",
+            "expression.npy": "d7a38957e40b63e2ef40267b188b0c4b6739bac1e6ec23bd102aca40ec361acc",
+            "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+            "matched_controls.json": "531b3427c245b9048e3bcfbca08515c64f5264a24c4f3480dc175de0ed352c25",
+            "morgan.npy": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+            "parents.csv": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+            "population.csv": "fd518a65800ffce54bb1c007bdd3d7a1fef85076f7919ee86fcc41abaa4f26b9",
+            "splits.csv": "089e2455a579fa9c5da7e6b9c77c5bc14ca30936367d7d1a642de083cd598d5a"
+          },
+          "freeze_peak_rss_kib": 399464,
+          "freeze_runtime_seconds": 3.38,
+          "freeze_splits_byte_equal_to_sealed": false,
+          "freeze_splits_sha256": "089e2455a579fa9c5da7e6b9c77c5bc14ca30936367d7d1a642de083cd598d5a",
+          "freeze_verified_by_inputs": true,
+          "freeze_verified_rows": 1377,
+          "implementer_freeze_manifest_sha256": "7b208b542724fa0c1f949b02ecec6e72487108890867c9a33fa48462acad50ee",
+          "implementer_manifest_sha256": "8bb9bfb781ada22237b5a16a3dfc88e4c831876f27fb50492d5c00d3666df257",
+          "implementer_payload_sha256": "27f39cc720f049fab2cc4e845eb50c4010947a3efa775b79a9a37c996a6a6474",
+          "manifest": "8bb9bfb781ada22237b5a16a3dfc88e4c831876f27fb50492d5c00d3666df257",
+          "mode": "payload",
+          "payload": {
+            "bytes": 53851602,
+            "cols": 5000,
+            "dtype": "float32",
+            "file": "tenv.h5ad",
+            "layers": [
+              "control",
+              "delta"
+            ],
+            "rows": 1377,
+            "sha256": "27f39cc720f049fab2cc4e845eb50c4010947a3efa775b79a9a37c996a6a6474"
+          },
+          "payload_and_files_match_implementer_record": true,
+          "peak_rss_kib": 437964,
+          "product_dir": "stage2/tsg_view/output/views/merge",
+          "rows": 1377,
+          "runtime_seconds": 6.134,
+          "wall_seconds": 6.45
+        }
+      },
+      "merge": {
+        "conflicts": [],
+        "files_changed": 3,
+        "insertions": 2522,
+        "result": "PASS",
+        "strategy": "ort"
+      },
+      "real_data_reconciliation_on_dev": {
+        "method": "independent recomputation straight from the integer corpus (stage2/01_bases/output/corpus) and the G_5000 axis, compared to the accepted payload and freeze arrays; not the implementation helpers",
+        "peak_rss_kib": 3188716,
+        "result": "PASS - pooled expression/control are the normalize-of-sum recipe, byte-identical to the accepted payload and freeze; singleton conditions deepen their control under merge (C7.2)",
+        "runtime_seconds": 53.24,
+        "tahoe_bulk": {
+          "control_mismatches": 0,
+          "expression_mismatches": 0,
+          "max_abs_pooled_minus_member_mean": 2.292053452692926,
+          "mean_probe_conditions": 325,
+          "mean_probe_conditions_where_pooled_differs": 325,
+          "member_ids_reconciled_to_corpus": true,
+          "pooled_retained_total_mismatches": 0,
+          "product_delta_equals_x_minus_control_all_52777_rows": true,
+          "product_equals_freeze_arrays_all_rows": true,
+          "repeats": 9741,
+          "sample": "every multi-member condition (9,741) plus every 40th singleton (1,076), 10,817 of 52,777",
+          "sampled_conditions": 10817
+        },
+        "tenv": {
+          "control_mismatches": 0,
+          "expression_mismatches": 0,
+          "max_abs_pooled_minus_member_mean": 3.2671244740486145,
+          "member_ids_reconciled_to_corpus": true,
+          "pooled_retained_total_mismatches": 0,
+          "product_delta_equals_x_minus_control": true,
+          "product_equals_freeze_arrays": true,
+          "repeats": 1377,
+          "repeats_where_pooled_row_differs_from_member_normalized_mean": 1377,
+          "sample": "all 1,377 conditions",
+          "sampled_conditions": 1377
+        }
+      },
+      "unit_tests_on_dev": {
+        "command": "cd /home/chang/arc/stage2/tsg_view && /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s execution/tests -p 'test_*.py' -v",
+        "elapsed_seconds": 32.143,
+        "errors": 0,
+        "failures": 0,
+        "note": "The implementer worktree skipped 3 test_learner_smoke tests (skipUnless on pert_model/TranSiGen/source/src/model.py); the main checkout has the real source, so all 39 ran and passed here.",
+        "ran": 39,
+        "result": "PASS",
+        "skipped": 0
+      }
+    },
+    "implementer_branch": "impl/tsg-view-02",
+    "implementer_tip": "fd51666e24878c5ac452e411366b0287b9a0c1e8",
+    "interpreter": "/home/chang/miniconda3/envs/arc/bin/python",
+    "merge_commit": "5421838266cfef5934fa04a13dbdd48c4d8eee1e",
+    "merge_message": "Merge Stage 2 tsg_view 02: replicate-pooled merge view and pooled controls",
+    "notes_for_downstream": {
+      "accepted_payloads": "merge/tenv 27f39cc720f049fab2cc4e845eb50c4010947a3efa775b79a9a37c996a6a6474 (53,851,602 B, 1,377 rows); merge/tahoe_bulk 10c2c39db087ad2b4cb3aad81acff8e127ce1f4ee6fcc791e647a7859ec349f8 (2,093,287,036 B, 52,777 rows).",
+      "canonical_freeze_digests": "Downstream tickets must use the main-checkout values: merge/tenv manifest 5b56a373... config 6394a837...; merge/tahoe_bulk manifest a4eb303c... config 4e949ffd... (full per-file digests in gates.materialised_products.<pair>.freeze_outputs).",
+      "control_rule": "merge uses control_rule=pooled-sum: the union of the members' matched control groups is summed in int64 and normalized on its own selected-axis total, so a singleton condition keeps its X but its control deepens and its delta differs from the full view (plan C7.2).",
+      "freeze_paths": "stage2/tsg_view/execution/freezes/merge/tenv and stage2/tsg_view/execution/freezes/merge/tahoe_bulk. They are gitignored and exist only in the main checkout /home/chang/arc; the tracked product manifests/CSVs under stage2/tsg_view/output/views/merge/ pin the payload digests.",
+      "record_type": "merge rows are merge::{source}::{cell_line}::{parent}::{dose:g}, one per condition (tenv 1,377, tahoe_bulk 52,777)."
+    },
+    "pre_merge_dev_rev": "d2ffef03fea4a1e3fdba842aef528e038c6513d6",
+    "schema": "tsg-view-merger-verification-v1",
+    "scope_check": {
+      "allowed": [
+        "stage2/tsg_view/execution/views/merge.py",
+        "stage2/tsg_view/execution/tests/test_views_merge.py",
+        "stage2/tsg_view/log/build-02.json"
+      ],
+      "command": "git -C /home/chang/arc diff --name-only dev..impl/tsg-view-02",
+      "files": [
+        "stage2/tsg_view/execution/tests/test_views_merge.py",
+        "stage2/tsg_view/execution/views/merge.py",
+        "stage2/tsg_view/log/build-02.json"
+      ],
+      "outside_scope": [],
+      "result": "PASS"
+    }
+  },
   "note": "Ran in the ticket worktree against the accepted payloads of /home/chang/arc. Derived merge payloads, freezes and smoke runs live under /tmp/tsg02-scratch (gitignored-equivalent scratch); only manifests, digests and counts are recorded here. The merger re-runs these gates in the main checkout and materialises the accepted products.",
   "schema": "tsg-view-build-evidence-v1",
   "ticket": "02-merge-view",

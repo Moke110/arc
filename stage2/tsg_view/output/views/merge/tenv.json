@@ -1,0 +1,1467 @@
+{
+  "alias": null,
+  "axis": {
+    "algorithm": "tier-first-deg1000-f1000-four-axes-v3",
+    "ascending": true,
+    "columns_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+    "file": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+    "gene_index_max": 18155,
+    "gene_index_min": 2,
+    "renumbered": false,
+    "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+    "size": 5000
+  },
+  "conditions": 1377,
+  "control_rule": "normalize-of-sum over the union of the members' matched_control_group vehicle counts (never a mean of normalized values)",
+  "control_sources": {
+    "bytes": 128842,
+    "columns": [
+      "profile_id",
+      "control_rule",
+      "control_groups",
+      "pooled_retained_total"
+    ],
+    "file": "tenv.control_sources.csv",
+    "rows": 1377,
+    "sha256": "3f04c2d122d2958931254af7a6d41422dbf2d7096bedcce08b834bb556b444aa"
+  },
+  "delta_kind": null,
+  "environment": {
+    "anndata": "0.12.16",
+    "data_access": "offline; reads the pinned integer corpus, the G_5000 axis and the accepted view-5k release in bounded windows",
+    "h5py": "3.16.0",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13",
+    "resource_contract": "one heavy job at a time under the repository caps; OMP_NUM_THREADS=2; peak RSS recorded by the driver"
+  },
+  "generated_by": "stage2/tsg_view/execution/build.py",
+  "members": {
+    "bytes": 321524,
+    "columns": [
+      "profile_id",
+      "member_profile_id"
+    ],
+    "file": "tenv.members.csv",
+    "rows": 4206,
+    "sha256": "9bcc191e0cdf8b1017eee55cf42ca4ae3e8e1e7f4dc4ddadc305b84f76191dfb"
+  },
+  "normalization": {
+    "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+    "formula": "log1p(count * 10000 / selected_axis_library_total)",
+    "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+    "source": "ADR 0077 five-k-only axis-local normalization"
+  },
+  "payload": {
+    "bytes": 53851602,
+    "cols": 5000,
+    "dtype": "float32",
+    "file": "tenv.h5ad",
+    "layers": [
+      "control",
+      "delta"
+    ],
+    "rows": 1377,
+    "sha256": "27f39cc720f049fab2cc4e845eb50c4010947a3efa775b79a9a37c996a6a6474"
+  },
+  "pooled_retained_total": 5270597961,
+  "pooling_identity": {
+    "checked_conditions": 256,
+    "checked_members": 777,
+    "differing_rows": 256,
+    "max_abs_difference": 2.7230451280885313,
+    "rule": "sum the members' retained integer counts, then normalize the sum on its own selected-axis total; never a mean of normalized values"
+  },
+  "product": "tenv-merge-5k-view",
+  "profile_ids": {
+    "bytes": 81525,
+    "file": "tenv.profile_ids.csv",
+    "sha256": "d5f359d69e1fae41b91a931567d3d642cf29bd3f1d0d1b7ce957140a3df26a21"
+  },
+  "recipe": "Sum the members' retained G_5000 integer counts per condition (int64), normalize the sum on its own selected-axis total; pool the union of the members' matched control groups' vehicle counts the same way; delta = X - control.",
+  "retained_totals": {
+    "max": 3358942,
+    "median": 941620.0,
+    "min": 234095,
+    "sum": 1503657870
+  },
+  "rows": 1377,
+  "schema": "tsg-view-product-v1",
+  "seed": null,
+  "selection": null,
+  "source": "tenv",
+  "source_manifests": {
+    "accepted_view": "stage2/01_bases/output/view-5k/manifest.json",
+    "accepted_view_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+    "gene_axis": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+    "gene_axis_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e"
+  },
+  "special_conditions": {
+    "cross_plate_conditions": 6,
+    "four_well_reference_compounds": [
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Oxazepam"
+        ],
+        "control_groups": [
+          "tenv::Plate2::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "ADIMAYPTOBDMTL-UHFFFAOYSA-N",
+        "drug_parent_smiles": "O=C1Nc2ccc(Cl)cc2C(c2ccccc2)=NC1O",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate2-E02",
+          "temp_env::Plate2-H02",
+          "temp_env::Plate2-K02",
+          "temp_env::Plate2-N23"
+        ],
+        "plates": [
+          "Plate2"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::ADIMAYPTOBDMTL-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Oxazepam"
+        ],
+        "control_groups": [
+          "tenv::Plate2::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "ADIMAYPTOBDMTL-UHFFFAOYSA-N",
+        "drug_parent_smiles": "O=C1Nc2ccc(Cl)cc2C(c2ccccc2)=NC1O",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate2-D02",
+          "temp_env::Plate2-G02",
+          "temp_env::Plate2-J02",
+          "temp_env::Plate2-M23"
+        ],
+        "plates": [
+          "Plate2"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::ADIMAYPTOBDMTL-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Oxazepam"
+        ],
+        "control_groups": [
+          "tenv::Plate2::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "ADIMAYPTOBDMTL-UHFFFAOYSA-N",
+        "drug_parent_smiles": "O=C1Nc2ccc(Cl)cc2C(c2ccccc2)=NC1O",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate2-C02",
+          "temp_env::Plate2-F02",
+          "temp_env::Plate2-I02",
+          "temp_env::Plate2-L23"
+        ],
+        "plates": [
+          "Plate2"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::ADIMAYPTOBDMTL-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "17alpha-Ethinylestradiol"
+        ],
+        "control_groups": [
+          "tenv::Plate4::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "BFPYWIDHMRZLRN-SLHNCBLASA-N",
+        "drug_parent_smiles": "C#C[C@]1(O)CC[C@H]2[C@@H]3CCc4cc(O)ccc4[C@H]3CC[C@@]21C",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate4-E02",
+          "temp_env::Plate4-H02",
+          "temp_env::Plate4-K02",
+          "temp_env::Plate4-N23"
+        ],
+        "plates": [
+          "Plate4"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::BFPYWIDHMRZLRN-SLHNCBLASA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "17alpha-Ethinylestradiol"
+        ],
+        "control_groups": [
+          "tenv::Plate4::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "BFPYWIDHMRZLRN-SLHNCBLASA-N",
+        "drug_parent_smiles": "C#C[C@]1(O)CC[C@H]2[C@@H]3CCc4cc(O)ccc4[C@H]3CC[C@@]21C",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate4-D02",
+          "temp_env::Plate4-G02",
+          "temp_env::Plate4-J02",
+          "temp_env::Plate4-M23"
+        ],
+        "plates": [
+          "Plate4"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::BFPYWIDHMRZLRN-SLHNCBLASA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "17alpha-Ethinylestradiol"
+        ],
+        "control_groups": [
+          "tenv::Plate4::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "BFPYWIDHMRZLRN-SLHNCBLASA-N",
+        "drug_parent_smiles": "C#C[C@]1(O)CC[C@H]2[C@@H]3CCc4cc(O)ccc4[C@H]3CC[C@@]21C",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate4-C02",
+          "temp_env::Plate4-F02",
+          "temp_env::Plate4-I02",
+          "temp_env::Plate4-L23"
+        ],
+        "plates": [
+          "Plate4"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::BFPYWIDHMRZLRN-SLHNCBLASA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dieldrin"
+        ],
+        "control_groups": [
+          "tenv::Plate15::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "DFBKLUNHFCTMDC-PICURKEMSA-N",
+        "drug_parent_smiles": "ClC1=C(Cl)[C@]2(Cl)[C@@H]3[C@@H]4C[C@@H]([C@H]5O[C@@H]45)[C@@H]3[C@@]1(Cl)C2(Cl)Cl",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate15-E02",
+          "temp_env::Plate15-H02",
+          "temp_env::Plate15-K02",
+          "temp_env::Plate15-N23"
+        ],
+        "plates": [
+          "Plate15"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::DFBKLUNHFCTMDC-PICURKEMSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dieldrin"
+        ],
+        "control_groups": [
+          "tenv::Plate15::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "DFBKLUNHFCTMDC-PICURKEMSA-N",
+        "drug_parent_smiles": "ClC1=C(Cl)[C@]2(Cl)[C@@H]3[C@@H]4C[C@@H]([C@H]5O[C@@H]45)[C@@H]3[C@@]1(Cl)C2(Cl)Cl",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate15-D02",
+          "temp_env::Plate15-G02",
+          "temp_env::Plate15-J02",
+          "temp_env::Plate15-M23"
+        ],
+        "plates": [
+          "Plate15"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::DFBKLUNHFCTMDC-PICURKEMSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dieldrin"
+        ],
+        "control_groups": [
+          "tenv::Plate15::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "DFBKLUNHFCTMDC-PICURKEMSA-N",
+        "drug_parent_smiles": "ClC1=C(Cl)[C@]2(Cl)[C@@H]3[C@@H]4C[C@@H]([C@H]5O[C@@H]45)[C@@H]3[C@@]1(Cl)C2(Cl)Cl",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate15-C02",
+          "temp_env::Plate15-F02",
+          "temp_env::Plate15-I02",
+          "temp_env::Plate15-L23"
+        ],
+        "plates": [
+          "Plate15"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::DFBKLUNHFCTMDC-PICURKEMSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "4,4'-Oxydianiline"
+        ],
+        "control_groups": [
+          "tenv::Plate11::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "HLBLWEWZXPIGSM-UHFFFAOYSA-N",
+        "drug_parent_smiles": "Nc1ccc(Oc2ccc(N)cc2)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate11-E02",
+          "temp_env::Plate11-H02",
+          "temp_env::Plate11-K02",
+          "temp_env::Plate11-N23"
+        ],
+        "plates": [
+          "Plate11"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::HLBLWEWZXPIGSM-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "4,4'-Oxydianiline"
+        ],
+        "control_groups": [
+          "tenv::Plate11::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "HLBLWEWZXPIGSM-UHFFFAOYSA-N",
+        "drug_parent_smiles": "Nc1ccc(Oc2ccc(N)cc2)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate11-D02",
+          "temp_env::Plate11-G02",
+          "temp_env::Plate11-J02",
+          "temp_env::Plate11-M23"
+        ],
+        "plates": [
+          "Plate11"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::HLBLWEWZXPIGSM-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "4,4'-Oxydianiline"
+        ],
+        "control_groups": [
+          "tenv::Plate11::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "HLBLWEWZXPIGSM-UHFFFAOYSA-N",
+        "drug_parent_smiles": "Nc1ccc(Oc2ccc(N)cc2)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate11-C02",
+          "temp_env::Plate11-F02",
+          "temp_env::Plate11-I02",
+          "temp_env::Plate11-L23"
+        ],
+        "plates": [
+          "Plate11"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::HLBLWEWZXPIGSM-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dofetilide"
+        ],
+        "control_groups": [
+          "tenv::Plate16::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "IXTMWRCNAAVVAI-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CN(CCOc1ccc(NS(C)(=O)=O)cc1)CCc1ccc(NS(C)(=O)=O)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate16-E02",
+          "temp_env::Plate16-H02",
+          "temp_env::Plate16-K02",
+          "temp_env::Plate16-N23"
+        ],
+        "plates": [
+          "Plate16"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::IXTMWRCNAAVVAI-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dofetilide"
+        ],
+        "control_groups": [
+          "tenv::Plate16::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "IXTMWRCNAAVVAI-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CN(CCOc1ccc(NS(C)(=O)=O)cc1)CCc1ccc(NS(C)(=O)=O)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate16-D02",
+          "temp_env::Plate16-G02",
+          "temp_env::Plate16-J02",
+          "temp_env::Plate16-M23"
+        ],
+        "plates": [
+          "Plate16"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::IXTMWRCNAAVVAI-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dofetilide"
+        ],
+        "control_groups": [
+          "tenv::Plate16::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "IXTMWRCNAAVVAI-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CN(CCOc1ccc(NS(C)(=O)=O)cc1)CCc1ccc(NS(C)(=O)=O)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate16-C02",
+          "temp_env::Plate16-F02",
+          "temp_env::Plate16-I02",
+          "temp_env::Plate16-L23"
+        ],
+        "plates": [
+          "Plate16"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::IXTMWRCNAAVVAI-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dimethoate"
+        ],
+        "control_groups": [
+          "tenv::Plate7::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "MCWXGJITAZMZEV-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CNC(=O)CSP(=S)(OC)OC",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate7-E02",
+          "temp_env::Plate7-H02",
+          "temp_env::Plate7-K02",
+          "temp_env::Plate7-N23"
+        ],
+        "plates": [
+          "Plate7"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::MCWXGJITAZMZEV-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dimethoate"
+        ],
+        "control_groups": [
+          "tenv::Plate7::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "MCWXGJITAZMZEV-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CNC(=O)CSP(=S)(OC)OC",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate7-D02",
+          "temp_env::Plate7-G02",
+          "temp_env::Plate7-J02",
+          "temp_env::Plate7-M23"
+        ],
+        "plates": [
+          "Plate7"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::MCWXGJITAZMZEV-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dimethoate"
+        ],
+        "control_groups": [
+          "tenv::Plate7::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "MCWXGJITAZMZEV-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CNC(=O)CSP(=S)(OC)OC",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate7-C02",
+          "temp_env::Plate7-F02",
+          "temp_env::Plate7-I02",
+          "temp_env::Plate7-L23"
+        ],
+        "plates": [
+          "Plate7"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::MCWXGJITAZMZEV-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dapsone"
+        ],
+        "control_groups": [
+          "tenv::Plate6::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "MQJKPEGWNLWLTK-UHFFFAOYSA-N",
+        "drug_parent_smiles": "Nc1ccc(S(=O)(=O)c2ccc(N)cc2)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate6-E02",
+          "temp_env::Plate6-H02",
+          "temp_env::Plate6-K02",
+          "temp_env::Plate6-N23"
+        ],
+        "plates": [
+          "Plate6"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::MQJKPEGWNLWLTK-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dapsone"
+        ],
+        "control_groups": [
+          "tenv::Plate6::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "MQJKPEGWNLWLTK-UHFFFAOYSA-N",
+        "drug_parent_smiles": "Nc1ccc(S(=O)(=O)c2ccc(N)cc2)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate6-D02",
+          "temp_env::Plate6-G02",
+          "temp_env::Plate6-J02",
+          "temp_env::Plate6-M23"
+        ],
+        "plates": [
+          "Plate6"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::MQJKPEGWNLWLTK-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Dapsone"
+        ],
+        "control_groups": [
+          "tenv::Plate6::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "MQJKPEGWNLWLTK-UHFFFAOYSA-N",
+        "drug_parent_smiles": "Nc1ccc(S(=O)(=O)c2ccc(N)cc2)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate6-C02",
+          "temp_env::Plate6-F02",
+          "temp_env::Plate6-I02",
+          "temp_env::Plate6-L23"
+        ],
+        "plates": [
+          "Plate6"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::MQJKPEGWNLWLTK-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Spiroxamine"
+        ],
+        "control_groups": [
+          "tenv::Plate5::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "PUYXTUJWRLOUCW-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCCN(CC)CC1COC2(CCC(C(C)(C)C)CC2)O1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate5-E02",
+          "temp_env::Plate5-H02",
+          "temp_env::Plate5-K02",
+          "temp_env::Plate5-N23"
+        ],
+        "plates": [
+          "Plate5"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::PUYXTUJWRLOUCW-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Spiroxamine"
+        ],
+        "control_groups": [
+          "tenv::Plate5::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "PUYXTUJWRLOUCW-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCCN(CC)CC1COC2(CCC(C(C)(C)C)CC2)O1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate5-D02",
+          "temp_env::Plate5-G02",
+          "temp_env::Plate5-J02",
+          "temp_env::Plate5-M23"
+        ],
+        "plates": [
+          "Plate5"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::PUYXTUJWRLOUCW-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Spiroxamine"
+        ],
+        "control_groups": [
+          "tenv::Plate5::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "PUYXTUJWRLOUCW-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCCN(CC)CC1COC2(CCC(C(C)(C)C)CC2)O1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate5-C02",
+          "temp_env::Plate5-F02",
+          "temp_env::Plate5-I02",
+          "temp_env::Plate5-L23"
+        ],
+        "plates": [
+          "Plate5"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::PUYXTUJWRLOUCW-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Isoniazid"
+        ],
+        "control_groups": [
+          "tenv::Plate1::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "QRXWMOHMRWLFEY-UHFFFAOYSA-N",
+        "drug_parent_smiles": "NNC(=O)c1ccncc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate1-E02",
+          "temp_env::Plate1-H02",
+          "temp_env::Plate1-K02",
+          "temp_env::Plate1-N23"
+        ],
+        "plates": [
+          "Plate1"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::QRXWMOHMRWLFEY-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Isoniazid"
+        ],
+        "control_groups": [
+          "tenv::Plate1::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "QRXWMOHMRWLFEY-UHFFFAOYSA-N",
+        "drug_parent_smiles": "NNC(=O)c1ccncc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate1-D02",
+          "temp_env::Plate1-G02",
+          "temp_env::Plate1-J02",
+          "temp_env::Plate1-M23"
+        ],
+        "plates": [
+          "Plate1"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::QRXWMOHMRWLFEY-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Isoniazid"
+        ],
+        "control_groups": [
+          "tenv::Plate1::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "QRXWMOHMRWLFEY-UHFFFAOYSA-N",
+        "drug_parent_smiles": "NNC(=O)c1ccncc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate1-C02",
+          "temp_env::Plate1-F02",
+          "temp_env::Plate1-I02",
+          "temp_env::Plate1-L23"
+        ],
+        "plates": [
+          "Plate1"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::QRXWMOHMRWLFEY-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Octabenzone"
+        ],
+        "control_groups": [
+          "tenv::Plate14::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "QUAMTGJKVDWJEQ-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCCCCCCCOc1ccc(C(=O)c2ccccc2)c(O)c1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate14-E02",
+          "temp_env::Plate14-H02",
+          "temp_env::Plate14-K02",
+          "temp_env::Plate14-N23"
+        ],
+        "plates": [
+          "Plate14"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::QUAMTGJKVDWJEQ-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Octabenzone"
+        ],
+        "control_groups": [
+          "tenv::Plate14::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "QUAMTGJKVDWJEQ-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCCCCCCCOc1ccc(C(=O)c2ccccc2)c(O)c1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate14-D02",
+          "temp_env::Plate14-G02",
+          "temp_env::Plate14-J02",
+          "temp_env::Plate14-M23"
+        ],
+        "plates": [
+          "Plate14"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::QUAMTGJKVDWJEQ-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Octabenzone"
+        ],
+        "control_groups": [
+          "tenv::Plate14::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "QUAMTGJKVDWJEQ-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCCCCCCCOc1ccc(C(=O)c2ccccc2)c(O)c1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate14-C02",
+          "temp_env::Plate14-F02",
+          "temp_env::Plate14-I02",
+          "temp_env::Plate14-L23"
+        ],
+        "plates": [
+          "Plate14"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::QUAMTGJKVDWJEQ-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Nicotine"
+        ],
+        "control_groups": [
+          "tenv::Plate8::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "SNICXCGAKADSCV-JTQLQIEISA-N",
+        "drug_parent_smiles": "CN1CCC[C@H]1c1cccnc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate8-E02",
+          "temp_env::Plate8-H02",
+          "temp_env::Plate8-K02",
+          "temp_env::Plate8-N23"
+        ],
+        "plates": [
+          "Plate8"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::SNICXCGAKADSCV-JTQLQIEISA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Nicotine"
+        ],
+        "control_groups": [
+          "tenv::Plate8::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "SNICXCGAKADSCV-JTQLQIEISA-N",
+        "drug_parent_smiles": "CN1CCC[C@H]1c1cccnc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate8-D02",
+          "temp_env::Plate8-G02",
+          "temp_env::Plate8-J02",
+          "temp_env::Plate8-M23"
+        ],
+        "plates": [
+          "Plate8"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::SNICXCGAKADSCV-JTQLQIEISA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Nicotine"
+        ],
+        "control_groups": [
+          "tenv::Plate8::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "SNICXCGAKADSCV-JTQLQIEISA-N",
+        "drug_parent_smiles": "CN1CCC[C@H]1c1cccnc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate8-C02",
+          "temp_env::Plate8-F02",
+          "temp_env::Plate8-I02",
+          "temp_env::Plate8-L23"
+        ],
+        "plates": [
+          "Plate8"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::SNICXCGAKADSCV-JTQLQIEISA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Clofentezine"
+        ],
+        "control_groups": [
+          "tenv::Plate3::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "UXADOQPNKNTIHB-UHFFFAOYSA-N",
+        "drug_parent_smiles": "Clc1ccccc1-c1nnc(-c2ccccc2Cl)nn1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate3-E02",
+          "temp_env::Plate3-H02",
+          "temp_env::Plate3-K02",
+          "temp_env::Plate3-N23"
+        ],
+        "plates": [
+          "Plate3"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::UXADOQPNKNTIHB-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Clofentezine"
+        ],
+        "control_groups": [
+          "tenv::Plate3::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "UXADOQPNKNTIHB-UHFFFAOYSA-N",
+        "drug_parent_smiles": "Clc1ccccc1-c1nnc(-c2ccccc2Cl)nn1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate3-D02",
+          "temp_env::Plate3-G02",
+          "temp_env::Plate3-J02",
+          "temp_env::Plate3-M23"
+        ],
+        "plates": [
+          "Plate3"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::UXADOQPNKNTIHB-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Clofentezine"
+        ],
+        "control_groups": [
+          "tenv::Plate3::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "UXADOQPNKNTIHB-UHFFFAOYSA-N",
+        "drug_parent_smiles": "Clc1ccccc1-c1nnc(-c2ccccc2Cl)nn1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate3-C02",
+          "temp_env::Plate3-F02",
+          "temp_env::Plate3-I02",
+          "temp_env::Plate3-L23"
+        ],
+        "plates": [
+          "Plate3"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::UXADOQPNKNTIHB-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Resmethrin"
+        ],
+        "control_groups": [
+          "tenv::Plate12::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "VEMKTZHHVJILDY-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CC(C)=CC1C(C(=O)OCc2coc(Cc3ccccc3)c2)C1(C)C",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate12-E02",
+          "temp_env::Plate12-H02",
+          "temp_env::Plate12-K02",
+          "temp_env::Plate12-N23"
+        ],
+        "plates": [
+          "Plate12"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::VEMKTZHHVJILDY-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Resmethrin"
+        ],
+        "control_groups": [
+          "tenv::Plate12::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "VEMKTZHHVJILDY-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CC(C)=CC1C(C(=O)OCc2coc(Cc3ccccc3)c2)C1(C)C",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate12-D02",
+          "temp_env::Plate12-G02",
+          "temp_env::Plate12-J02",
+          "temp_env::Plate12-M23"
+        ],
+        "plates": [
+          "Plate12"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::VEMKTZHHVJILDY-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Resmethrin"
+        ],
+        "control_groups": [
+          "tenv::Plate12::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "VEMKTZHHVJILDY-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CC(C)=CC1C(C(=O)OCc2coc(Cc3ccccc3)c2)C1(C)C",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate12-C02",
+          "temp_env::Plate12-F02",
+          "temp_env::Plate12-I02",
+          "temp_env::Plate12-L23"
+        ],
+        "plates": [
+          "Plate12"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::VEMKTZHHVJILDY-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Asulam"
+        ],
+        "control_groups": [
+          "tenv::Plate10::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "VGPYEHKOIGNJKV-UHFFFAOYSA-N",
+        "drug_parent_smiles": "COC(=O)NS(=O)(=O)c1ccc(N)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate10-E02",
+          "temp_env::Plate10-H02",
+          "temp_env::Plate10-K02",
+          "temp_env::Plate10-N23"
+        ],
+        "plates": [
+          "Plate10"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::VGPYEHKOIGNJKV-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Asulam"
+        ],
+        "control_groups": [
+          "tenv::Plate10::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "VGPYEHKOIGNJKV-UHFFFAOYSA-N",
+        "drug_parent_smiles": "COC(=O)NS(=O)(=O)c1ccc(N)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate10-D02",
+          "temp_env::Plate10-G02",
+          "temp_env::Plate10-J02",
+          "temp_env::Plate10-M23"
+        ],
+        "plates": [
+          "Plate10"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::VGPYEHKOIGNJKV-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Asulam"
+        ],
+        "control_groups": [
+          "tenv::Plate10::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "VGPYEHKOIGNJKV-UHFFFAOYSA-N",
+        "drug_parent_smiles": "COC(=O)NS(=O)(=O)c1ccc(N)cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate10-C02",
+          "temp_env::Plate10-F02",
+          "temp_env::Plate10-I02",
+          "temp_env::Plate10-L23"
+        ],
+        "plates": [
+          "Plate10"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::VGPYEHKOIGNJKV-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Metolachlor"
+        ],
+        "control_groups": [
+          "tenv::Plate13::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "WVQBLGZPHOPPFO-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCc1cccc(C)c1N(C(=O)CCl)C(C)COC",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate13-E02",
+          "temp_env::Plate13-H02",
+          "temp_env::Plate13-K02",
+          "temp_env::Plate13-N23"
+        ],
+        "plates": [
+          "Plate13"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::WVQBLGZPHOPPFO-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Metolachlor"
+        ],
+        "control_groups": [
+          "tenv::Plate13::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "WVQBLGZPHOPPFO-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCc1cccc(C)c1N(C(=O)CCl)C(C)COC",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate13-D02",
+          "temp_env::Plate13-G02",
+          "temp_env::Plate13-J02",
+          "temp_env::Plate13-M23"
+        ],
+        "plates": [
+          "Plate13"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::WVQBLGZPHOPPFO-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Metolachlor"
+        ],
+        "control_groups": [
+          "tenv::Plate13::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "WVQBLGZPHOPPFO-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCc1cccc(C)c1N(C(=O)CCl)C(C)COC",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate13-C02",
+          "temp_env::Plate13-F02",
+          "temp_env::Plate13-I02",
+          "temp_env::Plate13-L23"
+        ],
+        "plates": [
+          "Plate13"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::WVQBLGZPHOPPFO-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Paraoxon"
+        ],
+        "control_groups": [
+          "tenv::Plate9::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "WYMSBXTXOHUIGT-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCOP(=O)(OCC)Oc1ccc([N+](=O)[O-])cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate9-E02",
+          "temp_env::Plate9-H02",
+          "temp_env::Plate9-K02",
+          "temp_env::Plate9-N23"
+        ],
+        "plates": [
+          "Plate9"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::WYMSBXTXOHUIGT-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Paraoxon"
+        ],
+        "control_groups": [
+          "tenv::Plate9::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "WYMSBXTXOHUIGT-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCOP(=O)(OCC)Oc1ccc([N+](=O)[O-])cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate9-D02",
+          "temp_env::Plate9-G02",
+          "temp_env::Plate9-J02",
+          "temp_env::Plate9-M23"
+        ],
+        "plates": [
+          "Plate9"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::WYMSBXTXOHUIGT-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Paraoxon"
+        ],
+        "control_groups": [
+          "tenv::Plate9::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "WYMSBXTXOHUIGT-UHFFFAOYSA-N",
+        "drug_parent_smiles": "CCOP(=O)(OCC)Oc1ccc([N+](=O)[O-])cc1",
+        "member_count": 4,
+        "member_profile_ids": [
+          "temp_env::Plate9-C02",
+          "temp_env::Plate9-F02",
+          "temp_env::Plate9-I02",
+          "temp_env::Plate9-L23"
+        ],
+        "plates": [
+          "Plate9"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::WYMSBXTXOHUIGT-UHFFFAOYSA-N::10"
+      }
+    ],
+    "member_count_histogram": {
+      "1": 0,
+      "2": 0,
+      "3": 1320,
+      "4": 48,
+      "5": 0,
+      "6": 9
+    },
+    "six_well_salt_pairs": [
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Tamoxifen",
+          "Tamoxifen citrate"
+        ],
+        "control_groups": [
+          "tenv::Plate8::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "NKANXQFJJICGDU-QPLCGJKRSA-N",
+        "drug_parent_smiles": "CC/C(=C(\\c1ccccc1)c1ccc(OCCN(C)C)cc1)c1ccccc1",
+        "member_count": 6,
+        "member_profile_ids": [
+          "temp_env::Plate8-E08",
+          "temp_env::Plate8-E23",
+          "temp_env::Plate8-H08",
+          "temp_env::Plate8-H23",
+          "temp_env::Plate8-K08",
+          "temp_env::Plate8-K23"
+        ],
+        "plates": [
+          "Plate8"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::NKANXQFJJICGDU-QPLCGJKRSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Tamoxifen",
+          "Tamoxifen citrate"
+        ],
+        "control_groups": [
+          "tenv::Plate8::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "NKANXQFJJICGDU-QPLCGJKRSA-N",
+        "drug_parent_smiles": "CC/C(=C(\\c1ccccc1)c1ccc(OCCN(C)C)cc1)c1ccccc1",
+        "member_count": 6,
+        "member_profile_ids": [
+          "temp_env::Plate8-D08",
+          "temp_env::Plate8-D23",
+          "temp_env::Plate8-G08",
+          "temp_env::Plate8-G23",
+          "temp_env::Plate8-J08",
+          "temp_env::Plate8-J23"
+        ],
+        "plates": [
+          "Plate8"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::NKANXQFJJICGDU-QPLCGJKRSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Tamoxifen",
+          "Tamoxifen citrate"
+        ],
+        "control_groups": [
+          "tenv::Plate8::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "NKANXQFJJICGDU-QPLCGJKRSA-N",
+        "drug_parent_smiles": "CC/C(=C(\\c1ccccc1)c1ccc(OCCN(C)C)cc1)c1ccccc1",
+        "member_count": 6,
+        "member_profile_ids": [
+          "temp_env::Plate8-C08",
+          "temp_env::Plate8-C23",
+          "temp_env::Plate8-F08",
+          "temp_env::Plate8-F23",
+          "temp_env::Plate8-I08",
+          "temp_env::Plate8-I23"
+        ],
+        "plates": [
+          "Plate8"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::NKANXQFJJICGDU-QPLCGJKRSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Ammonium perfluorooctanoate",
+          "Perfluorooctanoic acid"
+        ],
+        "control_groups": [
+          "tenv::Plate5::DMSO",
+          "tenv::Plate9::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "SNGREZUHAYWORS-UHFFFAOYSA-N",
+        "drug_parent_smiles": "O=C(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+        "member_count": 6,
+        "member_profile_ids": [
+          "temp_env::Plate5-E03",
+          "temp_env::Plate5-H03",
+          "temp_env::Plate5-K03",
+          "temp_env::Plate9-E06",
+          "temp_env::Plate9-H06",
+          "temp_env::Plate9-K06"
+        ],
+        "plates": [
+          "Plate5",
+          "Plate9"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::SNGREZUHAYWORS-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Ammonium perfluorooctanoate",
+          "Perfluorooctanoic acid"
+        ],
+        "control_groups": [
+          "tenv::Plate5::DMSO",
+          "tenv::Plate9::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "SNGREZUHAYWORS-UHFFFAOYSA-N",
+        "drug_parent_smiles": "O=C(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+        "member_count": 6,
+        "member_profile_ids": [
+          "temp_env::Plate5-D03",
+          "temp_env::Plate5-G03",
+          "temp_env::Plate5-J03",
+          "temp_env::Plate9-D06",
+          "temp_env::Plate9-G06",
+          "temp_env::Plate9-J06"
+        ],
+        "plates": [
+          "Plate5",
+          "Plate9"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::SNGREZUHAYWORS-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Ammonium perfluorooctanoate",
+          "Perfluorooctanoic acid"
+        ],
+        "control_groups": [
+          "tenv::Plate5::DMSO",
+          "tenv::Plate9::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "SNGREZUHAYWORS-UHFFFAOYSA-N",
+        "drug_parent_smiles": "O=C(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+        "member_count": 6,
+        "member_profile_ids": [
+          "temp_env::Plate5-C03",
+          "temp_env::Plate5-F03",
+          "temp_env::Plate5-I03",
+          "temp_env::Plate9-C06",
+          "temp_env::Plate9-F06",
+          "temp_env::Plate9-I06"
+        ],
+        "plates": [
+          "Plate5",
+          "Plate9"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::SNGREZUHAYWORS-UHFFFAOYSA-N::10"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Perfluorooctanesulfonic acid",
+          "Potassium perfluorooctanesulfonate"
+        ],
+        "control_groups": [
+          "tenv::Plate12::DMSO",
+          "tenv::Plate8::DMSO"
+        ],
+        "dose_um": 0.2,
+        "drug_parent_inchikey": "YFSUTJLHUFNCNZ-UHFFFAOYSA-N",
+        "drug_parent_smiles": "O=S(=O)(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+        "member_count": 6,
+        "member_profile_ids": [
+          "temp_env::Plate12-E17",
+          "temp_env::Plate12-H17",
+          "temp_env::Plate12-K17",
+          "temp_env::Plate8-E18",
+          "temp_env::Plate8-H18",
+          "temp_env::Plate8-K18"
+        ],
+        "plates": [
+          "Plate12",
+          "Plate8"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::YFSUTJLHUFNCNZ-UHFFFAOYSA-N::0.2"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Perfluorooctanesulfonic acid",
+          "Potassium perfluorooctanesulfonate"
+        ],
+        "control_groups": [
+          "tenv::Plate12::DMSO",
+          "tenv::Plate8::DMSO"
+        ],
+        "dose_um": 1.0,
+        "drug_parent_inchikey": "YFSUTJLHUFNCNZ-UHFFFAOYSA-N",
+        "drug_parent_smiles": "O=S(=O)(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+        "member_count": 6,
+        "member_profile_ids": [
+          "temp_env::Plate12-D17",
+          "temp_env::Plate12-G17",
+          "temp_env::Plate12-J17",
+          "temp_env::Plate8-D18",
+          "temp_env::Plate8-G18",
+          "temp_env::Plate8-J18"
+        ],
+        "plates": [
+          "Plate12",
+          "Plate8"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::YFSUTJLHUFNCNZ-UHFFFAOYSA-N::1"
+      },
+      {
+        "cell_line": "hiPSC-CM",
+        "compound_names": [
+          "Perfluorooctanesulfonic acid",
+          "Potassium perfluorooctanesulfonate"
+        ],
+        "control_groups": [
+          "tenv::Plate12::DMSO",
+          "tenv::Plate8::DMSO"
+        ],
+        "dose_um": 10.0,
+        "drug_parent_inchikey": "YFSUTJLHUFNCNZ-UHFFFAOYSA-N",
+        "drug_parent_smiles": "O=S(=O)(O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F",
+        "member_count": 6,
+        "member_profile_ids": [
+          "temp_env::Plate12-C17",
+          "temp_env::Plate12-F17",
+          "temp_env::Plate12-I17",
+          "temp_env::Plate8-C18",
+          "temp_env::Plate8-F18",
+          "temp_env::Plate8-I18"
+        ],
+        "plates": [
+          "Plate12",
+          "Plate8"
+        ],
+        "profile_id": "merge::tenv::hiPSC-CM::YFSUTJLHUFNCNZ-UHFFFAOYSA-N::10"
+      }
+    ],
+    "source_has_named_traps": true
+  },
+  "treated": 1377,
+  "view": "merge"
+}
