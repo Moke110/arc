@@ -5,48 +5,25 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 
 ## Active steps
 
-- `01_bases/` — shared foundation (ADR 0066 integer corpus; ADR 0073 disease/axis
-  contract): frozen identity, raw counts, corpus, paired 5k expression views,
-  complete disease source evidence, tier-first DEG1000 fusion, 2k/3k/4k/5k nested
-  gene axes, fold/seed products, palette and the single public API. Later steps
-  import it rather than re-deriving it. Axes use half tenv-HVG, half unused
-  f1000-first/rank_sum-ordered disease candidates, with explicit HVG fallback.
-  ADR0077 views normalize on selected G_5000 integer totals and retain matched
-  control/delta semantics. Old02/03 experiments keep their full-axis scale. The human rule DOCX is at the step root.
-  Routing: `stage2/01_bases/AGENTS.md`.
-- `02_models_tenv-5k/` — single-dose tenv native model comparison (ADR 0074):
-  shared splits and Mean baselines, random-weight PRnet/TranSiGen/ECFP4_MLP,
-  parent-level Δ evaluation, checkpoint replay and CSV-only report figures.
-  Before changing or replaying it, read its `AGENTS.md` and `README.md`.
+- [util](util/AGENTS.md) owns gene and drug identities, representations, ECFP4,
+  seeds, generic metrics, palette and CSV plotting helpers.
+- [01_corpus](01_corpus/AGENTS.md) publishes source-native integer counts, coverage
+  and match status.
+- [02_axis_view](02_axis_view/AGENTS.md) owns the four ordered HVG-DEG prediction
+  axes and their selection evidence.
+- [03_view](03_view/AGENTS.md) publishes the raw-first view families. Its full
+  release is the default for downstream inputs.
+- [04_models_tenv-5k](04_models_tenv-5k/AGENTS.md) compares single-dose tenv models.
+- [05_tsg_drug_emb](05_tsg_drug_emb/AGENTS.md) compares drug representations.
+- [06_tsg_dose](06_tsg_dose/AGENTS.md) compares dose methods in Tahoe and tenv.
+- [07_tsg_width_dose](07_tsg_width_dose/AGENTS.md) compares width and dose encodings.
+- [08_tsg_transfer](08_tsg_transfer/AGENTS.md) compares Tahoe-to-tenv transfer.
 
-- `03_tsg_drug_emb/` — ADR 0079 tenv cold-drug comparison of seven drug
-  representations under fixed FiLM conditioning. See the
-  [execution workflow](03_tsg_drug_emb/AGENTS.md) and
-  [report](03_tsg_drug_emb/README.md).
-
-- `04_tsg_dose/` — ADR0078 Tahoe/tenv dose comparison with 84 TranSiGen fits,
-  12 ECFP4_MLP fits and 12 Mean_cell evaluations. Before reproducing results or
-  publishing a successor, read its [execution workflow](04_tsg_dose/AGENTS.md)
-  and [report](04_tsg_dose/README.md).
-
-- `05_tsg_width_dose/` — tenv TranSiGen width and dose encoding comparison on
-  the three Step 04 cold-drug-dose folds. See its [execution workflow](05_tsg_width_dose/AGENTS.md)
-  and [study report](05_tsg_width_dose/README.md).
-
-- `06_tsg_transfer/` — Tahoe pretraining and tenv cold-drug-dose transfer
-  comparison. Follow its [execution workflow](06_tsg_transfer/AGENTS.md) and
-  [study report](06_tsg_transfer/README.md).
-
-- `tsg_view/` — **study step (ADR 0082), not a pipeline stage and not numbered**: five
-  expression view families (nine source-specific products; `solo-deepest` is tenv-only)
-  built from the Bases integer corpus under the sealed cold-drug-dose folds, with native
-  TranSiGen fitted on each, to test how much of the tenv–Tahoe gap within-condition
-  replicate structure explains. It publishes comparison evidence and no model weights.
-  See its [execution workflow](tsg_view/AGENTS.md) and
-  [study report](tsg_view/README.md).
-
-Use **ECFP4** and **ECFP4_MLP** in new contracts and reports. See the
-[fingerprint migration record](04_tsg_dose/log/ecfp4-contract.md) for sealed keys.
+Use each study's `execution/raw_first.py` for new inputs and fixed-prediction
+evaluation. Use `figure/raw_first/render.py` or the documented `render` command
+for CSV-only rendering with util. Use [the replay map](03_view/03.1_hvg-deg_views/historical/README.md)
+for sealed inputs, metric and figure replay. `01_bases/` retains recovery bytes
+and shared derivation kernels used by external-data builders.
 
 ## Step contract
 - `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,

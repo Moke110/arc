@@ -85,8 +85,8 @@ def write_metadata(payload, source, item, drug_metadata=None):
         write_elem(handle, "obs", obs)
 
 
-def axis_inputs(repo):
-    stem = repo / "stage2/01_bases/output/gene-identity/tables"
+def axis_inputs():
+    stem = REPO / "stage2/util/output/gene-identity/tables"
     axis_path = stem / "genes.csv"
     axis = raw_counts._axis_frame(axis_path)
     crosswalk = pd.read_csv(stem / "gene_crosswalk.csv", dtype=str, keep_default_na=False)
@@ -139,7 +139,7 @@ def main():
     args = parser.parse_args()
     source_root = args.materialized_root.resolve()
     data = source_root / "pert_data"
-    axis, crosswalk = axis_inputs(source_root)
+    axis, crosswalk = axis_inputs()
     mapping, tahoe_columns = tahoe_mappings(data, axis, crosswalk)
     drug_metadata = data / TAHOE / "source/metadata/drug_metadata.parquet"
     pin_source(data / TAHOE, drug_metadata)
@@ -148,7 +148,7 @@ def main():
         inputs = {
             "common_axis_sha256": raw_counts.AXIS_SHA256,
             "crosswalk_sha256": sha256(
-                source_root / "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv"
+                REPO / "stage2/util/output/gene-identity/tables/gene_crosswalk.csv"
             ),
             "source_manifests": {
                 item.name: sha256(item / "manifest.sha256")

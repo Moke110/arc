@@ -51,4 +51,4 @@ rebuilds separately and compares bytes. An isolated tenv rehearsal may use
 `--source tenv --destination /path/to/rehearsal`.
 
 The prior recipes, payloads, 45-fit evidence and sealed replay remain at
-[the historical view-study boundary](../../tsg_view/README.md) during migration.
+[the historical view-study boundary](historical/README.md).
