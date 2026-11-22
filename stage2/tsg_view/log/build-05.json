@@ -354,6 +354,11 @@
         },
         "sealed_freeze": "stage2/04_tsg_dose/execution/checkpoints/round1-axis-local-inputs/tenv"
       }
+    },
+    "i_rebuild_evidence": {
+      "after_pairwise_refactor": "both sources rebuilt into /tmp/arc-tsg-05/output-truth-3 and compared byte for byte with the tracked products: identical (30 files each)",
+      "default_cli": "truth.py --source all --output /tmp/arc-tsg-05/output-truth-all --repo-root /home/chang/arc: 62.6 s wall, 1,831,940 KiB peak RSS, both sources byte-identical to the tracked products",
+      "sealed_freeze_confirmation": "primary control/delta bit-identical to the sealed Step 04 axis-local full freeze on every test row"
     }
   },
   "inputs": {
