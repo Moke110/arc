@@ -1,8 +1,9 @@
 {
   "base_commit": "ee49738",
   "branch": "impl/tsg-view-06",
+  "dev_merge": "3c68308 (ticket 05: frozen truth and diagnostics)",
   "deviations": [
-    "the bounded probes use a snapshot of the ticket-05 branch truth product (pinned above) because the final truth merges after this branch; the machinery is product-agnostic and the Lead's matrix runs against output/truth once 05 merges",
+    "the bounded probes run against the merged ticket-05 truth manifests with the gitignored truth arrays supplied from the deterministic ticket-05 builder (every array matches its fold manifest digest); the Lead's matrix reads the materialised output/truth in the main checkout",
     "per-fold truth manifests use tsg-view-truth-fold-v1 (source manifest tsg-view-truth-v1); the loader accepts both instead of assuming one string",
     "staged formal runs are limited to filters that keep each (source, fold) group whole, because the choice receipt is sealed per fold; --only-source tenv then --only-source tahoe_bulk is the intended staged run",
     "the driver writes checkpoints under stage2/tsg_view/execution/checkpoints/formal, which is gitignored per plan C7.12",
@@ -166,91 +167,90 @@
       },
       "seeds": {
         "42": {
-          "candidate": "/tmp/tsg06-probe/probe-42",
+          "candidate": "/tmp/tsg06-probe-final/probe-42",
           "cap": {
             "memory_max": "10G",
             "memory_swap_max": "8G",
             "schema": "tsg-view-formal-cap-v1",
             "scope": {
-              "Id": "arc-tsg-view-formal-2270641.scope",
-              "InvocationID": "bc58db2dd46444ff8fa94d7dafe5c962",
+              "Id": "arc-tsg-view-formal-858443.scope",
+              "InvocationID": "905a9cf4162046b48b88092d687ffc83",
               "MemoryMax": "10737418240",
               "MemorySwapMax": "8589934592"
             },
             "threads": 2,
-            "unit": "arc-tsg-view-formal-2270641"
+            "unit": "arc-tsg-view-formal-858443"
           },
-          "note": "the 2-epoch probe model is untrained evidence: its full-arm scores are far from the anchor, and verify correctly reports DRIFT with the measured values rather than hiding them; the probe proves the formal path, seeds and exact replay, not the fit quality",
           "origin": {
             "fold": 0,
             "seed": 42,
             "source": "tenv",
             "view": "full"
           },
-          "plan_sha256": "c256e268604962f036e67101703fbe06966afd4d7b3ace02afa013b196f953d5",
+          "plan_sha256": "3ce78325d96a1d148eda088ce5d321e6a75c433d0cbc2ca32105e8896520e983",
           "record": {
             "best_epoch": 2,
             "device": "cuda",
-            "peak_gpu_used_mib": 2042,
-            "peak_rss_kib": 1843600,
+            "peak_gpu_used_mib": 2045,
+            "peak_rss_kib": 1843380,
             "realized_epochs": 2,
-            "runtime_seconds": 19.388,
-            "training_seconds": 3.065,
+            "runtime_seconds": 18.912,
+            "training_seconds": 2.939,
             "validation_mse": 0.6170246601104736
           },
-          "replay_equality": "a later fresh-process replay of the completed run reproduced test_predictions.npy bit-for-bit (sha256 before == after, recorded in gates.c_bounded_gpu_probes.seeds.<seed>.test_predictions_sha256; the driver's own final test replay already asserts np.array_equal)",
-          "run_manifest_sha256": "0eefe9ac5d587b7bbc04c7fd44646fcc6df29b4d837f582fd4ca0591a0c45d8b",
-          "selection_sha256": "38999533346dd5464095b52b3e212018298ff7fa5af6564be86a1090cbcfa11e",
+          "replay_equality": "a later fresh-process replay reproduced test_predictions.npy bit-for-bit (sha256 unchanged)",
+          "run_manifest_sha256": "08ccc8450d0254994110339f3dd30345feb203e2061f453125b91de417309806",
+          "selection_sha256": "4717951ebdfdc84b9b0bebb12d9a23fcd15d354fd55386e0341ec21cbd6a6329",
           "telemetry_phases": {
-            "test-evaluate-1795341283302804221": {
-              "elapsed_seconds": 4.508,
-              "peak_rss_kib": 1559792,
+            "test-evaluate-1795342129705003929": {
+              "elapsed_seconds": 4.273,
+              "peak_rss_kib": 1559752,
               "returncode": 0,
               "telemetry": {
                 "max_gpu_util_pct": 2,
-                "max_mem_available_kib": 21765700,
+                "max_mem_available_kib": 20984004,
                 "mean_gpu_util_pct": 1.5,
-                "min_mem_available_kib": 21280304,
-                "peak_gpu_used_mib": 2042,
+                "min_mem_available_kib": 20595648,
+                "peak_gpu_used_mib": 2044,
                 "samples": 2
               }
             },
-            "test-replay-1795341287811784742": {
-              "elapsed_seconds": 3.811,
-              "peak_rss_kib": 1450432,
-              "returncode": 0,
-              "telemetry": {
-                "max_gpu_util_pct": 1,
-                "max_mem_available_kib": 21642280,
-                "mean_gpu_util_pct": 1.0,
-                "min_mem_available_kib": 21289200,
-                "peak_gpu_used_mib": 2042,
-                "samples": 2
-              }
-            },
-            "validation-replay-1795341279353002460": {
-              "elapsed_seconds": 3.948,
-              "peak_rss_kib": 1413236,
+            "test-replay-1795342133978479953": {
+              "elapsed_seconds": 3.92,
+              "peak_rss_kib": 1449704,
               "returncode": 0,
               "telemetry": {
                 "max_gpu_util_pct": 2,
-                "max_mem_available_kib": 21778032,
+                "max_mem_available_kib": 20656696,
                 "mean_gpu_util_pct": 2.0,
-                "min_mem_available_kib": 21273424,
-                "peak_gpu_used_mib": 2034,
+                "min_mem_available_kib": 20386208,
+                "peak_gpu_used_mib": 1980,
                 "samples": 2
               }
             },
-            "validation-train-1795341275295404733": {
-              "elapsed_seconds": 4.056,
-              "peak_rss_kib": 1843600,
+            "validation-replay-1795342125872624050": {
+              "elapsed_seconds": 3.831,
+              "peak_rss_kib": 1414440,
               "returncode": 0,
               "telemetry": {
-                "max_gpu_util_pct": 11,
-                "max_mem_available_kib": 21557484,
-                "mean_gpu_util_pct": 6.5,
-                "min_mem_available_kib": 21283088,
-                "peak_gpu_used_mib": 2013,
+                "max_gpu_util_pct": 2,
+                "max_mem_available_kib": 21464444,
+                "mean_gpu_util_pct": 1.5,
+                "min_mem_available_kib": 21000984,
+                "peak_gpu_used_mib": 2045,
+                "samples": 2
+              }
+            },
+            "validation-train-1795342121922236539": {
+              "elapsed_seconds": 3.949,
+              "peak_rss_kib": 1843380,
+              "returncode": 0,
+              "telemetry": {
+                "max_gpu_util_pct": 12,
+                "max_mem_available_kib": 21485516,
+                "mean_gpu_util_pct": 7.0,
+                "min_mem_available_kib": 21471632,
+                "peak_gpu_used_mib": 2043,
                 "samples": 2
               }
             }
@@ -261,11 +261,11 @@
             "epochs": 2,
             "seed": 42,
             "status": "complete",
-            "test_evaluation_process_token": "4e9bfe7fd7f3dd515abf6af846f61e2e80f996af707b702cae59efdbebfb7b0f",
-            "test_replay_token": "1d44bd95bfd4de72841d2b6503b55b7845f91b01bb7877ef7b86ae94d396e52e",
-            "training_process_token": "d8cacb1fb702467bcd92592390d31d9ebdb3749180d850b2a60f03644e915afd",
+            "test_evaluation_process_token": "866938bbafcd401911d583639ed218ba793933be95e3868dc2ef0148ac0c70a1",
+            "test_replay_token": "974028adf1bf94198b694351f69e185c816d53f6b313a99d92d836e3cfa280b4",
+            "training_process_token": "239e2a7032db95994c97417a8ac001fe86f154b5f49b79bfa5550179512e639e",
             "validation_mse": 0.6170246601104736,
-            "validation_replay_token": "7a5533b61f10212f2e3b85ccd64c355f7ee82b91b0197584690a816f3dad7e27"
+            "validation_replay_token": "b5ddbd10df8f87fd1c8defab253f0c373724ebcf2f415475cb4de8834678522d"
           },
           "test_metrics": {
             "condition_mean": {
@@ -333,91 +333,90 @@
           }
         },
         "43": {
-          "candidate": "/tmp/tsg06-probe/probe-43",
+          "candidate": "/tmp/tsg06-probe-final/probe-43",
           "cap": {
             "memory_max": "10G",
             "memory_swap_max": "8G",
             "schema": "tsg-view-formal-cap-v1",
             "scope": {
-              "Id": "arc-tsg-view-formal-2328363.scope",
-              "InvocationID": "3742ae00857e4b1fbf173648e6a76c7e",
+              "Id": "arc-tsg-view-formal-858852.scope",
+              "InvocationID": "e1cab11a24f34fdf92dbd60f163bf058",
               "MemoryMax": "10737418240",
               "MemorySwapMax": "8589934592"
             },
             "threads": 2,
-            "unit": "arc-tsg-view-formal-2328363"
+            "unit": "arc-tsg-view-formal-858852"
           },
-          "note": "the 2-epoch probe model is untrained evidence: its full-arm scores are far from the anchor, and verify correctly reports DRIFT with the measured values rather than hiding them; the probe proves the formal path, seeds and exact replay, not the fit quality",
           "origin": {
             "fold": 0,
             "seed": 43,
             "source": "tenv",
             "view": "full"
           },
-          "plan_sha256": "910b2a0bd9e186fb6c045c0e7663dc90e66bd6d0fd883ae7dcb457336c32bfb4",
+          "plan_sha256": "d8bdffecaffd5dd1f1d1921fae63e6a1b92d7bd345bcbd3669528cdfdf5dfe20",
           "record": {
             "best_epoch": 2,
             "device": "cuda",
-            "peak_gpu_used_mib": 2043,
-            "peak_rss_kib": 1843252,
+            "peak_gpu_used_mib": 2048,
+            "peak_rss_kib": 1843160,
             "realized_epochs": 2,
-            "runtime_seconds": 22.749,
-            "training_seconds": 3.143,
+            "runtime_seconds": 23.463,
+            "training_seconds": 3.081,
             "validation_mse": 0.618614137172699
           },
-          "replay_equality": "a later fresh-process replay of the completed run reproduced test_predictions.npy bit-for-bit (sha256 before == after, recorded in gates.c_bounded_gpu_probes.seeds.<seed>.test_predictions_sha256; the driver's own final test replay already asserts np.array_equal)",
-          "run_manifest_sha256": "25891080a98c193e3c648c15d8e7e48ee65d72f2f55f38d706e7ca8dc01ea003",
-          "selection_sha256": "acf265439f7535c8da8c65a7d4dc3af74db43dfd08a1fe0dce8469536ea695cb",
+          "replay_equality": "a later fresh-process replay reproduced test_predictions.npy bit-for-bit (sha256 unchanged)",
+          "run_manifest_sha256": "ad1a00fdc91bd19173845f4808a9913e07af012014974432606da3590268eb48",
+          "selection_sha256": "ed244966ff83e79c2bb521b722ba8e61d7ef16233c2ead1080fe2dc7f68a1bcb",
           "telemetry_phases": {
-            "test-evaluate-1795341309298630422": {
-              "elapsed_seconds": 4.449,
-              "peak_rss_kib": 1560500,
+            "test-evaluate-1795342156483178798": {
+              "elapsed_seconds": 4.296,
+              "peak_rss_kib": 1558944,
               "returncode": 0,
               "telemetry": {
                 "max_gpu_util_pct": 2,
-                "max_mem_available_kib": 21754100,
-                "mean_gpu_util_pct": 2.0,
-                "min_mem_available_kib": 21600964,
-                "peak_gpu_used_mib": 2030,
-                "samples": 2
-              }
-            },
-            "test-replay-1795341313748831711": {
-              "elapsed_seconds": 4.013,
-              "peak_rss_kib": 1450044,
-              "returncode": 0,
-              "telemetry": {
-                "max_gpu_util_pct": 2,
-                "max_mem_available_kib": 21559236,
+                "max_mem_available_kib": 21054768,
                 "mean_gpu_util_pct": 1.5,
-                "min_mem_available_kib": 21430788,
-                "peak_gpu_used_mib": 2043,
+                "min_mem_available_kib": 20981076,
+                "peak_gpu_used_mib": 2047,
                 "samples": 2
               }
             },
-            "validation-replay-1795341302283262377": {
-              "elapsed_seconds": 7.014,
-              "peak_rss_kib": 1413248,
+            "test-replay-1795342160780003971": {
+              "elapsed_seconds": 3.813,
+              "peak_rss_kib": 1448644,
               "returncode": 0,
               "telemetry": {
                 "max_gpu_util_pct": 2,
-                "max_mem_available_kib": 21772284,
-                "mean_gpu_util_pct": 2.0,
-                "min_mem_available_kib": 21325080,
-                "peak_gpu_used_mib": 2005,
+                "max_mem_available_kib": 20977188,
+                "mean_gpu_util_pct": 1.5,
+                "min_mem_available_kib": 20866732,
+                "peak_gpu_used_mib": 2048,
                 "samples": 2
               }
             },
-            "validation-train-1795341298152520060": {
-              "elapsed_seconds": 4.13,
-              "peak_rss_kib": 1843252,
+            "validation-replay-1795342152626989877": {
+              "elapsed_seconds": 3.854,
+              "peak_rss_kib": 1413404,
               "returncode": 0,
               "telemetry": {
-                "max_gpu_util_pct": 19,
-                "max_mem_available_kib": 21568340,
-                "mean_gpu_util_pct": 10.5,
-                "min_mem_available_kib": 21338852,
-                "peak_gpu_used_mib": 2005,
+                "max_gpu_util_pct": 2,
+                "max_mem_available_kib": 21050760,
+                "mean_gpu_util_pct": 2.0,
+                "min_mem_available_kib": 20983016,
+                "peak_gpu_used_mib": 2037,
+                "samples": 2
+              }
+            },
+            "validation-train-1795342144207094472": {
+              "elapsed_seconds": 8.419,
+              "peak_rss_kib": 1843160,
+              "returncode": 0,
+              "telemetry": {
+                "max_gpu_util_pct": 5,
+                "max_mem_available_kib": 21074700,
+                "mean_gpu_util_pct": 3.5,
+                "min_mem_available_kib": 21017884,
+                "peak_gpu_used_mib": 2020,
                 "samples": 2
               }
             }
@@ -428,11 +427,11 @@
             "epochs": 2,
             "seed": 43,
             "status": "complete",
-            "test_evaluation_process_token": "31cfdce304810fe44c7ebe1521bf71353db25d8618b44ab8aa32e8d5d185fa79",
-            "test_replay_token": "a359b7a20e15d3d50bd8bf409d9906aec969db5b23d70fcb8e35db4753e9881b",
-            "training_process_token": "7c593cc1956de7d3a3c0e5955c7daa91ccbb432108347a071e310ac2c2e993ff",
+            "test_evaluation_process_token": "17a8b9aecb384af308bbb675683cb0d12d62906347de76f48c836fe758cf6d22",
+            "test_replay_token": "31f277d4da8bc7ade86d6df84653b69e6ef4a20d14d219bdd681598c23ebc374",
+            "training_process_token": "8bcf1aea9fb852c4fd2507a29b3402e0e02f9065e07aeac6456b2144949eca76",
             "validation_mse": 0.618614137172699,
-            "validation_replay_token": "4ad57803c5fd2b8c19938079f25620e7c1e4dc46cac69933d8a52d6bdc182736"
+            "validation_replay_token": "a54787134a92152cee37e6827657771b806329afd530f1ca34d7fd3f1a6fcfb3"
           },
           "test_metrics": {
             "condition_mean": {
@@ -503,8 +502,8 @@
       "truth_snapshot": {
         "condition_mean_fold0_manifest_sha256": "4a67067e33fc3b7f573f907869721a5036f09186059c606fb8759a62abaa1aa4",
         "primary_fold0_manifest_sha256": "28d4d58d34ff43d96069d960e06bcda2455f5aec7d45e0cec30d217fd016c0b8",
-        "source": "ticket-05 branch 3e37d0e working-tree product copied to /tmp/tsg06-probe/truth; the merged ticket-05 product replaces it for the real matrix",
-        "tenv_manifest_sha256": "c8c800bf398583d3ed0aa49d6f49c1ffb4fcc9e6b120b269bd5d77442573b7a5"
+        "source": "merged dev truth product: tracked manifests/populations from /home/chang/arc stage2/tsg_view/output/truth/tenv; the gitignored arrays are the deterministic ticket-05 builder bytes copied from the ticket-05 worktree; every copied array matches the digest declared in the merged fold manifest",
+        "tenv_manifest_sha256": "dfbf9ff20be8f4422901f0f017648b56df1d646e8c860b694101e72437509230"
       }
     }
   },
