@@ -3,14 +3,21 @@
 Read [README.md](README.md), [Stage 2 routing](../AGENTS.md) and
 [ADR0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md) before changes.
 
-**tenv KPGT successor.** Follow [ADR0080](../../docs/adr/0080-tenv-kpgt-dose-round1.md).
+**Active raw-first comparison.** Use `execution/raw_first.py` for paired preparation,
+the tenv KPGT wrapper and fixed-prediction evaluation. The default input is the
+published full HVG-DEG view. Render the versioned summary CSV with
+`figure/raw_first/render.py`. See the [raw-first workflow](README.md#raw-first-inputs-evaluation-and-figures).
+Run whole-source preparation under the repository caps and preserve checkpoint
+paths and bytes used by the historical commands below.
+
+**Historical tenv KPGT comparison.** Follow [ADR0080](../../docs/adr/0080-tenv-kpgt-dose-round1.md).
 Prepare with `execution/kpgt/prepare.py` from the sealed Step 04 tenv input
 freeze and Step 03 representations. Verify with `execution/kpgt/smoke.py`
 under the repository caps. Run `execution/kpgt/formal.py` and `baseline.py`
 singly with 10-second RAM/GPU/WSL monitoring, then accept via `publish.py`.
 Publish its figures in `figure/` and verify them against the KPGT acceptance receipt.
 
-**ADR0078 execution.** Use `execution/axis_local/formal.py` and
+**Historical ADR0078 execution.** Use `execution/axis_local/formal.py` and
 `output/api/tsg_round1` for the 84-fit axis-local comparison. Keep Tahoe and
 tenv independent. Lock cold-drug selections on validation results before
 outer testing. Cold-drug-dose compares fixed methods. Run formal fits singly
