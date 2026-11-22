@@ -47,7 +47,31 @@ Its [10-second resource log](log/281-acceptance/resumed-resources-10s.txt)
 contains 252 samples, with a minimum available WSL memory of 20,252,128 KiB,
 no swap use, and a maximum total GPU memory use of 9,232 MiB.
 
-## Reproduction
+## Raw-first comparison
+
+`execution/raw_first.py` prepares the versioned tenv KPGT inputs, evaluates
+fixed predictions for a registered width, dose encoding and cold-drug-dose
+fold, and renders the resulting summary. Preparation defaults to the
+published full raw-first view. It can also reuse the verified tenv input from
+the [dose comparison](../04_tsg_dose/README.md) with `prepare --tenv`.
+
+```bash
+STEP=stage2/05_tsg_width_dose
+CANDIDATE=$(mktemp -d)
+python "$STEP/execution/raw_first.py" prepare --output "$CANDIDATE/inputs"
+python "$STEP/execution/raw_first.py" evaluate --inputs "$CANDIDATE/inputs" \
+  --width original --method no_dose --fold 0 --prediction /path/to/prediction.npy \
+  --prediction-ids /path/to/profile_ids.csv --output "$CANDIDATE/report"
+python "$STEP/execution/raw_first.py" render --summary "$CANDIDATE/report/summary.csv" \
+  --output "$CANDIDATE/metrics.png"
+```
+
+Supply a treated-expression prediction matrix in held profile and gene-axis
+order. The identity CSV contains one `profile_id` column. The report records
+the KPGT input, representation, corpus, axis and view digests. The renderer
+uses only the summary CSV and Stage 2 plotting and palette APIs.
+
+## Historical reproduction
 
 From the repository root with the `arc` environment active:
 
