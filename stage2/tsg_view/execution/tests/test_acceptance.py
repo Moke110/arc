@@ -5,6 +5,7 @@ so the suite never touches the accepted multi-gigabyte products, a GPU, or the n
 """
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -13,6 +14,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 EXECUTION = HERE.parent
+REPO = HERE.parents[3]
 if str(EXECUTION) not in sys.path:
     sys.path.insert(0, str(EXECUTION))
 
@@ -32,6 +34,23 @@ STEPS = ("01_bases", "02_models_tenv-5k", "03_tsg_drug_emb", "04_tsg_dose",
 STAMP = "2026-11-22T12:00:00Z"
 ENVIRONMENT = {"python": "3.13.13", "torch": "2.9.0", "cuda": "13.0", "device": "cuda",
                "driver": "580.95", "numpy": "2.4.6", "matplotlib": "3.10.9"}
+
+#: The verify artifact's transparency block: the dedup refactor moved two code digests after
+#: the plan was sealed, which is allowed but must reach the receipt unchanged.
+CODE_DRIFT = [
+    {"file": "formal.py", "section": "code",
+     "sealed_sha256": "1" * 64, "current_sha256": "2" * 64},
+    {"file": "learner.py", "section": "learner_runtime",
+     "sealed_sha256": "3" * 64, "current_sha256": "4" * 64},
+]
+SENSITIVITY_NOTE = ("the sealed anchor was measured at seed 42; this seed-43 arm is "
+                    "reported for transparency and claims no anchor reproduction")
+CODE_IDENTITY = {
+    "status": "CODE_DRIFT", "code_drift": CODE_DRIFT, "driver_code_drift": CODE_DRIFT[:1],
+    "sealed": {"formal.py": "1" * 64}, "current": {"formal.py": "2" * 64},
+    "note": ("verify records every code digest that moved since the plan was sealed; the "
+             "refactor-only drift is reported here and never hidden"),
+}
 
 
 def expected_origins():
@@ -158,14 +177,23 @@ class Fixture:
             self._report()
         if figures:
             self._figures()
-        if health:
-            self._health(verify_all=verify_all)
+        # The commit first: health transcripts record the commit they were taken at, and a
+        # sealed receipt refuses a transcript set that predates HEAD.
         if git:
             self._git()
         else:
             write(self.root / ".git-placeholder", "")
+        if health:
+            self._health(verify_all=verify_all)
         self._baseline(baseline_mode)
         return self.root
+
+    def head(self):
+        if not (self.root / ".git").exists():
+            return None
+        completed = subprocess.run(["git", "-C", str(self.root), "rev-parse", "HEAD"],
+                                   check=True, capture_output=True, text=True)
+        return completed.stdout.strip()
 
     # -- accepted inputs -------------------------------------------------- #
     def _inputs(self):
@@ -393,7 +421,10 @@ class Fixture:
             write_json(runs / "formal_verify.json", {
                 "schema": "tsg-view-formal-verify-v1", "status": "PASS",
                 "mode": "formal", "plan_sha256": plan_sha, "origins": len(present),
-                "full_arm": {"origins": [], "fold_mean": []}, "runs": verify_rows})
+                "code_identity": CODE_IDENTITY,
+                "full_arm": {"anchor_seed": 42, "origins": [], "fold_mean": [],
+                             "sensitivity": [{"seed": 43, "note": SENSITIVITY_NOTE}]},
+                "runs": verify_rows})
 
     def _run_dir(self, runs, origin):
         return (runs / "runs" / origin["source"] / origin["view"]
@@ -516,6 +547,11 @@ class Fixture:
     def _figures(self):
         figure = self.step("figure")
         renderer = write(self.step("execution/render.py"), RENDERER)
+        # The replay copies the declared closure, so the fixture tree must carry a sibling
+        # module for every declared entry even though this stand-in renderer imports none.
+        write(self.step("execution/common.py"),
+              "SOURCES = (\"tenv\", \"tahoe_bulk\")\nVIEW_ORDER = {}\n"
+              "def seeds_for(view):\n    return (42,)\n")
         write(self.step("figure/script/render.py"),
               "#!/usr/bin/env python3\nfrom pathlib import Path\n"
               "import sys\nsys.path.insert(0, str(Path(__file__).resolve().parents[2]"
@@ -557,7 +593,7 @@ class Fixture:
                 "log_sha256": sha(log), "runtime_seconds": 273.0,
                 "command": ["bash", "script/verify_all.sh"]}
         write_json(folder / "health.json", {
-            "schema": "tsg-view-health-v1", "commit": "f" * 40, "checks": checks})
+            "schema": "tsg-view-health-v1", "commit": self.head(), "checks": checks})
 
     # -- git + baseline --------------------------------------------------- #
     def _git(self):
@@ -611,6 +647,12 @@ class AcceptanceTestCase(unittest.TestCase):
                    "verify_binary": True, "preregistration_text": PREREGISTRATION}
         options.update(kwargs)
         return acceptance.build_receipt(self.root, **options)
+
+    def git_head(self):
+        """The fixture commit, read straight from git rather than from ``git_revs``."""
+        completed = subprocess.run(["git", "-C", str(self.root), "rev-parse", "HEAD"],
+                                   check=True, capture_output=True, text=True)
+        return completed.stdout.strip()
 
 
 PREREGISTRATION = """Pre-registered partial-contribution test.
@@ -856,6 +898,161 @@ class FigureReplayTest(AcceptanceTestCase):
 
     def step_figure(self):
         return self.root / "stage2/tsg_view/figure"
+
+
+class ClosureTest(unittest.TestCase):
+    """The declared replay closure must cover what ``execution/render.py`` imports.
+
+    ``figure_replay`` runs the renderer as a closed world under ``python -I``; an import of
+    an ``execution`` module that is not declared in ``RENDERER_MODULES`` cannot be satisfied
+    there.  This test re-derives the closure from the source, so the declaration cannot rot.
+    """
+
+    def test_declared_closure_covers_the_real_renderer_imports(self):
+        closure = acceptance.renderer_import_closure(EXECUTION)
+        declared = set(acceptance.RENDERER_MODULES)
+        missing = sorted(set(closure) - declared)
+        self.assertFalse(missing,
+                         "execution/render.py needs modules missing from "
+                         f"RENDERER_MODULES: {missing}")
+        self.assertEqual(sorted(closure), sorted(declared))
+
+    def test_closure_walk_is_transitive_and_skips_outside_imports(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            execution = Path(temporary)
+            write(execution / "render.py",
+                  "import json\nfrom pathlib import Path\nimport common\n")
+            write(execution / "common.py", "import helper\nimport matplotlib\n")
+            write(execution / "helper.py", "import csv\n")
+            write(execution / "unrelated.py", "pass\n")
+            self.assertEqual(acceptance.renderer_import_closure(execution),
+                             ("common.py", "helper.py", "render.py"))
+
+
+class ReceiptClosureTest(AcceptanceTestCase):
+    def test_receipt_pins_every_closure_module_digest(self):
+        receipt = self.receipt()
+        block = receipt["csv_only_replay"]["renderer_closure_sha256"]
+        execution = self.root / "stage2/tsg_view/execution"
+        self.assertEqual(sorted(block), sorted(acceptance.RENDERER_MODULES))
+        for name in acceptance.RENDERER_MODULES:
+            self.assertRegex(block[name], r"^[0-9a-f]{64}$")
+            self.assertEqual(block[name], sha(execution / name), name)
+        self.assertEqual(receipt["csv_only_replay"]["renderer_sha256"], block["render.py"])
+        self.assertTrue(receipt["csv_only_replay"]["byte_identical"])
+
+
+class CodeIdentityTest(AcceptanceTestCase):
+    def test_code_drift_identity_is_carried_verbatim(self):
+        block = self.receipt()["formal_verify"]
+        self.assertEqual(block["status"], "PASS")
+        self.assertEqual(block["origins"], len(ORIGINS))
+        self.assertEqual(block["sha256"],
+                         sha(self.root / "stage2/tsg_view/output/runs/formal_verify.json"))
+        identity = block["code_identity"]
+        self.assertEqual(identity["status"], "CODE_DRIFT")
+        self.assertEqual(identity["moved"], CODE_DRIFT)
+        self.assertEqual(identity["note"], CODE_IDENTITY["note"])
+        self.assertEqual(identity["driver_code_drift"], ["formal.py"])
+        full_arm = block["full_arm"]
+        self.assertEqual(full_arm["anchor_seed"], 42)
+        self.assertEqual(full_arm["sensitivity_seeds"], [43])
+        self.assertIn("seed 42", full_arm["statement"])
+        self.assertIn("seed-43", full_arm["statement"])
+
+    def test_missing_formal_verify_fails_closed_in_final(self):
+        (self.root / "stage2/tsg_view/output/runs/formal_verify.json").unlink()
+        with self.assertRaisesRegex(acceptance.MissingArtifact, "formal verification"):
+            self.receipt()
+
+    def test_non_pass_formal_verify_fails_closed(self):
+        path = self.root / "stage2/tsg_view/output/runs/formal_verify.json"
+        value = json.loads(path.read_text())
+        value["status"] = "DRIFT"
+        write_json(path, value)
+        with self.assertRaisesRegex(acceptance.AcceptanceError, "status 'DRIFT'"):
+            self.receipt()
+
+    def test_identity_status_must_agree_with_the_moved_digests(self):
+        path = self.root / "stage2/tsg_view/output/runs/formal_verify.json"
+        value = json.loads(path.read_text())
+        value["code_identity"]["status"] = "MATCH"
+        write_json(path, value)
+        with self.assertRaisesRegex(acceptance.AcceptanceError, "code identity"):
+            self.receipt()
+
+
+class HealthFreshnessTest(AcceptanceTestCase):
+    def test_health_block_records_the_commit_against_head(self):
+        receipt = self.receipt()
+        health = receipt["health"]
+        self.assertEqual(health["head"], self.git_head())
+        self.assertEqual(health["commit"], self.git_head())
+        self.assertFalse(health["health_commit_stale"])
+
+    def test_stale_health_commit_fails_closed_in_final(self):
+        path = self.root / "stage2/tsg_view/log/acceptance/health/health.json"
+        value = json.loads(path.read_text())
+        value["commit"] = "0" * 40
+        write_json(path, value)
+        with self.assertRaisesRegex(acceptance.AcceptanceError,
+                                    "health transcripts predate HEAD"):
+            self.receipt()
+
+
+class StaleHealthPartialTest(AcceptanceTestCase):
+    fixture_kwargs = {"complete": False, "verify_all": False}
+
+    def test_partial_phase_records_stale_health_instead_of_failing(self):
+        path = self.root / "stage2/tsg_view/log/acceptance/health/health.json"
+        value = json.loads(path.read_text())
+        value["commit"] = "0" * 40
+        write_json(path, value)
+        receipt = self.receipt(phase="partial")
+        self.assertTrue(receipt["health"]["health_commit_stale"])
+        self.assertEqual(receipt["health"]["commit"], "0" * 40)
+        self.assertEqual(receipt["health"]["head"], self.git_head())
+
+
+class RealRendererReplayTest(unittest.TestCase):
+    """The replay seam against the real renderer and the real ``figure/data`` payloads.
+
+    ``FigureReplayTest`` runs a synthetic renderer that imports nothing, which is exactly
+    how the ``render.py`` -> ``common`` regression slipped through.  This test renders with
+    the real module and the real CSVs, then asks ``figure_replay`` to reproduce those bytes
+    from a closure-only copy under ``python -I``; an import the copy forgets fails here.
+    """
+
+    def test_csv_only_replay_reproduces_the_real_renderer(self):
+        figure = REPO / "stage2/tsg_view/figure"
+        source = REPO / "stage2/tsg_view/execution/render.py"
+        data = sorted((figure / "data").glob("*.csv"))
+        if not data or not source.is_file():
+            self.skipTest(f"real figure payloads are absent: {figure / 'data'}")
+        with tempfile.TemporaryDirectory() as temporary:
+            staged = Path(temporary) / "figure"
+            (staged / "data").mkdir(parents=True)
+            (staged / "home").mkdir()
+            for path in data:
+                shutil.copyfile(path, staged / "data" / path.name)
+            environment = {"PATH": "/usr/bin:/bin",
+                           "MPLCONFIGDIR": str(staged / "mpl"),
+                           "PYTHONHASHSEED": "0",
+                           "PYTHONDONTWRITEBYTECODE": "1",
+                           "HOME": str(staged / "home")}
+            completed = subprocess.run(
+                [sys.executable, "-I", str(source), "--data", str(staged / "data"),
+                 "--output", str(staged), "--suite", "all"],
+                env=environment, capture_output=True, text=True, timeout=600)
+            self.assertEqual(completed.returncode, 0, completed.stderr[-2000:])
+            status = json.loads((staged / "render_status.json").read_text())
+            replayed = acceptance.figure_replay(REPO, staged)
+            self.assertTrue(replayed["byte_identical"])
+            self.assertEqual(replayed["figures"], status["figures"])
+            self.assertGreaterEqual(len(replayed["figures"]), 1)
+            closure = replayed["renderer_closure_sha256"]
+            self.assertEqual(sorted(closure), sorted(acceptance.RENDERER_MODULES))
+            self.assertEqual(closure["render.py"], sha(source))
 
 
 class InvarianceTest(AcceptanceTestCase):

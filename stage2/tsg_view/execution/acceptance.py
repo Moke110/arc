@@ -36,6 +36,7 @@ CLI::
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import importlib.metadata
 import json
@@ -67,6 +68,14 @@ VERIFY_SCHEMA = "tsg-view-formal-verify-v1"
 REPORT_SCHEMA = "tsg-view-report-v1"
 RENDER_SCHEMA = "tsg-view-render-v1"
 SMOKE_SCHEMA = "tsg-view-smoke-v1"
+
+#: The figure renderer's import closure: every ``execution`` module ``render.py`` needs at
+#: run time, relative to ``execution/``.  ``figure_replay`` copies *all* of these into the
+#: isolated ``work/script/`` tree; copying the entry point alone is what broke the gate when
+#: ``render.py`` started importing ``common`` for the shared schedule.  The closure is
+#: re-derived from the renderer's own imports by ``test_acceptance.ClosureTest``, so a new
+#: import fails that test instead of failing the receipt at run time.
+RENDERER_MODULES = ("render.py", "common.py")
 
 STUDY = "stage2/tsg_view"
 SCENARIO = "cold-drug-dose"
@@ -740,6 +749,59 @@ def verify_smoke(root, step_dir, *, phase, inventory):
     return evidence
 
 
+def _verify_identity(value, label) -> dict:
+    """Pin the code-identity consequence carried by ``formal_verify.json``.
+
+    ``verify`` may run on newer code than the one that produced the runs, so it records
+    every code digest that moved instead of refusing (``CODE_DRIFT``); ``MATCH`` means
+    nothing moved. Either way the receipt carries the status, the moved digests and the
+    rule note verbatim, so a refactor-only drift is never hidden by the receipt.
+
+    The seed split is carried alongside it: only the seed-42 ``full`` arms may claim
+    sealed-anchor reproduction, and a seed-43 arm is a labelled sensitivity.
+    """
+    identity = value.get("code_identity")
+    if not isinstance(identity, dict):
+        raise AcceptanceError(f"formal verify has no code identity: {label}")
+    status = identity.get("status")
+    if status not in ("MATCH", "CODE_DRIFT"):
+        raise AcceptanceError(f"formal verify code identity status {status!r}: {label}")
+    moved = [{"file": str(entry.get("file")), "section": str(entry.get("section")),
+              "sealed_sha256": entry.get("sealed_sha256"),
+              "current_sha256": entry.get("current_sha256")}
+             for entry in identity.get("code_drift") or []]
+    if bool(moved) != (status == "CODE_DRIFT"):
+        raise AcceptanceError(f"formal verify code identity {status!r} disagrees with "
+                              f"{len(moved)} moved digests: {label}")
+    for entry in moved:
+        for key in ("sealed_sha256", "current_sha256"):
+            if not re.fullmatch(r"[0-9a-f]{64}", str(entry[key] or "")):
+                raise AcceptanceError(f"formal verify moved digest is malformed "
+                                      f"({entry['file']}): {label}")
+    full_arm = value.get("full_arm") or {}
+    anchor = full_arm.get("anchor_seed")
+    if not isinstance(anchor, int):
+        raise AcceptanceError(f"formal verify has no full-arm anchor seed: {label}")
+    sensitivity = sorted({int(item["seed"]) for item in full_arm.get("sensitivity") or []
+                          if item.get("seed") is not None})
+    notes = sorted({str(item.get("note")) for item in full_arm.get("sensitivity") or []
+                    if item.get("note")})
+    statement = (notes[0] if len(notes) == 1 else
+                 f"only the seed-{anchor} arms claim sealed-anchor reproduction; "
+                 f"seeds {sensitivity} are reported as sensitivity only")
+    return {
+        "code_identity": {
+            "status": status,
+            "moved": moved,
+            "driver_code_drift": [str(entry.get("file"))
+                                  for entry in identity.get("driver_code_drift") or []],
+            "note": identity.get("note"),
+        },
+        "full_arm": {"anchor_seed": anchor, "sensitivity_seeds": sensitivity,
+                     "statement": statement},
+    }
+
+
 def verify_runs(root, runs_root, origin_products, freeze_products, truth_products, *,
                 phase, verify_binary, inventory):
     runs_root = Path(runs_root)
@@ -946,7 +1008,8 @@ def verify_runs(root, runs_root, origin_products, freeze_products, truth_product
                                       f"{origin_key(entry['origin'])}")
         _pin(inventory, "runs", root, verify_path)
         verify = {"path": rel(root, verify_path), "sha256": sha256_file(verify_path),
-                  "status": value.get("status"), "origins": value.get("origins")}
+                  "status": value.get("status"), "origins": value.get("origins"),
+                  **_verify_identity(value, rel(root, verify_path))}
     elif phase == "final":
         raise MissingArtifact(f"missing formal verification report: "
                               f"{rel(root, verify_path)}")
@@ -968,8 +1031,53 @@ def verify_runs(root, runs_root, origin_products, freeze_products, truth_product
 # --------------------------------------------------------------------------- #
 # report tables and CSV-only figure reproduction
 # --------------------------------------------------------------------------- #
+def renderer_import_closure(execution_dir) -> tuple:
+    """The in-package import closure of ``execution/render.py``, read from the source.
+
+    A module is in-package when ``execution/<name>.py`` or ``execution/<name>/__init__.py``
+    exists; standard-library, third-party and relative imports are outside the closure. The
+    walk is transitive -- a module the renderer reaches through ``common`` is included too --
+    and entries are paths relative to ``execution/`` in the spelling ``RENDERER_MODULES``
+    uses. ``test_acceptance.ClosureTest`` compares the result with that declaration, so a
+    new import fails the suite instead of the receipt.
+    """
+    execution_dir = Path(execution_dir)
+    closure, pending = set(), ["render.py"]
+    while pending:
+        name = pending.pop()
+        if name in closure:
+            continue
+        closure.add(name)
+        path = execution_dir / name
+        if not path.is_file():
+            continue
+        for node in ast.walk(ast.parse(path.read_text())):
+            if isinstance(node, ast.Import):
+                imported = [alias.name.split(".")[0] for alias in node.names]
+            elif isinstance(node, ast.ImportFrom) and not node.level and node.module:
+                imported = [node.module.split(".")[0]]
+            else:
+                continue
+            for module in imported:
+                for candidate in (f"{module}.py", f"{module}/__init__.py"):
+                    if (execution_dir / candidate).is_file():
+                        pending.append(candidate)
+    return tuple(sorted(closure))
+
+
 def figure_replay(root, figure_dir, *, python=None, timeout=300) -> dict:
-    """Re-render every PNG from ``figure/data/*.csv`` alone and require identical bytes."""
+    """Re-render every PNG from ``figure/data/*.csv`` alone and require identical bytes.
+
+    The re-render runs ``RENDERER_MODULES`` as a *closed world*: every module of the
+    renderer's import closure is copied into ``work/script/`` and the subprocess runs
+    ``python -I`` with ``PYTHONPATH`` removed and its own ``HOME``/``MPLCONFIGDIR``, so it
+    can import nothing that was not copied. ``RENDERER_MODULES`` is therefore a declaration
+    that the closure-completeness test re-derives from the renderer's own imports.
+
+    The returned block pins both the entry point (``renderer_sha256``) and the whole
+    closure (``renderer_closure_sha256``: ``{module: sha256}``), so the receipt records the
+    exact module set that reproduced the figures rather than one file of it.
+    """
     figure_dir = Path(figure_dir)
     status_path = figure_dir / "render_status.json"
     if not status_path.is_file():
@@ -977,9 +1085,14 @@ def figure_replay(root, figure_dir, *, python=None, timeout=300) -> dict:
     status = load_json(status_path)
     if status.get("schema") != RENDER_SCHEMA:
         raise AcceptanceError(f"render status schema mismatch: {rel(root, status_path)}")
-    renderer = Path(root) / STUDY / "execution/render.py"
-    if not renderer.is_file():
-        raise MissingArtifact(f"missing figure renderer: {rel(root, renderer)}")
+    execution = Path(root) / STUDY / "execution"
+    modules = {}
+    for name in RENDERER_MODULES:
+        path = execution / name
+        if not path.is_file():
+            raise MissingArtifact(f"missing figure renderer module: {rel(root, path)}")
+        modules[name] = path
+    renderer = modules["render.py"]
     data_files = sorted((figure_dir / "data").glob("*.csv"))
     if not data_files:
         raise MissingArtifact("missing figure/data CSV tables")
@@ -990,7 +1103,8 @@ def figure_replay(root, figure_dir, *, python=None, timeout=300) -> dict:
         (work / "script").mkdir()
         for path in data_files:
             shutil.copyfile(path, work / "data" / path.name)
-        shutil.copyfile(renderer, work / "script" / "render.py")
+        for name, path in modules.items():
+            shutil.copyfile(path, work / "script" / name)
         environment = dict(os.environ)
         environment.update({"MPLCONFIGDIR": str(work / "mpl"),
                             "PYTHONHASHSEED": "0",
@@ -1023,6 +1137,8 @@ def figure_replay(root, figure_dir, *, python=None, timeout=300) -> dict:
         "byte_identical": True,
         "render_status_sha256": sha256_file(status_path),
         "renderer_sha256": sha256_file(renderer),
+        "renderer_closure_sha256": {name: sha256_file(path)
+                                    for name, path in sorted(modules.items())},
         "matplotlib": status.get("matplotlib"),
         "dpi": status.get("dpi"),
     }
@@ -1163,16 +1279,27 @@ def run_health(root, output_dir, *, scripts=("check_paths", "check_tracked"),
 
 
 def read_health(root, health_dir, *, phase, inventory) -> dict:
+    """Read the health transcripts and prove they were taken at the receipt's HEAD.
+
+    A transcript set that predates the commit under audit cannot speak for that commit, so
+    the block records ``commit`` next to ``git.head`` and ``health_commit_stale``; a sealed
+    (``final``) receipt fails closed on staleness, while a ``partial`` receipt records the
+    flag so an in-flight run can report it without pretending the evidence is fresh.
+    """
     health_dir = Path(health_dir)
     path = health_dir / "health.json"
+    head = git_revs(root).get("head")
     if not path.is_file():
         if phase == "final":
             raise MissingArtifact(f"missing health evidence: {rel(root, path)}")
         return {"schema": HEALTH_SCHEMA, "checks": {}, "verify_all": VERIFY_ALL_NOTE,
-                "status": "pending"}
+                "status": "pending", "commit": None, "head": head,
+                "health_commit_stale": None}
     value = load_json(path)
     if value.get("schema") != HEALTH_SCHEMA:
         raise AcceptanceError(f"health schema mismatch: {rel(root, path)}")
+    commit = value.get("commit")
+    stale = None if head is None else commit != head
     checks = {}
     for name in ("check_paths.sh", "check_tracked.sh", "verify_all.sh"):
         entry = (value.get("checks") or {}).get(name)
@@ -1212,7 +1339,13 @@ def read_health(root, health_dir, *, phase, inventory) -> dict:
                               "health.json, then rebuild")
     else:
         verify_all = dict(VERIFY_ALL_NOTE)
-    return {"schema": HEALTH_SCHEMA, "commit": value.get("commit"), "checks": checks,
+    if stale and phase == "final":
+        raise AcceptanceError(
+            f"health transcripts predate HEAD: health.commit {commit!r} != "
+            f"git.head {head!r}; re-run `acceptance.py health` at the current commit, "
+            "then rebuild the receipt")
+    return {"schema": HEALTH_SCHEMA, "commit": commit, "head": head,
+            "health_commit_stale": stale, "checks": checks,
             "verify_all": verify_all, "health_json_sha256": sha256_file(path)}
 
 
