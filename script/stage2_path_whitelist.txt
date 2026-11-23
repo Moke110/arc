@@ -14,8 +14,5 @@
 # historical record quoted verbatim. A live document or live path literal that
 # merely needs updating is a path to FIX, not to whitelist.
 #
-# The moved ADR 0082 study retains the original literals for snapshot replay.
-stage2/03_view/03.1_hvg-deg_views/historical/tsg_view/*:^stage2/(tsg_view|02_models_tenv-5k|03_tsg_drug_emb|04_tsg_dose|05_tsg_width_dose|06_tsg_transfer)(/|$)
-# Frozen preceding publication code is replayed at the original snapshot.
-stage2/01_bases/execution/publish_axis_local.py:^stage2/04_tsg_dose$
-stage2/01_bases/execution/tests/test_axis_local_publication.py:^stage2/04_tsg_dose/log/science\.json$
+# The axis contract looks up its sealed predecessor manifest by original name.
+stage2/02_gene_axis/02.1_hvg-deg/execution/tests/test_prediction_axis.py:^stage2/01_bases/output/gene-axis/gene_axis_$

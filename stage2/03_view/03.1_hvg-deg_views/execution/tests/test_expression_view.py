@@ -13,7 +13,7 @@ STAGE = STEP.parents[1]
 sys.path[:0] = [str(item) for item in (
     STEP / "execution", STEP / "output/api",
     STAGE / "01_corpus/output/api",
-    STAGE / "02_axis_view/02.1_hvg-deg/output/api",
+    STAGE / "02_gene_axis/02.1_hvg-deg/output/api",
 )]
 
 from native_corpus import open_corpus, seal_corpus

@@ -17,10 +17,11 @@ import pyarrow.parquet as pq
 STEP = Path(__file__).resolve().parents[1]
 REPO = next(parent for parent in STEP.parents if (parent / ".git").exists())
 sys.path[:0] = [str(path) for path in (
-    STEP / "output/api", REPO / "stage2/01_bases/output/api", REPO / "stage2/util/output/api",
+    STEP / "output/api", REPO / "stage2/util/output/api",
 )]
 
-from bases import corpus as legacy_corpus, native, raw, raw_counts, release
+from corpus_sources import identities, mapping as gene_mapping, native
+from stage2_util.derivation import release
 from cardiac_sources import build_cardiac_sources
 from stage2_util.publication import publication_lock, publish_candidate
 import native_tahoe as tahoe
@@ -50,15 +51,15 @@ def write_metadata(payload, source, item, drug_metadata=None):
     with h5py.File(payload) as handle:
         raw_obs = read_elem(handle["obs"])
     if source == "tenv":
-        records, excluded = legacy_corpus._tenv_rows(raw_obs, item)
+        records, excluded = identities._tenv_rows(raw_obs, item)
         role = np.select([raw_obs.is_blank, raw_obs.is_control], ["blank", "vehicle"], "treated")
         compatible = ~raw_obs.is_blank & (raw_obs.is_control | raw_obs.vehicle.eq("DMSO"))
         groups = ("tenv::" + raw_obs.plate.astype(str) + "::" + raw_obs.vehicle.astype(str)).where(
             compatible, ""
         )
     else:
-        structures = legacy_corpus.tahoe_structures(drug_metadata)
-        records, excluded = legacy_corpus._tahoe_rows(raw_obs, item, structures)
+        structures = identities.tahoe_structures(drug_metadata)
+        records, excluded = identities._tahoe_rows(raw_obs, item, structures)
         role = np.where(raw_obs.is_control, "vehicle", "treated")
         groups = "tahoe::" + raw_obs.plate.astype(str) + "::" + raw_obs.cell_line_id.astype(str)
     canonical = pd.DataFrame(records).set_index("profile_id", drop=False)
@@ -91,7 +92,7 @@ def write_metadata(payload, source, item, drug_metadata=None):
 def axis_inputs():
     stem = REPO / "stage2/util/output/gene-identity/tables"
     axis_path = stem / "genes.csv"
-    axis = raw_counts._axis_frame(axis_path)
+    axis = gene_mapping.axis_frame(axis_path)
     crosswalk = pd.read_csv(stem / "gene_crosswalk.csv", dtype=str, keep_default_na=False)
     return axis, crosswalk
 
@@ -99,7 +100,7 @@ def axis_inputs():
 def tahoe_mappings(data, axis, crosswalk):
     gene_file = data / TAHOE / "source/metadata/gene_metadata.parquet"
     pin_source(data / TAHOE, gene_file)
-    common = raw.tahoe_axis_mapping(axis, crosswalk, gene_file)
+    common = gene_mapping.tahoe_axis_mapping(axis, crosswalk, gene_file)
     genes = pq.read_table(gene_file).to_pandas().sort_values("token_id").reset_index(drop=True)
     mapping = pd.DataFrame({
         "gene_index": np.arange(len(genes)),
@@ -143,13 +144,13 @@ def main():
     source_root = args.materialized_root.resolve()
     data = source_root / "pert_data"
     axis, crosswalk = axis_inputs()
-    mapping, tahoe_columns = tahoe_mappings(data, axis, crosswalk)
+    tahoe_mapping, tahoe_columns = tahoe_mappings(data, axis, crosswalk)
     drug_metadata = data / TAHOE / "source/metadata/drug_metadata.parquet"
     pin_source(data / TAHOE, drug_metadata)
 
     def build(candidate):
         inputs = {
-            "common_axis_sha256": raw_counts.AXIS_SHA256,
+            "common_axis_sha256": gene_mapping.AXIS_SHA256,
             "crosswalk_sha256": sha256(
                 REPO / "stage2/util/output/gene-identity/tables/gene_crosswalk.csv"
             ),
@@ -169,23 +170,23 @@ def main():
         native.verify_tenv(*tenv_args(data), candidate)
         with h5py.File(candidate / "tenv.h5ad") as handle:
             var = read_elem(handle["var"])
-        tenv_bridge = raw_counts.tenv_axis_mapping(axis, var)
+        tenv_bridge = gene_mapping.tenv_axis_mapping(axis, var)
         tenv_columns = {int(row.gene_index): int(row.native_column)
                         for row in tenv_bridge.itertuples(index=False)}
         inputs["tenv_source_replay"] = tenv_record
 
         tahoe_source = data / TAHOE / "source"
         tahoe_manifest = data / TAHOE / "manifest.sha256"
-        options = {"expected_genes": len(mapping)}
+        options = {"expected_genes": len(tahoe_mapping)}
         tahoe_candidate = args.tahoe_built
         if tahoe_candidate is None:
             tahoe_candidate = candidate / "tahoe-build"
             tahoe.build_tahoe(
-                tahoe_source, mapping, tahoe_manifest, tahoe_candidate,
+                tahoe_source, tahoe_mapping, tahoe_manifest, tahoe_candidate,
                 checkpoints=args.staging / "tahoe-native-plates", **options,
             )
         inputs["tahoe_source_replay"] = tahoe.verify_tahoe(
-            tahoe_source, mapping, tahoe_manifest, tahoe_candidate, **options
+            tahoe_source, tahoe_mapping, tahoe_manifest, tahoe_candidate, **options
         )
         payload = candidate / "tahoe_bulk.h5ad"
         if args.tahoe_built is None:
@@ -202,7 +203,7 @@ def main():
                            drug_metadata)
         columns = build_cardiac_sources(candidate, data, axis, pin_source, inputs)
         columns.update(tenv=tenv_columns, tahoe_bulk=tahoe_columns)
-        seal_corpus(candidate, columns, len(axis), raw_counts.AXIS_SHA256, inputs, EXCLUSIONS,
+        seal_corpus(candidate, columns, len(axis), gene_mapping.AXIS_SHA256, inputs, EXCLUSIONS,
                     artifacts=("tenv_probe_mapping.csv", "tenv_manifest.json"))
 
     args.staging.mkdir(parents=True, exist_ok=True)

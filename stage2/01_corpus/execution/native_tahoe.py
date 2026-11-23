@@ -14,8 +14,8 @@ from anndata import AnnData
 from anndata.io import read_elem
 from scipy.sparse import coo_matrix, csr_matrix
 
-from bases import tahoe as projected
-from bases.tahoe import _digest, _entries, _json, _obs, _plate_key, _plate_layout
+from corpus_sources import tahoe as projected
+from corpus_sources.tahoe import _digest, _entries, _json, _obs, _plate_key, _plate_layout
 
 SCHEMA = projected.SCHEMA
 

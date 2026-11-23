@@ -40,8 +40,8 @@ every item.
 Nine items historically completed Stage 2 setup; their run cards are retained in
 Git history. Five were historically **reference-only** (`WAVE`, `ExPO`, `State`, `TranSiGen`,
 `XPert`). ADR 0074 now admits TranSiGen to the single-dose 5k comparison,
-without using retained pretrained assets or changing Stage 3. The current successor comparison is [02_models_tenv-5k](../stage2/02_models_tenv-5k/README.md),
-using the released [01_bases](../stage2/01_bases/README.md) inputs. `pert_data/`,
+without using retained pretrained assets or changing Stage 3. The current successor comparison is [04_model_view](../stage2/04_model_view/README.md),
+using the released [HVG-DEG expression views](../stage2/03_view/README.md) inputs. `pert_data/`,
 `drug_emb_model/`, `disease_data/` are the sibling external categories under the
 same contract; `pert_model/` is the model-code one, so its `source/` trees are
 the upstream repositories themselves plus whatever weights/data the authors

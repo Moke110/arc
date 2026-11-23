@@ -23,14 +23,14 @@ Design (declared in ``SPEC`` below, all of it recorded in the tracked summary):
   donor)`` estimates one consensus intra-donor correlation and both ``voom`` and
   ``lmFit`` are given it.
 * **The fit** goes through the one live implementation,
-  ``output/api/bases/disease_deg.R``; the summary it prints (limma/R versions,
+  ``stage2/util/output/api/stage2_util/derivation/disease_deg.R``; the summary it prints (limma/R versions,
   consensus correlation) is carried into the tracked JSON.
 
 The output is the gene-axis DEG interface: a full-transcriptome per-contrast
 table (Ensembl id, deposit symbol, signed log2FC, moderated t, p, BH padj, the
 voom average log-expression) for the published contrast, plus the tracked JSON.
 The frozen-axis counts in the JSON are a cross-check computed with the same
-``bases.disease_deg`` resolver the republish ticket uses (symbol first, then
+``stage2_util.derivation.disease_deg`` resolver the republish ticket uses (symbol first, then
 Ensembl); they do not filter the published table.
 
 Writes (ADR 0030; the tables are regenerable ``local/`` additions):
@@ -64,9 +64,8 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2/01_bases/execution'))
-import public_api  # noqa: F401  (binds the single public implementation)
-from bases import disease_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'stage2/util/output/api'))
+from stage2_util.derivation import disease_deg  # noqa: E402
 
 LOCAL = ITEM / 'local'
 PSEUDOBULK = LOCAL / 'pseudobulk' / 'kuppe-mi_cm_pseudobulk.csv.gz'
@@ -76,8 +75,8 @@ SAMPLES = LOCAL / 'deg' / 'kuppe-mi_samples.csv'
 ZONE_DEG = LOCAL / 'deg' / 'kuppe-mi_zone_deg.csv'
 DEG = LOCAL / 'deg' / 'kuppe-mi_deg.csv'
 SUMMARY = LOCAL / 'deg' / 'kuppe-mi_deg.json'
-AXIS = REPO / 'stage2/01_bases/output/gene-identity/genes.csv'
-CROSSWALK = REPO / 'stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv'
+AXIS = REPO / 'stage2/util/output/gene-identity/genes.csv'
+CROSSWALK = REPO / 'stage2/util/output/gene-identity/tables/gene_crosswalk.csv'
 SCHEMA = 'stage2-item-deg-summary-v1'
 CATEGORY = 'ICM'
 TIER = 1
@@ -272,12 +271,12 @@ def main():
             'published_contrast': published_counts,
             'all_contrasts': deg_counts,
             'axis': axis_counts,
-            'axis_definition': 'frozen 18,164-gene axis, resolved by bases.disease_deg',
+            'axis_definition': 'frozen 18,164-gene axis, resolved by stage2_util.derivation.disease_deg',
         },
         'alignment': alignment,
         'method': {
             'model': (MODEL_DESCRIPTION),
-            'implementation': 'stage2/01_bases/output/api/bases/disease_deg.R',
+            'implementation': 'stage2/util/output/api/stage2_util/derivation/disease_deg.R',
             'implementation_sha256': sha256(Path(disease_deg.DEG_WORKER)),
             'count_filter': SPEC['filter'],
             'normalisation': SPEC['normalisation'],

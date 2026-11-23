@@ -32,8 +32,7 @@ every item.
 
 Each item's `author_log.json` carries its provenance; each `local/` file is declared in that
 log's `local_additions[]`. Current downstream preparation belongs to
-[Stage 2 bases](../stage2/01_bases/README.md): tenv native raw counts and Tahoe
-raw counts projected onto the frozen shared axis feed two separate training
-corpora. The former five-source native-axis corpus release described by ADR 0033
+the [Stage 2 corpus](../stage2/01_corpus/README.md), which preserves
+source-native counts and gene coverage. The former five-source native-axis corpus release described by ADR 0033
 was removed with the other Stage 2 steps; its tracked build evidence remains in
 Git history. The immutable downloaded sources listed above remain in this category.

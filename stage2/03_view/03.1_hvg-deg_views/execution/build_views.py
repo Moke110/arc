@@ -18,13 +18,13 @@ STEP = Path(__file__).resolve().parents[1]
 STAGE = STEP.parents[1]
 sys.path[:0] = [str(path) for path in (
     STEP / "output/api",
-    STAGE / "01_bases/output/api",
     STAGE / "util/output/api",
     STAGE / "01_corpus/output/api",
-    STAGE / "02_axis_view/02.1_hvg-deg/output/api",
+    STAGE / "02_gene_axis/02.1_hvg-deg/output/api",
 )]
 
-from bases import release, view as legacy_normalization
+import normalization
+from stage2_util.derivation import release
 from expression_view import (ARMS, DEFAULT, LAYERS, RECIPE, SCHEMA, SOLO_SEED,
                              layer_path, open_view, sha256)
 from native_corpus import open_corpus
@@ -132,7 +132,7 @@ def _frame(obs, plan, totals, merged):
 
 def _normalized(counts, members):
     raw = counts[list(members)].sum(axis=0, dtype=np.int64, keepdims=True)
-    return legacy_normalization.log1p_cp10k(raw, legacy_normalization.library_totals(raw))[0].astype(np.float32)
+    return normalization.log1p_cp10k(raw, normalization.library_totals(raw))[0].astype(np.float32)
 
 
 def _write_arm(root, name, family, obs, plan, conditions, counts, totals, controls, tags, var):

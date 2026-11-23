@@ -5,7 +5,7 @@ Ticket #187 fitted one joint design over the exported donors but published only
 the ``nHF`` contrast (genotype-negative DCM vs normal). Under ADR 0066's
 genotype-first split the genotype-positive DCM donors and the 8 ARVC donors are
 ``genetic_cardiomyopathy`` datasets, so this script re-runs the same single live
-DEG implementation (``bases/disease_deg.R``, limma-voom) over the **tracked
+DEG implementation (``stage2_util/derivation/disease_deg.R``, limma-voom) over the **tracked
 export #187 produced** and publishes the two genetic contrasts:
 
     local/deg/reichart-cm_genetic_deg.csv    long table (gitignored, regenerable)
@@ -41,9 +41,8 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2/01_bases/execution'))
-import public_api  # noqa: F401  (binds the single public implementation)
-from bases import disease_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'stage2/util/output/api'))
+from stage2_util.derivation import disease_deg  # noqa: E402
 
 LOCAL = ITEM / 'local'
 PSEUDOBULK = LOCAL / 'pseudobulk' / 'reichart-cm_cm_pseudobulk.csv.gz'
@@ -144,7 +143,7 @@ def main():
         },
         'method': {
             'model': 'limma-voom (voom library-size normalisation, moderated t)',
-            'implementation': 'stage2/01_bases/output/api/bases/disease_deg.R',
+            'implementation': 'stage2/util/output/api/stage2_util/derivation/disease_deg.R',
             'implementation_sha256': sha256(Path(disease_deg.DEG_WORKER)),
             'derivation': 'disease_data/Reichart-CM/script/build_genetic_deg.py',
             'derivation_sha256': sha256(Path(__file__).resolve()),

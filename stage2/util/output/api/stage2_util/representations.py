@@ -27,6 +27,15 @@ ACCEPTED = {
 }
 
 
+def ordered_parents(observations):
+    """Extract a unique parent table in InChIKey order from repeated observations."""
+    parents = observations[PARENT_COLUMNS].drop_duplicates()
+    if (parents.isna().any().any() or parents.eq("").any().any()
+            or parents[PARENT_COLUMNS[0]].duplicated().any()):
+        raise ValueError("parent identities contain missing or conflicting structures")
+    return parents.sort_values(PARENT_COLUMNS[0], ignore_index=True)
+
+
 def _sha256(path):
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
@@ -84,6 +93,17 @@ class RepresentationTable:
     def parents(self):
         """Return the ordered parent identities and structures."""
         return self._parents.copy()
+
+    def verified_parent_keys(self, parents):
+        """Check structures against accepted identities and return keys in input order."""
+        keys = parents[PARENT_COLUMNS[0]].tolist()
+        accepted = self._parents.set_index(PARENT_COLUMNS[0])[PARENT_COLUMNS[1]]
+        if any(key not in self._rows for key in keys):
+            raise ValueError("parent identity missing from the shared representation release")
+        structures = parents[PARENT_COLUMNS[1]]
+        if structures.isna().any() or accepted.reindex(keys).tolist() != structures.tolist():
+            raise ValueError("parent structures differ from the shared representation release")
+        return keys
 
     def width(self, arm):
         return self._values[arm].shape[1]

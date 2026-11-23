@@ -26,9 +26,8 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2/01_bases/execution'))
-import public_api  # noqa: F401  (binds the single public implementation)
-from bases import bulk_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'stage2/util/output/api'))
+from stage2_util.derivation import bulk_deg  # noqa: E402
 
 _TTN = 'WT/TTNtv (p.Ser21134Trpfs*25)'
 _TWO_D = 'iPSC-derived cardiomyocytes (2D/monolayer)'

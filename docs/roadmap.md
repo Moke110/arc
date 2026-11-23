@@ -66,16 +66,11 @@ Record: `docs/wetlab-validation-stage1.md`; raw data `wet_data/` (gitignored).
   candidates, so the screen still lacks a systematic experimental ground truth.
 - Cardiotoxicity scoring is deferred (`GLOSSARY.md` → Cardiotoxicity score).
 
-## Stage 2 — shared foundations
+## Stage 2 — perturbation prediction
 
-Stage 2 retains only `stage2/01_bases/`: shared gene identity, separate Tahoe
-and tenv training corpora, tenv measured truth, training-only HVG selection,
-and shared retrieval metrics/reporting. Build and acceptance commands are in
-`stage2/01_bases/README.md` (agent routing: its `AGENTS.md`). The other Stage 2
-steps and their local assets were deleted at the user's request on 2026-11-11.
-Prior benchmark records can be inspected in Git; their ignored predictions and
-checkpoints are no longer local inputs. The original consumer-migration scope
-is not an acceptance claim for this retained foundation.
+The [Stage 2 routing](../stage2/AGENTS.md) lists source-native counts, prediction
+axes, expression views, and the model and TranSiGen comparisons. ADR 0084
+retired Bases replay and reserved Step 05 for a loss comparison.
 
 The Stage 2 exit is now fixed: **the predicted Δ on a selected gene axis, as
 accurate as possible**. Narrowing the frozen 18,164-gene axis to that selected

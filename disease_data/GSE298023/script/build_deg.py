@@ -6,9 +6,8 @@ import pandas as pd
 ITEM=Path(__file__).resolve().parents[1]
 REPO=ITEM
 while not (REPO/'.git').exists():REPO=REPO.parent
-sys.path.insert(0,str(REPO/'stage2/01_bases/execution'))
-import public_api
-from bases import disease_deg
+sys.path.insert(0,str(REPO/'stage2/util/output/api'))
+from stage2_util.derivation import disease_deg
 CONTRASTS=[dict(label='DCM-NF',numerator='DCM',denominator='NF'),dict(label='ICM-NF',numerator='ICM',denominator='NF')]
 DESIGN=dict(kind='counts',formula='~0 + group + batch',factor='group',contrasts=CONTRASTS)
 def digest(p):
@@ -27,7 +26,7 @@ def main():
   source=dict(path='source/'+source.name,sha256=digest(source),bytes=source.stat().st_size),
   pseudobulk=dict(path='local/pseudobulk/'+pb.name,sha256=digest(pb),dtype='integer counts summed per author heart_number over CM cells and repeated scar/nonscar regions',cells_per_donor={r.sample:int(r.cells_cm) for r in samples.itertuples()}),
   donors=dict(path='local/pseudobulk/'+donors.name,sha256=digest(donors)),design=DESIGN,
-  method=dict(model='limma-voom; moderated t; BH adjusted p values',implementation='stage2/01_bases/output/api/bases/disease_deg.R',implementation_sha256=digest(disease_deg.DEG_WORKER),adapter_sha256=digest(__file__),pseudobulk_adapter_sha256=digest(ITEM/'script/build_pseudobulk.R'),r_version=fit['r_version'],limma_version=fit['limma_version']),
+  method=dict(model='limma-voom; moderated t; BH adjusted p values',implementation='stage2/util/output/api/stage2_util/derivation/disease_deg.R',implementation_sha256=digest(disease_deg.DEG_WORKER),adapter_sha256=digest(__file__),pseudobulk_adapter_sha256=digest(ITEM/'script/build_pseudobulk.R'),r_version=fit['r_version'],limma_version=fit['limma_version']),
   contrasts={c['label']:dict(n_case=int((samples.group==c['numerator']).sum()),n_control=int((samples.group==c['denominator']).sum())) for c in CONTRASTS},
   fit_summary=fit,
   limitations=['Author heart_number defines the independent donor, including pooled male/female NF assignments already in the deposited object; no new sex-demultiplexing or marker gate.',

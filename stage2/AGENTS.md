@@ -6,24 +6,27 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 ## Active steps
 
 - [util](util/AGENTS.md) owns gene and drug identities, representations, ECFP4,
-  seeds, generic metrics, palette and CSV plotting helpers.
+  seed selection, generic vector metrics, the palette and CSV-only plotting.
+  It also owns release publication and locking, shared DEG and ranking kernels,
+  R worker resolution, and derivation manifest verification. Read the
+  [public API inventory](util/README.md) and reuse compatible operations.
+  Keep fold validation, metric aggregation and report tables with the study.
 - [01_corpus](01_corpus/AGENTS.md) publishes source-native integer counts, coverage
   and match status.
-- [02_axis_view](02_axis_view/AGENTS.md) owns the four ordered HVG-DEG prediction
+- [02_gene_axis](02_gene_axis/AGENTS.md) owns the four ordered HVG-DEG prediction
   axes and their selection evidence.
 - [03_view](03_view/AGENTS.md) publishes the raw-first view families. Its full
   release is the default for downstream inputs.
-- [04_models_tenv-5k](04_models_tenv-5k/AGENTS.md) compares single-dose tenv models.
-- [05_tsg_drug_emb](05_tsg_drug_emb/AGENTS.md) compares drug representations.
-- [06_tsg_dose](06_tsg_dose/AGENTS.md) compares dose methods in Tahoe and tenv.
-- [07_tsg_width_dose](07_tsg_width_dose/AGENTS.md) compares width and dose encodings.
-- [08_tsg_transfer](08_tsg_transfer/AGENTS.md) compares Tahoe-to-tenv transfer.
+- [04_model_view](04_model_view/AGENTS.md) compares single-dose tenv models.
+- [05_tsg_loss](05_tsg_loss/AGENTS.md) reserves the loss comparison.
+- [06_tsg_drug_emb](06_tsg_drug_emb/AGENTS.md) compares drug representations.
+- [07_tsg_dose](07_tsg_dose/AGENTS.md) compares dose methods in Tahoe and tenv.
+- [08_tsg_width_dose](08_tsg_width_dose/AGENTS.md) compares width and dose encodings.
+- [09_tsg_transfer](09_tsg_transfer/AGENTS.md) compares Tahoe-to-tenv transfer.
 
 Use each study's `execution/raw_first.py` for new inputs and fixed-prediction
 evaluation. Use `figure/raw_first/render.py` or the documented `render` command
-for CSV-only rendering with util. Use [the replay map](03_view/03.1_hvg-deg_views/historical/README.md)
-for sealed inputs, metric and figure replay. `01_bases/` retains recovery bytes
-and shared derivation kernels used by external-data builders.
+for CSV-only rendering with util. The [historical evidence index](03_view/03.1_hvg-deg_views/historical/README.md) locates sealed records and their original provenance.
 
 ## Step contract
 - `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,
