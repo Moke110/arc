@@ -5,7 +5,7 @@ import json
 import operator
 import re
 from collections import defaultdict
-from hashlib import file_digest
+from hashlib import file_digest, sha256 as hash_bytes
 from pathlib import Path
 
 import h5py
@@ -32,6 +32,23 @@ def sha256(path):
     with Path(path).open("rb") as handle:
         return file_digest(handle, "sha256").hexdigest()
 
+
+def resolve_generation(manifest, current, requested, sources, historical_manifest):
+    """Resolve the requested digest against the current or equivalent sealed corpus."""
+    if manifest.get("schema") not in {SCHEMA, LEGACY_SCHEMA}:
+        raise CorpusError("canonical native corpus provenance is missing")
+    if requested == current:
+        return current
+    predecessor = manifest.get("predecessor", {})
+    unchanged = predecessor.get("unchanged_sources", {})
+    if (manifest["schema"] == SCHEMA and predecessor.get("manifest_sha256") == requested
+            and all(unchanged.get(source) == source for source in sources)
+            and historical_manifest.is_file()):
+        payload = historical_manifest.read_bytes()
+        if (hash_bytes(payload).hexdigest() == requested
+                and json.loads(payload).get("schema") == LEGACY_SCHEMA):
+            return requested
+    raise CorpusError("requested corpus or axis does not match the canonical release inputs")
 
 def _payload(root, source):
     if not SOURCE_NAME.fullmatch(source):
@@ -182,6 +199,12 @@ class Corpus:
             raise CorpusError("unsupported corpus release version")
         self.manifest_sha256 = sha256(self.root / "manifest.json")
         self._sources = {}
+
+    def resolve_generation(self, requested, sources, *, historical_manifest=None):
+        if historical_manifest is None:
+            historical_manifest = self.root.resolve().parent / "historical/native-v1/manifest.json"
+        return resolve_generation(self.manifest, self.manifest_sha256, requested, sources,
+                                  Path(historical_manifest))
 
     def source(self, name):
         if name not in self._sources:
