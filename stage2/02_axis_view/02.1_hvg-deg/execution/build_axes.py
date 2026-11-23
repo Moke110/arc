@@ -3,7 +3,7 @@ import argparse
 import json
 import shutil
 import sys
-from dataclasses import replace
+from dataclasses import dataclass
 from pathlib import Path
 
 STEP = Path(__file__).resolve().parents[1]
@@ -11,98 +11,61 @@ REPO = next(parent for parent in STEP.parents if (parent / ".git").exists())
 STAGE2 = REPO / "stage2"
 NATIVE_CORPUS = STAGE2 / "01_corpus/output/native"
 sys.path.insert(0, str(STEP / "output/api"))
-sys.path.insert(0, str(STAGE2 / "01_bases/execution"))
 sys.path.insert(0, str(STAGE2 / "01_corpus/output/api"))
 sys.path.insert(0, str(STAGE2 / "util/output/api"))
 
-import build_gene_axis as legacy
+import axis_selection
+from axis_selection_kernel import ALGORITHM, AXIS_SIZES
+from stage2_util.derivation import release
 from native_corpus import open_corpus
 from stage2_util.publication import publication_lock, replace_release
-from prediction_axis import COMMON_SHA256, COMMON_SIZE, SCHEMA, open_axes, sha256
+from prediction_axis import COMMON_SHA256, COMMON_SIZE, open_axes, sha256
 
 OUTPUT = STEP / "output/release"
-METHOD_FILES = (
-    "stage2/01_bases/execution/build_gene_axis.py",
-    "stage2/01_bases/output/api/bases/gene_axis.py",
-)
+
+@dataclass(frozen=True)
+class SelectionInputs:
+    genes: Path
+    tenv_hvg: Path
+    fusion_root: Path
 
 
-def _copy(source, target, expected):
-    if sha256(source) != expected:
-        raise ValueError(f"HVG-DEG evidence digest differs: {source}")
-    target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(source, target)
-
-
-def _candidate(source_root, output):
-    config = legacy.default_config(source_root)
-    accepted_path = config.output / "manifest.json"
-    accepted = legacy.release.read_json(accepted_path)
-    if accepted["schema"] != legacy.SCHEMA or accepted["release"]["algorithm"] != legacy.ALGORITHM:
-        raise ValueError("unrecognized historical axis method")
-    for path, record in accepted["inputs"].items():
-        if sha256(source_root / path) != record["sha256"]:
-            raise ValueError(f"pinned historical axis input differs: {path}")
-    common_table = config.genes.parent / "tables/genes.csv"
-    if sha256(common_table) != COMMON_SHA256:
-        raise ValueError("fixed Stage 2 common gene identity differs")
-    products = {
-        "evidence/gene-axis/accepted_manifest.json": (accepted_path, sha256(accepted_path)),
-        "evidence/tenv-hvg/manifest.json": (
-            config.tenv_hvg.with_name("manifest.json"), sha256(config.tenv_hvg.with_name("manifest.json"))
-        ),
-    }
-    axes = {}
-    for name, record in accepted["outputs"].items():
-        source = source_root / name
-        if source.parent != config.output:
-            continue
-        if source.name.startswith("gene_axis_"):
-            size = int(source.stem.rsplit("_", 1)[1])
-            products[source.name] = (source, record["sha256"])
-            axes[str(size)] = record["sha256"]
-        else:
-            products[f"evidence/gene-axis/{source.name}"] = (source, record["sha256"])
-    for name, record in accepted["inputs"].items():
-        source = source_root / name
-        if source == config.tenv_hvg:
-            products[f"evidence/tenv-hvg/{source.name}"] = (source, record["sha256"])
-        elif source.parent == config.fusion_root:
-            products[f"evidence/disease-fusion/{source.name}"] = (source, record["sha256"])
-    for target, (source, digest) in products.items():
-        _copy(source, output / target, digest)
-    manifest = {
-        "schema": SCHEMA,
-        "common_axis": {"size": COMMON_SIZE, "sha256": COMMON_SHA256},
-        "axes": axes,
-        "algorithm": legacy.ALGORITHM,
-        "method": {name: sha256(REPO / name) for name in METHOD_FILES},
-        "outputs": {name: {"sha256": digest} for name, (_, digest) in products.items()},
-    }
-    legacy.release.write_json(output / "manifest.json", manifest)
+def _candidate(source, output):
+    """Copy the verified owner release with the original provenance intact."""
+    accepted = verify_release(source)
+    for name, record in accepted.manifest["outputs"].items():
+        target = output / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source / name, target)
+        if sha256(target) != record["sha256"]:
+            raise ValueError(f"axis evidence changed during publication: {name}")
+    shutil.copyfile(source / "manifest.json", output / "manifest.json")
+    if sha256(output / "manifest.json") != accepted.manifest_sha256:
+        raise ValueError("axis manifest changed during publication")
     return verify_release(output)
 
 
 def verify_release(output):
     published = open_axes(output)
     manifest = published.manifest
-    if manifest["algorithm"] != legacy.ALGORITHM or manifest["method"] != {
-        name: sha256(REPO / name) for name in METHOD_FILES
-    }:
-        raise ValueError("published HVG-DEG selection method differs")
-    legacy.release.check_manifest(output, manifest)
+    if manifest["algorithm"] != ALGORITHM:
+        raise ValueError("unrecognized published HVG-DEG selection algorithm")
+    release.check_manifest(output, manifest)
     evidence = output / "evidence"
-    config = replace(legacy.default_config(REPO),
-                     tenv_hvg=evidence / "tenv-hvg/descriptive.csv",
-                     fusion_root=evidence / "disease-fusion")
-    if sha256(config.genes.parent / "tables/genes.csv") != COMMON_SHA256:
+    identity = STAGE2 / "util/output/gene-identity"
+    config = SelectionInputs(
+        genes=identity / "genes.csv",
+        tenv_hvg=evidence / "tenv-hvg/descriptive.csv",
+        fusion_root=evidence / "disease-fusion",
+    )
+    if sha256(identity / "tables/genes.csv") != COMMON_SHA256:
         raise ValueError("fixed Stage 2 common gene identity differs")
-    axis = legacy.read_axis(config.genes)
+    axis = axis_selection.read_axis(config.genes)
     if len(axis) != COMMON_SIZE:
         raise ValueError("selection input does not cover the fixed common genes")
-    tenv_hvg = legacy.read_tenv(config.tenv_hvg, COMMON_SIZE)
-    fusion = legacy.read_fusion(config, COMMON_SIZE)
-    selected = legacy.compute(axis, tenv_hvg, fusion, config.axis_sizes)["axes"]
+    tenv_hvg = axis_selection.read_tenv(config.tenv_hvg, COMMON_SIZE)
+    fusion = axis_selection.read_fusion(config, COMMON_SIZE)
+    selected = axis_selection.compute(axis, tenv_hvg, fusion, AXIS_SIZES)["axes"]
     prior = set()
     for size in published.sizes:
         prediction = published.axis(size)
@@ -143,15 +106,16 @@ def run(action, source_root, output, *, corpus=None, required_sources=("tenv", "
         if Path(output).resolve() == OUTPUT.resolve():
             required_sources = set(required_sources) | {"tenv", "tahoe_bulk"}
     with publication_lock(output) as destination:
-        candidate = legacy.release.candidate(destination) if action == "publish" else None
+        candidate = release.candidate(destination) if action == "publish" else None
         try:
-            released = (_candidate(source_root.resolve(), candidate) if candidate is not None
+            source = source_root.resolve() / STEP.relative_to(REPO) / "output/release"
+            released = (_candidate(source, candidate) if candidate is not None
                         else verify_release(destination))
             result = {"axes": list(released.sizes), "manifest_sha256": released.manifest_sha256}
             if corpus is not None:
                 result["corpus"] = verify_coverage(released, corpus, required_sources)
             if candidate is not None:
-                replace_release(candidate, destination, legacy.release.replace,
+                replace_release(candidate, destination, release.replace,
                                 verify_existing=verify_release)
             return result
         finally:

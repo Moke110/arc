@@ -1,4 +1,4 @@
-import hashlib
+import json
 import sys
 import tempfile
 import unittest
@@ -15,11 +15,12 @@ class PredictionAxisTest(unittest.TestCase):
     def test_release_has_original_ordered_axes(self):
         release = open_axes()
         self.assertEqual(release.sizes, (2000, 3000, 4000, 5000))
+        evidence = json.loads((STEP / "output/release/evidence/gene-axis/accepted_manifest.json").read_text())
         for size in release.sizes:
             with self.subTest(size=size):
                 axis = release.axis(size)
-                original = STAGE2 / "01_bases/output/gene-axis" / f"gene_axis_{size}.csv"
-                self.assertEqual(axis.sha256, hashlib.sha256(original.read_bytes()).hexdigest())
+                original = f"stage2/01_bases/output/gene-axis/gene_axis_{size}.csv"
+                self.assertEqual(axis.sha256, evidence["outputs"][original]["sha256"])
                 self.assertEqual(len(axis.gene_indices), size)
                 self.assertEqual(tuple(sorted(set(axis.gene_indices))), axis.gene_indices)
                 self.assertLess(axis.gene_indices[-1], 18164)
@@ -74,6 +75,13 @@ class PredictionAxisTest(unittest.TestCase):
             seal_corpus(root, {"partial": mapping}, COMMON_SIZE, COMMON_SHA256, {}, {})
             with open_corpus(root) as corpus, self.assertRaisesRegex(ValueError, "fixed common gene axis"):
                 axis.project(corpus, "partial")
+
+    def test_verify_recomputes_axis_selection_from_owner_evidence(self):
+        sys.path.insert(0, str(STEP / "execution"))
+        import build_axes
+
+        result = build_axes.verify_release(STEP / "output/release")
+        self.assertEqual(result.sizes, (2000, 3000, 4000, 5000))
 
     def test_publish_without_native_corpus_keeps_the_previous_release(self):
         from unittest.mock import patch

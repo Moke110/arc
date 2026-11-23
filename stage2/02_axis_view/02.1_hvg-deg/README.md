@@ -8,9 +8,9 @@ composition and coverage evidence.
 
 [The release manifest](output/release/manifest.json) binds those files to the
 common gene identity and original selection method. Publication reuses the
-existing method and independently compares its selected genes and symbols with
-the accepted CSVs. Original Bases files and presentation artifacts remain
-available for historical replay.
+selection code in this step and independently compares its selected genes and
+symbols with the accepted CSVs. The bundled evidence keeps its original sealed
+paths and digests.
 
 Add `output/api` to the Python path to use `prediction_axis.open_axes`. A
 prediction axis projects a source-native corpus with complete common coverage.
@@ -28,7 +28,7 @@ with open_corpus(corpus_path) as corpus:
 `counts` preserves integer values and prediction-axis column order. Projection
 also supports bounded `batches` and requires the corpus to stay open.
 
-Publish from a checkout containing the original materialized HVG evidence.
+Publish from a checkout containing this step's accepted release and bundled HVG evidence.
 Publication checks the canonical native corpus by default. Pass `--corpus`
 when that release is materialized elsewhere.
 Verification uses the bundled ranking and fusion evidence. The full verify
