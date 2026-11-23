@@ -14,7 +14,7 @@ import pandas as pd
 STEP = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(STEP / "output/api"))
 from tenv5k_raw_first import workflow
-from expression_view import RECIPE, SCHEMA
+from expression_view import PAYLOAD_SCHEMA, RECIPE, SCHEMA
 from prediction_axis import open_axes
 from stage2_util import metrics, palette, plotting
 from stage2_util.representations import ARMS, SCHEMA as REPRESENTATIONS, WIDTHS
@@ -26,7 +26,7 @@ def digest(path):
 
 def fixtures(root):
     view = root / "view"
-    (view / "full").mkdir(parents=True)
+    view.mkdir(parents=True)
     axis = open_axes().axis(5000)
     obs = pd.DataFrame(
         [("vehicle", "", "", 0), *[("treated", f"p{parent}", f"smiles{parent}", 1)
@@ -43,16 +43,18 @@ def fixtures(root):
     expression[-1, :3] = [4, 5, 6]
     control = np.zeros_like(expression)
     control[:, :3] = [1, 2, 3]
-    source = view / "full/tenv.h5ad"
+    source = view / "tenv.h5ad"
     AnnData(expression, obs=obs, var=var,
             layers={"control": control, "delta": expression - control}).write_h5ad(source)
     tags = {"schema": SCHEMA, "axis_sha256": axis.sha256, "corpus_sha256": "a" * 64}
     with h5py.File(source, "r+") as handle:
-        handle.attrs.update(tags, source="tenv", family="full")
+        handle.attrs.update(dict(tags, schema=PAYLOAD_SCHEMA), source="tenv", family="full")
     exclusions = view / "tenv.exclusions.csv"
     exclusions.write_text("profile_id,role,reason\n")
+    membership = view / "tenv.members.csv"
+    membership.write_text("profile_id,member_profile_id,role\n")
     (view / "manifest.json").write_text(json.dumps(dict(tags, **RECIPE, axis_size=5000, sources=["tenv"],
-        outputs={str(p.relative_to(view)): digest(p) for p in (source, exclusions)})))
+        outputs={str(p.relative_to(view)): digest(p) for p in (source, exclusions, membership)})))
 
     vectors = root / "representations"
     vectors.mkdir()

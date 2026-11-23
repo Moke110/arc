@@ -12,3 +12,8 @@
 | `07_tsg_width_dose` | [Width and dose](../../../08_tsg_width_dose/README.md) |
 | `08_tsg_transfer` | [Transfer](../../../09_tsg_transfer/README.md) |
 | `tsg_view` | [View-variant study evidence](tsg_view/README.md) |
+
+The [raw-first-v1 manifest](raw-first-v1/manifest.json) seals the five-family
+predecessor covered by the original [acceptance receipt](../log/acceptance.json).
+The [full-only migration record](../log/full-only-migration.json) documents
+the change in active release layout and generation.

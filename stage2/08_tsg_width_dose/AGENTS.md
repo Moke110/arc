@@ -1,6 +1,6 @@
 # TranSiGen width and dose encoding
 
-Use the [historical evidence index](../03_view/03.1_hvg-deg_views/historical/README.md) for sealed records.
+Use the [historical evidence index](../03_view/03.1_hvg-deg-5k/historical/README.md) for sealed records.
 
 Read [README.md](README.md), the [Stage 2 routing](../AGENTS.md),
 [ADR 0062](../../docs/adr/0062-stage2-accepted-products-and-reproducible-figures.md),

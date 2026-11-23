@@ -1,0 +1,43 @@
+{
+  "assets": [
+    {
+      "previous": "stage2/03_view/03.1_hvg-deg_views/output/raw-first-v1/tahoe_bulk.exclusions.csv",
+      "release": "stage2/03_view/03.1_hvg-deg-5k/output/release/tahoe_bulk.exclusions.csv",
+      "sha256": "9c9e61ede74b0b8b0bff5b074f3c1499cd1e165ec8a792597b0f5750fc538d86"
+    },
+    {
+      "previous": "stage2/03_view/03.1_hvg-deg_views/output/raw-first-v1/full/tahoe_bulk.h5ad",
+      "release": "stage2/03_view/03.1_hvg-deg-5k/output/release/tahoe_bulk.h5ad",
+      "sha256": "79e06aeaf3135a8564d5889508e375e77a05c61325e497efc0d6d19365085e7c"
+    },
+    {
+      "previous": "stage2/03_view/03.1_hvg-deg_views/output/raw-first-v1/full/tahoe_bulk.members.csv",
+      "release": "stage2/03_view/03.1_hvg-deg-5k/output/release/tahoe_bulk.members.csv",
+      "sha256": "b9db6704d52d9597052a11ca83409b11f2bd4bc4e5e7cba0fef14b42ae7fa353"
+    },
+    {
+      "previous": "stage2/03_view/03.1_hvg-deg_views/output/raw-first-v1/tenv.exclusions.csv",
+      "release": "stage2/03_view/03.1_hvg-deg-5k/output/release/tenv.exclusions.csv",
+      "sha256": "2b3fdee7a85c77e2b0caf835d92cf935ec38968d7edfff84daff29104b0dbfb7"
+    },
+    {
+      "previous": "stage2/03_view/03.1_hvg-deg_views/output/raw-first-v1/full/tenv.h5ad",
+      "release": "stage2/03_view/03.1_hvg-deg-5k/output/release/tenv.h5ad",
+      "sha256": "80925c0d0df0d1800e1a1e55ce7ebf5201abb276defbbff7a8d735d64bad0ecb"
+    },
+    {
+      "previous": "stage2/03_view/03.1_hvg-deg_views/output/raw-first-v1/full/tenv.members.csv",
+      "release": "stage2/03_view/03.1_hvg-deg-5k/output/release/tenv.members.csv",
+      "sha256": "738ae868c8af1e29a947b5360ff0d9db94b5a43eb745759b295ff99394768cc4"
+    }
+  ],
+  "previous_manifest": {
+    "archive": "stage2/03_view/03.1_hvg-deg-5k/historical/raw-first-v1/manifest.json",
+    "path": "stage2/03_view/03.1_hvg-deg_views/output/raw-first-v1/manifest.json",
+    "sha256": "038129736f94233f0b9abc45a13d4363b47d463c10a2c5c6b7921e66312030a6"
+  },
+  "release_manifest": {
+    "path": "stage2/03_view/03.1_hvg-deg-5k/output/release/manifest.json",
+    "sha256": "d66eed2c849fabc85fc2ae1218e1ea69181a7559bab49dfe4eaaa4e04c5eea2c"
+  }
+}

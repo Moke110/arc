@@ -6,7 +6,7 @@ import re
 import numpy as np
 import pandas as pd
 
-from expression_view import CONTROL, NORMALIZATION, SCHEMA as VIEW_SCHEMA, sha256
+from expression_view import CONTROL, NORMALIZATION, PAYLOAD_SCHEMA, SCHEMA as VIEW_SCHEMA, sha256
 from prediction_axis import open_axes
 from stage2_util.representations import WIDTHS, ordered_parents
 from stage2_util.seeds import read_seeds
@@ -43,7 +43,7 @@ def valid_digest(value):
 
 
 def check_generation(generation, axis):
-    if (generation.get("schema") != VIEW_SCHEMA or generation.get("family") != "full"
+    if (generation.get("schema") not in (VIEW_SCHEMA, PAYLOAD_SCHEMA) or generation.get("family") != "full"
             or generation.get("axis_size") != len(axis.gene_indices)
             or generation.get("axis_sha256") != axis.sha256
             or not all(valid_digest(generation.get(name)) for name in ("view_sha256", "corpus_sha256"))

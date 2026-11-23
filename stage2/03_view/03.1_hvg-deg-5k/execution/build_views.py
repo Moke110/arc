@@ -1,9 +1,8 @@
-"""Build and deterministically replay the raw-first HVG-DEG view families."""
+"""Build and deterministically replay the raw-first HVG-DEG full 5k views."""
 from __future__ import annotations
 
 import argparse
 import csv
-import hashlib
 import json
 import sys
 from functools import lru_cache
@@ -25,14 +24,13 @@ sys.path[:0] = [str(path) for path in (
 
 import normalization
 from stage2_util.derivation import release
-from expression_view import (ARMS, DEFAULT, LAYERS, RECIPE, SCHEMA, SOLO_SEED,
-                             layer_path, open_view, sha256)
+from expression_view import (DEFAULT, LAYERS, PAYLOAD_SCHEMA, RECIPE, SCHEMA, SOURCES,
+                             check_inventory, layer_path, open_view, sha256)
 from native_corpus import open_corpus
 from prediction_axis import open_axes
 from stage2_util.publication import publication_lock, publish_candidate
 
 CONDITION = ["cell_line", "drug_parent_inchikey", "dose_um"]
-FULL_FAMILIES = ("full", "full-pooled-label")
 
 
 def _population(source):
@@ -52,43 +50,12 @@ def _population(source):
     return obs, valid, excluded
 
 
-def _groups(obs, valid):
-    positions = [index for index in valid if obs.role.iloc[index] == "treated"]
-    conditions = obs.iloc[positions][CONDITION].copy()
-    conditions["source_position"] = positions
-    conditions["identity"] = conditions.index.astype(str)
-    if conditions[CONDITION].isna().any().any() or conditions.drug_parent_inchikey.eq("").any():
+def _check_conditions(name, obs, valid):
+    treated = obs.iloc[valid].loc[lambda rows: rows.role == "treated", CONDITION]
+    if treated.empty:
+        raise ValueError(f"{name} has no conditions eligible for paired views")
+    if treated.isna().any().any() or treated.drug_parent_inchikey.eq("").any():
         raise ValueError("a retained treated observation has no condition identity")
-    conditions.sort_values(CONDITION + ["identity"], inplace=True)
-    return {
-        key: tuple(members.source_position)
-        for key, members in conditions.groupby(CONDITION, sort=False, observed=True)
-    }
-
-
-def _identity(key):
-    cell, parent, dose = key
-    return f"{cell}|{parent}|{float(dose):g}"
-
-
-def _solo(key, members, name):
-    encoded = f"{SOLO_SEED}|{name}|{_identity(key)}".encode()
-    number = int.from_bytes(hashlib.sha256(encoded).digest()[:8], "big")
-    return members[number % len(members)]
-
-
-def _plan(name, family, obs, valid, conditions, totals):
-    if family in FULL_FAMILIES:
-        return [(str(obs.index[index]), (index,)) for index in valid]
-    if family == "merge":
-        return [(f"merge::{name}::{_identity(key).replace('|', '::')}", rows)
-                for key, rows in conditions.items()]
-    if family == "solo":
-        chosen = [_solo(key, rows, name) for key, rows in conditions.items()]
-    else:
-        chosen = [min(rows, key=lambda index: (-totals[index], str(obs.index[index])))
-                  for rows in conditions.values()]
-    return sorted((str(obs.index[index]), (index,)) for index in chosen)
 
 
 def _controls(source, obs, valid):
@@ -106,27 +73,15 @@ def _controls(source, obs, valid):
     }
 
 
-def _control_union(members, controls):
-    return tuple(sorted({position for member in members for position in controls[member]}))
-
-
-def _frame(obs, plan, totals, merged):
-    rows = obs.iloc[[members[0] for _, members in plan]].copy()
-    rows.index = pd.Index([identity for identity, _ in plan], name="profile_id")
+def _frame(obs, positions, totals):
+    rows = obs.iloc[positions].copy()
+    rows.index = pd.Index([str(identity) for identity in rows.index], name="profile_id")
     if rows.index.has_duplicates:
         raise ValueError("expression view identities are not unique")
     if "profile_id" in rows:
         rows["profile_id"] = rows.index
-    rows["library_total"] = [sum(int(totals[index]) for index in members) for _, members in plan]
-    rows["member_count"] = [len(members) for _, members in plan]
-    if merged:
-        if "source_row" in rows:
-            rows["source_row"] = -1
-        for field in ("plate", "matched_control_group"):
-            if field in rows:
-                source = obs[field].astype(str).to_numpy()
-                rows[field] = [";".join(sorted({source[index] for index in members}))
-                               for _, members in plan]
+    rows["library_total"] = totals[positions]
+    rows["member_count"] = 1
     return rows
 
 
@@ -135,61 +90,45 @@ def _normalized(counts, members):
     return normalization.log1p_cp10k(raw, normalization.library_totals(raw))[0].astype(np.float32)
 
 
-def _write_arm(root, name, family, obs, plan, conditions, counts, totals, controls, tags, var):
-    directory = root / family
-    directory.mkdir(exist_ok=True)
-    rows = _frame(obs, plan, totals, family == "merge")
-    origins = {member: members for members in conditions.values() for member in members}
-    pooled = family == "full-pooled-label"
+def _write_full(root, name, obs, positions, counts, totals, controls, tags, var):
+    rows = _frame(obs, positions, totals)
 
     @lru_cache(maxsize=512)
     def norm_controls(control_members):
         if not control_members:
-            raise ValueError(f"retained {name}/{family} profile has no matched vehicle")
+            raise ValueError(f"retained {name}/full profile has no matched vehicle")
         return _normalized(counts, control_members)
 
-    @lru_cache(maxsize=512)
-    def pooled_delta(members):
-        return _normalized(counts, members) - norm_controls(_control_union(members, controls))
-
-    with (directory / f"{name}.members.csv").open("w", newline="") as ledger, h5py.File(
-        directory / f"{name}.h5ad", "w"
+    with (root / f"{name}.members.csv").open("w", newline="") as ledger, h5py.File(
+        root / f"{name}.h5ad", "w"
     ) as handle:
         writer = csv.writer(ledger, lineterminator="\n")
         writer.writerow(("profile_id", "member_profile_id", "role"))
-        handle.attrs.update(tags, family=family, source=name)
+        handle.attrs.update(tags, family="full", source=name)
         handle.attrs["encoding-type"], handle.attrs["encoding-version"] = "anndata", "0.1.0"
         write_elem(handle, "obs", rows)
         write_elem(handle, "var", var)
         layers = handle.create_group("layers")
         layers.attrs["encoding-type"], layers.attrs["encoding-version"] = "dict", "0.1.0"
-        layer_names = ("delta",) if pooled else LAYERS
         datasets = {}
         width = len(var)
-        for layer in layer_names:
+        for layer in LAYERS:
             dataset = handle.create_dataset(layer_path(layer), (len(rows), width), dtype=np.float32,
                                             chunks=(min(64, len(rows)), width), compression="gzip",
                                             compression_opts=1)
             dataset.attrs["encoding-type"], dataset.attrs["encoding-version"] = "array", "0.2.0"
             datasets[layer] = dataset
-        for start in range(0, len(plan), 64):
-            block = plan[start:start + 64]
-            arrays = {layer: np.empty((len(block), width), dtype=np.float32) for layer in layer_names}
-            for offset, (identity, members) in enumerate(block):
-                vehicle = _control_union(members, controls)
-                label = origins.get(members[0], members) if pooled else members
-                if pooled:
-                    arrays["delta"][offset] = pooled_delta(label)
-                else:
-                    arrays["X"][offset] = _normalized(counts, members)
-                    arrays["control"][offset] = norm_controls(vehicle)
-                    arrays["delta"][offset] = arrays["X"][offset] - arrays["control"][offset]
-                writer.writerows((identity, obs.index[index], "expression") for index in members)
+        for start in range(0, len(positions), 64):
+            block = positions[start:start + 64]
+            arrays = {layer: np.empty((len(block), width), dtype=np.float32) for layer in LAYERS}
+            for offset, position in enumerate(block):
+                identity = obs.index[position]
+                vehicle = tuple(sorted(set(controls[position])))
+                arrays["X"][offset] = _normalized(counts, (position,))
+                arrays["control"][offset] = norm_controls(vehicle)
+                arrays["delta"][offset] = arrays["X"][offset] - arrays["control"][offset]
+                writer.writerow((identity, identity, "expression"))
                 writer.writerows((identity, obs.index[index], "matched_vehicle") for index in vehicle)
-                if pooled:
-                    writer.writerows((identity, obs.index[index], "label_expression") for index in label)
-                    writer.writerows((identity, obs.index[index], "label_vehicle")
-                                     for index in _control_union(label, controls))
             for layer, dataset in datasets.items():
                 dataset[start:start + len(block)] = arrays[layer]
 
@@ -198,9 +137,7 @@ def _build_source(root, name, corpus, axis, tags, var):
     projection = axis.project(corpus, name)
     obs, valid, excluded = _population(projection.source)
     controls = _controls(projection.source, obs, valid)
-    conditions = _groups(obs, valid)
-    if not conditions:
-        raise ValueError(f"{name} has no conditions eligible for paired views")
+    _check_conditions(name, obs, valid)
     pd.DataFrame(excluded, columns=["profile_id", "role", "reason"]).to_csv(
         root / f"{name}.exclusions.csv", index=False
     )
@@ -212,21 +149,19 @@ def _build_source(root, name, corpus, axis, tags, var):
             stop = start + len(block)
             counts[start:stop] = block
             totals[start:stop] = block.sum(axis=1, dtype=np.int64)
-        for family in ARMS[name]:
-            plan = _plan(name, family, obs, valid, conditions, totals)
-            _write_arm(root, name, family, obs, plan, conditions, counts, totals, controls, tags, var)
+        _write_full(root, name, obs, valid, counts, totals, controls, tags, var)
     finally:
         del counts
         cache.unlink()
 
 
 def _build(root, corpus, axis, sources):
-    tags = {"schema": SCHEMA, "corpus_sha256": corpus.manifest_sha256, "axis_sha256": axis.sha256}
+    tags = {"schema": PAYLOAD_SCHEMA, "corpus_sha256": corpus.manifest_sha256, "axis_sha256": axis.sha256}
     var = pd.DataFrame({"gene_index": axis.gene_indices, "symbol": axis.symbols},
                        index=pd.Index([str(gene) for gene in axis.gene_indices], name="gene_index_label"))
     for name in sources:
         _build_source(root, name, corpus, axis, tags, var)
-    manifest = {**tags, **RECIPE, "axis_size": len(var), "sources": list(sources),
+    manifest = {**tags, **RECIPE, "schema": SCHEMA, "axis_size": len(var), "sources": list(sources),
                 "outputs": {path.relative_to(root).as_posix(): sha256(path)
                             for path in sorted(root.rglob("*")) if path.is_file()}}
     release.write_json(root / "manifest.json", manifest)
@@ -235,19 +170,22 @@ def _build(root, corpus, axis, sources):
 def _verify(root, corpus, axis, sources):
     manifest = release.read_json(root / "manifest.json")
     release.check_relative_paths(manifest)
+    if tuple(check_inventory(manifest)) != tuple(sources):
+        raise ValueError("expression view release sources differ")
+    if {path.name for path in root.iterdir()} != {"manifest.json", *manifest["outputs"]}:
+        raise ValueError("expression view release inventory differs")
     for name in sources:
-        for family in ARMS[name]:
-            with open_view(root, source=name, family=family, corpus_sha256=corpus.manifest_sha256,
-                           axis_sha256=axis.sha256) as view:
-                if tuple(view.var.gene_index) != axis.gene_indices:
-                    raise ValueError("expression view axis order differs")
-            name_in_manifest = f"{family}/{name}.members.csv"
-            if sha256(root / name_in_manifest) != manifest["outputs"][name_in_manifest]:
-                raise ValueError("expression view membership digest differs")
+        with open_view(root, source=name, corpus_sha256=corpus.manifest_sha256,
+                       axis_sha256=axis.sha256) as view:
+            if tuple(view.var.gene_index) != axis.gene_indices:
+                raise ValueError("expression view axis order differs")
+        membership = f"{name}.members.csv"
+        if sha256(root / membership) != manifest["outputs"][membership]:
+            raise ValueError("expression view membership digest differs")
 
 
-def publish_views(destination, corpus, axis, *, sources=tuple(ARMS), staging=None):
-    if not sources or len(set(sources)) != len(sources) or not set(sources).issubset(ARMS):
+def publish_views(destination, corpus, axis, *, sources=SOURCES, staging=None):
+    if not sources or len(set(sources)) != len(sources) or not set(sources).issubset(SOURCES):
         raise ValueError("unknown or duplicate expression sources")
     with publication_lock(destination) as output:
         return publish_candidate(
@@ -257,7 +195,7 @@ def publish_views(destination, corpus, axis, *, sources=tuple(ARMS), staging=Non
         )
 
 
-def replay_views(destination, corpus, axis, *, sources=tuple(ARMS), staging=None):
+def replay_views(destination, corpus, axis, *, sources=SOURCES, staging=None):
     with publication_lock(destination) as output:
         return release.replay(output, lambda root: _build(root, corpus, axis, sources),
                               lambda root: _verify(root, corpus, axis, sources), root=staging)
@@ -270,10 +208,10 @@ def main():
     parser.add_argument("--axis", type=Path)
     parser.add_argument("--destination", type=Path, default=DEFAULT)
     parser.add_argument("--staging", type=Path, default=STEP / "execution/checkpoints")
-    parser.add_argument("--source", choices=tuple(ARMS), action="append")
+    parser.add_argument("--source", choices=SOURCES, action="append")
     args = parser.parse_args()
-    sources = tuple(ARMS) if not args.source else tuple(args.source)
-    if sources != tuple(ARMS) and args.destination.resolve() == DEFAULT.resolve():
+    sources = SOURCES if not args.source else tuple(args.source)
+    if sources != SOURCES and args.destination.resolve() == DEFAULT.resolve():
         parser.error("single-source rehearsals require an explicit non-default destination")
     operation = publish_views if args.action == "publish" else replay_views
     with open_corpus(args.corpus) as corpus:

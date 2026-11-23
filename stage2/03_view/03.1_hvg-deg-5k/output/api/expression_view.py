@@ -11,22 +11,19 @@ import numpy as np
 import pandas as pd
 from anndata.io import read_elem
 
-SCHEMA = "stage2-hvg-deg-views-raw-first-v1"
-DEFAULT = Path(__file__).resolve().parents[1] / "raw-first-v1"
+PAYLOAD_SCHEMA = "stage2-hvg-deg-views-raw-first-v1"
+SCHEMA = "stage2-hvg-deg-5k-release-v2"
+DEFAULT = Path(__file__).resolve().parents[1] / "release"
 REPO = next(parent for parent in DEFAULT.parents if (parent / ".git").exists())
 CORPUS_MANIFEST = REPO / "stage2/01_corpus/output/native/manifest.json"
 CANONICAL_AXIS = REPO / "stage2/02_gene_axis/02.1_hvg-deg/output/release/gene_axis_5000.csv"
 NORMALIZATION = "sum selected-axis integer counts, then separate CP10K and log1p"
 CONTROL = "union matched vehicle rows by source observation identity"
-DELTA = "X minus control, or the corresponding merge delta for pooled labels"
-SOLO_SEED = 20261122
-RECIPE = {"default_family": "full", "normalization": NORMALIZATION, "control": CONTROL,
-          "delta": DELTA, "solo_seed": SOLO_SEED}
+DELTA = "X minus control"
+RECIPE = {"default_family": "full", "payload_schema": PAYLOAD_SCHEMA, "normalization": NORMALIZATION,
+          "control": CONTROL, "delta": DELTA}
 MAX_ROWS = 256
-ARMS = {
-    "tenv": ("full", "merge", "solo", "solo-deepest", "full-pooled-label"),
-    "tahoe_bulk": ("full", "merge", "solo", "full-pooled-label"),
-}
+SOURCES = ("tenv", "tahoe_bulk")
 LAYERS = ("X", "control", "delta")
 
 
@@ -35,15 +32,31 @@ def sha256(path):
         return file_digest(handle, "sha256").hexdigest()
 
 
+def output_names(sources):
+    return {f"{source}.{suffix}" for source in sources
+            for suffix in ("h5ad", "members.csv", "exclusions.csv")}
+
+
+def check_inventory(manifest):
+    sources = manifest.get("sources")
+    outputs = manifest.get("outputs")
+    if (not isinstance(sources, list) or not sources
+            or any(source not in SOURCES for source in sources)
+            or len(set(sources)) != len(sources)
+            or not isinstance(outputs, dict) or outputs.keys() != output_names(sources)):
+        raise ValueError("expression view manifest inventory differs")
+    return sources
+
+
 def layer_path(layer):
     return layer if layer == "X" else f"layers/{layer}"
 
 
 class View:
-    """One source and view family. The full family is the default expression release."""
+    """Bounded expression view for one source."""
 
     def __init__(self, root, source, family, corpus_sha256, axis_sha256):
-        if source not in ARMS or family not in ARMS[source]:
+        if source not in SOURCES or family != "full":
             raise ValueError(f"unknown expression view arm: {source}/{family}")
         base = root / "manifest.json"
         payload = base.read_bytes()
@@ -54,6 +67,8 @@ class View:
             raise ValueError("expression view generation does not match the requested corpus or axis")
         if any(manifest.get(key) != value for key, value in RECIPE.items()):
             raise ValueError("expression view recipe differs from the accepted raw-first recipe")
+        if source not in check_inventory(manifest):
+            raise ValueError(f"source is missing from expression view release: {source}")
         self.manifest = manifest
         self.manifest_sha256 = hash_bytes(payload).hexdigest()
         self.source = source
@@ -61,8 +76,8 @@ class View:
         self.root = root
         self._handles = {}
         try:
-            key = f"{family}/{source}.h5ad"
-            handle = self._open(key, family)
+            key = f"{source}.h5ad"
+            handle = self._open(key)
             self.obs = read_elem(handle["obs"])
             self.var = read_elem(handle["var"])
             self.shape = (len(self.obs), len(self.var))
@@ -75,11 +90,6 @@ class View:
                 layer: handle[layer_path(layer)] for layer in LAYERS
                 if layer_path(layer) in handle
             }
-            if family == "full-pooled-label":
-                full = self._open(f"full/{source}.h5ad", "full")
-                if not self.obs.equals(read_elem(full["obs"])) or not self.var.equals(read_elem(full["var"])):
-                    raise ValueError("pooled-label view does not bind identical full-view rows and genes")
-                self._arrays.update({layer: full[layer_path(layer)] for layer in ("X", "control")})
             if set(self._arrays) != set(LAYERS) or any(
                 block.shape != self.shape or block.dtype != np.float32 for block in self._arrays.values()
             ):
@@ -94,13 +104,15 @@ class View:
             raise ValueError(f"expression view payload digest differs: {relative}")
         return path
 
-    def _open(self, relative, family):
+    def _open(self, relative):
         handle = h5py.File(self._checked(relative), "r")
         self._handles[relative] = handle
-        for key in ("schema", "corpus_sha256", "axis_sha256"):
+        if handle.attrs["schema"] != self.manifest["payload_schema"]:
+            raise ValueError(f"expression view payload schema differs: {relative}")
+        for key in ("corpus_sha256", "axis_sha256"):
             if handle.attrs[key] != self.manifest[key]:
                 raise ValueError(f"mixed expression view generation: {relative}")
-        if handle.attrs["source"] != self.source or handle.attrs["family"] != family:
+        if handle.attrs["source"] != self.source or handle.attrs["family"] != "full":
             raise ValueError(f"expression view arm differs: {relative}")
         return handle
 
