@@ -1,6 +1,6 @@
 """Render the accepted 02 CSV values with canonical ECFP4 labels."""
 import argparse
-import importlib.util
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -8,11 +8,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# Pure public palette module reads no payload (including Bases __init__).
-PALETTE_PATH = Path(__file__).resolve().parents[4] / '01_bases/output/api/bases/palette.py'
-palette_spec = importlib.util.spec_from_file_location('stage_palette', PALETTE_PATH)
-palette = importlib.util.module_from_spec(palette_spec)
-palette_spec.loader.exec_module(palette)
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'util/output/api'))
+from stage2_util import palette
 
 SEALED_MLP_LABEL = 'MLP_Morgan'
 DISPLAY_MLP_LABEL = 'ECFP4_MLP'

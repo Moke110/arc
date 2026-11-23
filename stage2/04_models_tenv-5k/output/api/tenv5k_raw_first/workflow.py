@@ -16,7 +16,7 @@ for relative in ("util/output/api", "03_view/03.1_hvg-deg_views/output/api",
 from expression_view import DEFAULT, SCHEMA as VIEW_SCHEMA, open_view, sha256
 from prediction_axis import open_axes
 from stage2_util import metrics, palette, plotting
-from stage2_util.representations import PARENT_COLUMNS, RepresentationTable
+from stage2_util.representations import RepresentationTable, ordered_parents
 from stage2_util.seeds import read_seeds
 from tenv5k.protocol import FOLDS, make_splits
 
@@ -42,13 +42,6 @@ def write_json(path, payload):
 
 def read_csv(path):
     return pd.read_csv(path, keep_default_na=False, float_precision="round_trip", low_memory=False)
-
-
-def ordered_parents(obs):
-    parents = obs[PARENT_COLUMNS].drop_duplicates().sort_values(PARENT_COLUMNS[0], ignore_index=True)
-    if parents[PARENT_COLUMNS[0]].duplicated().any() or parents.eq("").any().any():
-        raise ValueError("missing or conflicting single-dose parent structures")
-    return parents
 
 
 def control_mapping(treated, vehicles):
@@ -144,10 +137,7 @@ def _freeze(source, destination, axis, representations):
         matrix.flush()
         del matrix
     parents = ordered_parents(population)
-    keys = parents.drug_parent_inchikey.tolist()
-    accepted = representations.parents.set_index(PARENT_COLUMNS[0])[PARENT_COLUMNS[1]]
-    if accepted.reindex(keys).tolist() != parents.drug_parent_smiles.tolist():
-        raise ValueError("single-dose parent identity differs from the shared representation release")
+    keys = representations.verified_parent_keys(parents)
     np.save(destination / "morgan.npy", representations.vectors("ECFP4C", keys).astype(np.uint8))
     for name, frame in (("population", population), ("all_obs", obs.iloc[rows]), ("parents", parents),
                         ("splits", make_splits(population, seed=SPLIT_SEED)),

@@ -76,6 +76,19 @@ class IdentityTests(unittest.TestCase):
 
 
 class RepresentationTests(unittest.TestCase):
+    def test_ordered_parent_identities_collapse_repeated_profiles(self):
+        import pandas as pd
+        from stage2_util.representations import PARENT_COLUMNS, ordered_parents
+
+        observations = pd.DataFrame(
+            [("B", "CCC"), ("A", "CCO"), ("B", "CCC")], columns=PARENT_COLUMNS
+        )
+        self.assertEqual(ordered_parents(observations).values.tolist(),
+                         [["A", "CCO"], ["B", "CCC"]])
+        for invalid in ((None, "CCO"), ("", "CCO"), ("A", "CCC")):
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(ValueError, "parent"):
+                ordered_parents(pd.DataFrame([("A", "CCO"), invalid], columns=PARENT_COLUMNS))
+
     def test_digest_bound_parent_order_and_vectors(self):
         import hashlib
         import json
@@ -111,6 +124,11 @@ class RepresentationTests(unittest.TestCase):
             table = RepresentationTable(directory, source="tenv", manifest_sha256=pin)
             self.assertEqual(table.parents["drug_parent_smiles"].tolist(), ["CCO", "CO"])
             keys = ["OKKJLVBELUTLKV-UHFFFAOYSA-N", "LFQSCWFLJHTTHZ-UHFFFAOYSA-N"]
+            reordered = table.parents.iloc[[1, 0]]
+            self.assertEqual(table.verified_parent_keys(reordered), keys)
+            altered = reordered.assign(drug_parent_smiles=["CC", "CCO"])
+            with self.assertRaisesRegex(ValueError, "structures differ"):
+                table.verified_parent_keys(altered)
             self.assertEqual(table.vectors("ECFP4C", keys)[:, 1].tolist(), [1, 0])
             self.assertEqual(table.width("KPGT"), 2304)
             parents.write_text(parents.read_text().replace("CCO", "CC"))

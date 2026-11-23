@@ -3,7 +3,7 @@
 
 The item's CM pseudobulk (4 sinus-rhythm / 3 persistent-AF donors, 3,049 author-
 labelled CM nuclei) is fitted with the one live implementation,
-`stage2/01_bases/output/api/bases/disease_deg.R`, in counts mode: limma-voom on
+`stage2/util/output/api/stage2_util/derivation/disease_deg.R`, in counts mode: limma-voom on
 the integer pseudobulk. The declared design is the single AF-vs-SR contrast.
 
 The expected and measured outcome is **zero** v2 DEGs (padj < 0.05 and
@@ -32,9 +32,8 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2/01_bases/execution'))
-import public_api  # noqa: F401  (binds the single public implementation)
-from bases import disease_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'stage2/util/output/api'))
+from stage2_util.derivation import disease_deg  # noqa: E402
 
 LOCAL = ITEM / 'local'
 PSEUDOBULK = 'local/pseudobulk/GSE238242_cm_pseudobulk.csv.gz'
@@ -253,7 +252,7 @@ def main():
             'pseudobulk': pseudobulk_summary['pseudobulk']['rule'],
             'model': "limma-voom (voom's own library-size normalisation, moderated t)",
             'filter': 'edgeR filterByExpr rule written out in the live worker',
-            'implementation': 'stage2/01_bases/output/api/bases/disease_deg.R',
+            'implementation': 'stage2/util/output/api/stage2_util/derivation/disease_deg.R',
             'implementation_sha256': sha256(Path(disease_deg.DEG_WORKER)),
             'derivation': str(Path(__file__).resolve().relative_to(REPO)),
             'derivation_sha256': sha256(Path(__file__).resolve()),

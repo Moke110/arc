@@ -54,9 +54,8 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2/01_bases/execution'))
-import public_api  # noqa: F401  (binds the single public implementation)
-from bases import deg_rank, disease_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'stage2/util/output/api'))
+from stage2_util.derivation import deg_rank, disease_deg  # noqa: E402
 
 SERIES_MATRIX = 'source/GSE35108_series_matrix.txt.gz'
 PLATFORM_ANNOT = 'source/GPL6244.annot.gz'
@@ -466,7 +465,7 @@ def main():
             'deposition': 'deposited RMA log2 expression (one-colour array)',
             'collapse': collapse_stats['rule'],
             'model': 'limma on the deposited log2 matrix (moderated t)',
-            'implementation': 'stage2/01_bases/output/api/bases/disease_deg.R',
+            'implementation': 'stage2/util/output/api/stage2_util/derivation/disease_deg.R',
             'implementation_sha256': sha256(Path(disease_deg.DEG_WORKER)),
             'derivation': str(Path(__file__).resolve().relative_to(REPO)),
             'derivation_sha256': sha256(Path(__file__).resolve()),

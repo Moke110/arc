@@ -1,16 +1,14 @@
 """Render complete recorded plot values; no model, input or metric access."""
 import argparse
-import importlib.util
+import sys
 from pathlib import Path
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# Pure public palette module reads no payload (including Bases __init__).
-PALETTE=Path(__file__).resolve().parents[3]/'01_bases/output/api/bases/palette.py'
-spec=importlib.util.spec_from_file_location('stage_palette',PALETTE)
-palette=importlib.util.module_from_spec(spec);spec.loader.exec_module(palette)
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'util/output/api'))
+from stage2_util import palette
 HUES=dict(PRnet='blue',TranSiGen='orange',MLP_Morgan='green',Mean='gray',Mean_cell='purple',Mean_drug='magenta')
 ORDER=list(HUES)
 

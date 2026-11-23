@@ -64,9 +64,8 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2/01_bases/execution'))
-import public_api  # noqa: F401  (binds the single public implementation)
-from bases import disease_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'stage2/util/output/api'))
+from stage2_util.derivation import disease_deg  # noqa: E402
 
 LOCAL = ITEM / 'local'
 PSEUDOBULK = LOCAL / 'pseudobulk' / 'kuppe-mi_cm_pseudobulk.csv.gz'
@@ -76,8 +75,8 @@ SAMPLES = LOCAL / 'deg' / 'kuppe-mi_samples.csv'
 ZONE_DEG = LOCAL / 'deg' / 'kuppe-mi_zone_deg.csv'
 DEG = LOCAL / 'deg' / 'kuppe-mi_deg.csv'
 SUMMARY = LOCAL / 'deg' / 'kuppe-mi_deg.json'
-AXIS = REPO / 'stage2/01_bases/output/gene-identity/genes.csv'
-CROSSWALK = REPO / 'stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv'
+AXIS = REPO / 'stage2/util/output/gene-identity/genes.csv'
+CROSSWALK = REPO / 'stage2/util/output/gene-identity/tables/gene_crosswalk.csv'
 SCHEMA = 'stage2-item-deg-summary-v1'
 CATEGORY = 'ICM'
 TIER = 1
@@ -277,7 +276,7 @@ def main():
         'alignment': alignment,
         'method': {
             'model': (MODEL_DESCRIPTION),
-            'implementation': 'stage2/01_bases/output/api/bases/disease_deg.R',
+            'implementation': 'stage2/util/output/api/stage2_util/derivation/disease_deg.R',
             'implementation_sha256': sha256(Path(disease_deg.DEG_WORKER)),
             'count_filter': SPEC['filter'],
             'normalisation': SPEC['normalisation'],

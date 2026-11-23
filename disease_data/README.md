@@ -117,7 +117,7 @@ Conventions specific to these three items:
 - **`local/deg/<item>_deg.csv` + tracked `_deg.json`** — the item-local
   full DEG table (long, one row per gene × contrast) and its tracked summary.
   The DEG is the single live implementation in
-  `stage2/01_bases/output/api/bases/disease_deg.R` (limma: voom for counts,
+  `stage2/util/output/api/stage2_util/derivation/disease_deg.R` (limma: voom for counts,
   `lmFit` for the log-scale deposit); the item scripts only bind inputs and run
   it. GSE270788's three arms share one control set, so its table comes from
   **one joint `~ 0 + arm` fit** over all 23 donors (three contrasts), not three
@@ -143,9 +143,9 @@ category, where the two Reichart genotype-split exports (genotype-positive DCM
 and ARVC donors) are the tier-1 human CM-pseudobulk datasets and the six
 in-vitro models enter at tier 2 under ADR 0066's **Isogenic exception**. Each
 item follows the same five-member ADR 0030 contract, and one shared adapter
-(`stage2/01_bases/output/api/bases/bulk_deg.py`) binds the deposited matrix +
+(`stage2/util/output/api/stage2_util/derivation/bulk_deg.py`) binds the deposited matrix +
 GEO series matrix and runs the one live DEG implementation
-(`output/api/bases/disease_deg.R`); the item script only declares its design.
+(`stage2_util/derivation/disease_deg.R`); the item script only declares its design.
 
 | item | deposit | design | published dataset |
 |---|---|---|---|

@@ -8,8 +8,8 @@ import unittest
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / '01_bases/output/api'))
-from ecfp4 import open_ecfp4, publish_ecfp4
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'util/output/api'))
+from stage2_util.ecfp4 import open_ecfp4, publish_ecfp4
 
 
 class Ecfp4ContractTest(unittest.TestCase):

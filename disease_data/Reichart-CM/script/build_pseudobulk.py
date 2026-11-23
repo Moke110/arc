@@ -40,15 +40,14 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2/01_bases/execution'))
-import public_api  # noqa: F401  (binds the single public implementation)
-from bases import disease_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'stage2/util/output/api'))
+from stage2_util.derivation import disease_deg  # noqa: E402
 
 SOURCE = ITEM / 'source'
 OBJECT = SOURCE / '27fdbdf9-deae-4aed-bf7f-21964ee62137.h5ad'
 LOCAL = ITEM / 'local'
-AXIS = REPO / 'stage2/01_bases/output/gene-identity/genes.csv'
-CROSSWALK = REPO / 'stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv'
+AXIS = REPO / 'stage2/util/output/gene-identity/genes.csv'
+CROSSWALK = REPO / 'stage2/util/output/gene-identity/tables/gene_crosswalk.csv'
 GATE = ('cell_type', 'cardiac muscle cell')
 CELL_CHUNK = 4000
 SCHEMA = 'stage2-item-cm-pseudobulk-v1'

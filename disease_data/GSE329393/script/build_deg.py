@@ -5,9 +5,8 @@ from prepare_counts import prepare
 ITEM=Path(__file__).resolve().parents[1]
 REPO=ITEM
 while not (REPO/'.git').exists():REPO=REPO.parent
-sys.path.insert(0,str(REPO/'stage2/01_bases/execution'))
-import public_api
-from bases import bulk_deg
+sys.path.insert(0,str(REPO/'stage2/util/output/api'))
+from stage2_util.derivation import bulk_deg
 SPEC={'matrix': 'local/deg/GSE329393_counts.tsv.gz', 'sep': '\t', 'series_matrix': 'source/GSE329393_series_matrix.txt.gz', 'id_kind': 'entrez', 'sample_match': 'description', 'group_source': 'genotype', 'group_map': {'6crispr': 'ctrl6', '6RBM': 'mut6', '9crispr': 'ctrl9', '9RBM': 'mut9'}, 'kind': 'counts', 'formula': '~0 + group', 'contrasts': [{'label': 'RBM20_LVNC-corrected', 'numerator': 'mut6', 'denominator': 'ctrl6'}, {'label': 'RBM20_DCM-corrected', 'numerator': 'mut9', 'denominator': 'ctrl9'}], 'contrast_direction': 'positive log2FC = mutant minus matched-family CRISPR-corrected control', 'isogenic_control': {'arm': '5 corrected libraries per family', 'basis': 'GEO genotype6crispr/9crispr vs6RBM/9RBM, patient-specific CRISPR corrected controls'}, 'strata': {'decision': 'one fit four family/genotype groups; two matched-family contrasts collapse as one dataset', 'pooled': False, 'blocking_covariates': [], 'why': 'family and genotype represented jointly, no cross-family comparison or duplicate dataset votes'}}
 if __name__=='__main__':
  prepare(ITEM/'source/GSE329393_raw_counts.tsv.gz',ITEM/SPEC['matrix'])

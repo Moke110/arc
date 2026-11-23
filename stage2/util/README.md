@@ -7,7 +7,7 @@ indexed gene identities, seed selection, generic metrics, and CSV rendering util
 | Module | Entry point |
 | --- | --- |
 | `identity` | `load_gene_table()` verifies and reads the accepted 18,164 rows in index order. `GeneIdentity` resolves global and source-specific identifiers. |
-| `representations` | `RepresentationTable(source="tenv")` or `RepresentationTable(source="tahoe_bulk")` verifies the source manifest, reads the parent identity table, and selects vectors by ordered parent InChIKeys. |
+| `representations` | `RepresentationTable(source="tenv")` or `RepresentationTable(source="tahoe_bulk")` verifies the source manifest, reads the parent identity table, and selects vectors by ordered parent InChIKeys. `ordered_parents(observations)` and `verified_parent_keys(parents)` validate profile and accepted representation identities. |
 | `ecfp4` | `open_ecfp4(path)` verifies the accepted binary fingerprint and parent order. `publish_ecfp4(source, candidate)` preserves frozen input provenance. |
 | `seeds` | `read_seeds()` returns the accepted seed tuple. Pass a count to select a prefix. |
 | `metrics` | `vector_metrics(truth, prediction)` scores paired finite vectors, including the accepted constant-vector policy. |

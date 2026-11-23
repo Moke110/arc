@@ -8,7 +8,7 @@ import pandas as pd
 
 from expression_view import CONTROL, NORMALIZATION, SCHEMA as VIEW_SCHEMA, sha256
 from prediction_axis import open_axes
-from stage2_util.representations import WIDTHS
+from stage2_util.representations import WIDTHS, ordered_parents
 from stage2_util.seeds import read_seeds
 from tsg_round1.inputs import REQUIRED, SOURCE_POPULATIONS
 from tsg_round1.protocol import SPLIT_SEED, TRAINING_SEED, make_splits
@@ -20,7 +20,6 @@ SOURCES = tuple(SOURCE_POPULATIONS)
 GENE_COLUMNS = ["gene_index", "symbol"]
 IDENTITY_COLUMNS = ["profile_id", "view_row", "role", "drug_parent_inchikey", "drug_parent_smiles",
                     "dose_um", "cell_line", "matched_control_group"]
-PARENT_COLUMNS = ["drug_parent_inchikey", "drug_parent_smiles"]
 
 
 def read_json(path):
@@ -140,13 +139,6 @@ class Inputs:
 
     def doses(self, rows):
         return self.obs.iloc[rows].dose_um.to_numpy(dtype=np.float32)
-
-
-def ordered_parents(obs):
-    parents = obs[PARENT_COLUMNS].drop_duplicates().sort_values(PARENT_COLUMNS[0], ignore_index=True)
-    if parents.eq("").any().any() or parents.isna().any().any() or parents[PARENT_COLUMNS[0]].duplicated().any():
-        raise ValueError("raw-first parent has missing or conflicting structures")
-    return parents
 
 
 class KPGTInputs(Inputs):

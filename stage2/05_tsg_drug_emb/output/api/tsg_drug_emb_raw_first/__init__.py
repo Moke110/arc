@@ -26,11 +26,9 @@ def _bind(inputs, representation, representation_sha256):
     data = Inputs(inputs)
     table = RepresentationTable(representation, source=data.source,
                                 manifest_sha256=representation_sha256)
-    aligned_parents = (table.parents.set_index("drug_parent_inchikey")
-                       .reindex(data.parents.drug_parent_inchikey).reset_index())
-    if (table.manifest_sha256 != data.config["representation_sha256"]
-            or not aligned_parents.equals(data.parents)):
-        raise ValueError("representation generation or parent structures differ from the paired input")
+    if table.manifest_sha256 != data.config["representation_sha256"]:
+        raise ValueError("representation generation differs from the paired input")
+    table.verified_parent_keys(data.parents)
     seed = data.config["training_seed"]
     if seed not in read_seeds():
         raise ValueError("representation comparison training seed differs from the paired input")

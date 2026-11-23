@@ -27,14 +27,6 @@ def _representation(source, specification):
     return RepresentationTable(path, source=source, manifest_sha256=digest)
 
 
-def _representation_keys(parents, table):
-    result = parents.drug_parent_inchikey.tolist()
-    accepted = table.parents.set_index("drug_parent_inchikey")["drug_parent_smiles"]
-    if accepted.reindex(result).tolist() != parents.drug_parent_smiles.tolist():
-        raise ValueError("raw-first parent structures differ from the shared representation release")
-    return result
-
-
 def _fresh_destination(destination, inputs):
     destination = Path(destination)
     if destination.exists():
@@ -72,7 +64,7 @@ def _freeze(view, output, generation, table):
         del matrix
 
     parents = ordered_parents(population)
-    fingerprints = table.vectors("ECFP4C", _representation_keys(parents, table)).astype(np.uint8)
+    fingerprints = table.vectors("ECFP4C", table.verified_parent_keys(parents)).astype(np.uint8)
     np.save(output / "morgan.npy", fingerprints)
     parents.to_csv(output / "parents.csv", index=False)
     view.var[GENE_COLUMNS].to_csv(output / "genes.csv", index=False)
@@ -150,7 +142,7 @@ def prepare_kpgt(tenv, destination, *, representation=None):
         shutil.copytree(tenv, pair_dir / "tenv")
         shutil.copyfile(tenv.parent / "manifest.json", pair_dir / "manifest.json")
         data.parents.to_csv(output / "representation_parents.csv", index=False)
-        np.save(output / "KPGT.npy", table.vectors("KPGT", _representation_keys(data.parents, table)))
+        np.save(output / "KPGT.npy", table.vectors("KPGT", table.verified_parent_keys(data.parents)))
         files = ("pair/manifest.json", "pair/tenv/manifest.json", "KPGT.npy", "representation_parents.csv")
         _json(output / "manifest.json", {"schema": KPGT_SCHEMA, "representation_sha256": table.manifest_sha256,
                                          "files": {name: sha256(output / name) for name in files}})
