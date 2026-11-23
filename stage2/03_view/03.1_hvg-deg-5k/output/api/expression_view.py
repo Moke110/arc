@@ -78,6 +78,7 @@ class View:
         try:
             key = f"{source}.h5ad"
             handle = self._open(key)
+            self.payload_sha256 = manifest["outputs"][key]
             self.obs = read_elem(handle["obs"])
             self.var = read_elem(handle["var"])
             self.shape = (len(self.obs), len(self.var))

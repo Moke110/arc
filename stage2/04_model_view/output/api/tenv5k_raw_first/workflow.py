@@ -149,7 +149,7 @@ def _freeze(source, destination, axis, representations):
         "schema": source.manifest["schema"], "source": source.source, "family": source.family,
         "view_sha256": source.manifest_sha256, "axis_sha256": axis.sha256,
         "corpus_sha256": source.manifest["corpus_sha256"],
-        "payload_sha256": source.manifest["outputs"]["tenv.h5ad"],
+        "payload_sha256": source.payload_sha256,
     }
     write_json(destination / "config.json", {
         "view_generation": generation, "representation_sha256": representations.manifest_sha256,

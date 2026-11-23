@@ -72,11 +72,10 @@ def _freeze(view, output, generation, table):
     obs.iloc[np.r_[treated, vehicles]].to_csv(output / "all_obs.csv", index=False)
     make_splits(population).to_csv(output / "splits.csv", index=False)
     _json(output / "matched_controls.json", {str(row): members for row, members in controls.items()})
-    payload = view.manifest["outputs"][f"{view.source}.h5ad"]
     if TRAINING_SEED not in read_seeds():
         raise ValueError("shared seed table no longer contains the study training seed")
     _json(output / "config.json", {
-        "source": view.source, "view_generation": generation, "view_payload_sha256": payload,
+        "source": view.source, "view_generation": generation, "view_payload_sha256": view.payload_sha256,
         "split_seed": SPLIT_SEED, "training_seed": TRAINING_SEED,
         "representation_sha256": table.manifest_sha256, "n_treated": len(treated),
         "n_matched_vehicles": len(vehicles), "n_parents": len(parents),

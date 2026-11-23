@@ -1,7 +1,9 @@
 """Worked examples through published view builder and reader."""
+import json
 import sys
 import tempfile
 import unittest
+from hashlib import sha256
 from pathlib import Path
 
 import numpy as np
@@ -19,7 +21,8 @@ sys.path[:0] = [str(item) for item in (
 from native_corpus import open_corpus, seal_corpus
 from prediction_axis import COMMON_SHA256, PredictionAxis
 from build_views import publish_views, replay_views
-from expression_view import open_view
+from expression_view import PAYLOAD_SCHEMA, open_view
+from migrate_release import stage_migration
 
 
 class ExpressionViewTest(unittest.TestCase):
@@ -71,6 +74,40 @@ class ExpressionViewTest(unittest.TestCase):
             open_view(self.output, source="tenv", family="merge")
         self.assertEqual(replay_views(self.output, self.corpus, self.axis)["result"], "PASS")
 
+    def test_migration_preserves_payloads_and_cleans_up_when_receipt_cannot_be_written(self):
+        genes = tuple(range(5000))
+        axis = PredictionAxis(genes, tuple(map(str, genes)), self.axis.sha256)
+        publish_views(self.output, self.corpus, axis)
+        manifest_path = self.output / "manifest.json"
+        predecessor = json.loads(manifest_path.read_bytes())
+        predecessor["schema"] = PAYLOAD_SCHEMA
+        (self.output / "full").mkdir()
+        for name in list(predecessor["outputs"]):
+            if name.endswith((".h5ad", ".members.csv")):
+                old_name = f"full/{name}"
+                (self.output / name).rename(self.output / old_name)
+                predecessor["outputs"][old_name] = predecessor["outputs"].pop(name)
+        raw_manifest = json.dumps(predecessor).encode()
+        manifest_path.write_bytes(raw_manifest)
+
+        candidate = self.root / "candidate"
+        occupied = self.root / "file"
+        occupied.touch()
+        with self.assertRaises(OSError):
+            stage_migration(self.output, candidate, occupied / "receipt.json")
+        self.assertFalse(candidate.exists())
+        self.assertEqual(manifest_path.read_bytes(), raw_manifest)
+
+        receipt_path = self.root / "receipt.json"
+        stage_migration(self.output, candidate, receipt_path)
+        receipt = json.loads(receipt_path.read_bytes())
+        self.assertEqual(receipt["previous_manifest"]["sha256"],
+                         sha256(raw_manifest).hexdigest())
+        self.assertEqual(receipt["release_manifest"]["sha256"],
+                         sha256((candidate / "manifest.json").read_bytes()).hexdigest())
+        self.assertEqual((candidate / "tenv.h5ad").read_bytes(),
+                         (self.output / "full/tenv.h5ad").read_bytes())
+
     def test_reader_rejects_stale_digest_and_modified_payload(self):
         publish_views(self.output, self.corpus, self.axis)
         with self.assertRaisesRegex(ValueError, "generation"):
@@ -85,7 +122,6 @@ class ExpressionViewTest(unittest.TestCase):
             open_view(self.output, source="tenv")
 
     def test_canonical_reader_rejects_stale_corpus_and_coherent_wrong_recipe(self):
-        import json
         from unittest.mock import patch
         import expression_view
 

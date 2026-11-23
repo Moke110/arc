@@ -2,7 +2,11 @@
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import shutil
+import tempfile
+from hashlib import sha256 as hash_bytes
 from pathlib import Path
 
 # Reuse the builder's imports and release layout.
@@ -34,11 +38,30 @@ def migration_manifest(previous):
     return manifest, mapping
 
 
-def stage_migration(predecessor, candidate):
-    """Create and verify a new directory, leaving the predecessor available."""
-    predecessor, candidate = Path(predecessor), Path(candidate)
-    old_manifest = predecessor / "manifest.json"
-    manifest, mapping = migration_manifest(release.read_json(old_manifest))
+def _write_receipt(path, receipt):
+    """Link a complete receipt into place without replacing an existing file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent) as staged:
+        staged.write(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+        staged.flush()
+        os.link(staged.name, path)
+
+
+def stage_migration(predecessor, candidate, receipt_path):
+    """Create a verified candidate and a fresh receipt outside both release trees."""
+    predecessor = Path(predecessor).resolve()
+    candidate = Path(candidate).resolve()
+    requested_receipt = Path(receipt_path)
+    receipt_path = requested_receipt.resolve()
+    if predecessor.is_relative_to(candidate) or candidate.is_relative_to(predecessor):
+        raise ValueError("predecessor and candidate must be separate directories")
+    if receipt_path.is_relative_to(predecessor) or receipt_path.is_relative_to(candidate):
+        raise ValueError("migration receipt must be outside the predecessor and candidate")
+    if receipt_path.exists() or requested_receipt.is_symlink():
+        raise FileExistsError(f"migration receipt already exists: {requested_receipt}")
+
+    old_manifest = (predecessor / "manifest.json").read_bytes()
+    manifest, mapping = migration_manifest(json.loads(old_manifest))
     candidate.mkdir()
     try:
         for new, old in mapping.items():
@@ -52,16 +75,17 @@ def stage_migration(predecessor, candidate):
                     raise ValueError(f"{source} has no accepted expression profiles")
                 for layer in ("X", "control", "delta"):
                     view.read(0, min(view.shape[0], 64), layer)
-        return {
+        receipt = {
             "previous_manifest": {"path": (PREVIOUS / "manifest.json").as_posix(),
                                   "archive": (ARCHIVED / "manifest.json").as_posix(),
-                                  "sha256": sha256(old_manifest)},
+                                  "sha256": hash_bytes(old_manifest).hexdigest()},
             "release_manifest": {"path": (CURRENT / "manifest.json").as_posix(),
                                  "sha256": sha256(new_manifest)},
             "assets": [{"previous": (PREVIOUS / old).as_posix(),
                         "release": (CURRENT / new).as_posix(),
                         "sha256": manifest["outputs"][new]} for new, old in sorted(mapping.items())],
         }
+        _write_receipt(receipt_path, receipt)
     except BaseException:
         shutil.rmtree(candidate)
         raise
@@ -73,7 +97,7 @@ def main():
     parser.add_argument("candidate", type=Path)
     parser.add_argument("--receipt", type=Path, required=True)
     args = parser.parse_args()
-    release.write_json(args.receipt, stage_migration(args.predecessor, args.candidate))
+    stage_migration(args.predecessor, args.candidate, args.receipt)
 
 
 if __name__ == "__main__":
