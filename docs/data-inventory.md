@@ -181,126 +181,38 @@ The four finalised screens are rerunnable from the 項 sources with the shared `
 
 Per-workflow rows are isolated `du -sb` values that each include their own hard-linked `input/` copies; the `stage1/` total above counts the shared 5.57 GB UniMol array once, which is why the five rows sum to more than it.
 
-## Stage 2 — published products and early comparison payloads
+## Stage 2 — published products and comparison payloads
 
-The [Stage 2 routing](../stage2/AGENTS.md) lists the active raw-first steps. The
-[replay map](../stage2/03_view/03.1_hvg-deg_views/historical/README.md) locates
-sealed historical data. `stage2/01_bases/` holds the prior foundation release,
-and `stage2/04_models_tenv-5k/` holds the accepted single-dose comparison. The previous `02_models_tenv`
-step is retired after verified successor acceptance; its complete tracked and
-ignored tree is retained in the archive listed below. Historical ADRs and sealed
-records retain their original paths and scientific identities.
+The [Stage 2 routing](../stage2/AGENTS.md) identifies the current study and
+product owners. [Historical evidence](../stage2/03_view/03.1_hvg-deg_views/historical/README.md)
+keeps accepted figures, reports, and their original receipt paths.
 
-Every accepted product now has one stable semantic path (`du -sb`; the retained
-rows below were measured 2026-11-12/13, historical sizes for removed payloads are
-kept only in git history). #157 removed 15.27 GB of rejected and disposable
-payload — the rejected historical v1 Tahoe h5ad (11.20 GB) and two superseded
-build-state directories (1.21 GB + 2.83 GB) — after its dependency proof. The
-ADR 0066 rebuild (#186-#192) then **deleted the pre-0066 products**
-`shared-expression/`, `training-corpora/`, `tenv-raw-counts/`,
-`tahoe-raw-counts/`, `tenv-truth/`, `tenv-truth-successor/`,
-`historical-training-release/` and the old `gene-axis/` file set, only after the
-#192 acceptance replays passed; the old→new mapping and digest evidence are in
-`stage2/01_bases/log/acceptance.md` + `inputs.json`. Git retains the compact
-files and all code; the ignored multi-GB payloads are re-creatable from the
-immutable `source/` trees below.
+| Owner | Accepted products |
+| --- | --- |
+| [Corpus](../stage2/01_corpus/README.md) | Source-native count payloads and manifest in `output/native/`. |
+| [Prediction axes](../stage2/02_gene_axis/README.md) | Four ordered axes and compact selection evidence in `02.1_hvg-deg/output/release/`. |
+| [Views](../stage2/03_view/README.md) | Accepted expression view payloads under `03.1_hvg-deg/output/raw-first-v1/`. |
+| [Util](../stage2/util/README.md) | Accepted gene identity and representation products plus shared operations. |
 
-| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
-|---|---:|---|---|
-| `output/gene-identity/` | 16,638,438 | indexed identity (`genes.csv`, `manifest.json`) and the frozen `tables/` axis/crosswalk | compact source gene metadata, pinned HGNC annotation and the historical v1 mapping evidence |
-| `output/tenv-hvg/` | 6,243,580 | retained pre-0066 product: descriptive ranking (the tenv-HVG axis source) plus three train-only HVG rankings and deterministic parent-hash fold assignments | `build_hvg.py` — its pre-0066 input `training-corpora/tenv.h5ad` is retired; the same 4,206-well population is available from `output/corpus/tenv.h5ad` under the frozen normalization and the re-point is deferred (README *Retained tenv-HVG ranking*) |
-| `output/fold_n_seed/` | 1,159,437 | the accepted cold-drug assignment re-homed (#161) plus the ordered `folds.csv`/`seeds.csv` index tables and manifest | `build_fold_n_seed.py` from the sealed HVG cohort assignment; row-prefix selection only |
-| `output/palette/` | 3,204 | the stage palette: six hue families x nine shades as a hex table, its generation recipe and the colour roles (#162) | `output/api/bases/palette.py` `publish()`; the table is a pure function of the recorded recipe |
-| `output/api/` | 512,471 | the single public reader/metric implementation imported by build/audit/test code | tracked code, not payload (see `.gitignore` exception and #156 D1) |
-| `figure/` | 100,506 | `gene_axis_rank_sum_histogram.png` (two-panel evidence figure), its complete plotted-values CSV and the CSV-only renderer (the diagnostic PR figure was deleted by #192) | regeneration reads only `figure/data/*.csv` with `output/` products unreadable |
-| `log/` | ~4.1 MB | the post-0066 acceptance record `acceptance.md` + `inputs.json`, the tracked `raw_counts_provenance.json` (the two pre-0066 source-replay records restored from git history) and the per-slice `*_verify.json` replay records (the rest of the pre-0066 tree was deleted, not archived — ADR 0066) | tracked evidence |
-
-### Rebuild foundation products (#186, ADR 0066)
-
-The rebuild's `raw_counts/` -> `corpus/` chain is accepted (#192:
-`stage2/01_bases/log/acceptance.md`); the superseded raw, shared-expression and
-training products are deleted. Both new areas are gitignored payloads with
-tracked manifests, mapping evidence and exclusion table; `du -sb`, 2026-11-13.
-
-| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
-|---|---:|---|---|
-| `output/raw_counts/` | 3,037,082,960 | `tenv.h5ad` (4,510 wells x 19,613 native genes, int32), `tenv_probe_mapping.csv`, `tenv_axis_mapping.csv` (frozen `gene_index` -> native column), `tahoe.h5ad` (67,018 profiles x 18,164 axis genes, CSR int32), `token_mapping.csv`, `manifest.json` | `execution/build_raw_counts.py publish`: rehomes the source-accepted payloads and records `source-accepted-replay` provenance against the tracked `log/raw_counts_provenance.json` (the two pre-0066 source-replay acceptance records restored verbatim from git history plus the native tenv build manifest, digest-pinned). `--full-rebuild` rebuilds both from `pert_data/GSE262419/source` + `pert_data/Tahoe-100M/source` and replays from source (recorded ~4 h under the 10 GiB cap) |
-| `output/corpus/` | 1,395,893,021 | `tenv.h5ad` (4,206 treated + 272 vehicle), `tahoe_bulk.h5ad` (65,318 treated + 1,400 `DMSO_TF`), `exclusions.csv` (32 blanks + 300 invalid structures), `manifest.json` with the matched-control report; int32, no normalization, no delta | `execution/build_corpus.py publish` from `output/raw_counts/` + `pert_data/Tahoe-100M/source/metadata/drug_metadata.parquet` |
-| `output/disease-deg/` | 138,019,836 | tracked source DEG/rank evidence: five diseases, 41 dataset records (8 nHF, 5 ICM, 5 AF, 11 genetic, 12 TOX); shared studies/control arms explicit, not 41 independent physical studies | `execution/build_disease_deg.py` plus independently replayed `execution/build_tox.py`; complete qualifying tier inventory, no count stop |
-| `output/disease-fusion/` | 1,446,730 | full tier/rank/support unions plus five DEG1000 tables; union sizes nHF 1785, ICM 1671, AF 25, genetic 4399, TOX 9589; AF excluded by 100-gene gate | integrated successor driver, independent replay and public readers |
-
-Both products are replayed by their drivers' `verify` action (rebuild in
-`execution/checkpoints/` and compare every digest). The compact manifests,
-mapping evidence and exclusion table are force-tracked; the count payloads are
-gitignored.
-
-### Unified TOX products ADR 0072
-
-The accepted `output/disease-deg/tox/` contains twelve measured DEG/rank pairs,
-independent admission and matched-well audits, a catalog and manifest. Compact
-products are tracked; source measurements remain immutable external item bytes.
-The former mechanism-class products are retired from live output and remain in
-git history. Reconstruct TOX with `execution/build_tox.py publish`, verify with
-its fresh source replay, and promote with the coherent integrated successor.
-
-### ADR 0073 gene axes, figures and rule document (2026-11-16)
-
-All compact scientific CSVs/catalogs/manifests, figure inputs/PNGs and the human
-DOCX are tracked. Axis sizes are 2k/3k/4k/5k, exact and nested; selection uses
-DEG1000/f1000 and complete-union rank denominators. Measured fallback is zero
-at all four sizes, with fallback still implemented. Current source/provenance
-and deterministic replay evidence is in `log/full_source_acceptance.json`;
-older ADR 0066–0072 sizes/digests remain sealed historical acceptance records.
-
-| stable path under `stage2/01_bases/` | file bytes | contents / reconstruction |
-|---|---:|---|
-| `output/gene-axis/` | 1,006,428 | Complete candidate table, four axes, composition/coverage and manifest. `execution/build_gene_axis.py publish` / `--verify` from final disease fusion + frozen identity + tenv-HVG. |
-| `gene_axis_fill_rule.docx` | 104,322 | 13-page portrait A4 reading aid, five disease-category subtables (41 records) plus separate tenv-HVG table. `execution/make_gene_axis_docx.py`; input/tool/output pins and every-page QA in `log/gene_axis_document_verify.json`. Old live output/gene-axis copy removed. |
-| `figure/gene_axis_rank_sum_histogram.png` | 95,996 | Four-axis (2×2 panel) histogram, rendered only from matching tracked figure/data CSV. |
-| `figure/data/gene_axis_rank_sum_histogram.csv` | 18,622 | All candidate/selected histogram bins and axis panel labels. |
-| `figure/gene_axis_source_topn_coverage.png` | 75,469 | Four-axis coverage bars using own DEG1000/group denominators; CSV-only renderer. |
-| `figure/data/gene_axis_source_topn_coverage.csv` | 1,518 | Explicit complete coverage plot values; excluded AF unavailable with reason. |
-
-### Paired 5k-local expression (ADR 0077)
-
-Only `output/view-5k/` is live. The unchanged 4,478 tenv and 66,718 tahoe_bulk
-rows use selected G_5000 int64 totals for CP10K/natural log1p, individually
-normalized matched vehicles, and delta = X-control. `stage2-view-v3` binds the
-unchanged gene axis, corpus and denominator provenance. All four named axes
-remain; 2k/3k/4k expression is retired. Rebuild/replay only this pair with
-`execution/build_view.py publish|verify`; read through bounded `bases.view.open_view`.
-
-| product | bytes |
-|---|---:|
-| `output/view-5k/tenv.h5ad` | 138,696,684 |
-| `output/view-5k/tahoe_bulk.h5ad` | 2,942,840,025 |
-| `output/view-5k/library_totals.csv` | 9,366,916 |
-
-These three ignored/reconstructible files total **3,090,903,625 bytes**.
-Source/corpus/HVG/four-axis and historical downstream bytes remain unchanged.
-Old measurements stay in sealed receipts; recovery views outside formal output
-are temporary reconstruction evidence, not live model inputs.
-
-### `stage2/04_models_tenv-5k/` — accepted three-fold comparison (#226/#231)
+### `stage2/04_model_view/` — accepted three-fold comparison (#226/#231)
 
 Canonical ignored payloads preserve the accepted complete 54-run matrix and new
 18-slot Mean release. Sizes below are regular-file byte sums, excluding directory
 metadata. The complete candidate duplicates published runs to retain registrations,
-plan, resources and replay evidence; it is required for no-training matrix replay.
+plan, resources and verification evidence from the accepted run.
 
-| path under `stage2/04_models_tenv-5k/` | files | bytes | contents / reconstruction |
+| path under `stage2/04_model_view/` | files | bytes | contents / reconstruction |
 |---|---:|---:|---|
-| `output/inputs/` | 12 | 98,265,302 | 1,402 treated wells, 459 parents, 192 unique controls, 5,000 genes, exact three-fold splits/Morgan/manifest; `execution/prepare.py --view ../01_bases/output/view-5k --candidate <empty>` |
-| `output/means/` | 62 | 142,776,780 | 18 baseline slots, 15 applicable and three cold-drug Mean_drug N/A; `execution/means.py --inputs output/inputs --candidate <empty>` |
-| `output/runs/` | 594 | 2,296,905,455 | 54 newly trained float32 checkpoints/predictions, identities, curves, exact replay and execution receipts; `execution/run_matrix.py --all` with explicit source/input/Mean paths and a new candidate |
-| `output/comparison/` | 9 | 13,245,103 | full per-well/parent/seed metrics, paired bootstrap, selection and plot values; `execution/run_matrix.py --accept-only` |
+| `output/inputs/` | 12 | 98,265,302 | 1,402 treated wells, 459 parents, 192 unique controls, 5,000 genes, exact three-fold splits/Morgan/manifest; accepted historical input freeze |
+| `output/means/` | 62 | 142,776,780 | 18 baseline slots, 15 applicable and three cold-drug Mean_drug N/A |
+| `output/runs/` | 594 | 2,296,905,455 | 54 newly trained float32 checkpoints/predictions, identities, curves, exact replay and execution receipts |
+| `output/comparison/` | 9 | 13,245,103 | full per-well/parent/seed metrics, paired bootstrap, selection and plot values |
 | `execution/checkpoints/matrix-threefold-f32-lr1e4/` | 840 | 2,325,763,750 | full accepted candidate, including all registrations, plan and raw resources; preserved from the verified formal generation |
 
 Tracked report products are `figure/{metrics,paired_differences,learning_curve}.png`,
 their complete CSV values under `figure/data/`, the CSV-only renderer and compact
 acceptance/resource/environment records under `log/`. Canonical payload SHA256
-preservation is recorded in `log/231-canonical-preservation.json`; replay and rebuild
-commands are in the step README. Immutable external model sources remain owned by
+preservation is recorded in `log/231-canonical-preservation.json`. Immutable external model sources remain owned by
 `pert_model/PRnet` and `pert_model/TranSiGen`. Stage 3 is unchanged.
 
 ### Retired `stage2/02_models_tenv/` — preserved old accepted result
@@ -376,16 +288,6 @@ Heliste source-first corpora live in `stage3/01_corpus/output/baseline/` and
 `stage3/01_corpus/output/H-R/`; chemical-resolution reports describe admitted and
 pending values separately from source availability. Historical endpoint-gated
 evidence is retained under `stage3/01_corpus/execution/historical/`. No model view or training result is implied by the archive.
-
-## Shared Stage 2 tenv significance labels
-
-Measured truth is owned by `stage2/01_bases/`, separately from training h5ads.
-The current parent-normalized design has 1377 contrasts and a BH family of
-exactly 18164 genes, with tested-empty distinct from untestable. Raw well joins,
-contrast membership, worker/runtime seals and truth arrays must pass the
-independent truth verifier before acceptance. The deleted historical 1380-group,
-18165-gene `stage2/evaluation` release is not a current dependency. Tahoe has no
-significance-label build. Training readers never load truth labels.
 
 ## ADR 0072 TOX admission inputs
 

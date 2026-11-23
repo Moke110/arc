@@ -31,7 +31,7 @@ records that discrepancy and the chamber/arm decision explicitly:
 
 The one live implementation is `stage2/util/output/api/stage2_util/derivation/disease_deg.R`
 (limma-voom, voom's own library-size normalisation), run through
-`bases.disease_deg.run_deg_worker`; the item declares the edgeR
+`stage2_util.derivation.disease_deg.run_deg_worker`; the item declares the edgeR
 `filterByExpr` rule through the worker's `filter` option.
 
 Usage (arc python):

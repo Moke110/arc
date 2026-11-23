@@ -5,7 +5,7 @@ Ticket #187 fitted one joint design over the exported donors but published only
 the ``nHF`` contrast (genotype-negative DCM vs normal). Under ADR 0066's
 genotype-first split the genotype-positive DCM donors and the 8 ARVC donors are
 ``genetic_cardiomyopathy`` datasets, so this script re-runs the same single live
-DEG implementation (``bases/disease_deg.R``, limma-voom) over the **tracked
+DEG implementation (``stage2_util/derivation/disease_deg.R``, limma-voom) over the **tracked
 export #187 produced** and publishes the two genetic contrasts:
 
     local/deg/reichart-cm_genetic_deg.csv    long table (gitignored, regenerable)

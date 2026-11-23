@@ -5,8 +5,8 @@ The item-local derivation: the GEO series matrix (the deposited RMA log2
 expression table plus the ``!Sample_*`` design block) and the GPL6244 platform
 annotation (transcript cluster -> Entrez gene symbol) are bound here, the
 probes are collapsed to one probe per gene, and the one live DEG implementation
-``bases.disease_deg.R`` (limma on the deposited log2 matrix) is run through
-``bases.disease_deg.run_deg_worker``. Nothing below that line re-implements the
+``stage2_util/derivation/disease_deg.R`` (limma on the deposited log2 matrix) is run through
+``stage2_util.derivation.disease_deg.run_deg_worker``. Nothing below that line re-implements the
 fit.
 
 Verified design (from the deposit, not from the ticket prose):

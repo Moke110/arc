@@ -315,10 +315,10 @@ The historical proposal for a Stage 2 stage after setup: choose which model(s) t
 ### Stage 2 dataset corpus
 
 **Bases (historical layout)**:
-The shipped Stage 2 foundation at `stage2/01_bases/`: frozen gene identity, raw counts, the integer corpus, the model-facing views and the released gene axes, plus disease and cardiotox DEGs, the per-disease fusion and the single public reader/metric API. It publishes `raw_counts`, `corpus`, `disease-deg`, `disease-fusion`, `gene-axis`, `gene-identity`, `palette`, `tenv-hvg`, `view-5k`, `api` and `fold_n_seed`. The retired measured truth, successor envelope and training corpora are not part of it; model setup and benchmark experiments are outside its scope.
+The retired Stage 2 foundation at its original `stage2/01_bases/` path: frozen gene identity, raw counts, the integer corpus, the model-facing views and the released gene axes, plus disease and cardiotox DEGs, the per-disease fusion and the single public reader/metric API. It published `raw_counts`, `corpus`, `disease-deg`, `disease-fusion`, `gene-axis`, `gene-identity`, `palette`, `tenv-hvg`, `view-5k`, `api` and `fold_n_seed`. The retired measured truth, successor envelope and training corpora are not part of it; model setup and benchmark experiments are outside its scope.
 
 **Raw-count preparation**:
-Counts derived from immutable source expression before normalization or treated-well selection. Current bases retains tenv on its native gene axis and Tahoe projected onto the frozen CM gene axis, with controls retained.
+Counts derived from immutable source expression before normalization or treated-well selection. The Stage 2 corpus retains source-native axes and controls. Views project and normalize the requested prediction axes.
 
 **Corpus**:
 A source-preserving collection of verified raw integer expression counts at the finest published observation granularity. It retains native gene coverage and observation identity, dose, role and control-match status. Unmatched observations remain available. Normalized expression and Delta are properties of derived views.
@@ -721,8 +721,8 @@ comparison retains parent-equal evaluation.
 The mean transcriptional response of repeated treated wells for one drug
 parent at one measured dose, retaining that dose as a distinct evaluation unit.
 
-**Tenv comparison step** (`02_models_tenv-5k`):
-The active Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result. It owns the shared comparison splits, entrants, predictions and figures; the released inputs and palette stay in `01_bases`.
+**Tenv comparison step** (`04_model_view`):
+The active Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result. It owns the shared comparison splits, entrants, predictions and figures; the full expression view supplies inputs and util supplies the palette.
 _Avoid_: benchmark step (when meaning this comparison)
 
 **Direct metric**:
@@ -773,10 +773,10 @@ The reference entry that predicts, for every gene of a group, the mean Δ of tha
 _Avoid_: delta_mean (retired name), no_change (withdrawn)
 
 **Fold/seed index table**:
-`01_bases/output/fold_n_seed/folds.csv` or `seeds.csv`. Each table orders frozen identities for studies that explicitly consume that table. A separately frozen comparison partition has its own fold identities; taking a prefix of a different partition does not recreate it.
+Shared seeds are ordered by `stage2_util.seeds.read_seeds()`. Fold indices identify the partition frozen by each study. A separately frozen comparison partition has its own fold identities; taking a prefix of a different partition does not recreate it.
 
 **Stage palette**:
-The two-dimensional `01_bases/output/palette/` table of plotting colors: six hue families (gray, blue, green, orange, purple, magenta) crossed with nine lightness-and-saturation shades. A color means the same thing in every Stage 2 figure.
+The two-dimensional `stage2_util.palette` table of plotting colors: six hue families (gray, blue, green, orange, purple, magenta) crossed with nine lightness-and-saturation shades. A color means the same thing in every Stage 2 figure.
 
 **Learning-curve figure**:
 `figure/learning_curve.png`: one subplot per learnable model, epoch on the horizontal axis and loss on the vertical axis. The blue family is training and the green family is validation; one shade identifies one `(fold, seed)` run in both families.
@@ -895,7 +895,7 @@ substitute: it flatters any dataset whose measurable genes happen to be large-ef
 _Avoid_: random-gene null, permutation p (unqualified)
 
 **Source dataset table**:
-The category subtables at the start of `stage2/01_bases/gene_axis_fill_rule.docx`: one row per released dataset record with its
+The category subtables at the start of the [archived gene-axis rule document](stage2/03_view/03.1_hvg-deg_views/historical/bases/gene_axis_fill_rule.docx): one row per released dataset record with its
 category, accession, sample type, groups, sample sizes, sequencing technology and the published
 v2 DEG count (`catalog.json` `n_deg`, never the padj-only `n_significant`), plus a separately labelled tenv-HVG non-disease row. Shared studies/controls and sample units remain explicit.
 _Avoid_: dataset summary, metadata table

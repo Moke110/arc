@@ -139,90 +139,57 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # Independent linked checkouts have their own Git indexes and are not repo content.
 /.worktrees/
 
-# Bases payloads/checkpoints stay local; required compact evidence is force-added.
-# The single public implementation under output/api is code, not payload
-# (ADR 0062, ticket #156 decision D1).  Git cannot re-include a path whose parent
-# directory is excluded, and the pre-existing `output/` rule excludes this
-# directory itself, so the directory is re-included FIRST, its contents excluded,
-# then the api subtree re-included.  `script/check_tracked.sh` proves the current
-# tree only, not future adds; see the #157 review correction in
-# log/156-decisions.md.
-!/stage2/01_bases/output/
-/stage2/01_bases/output/*
-!/stage2/01_bases/output/api/
-!/stage2/01_bases/output/api/**
-# Re-assert the global bytecode rules inside the re-included api tree: a later
-# negation overrides an earlier ignore, so without these `git add -A` would stage
-# `output/api/**/__pycache__`.
-/stage2/01_bases/output/api/**/__pycache__/
-/stage2/01_bases/output/api/**/*.py[cod]
-
-# ADR 0062: disposable build resumption state lives in execution/, never output/.
-/stage2/01_bases/execution/checkpoints/
-
-# ADR 0062 report panels: the complete plotted values are tracked next to the
-# figure, not stored as payload.
-!/stage2/01_bases/figure/data/*.csv
-
-# ADR 0062 audit evidence: the dissolved diagnostic evidence CSVs are tracked
-# beside the records that seal them.
-!/stage2/01_bases/log/diagnostic/*.csv
-
-# ADR 0062 / #162: test fixtures are the recorded plot values that prove a
-# figure is a function of those values, so they are tracked next to their PNGs.
-!/stage2/01_bases/execution/tests/fixtures/*.csv
-
 # Single-dose tenv5k successor: public code is tracked, candidates disposable.
-!/stage2/04_models_tenv-5k/output/
-/stage2/04_models_tenv-5k/output/*
-!/stage2/04_models_tenv-5k/output/api/
-!/stage2/04_models_tenv-5k/output/api/**
-/stage2/04_models_tenv-5k/output/api/**/__pycache__/
-/stage2/04_models_tenv-5k/output/api/**/*.py[cod]
-/stage2/04_models_tenv-5k/execution/checkpoints/
-!/stage2/04_models_tenv-5k/figure/data/*.csv
-!/stage2/04_models_tenv-5k/log/frozen-inputs/*.csv
+!/stage2/04_model_view/output/
+/stage2/04_model_view/output/*
+!/stage2/04_model_view/output/api/
+!/stage2/04_model_view/output/api/**
+/stage2/04_model_view/output/api/**/__pycache__/
+/stage2/04_model_view/output/api/**/*.py[cod]
+/stage2/04_model_view/execution/checkpoints/
+!/stage2/04_model_view/figure/data/*.csv
+!/stage2/04_model_view/log/frozen-inputs/*.csv
 
 # HVG-DEG axes and compact selection evidence. Keep candidates local.
-!/stage2/02_axis_view/02.1_hvg-deg/output/
-/stage2/02_axis_view/02.1_hvg-deg/output/*
-!/stage2/02_axis_view/02.1_hvg-deg/output/api/
-!/stage2/02_axis_view/02.1_hvg-deg/output/release/
-!/stage2/02_axis_view/02.1_hvg-deg/output/release/**/*.csv
-/stage2/02_axis_view/02.1_hvg-deg/execution/checkpoints/
+!/stage2/02_gene_axis/02.1_hvg-deg/output/
+/stage2/02_gene_axis/02.1_hvg-deg/output/*
+!/stage2/02_gene_axis/02.1_hvg-deg/output/api/
+!/stage2/02_gene_axis/02.1_hvg-deg/output/release/
+!/stage2/02_gene_axis/02.1_hvg-deg/output/release/**/*.csv
+/stage2/02_gene_axis/02.1_hvg-deg/execution/checkpoints/
 
-!/stage2/05_tsg_drug_emb/output/
-/stage2/05_tsg_drug_emb/output/*
-!/stage2/05_tsg_drug_emb/output/api/
-!/stage2/05_tsg_drug_emb/output/api/**
-/stage2/05_tsg_drug_emb/output/api/**/__pycache__/
-/stage2/05_tsg_drug_emb/output/api/**/*.py[cod]
-/stage2/05_tsg_drug_emb/execution/checkpoints/
-!/stage2/05_tsg_drug_emb/figure/data/*.csv
-!/stage2/05_tsg_drug_emb/figure/data/tahoe/*.csv
+!/stage2/06_tsg_drug_emb/output/
+/stage2/06_tsg_drug_emb/output/*
+!/stage2/06_tsg_drug_emb/output/api/
+!/stage2/06_tsg_drug_emb/output/api/**
+/stage2/06_tsg_drug_emb/output/api/**/__pycache__/
+/stage2/06_tsg_drug_emb/output/api/**/*.py[cod]
+/stage2/06_tsg_drug_emb/execution/checkpoints/
+!/stage2/06_tsg_drug_emb/figure/data/*.csv
+!/stage2/06_tsg_drug_emb/figure/data/tahoe/*.csv
 
-/stage2/06_tsg_dose/execution/checkpoints/
+/stage2/07_tsg_dose/execution/checkpoints/
 # Independent all-dose TranSiGen public implementation (ADR0075).
-!/stage2/06_tsg_dose/output/
-/stage2/06_tsg_dose/output/*
-!/stage2/06_tsg_dose/output/api/
-!/stage2/06_tsg_dose/output/api/**
-/stage2/06_tsg_dose/output/api/**/__pycache__/
-/stage2/06_tsg_dose/output/api/**/*.py[cod]
-!/stage2/06_tsg_dose/figure/data/*.csv
-!/stage2/06_tsg_dose/execution/historical/report_126/data/*.csv
+!/stage2/07_tsg_dose/output/
+/stage2/07_tsg_dose/output/*
+!/stage2/07_tsg_dose/output/api/
+!/stage2/07_tsg_dose/output/api/**
+/stage2/07_tsg_dose/output/api/**/__pycache__/
+/stage2/07_tsg_dose/output/api/**/*.py[cod]
+!/stage2/07_tsg_dose/figure/data/*.csv
+!/stage2/07_tsg_dose/execution/historical/report_126/data/*.csv
 
-/stage2/07_tsg_width_dose/execution/checkpoints/
-!/stage2/07_tsg_width_dose/figure/data/*.csv
+/stage2/08_tsg_width_dose/execution/checkpoints/
+!/stage2/08_tsg_width_dose/figure/data/*.csv
 
-/stage2/08_tsg_transfer/execution/checkpoints/
-!/stage2/08_tsg_transfer/output/
-/stage2/08_tsg_transfer/output/*
-!/stage2/08_tsg_transfer/output/api/
-!/stage2/08_tsg_transfer/output/api/**
-/stage2/08_tsg_transfer/output/api/**/__pycache__/
-/stage2/08_tsg_transfer/output/api/**/*.py[cod]
-!/stage2/08_tsg_transfer/figure/data/*.csv
+/stage2/09_tsg_transfer/execution/checkpoints/
+!/stage2/09_tsg_transfer/output/
+/stage2/09_tsg_transfer/output/*
+!/stage2/09_tsg_transfer/output/api/
+!/stage2/09_tsg_transfer/output/api/**
+/stage2/09_tsg_transfer/output/api/**/__pycache__/
+/stage2/09_tsg_transfer/output/api/**/*.py[cod]
+!/stage2/09_tsg_transfer/figure/data/*.csv
 
 # ADR 0082 view-variant study: manifests, parents, splits and CSV summaries are
 # tracked evidence; expression payloads, frozen truth/run payloads and build or
@@ -235,8 +202,6 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 /stage2/03_view/03.1_hvg-deg_views/historical/tsg_view/output/**/*.h5ad
 /stage2/03_view/03.1_hvg-deg_views/historical/tsg_view/output/**/*.npy
 /stage2/03_view/03.1_hvg-deg_views/historical/tsg_view/output/runs/
-/stage2/03_view/03.1_hvg-deg_views/historical/tsg_view/execution/freezes/
-/stage2/03_view/03.1_hvg-deg_views/historical/tsg_view/execution/checkpoints/
 
 # Authoritative shared identities are tracked; representation vectors remain local.
 !/stage2/util/output/
@@ -246,3 +211,7 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2/util/output/gene-identity/
 !/stage2/util/output/gene-identity/**/*.csv
 /stage2/util/output/representations/
+
+# Retained local historical view payloads.
+/stage2/03_view/03.1_hvg-deg_views/historical/tsg_view/execution/freezes/
+/stage2/03_view/03.1_hvg-deg_views/historical/tsg_view/execution/checkpoints/

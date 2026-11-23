@@ -50,5 +50,5 @@ Publish and verify both use the same pinned corpus and axis, and verification
 rebuilds separately and compares bytes. An isolated tenv rehearsal may use
 `--source tenv --destination /path/to/rehearsal`.
 
-The prior recipes, payloads, 45-fit evidence and sealed replay remain at
+The prior 45-fit study and its acceptance records are documented in
 [the historical view-study boundary](historical/README.md).

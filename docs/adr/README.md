@@ -116,3 +116,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 
 | [0082](0082-view-variants-tenv-tahoe-replicate-structure.md) | Test whether within-condition replicate structure explains the tenv–Tahoe gap with eight expression view variants (*study step `stage2/tsg_view`*) |
 | [0083](0083-stage2-corpus-axis-view-boundaries.md) | Stage 2 corpus, prediction axes and expression view publication |
+| [0084](0084-retire-stage2-bases-and-reserve-loss-step.md) | Retire Stage 2 Bases and reserve the loss comparison step |

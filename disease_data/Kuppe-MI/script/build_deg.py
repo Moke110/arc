@@ -23,14 +23,14 @@ Design (declared in ``SPEC`` below, all of it recorded in the tracked summary):
   donor)`` estimates one consensus intra-donor correlation and both ``voom`` and
   ``lmFit`` are given it.
 * **The fit** goes through the one live implementation,
-  ``output/api/bases/disease_deg.R``; the summary it prints (limma/R versions,
+  ``stage2/util/output/api/stage2_util/derivation/disease_deg.R``; the summary it prints (limma/R versions,
   consensus correlation) is carried into the tracked JSON.
 
 The output is the gene-axis DEG interface: a full-transcriptome per-contrast
 table (Ensembl id, deposit symbol, signed log2FC, moderated t, p, BH padj, the
 voom average log-expression) for the published contrast, plus the tracked JSON.
 The frozen-axis counts in the JSON are a cross-check computed with the same
-``bases.disease_deg`` resolver the republish ticket uses (symbol first, then
+``stage2_util.derivation.disease_deg`` resolver the republish ticket uses (symbol first, then
 Ensembl); they do not filter the published table.
 
 Writes (ADR 0030; the tables are regenerable ``local/`` additions):

@@ -5,7 +5,7 @@ The item-local derivation: the deposit's RSEM gene matrix (non-integer
 ``expected_count`` values on a count scale) and the GEO series matrix are bound
 by the shared adapter ``bases.bulk_deg``, which integerises the count-scale matrix
 with the shared rounding helper and runs the one live DEG implementation
-``bases.disease_deg.R`` (limma-voom). One joint fit over all 12 ECT libraries
+``stage2_util/derivation/disease_deg.R`` (limma-voom). One joint fit over all 12 ECT libraries
 yields two contrasts — MYBPC3 +/- and -/- against the isogenic +/+ arm — which
 become one published dataset through the ticket-01 per-gene maximum-effect
 collapse.

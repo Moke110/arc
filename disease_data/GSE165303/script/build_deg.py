@@ -5,8 +5,8 @@ The item-local derivation: the deposited RNA-seq master table (Ensembl gene x
 101 libraries, on the log2 normalised-count scale, with the authors' own DESeq2
 result columns) and the GPL20795 series matrix (the deposit's own sample block)
 are bound here and the one live DEG implementation
-``bases.disease_deg.R`` (limma on the deposited log2 matrix) is run through
-``bases.disease_deg.run_deg_worker``. Nothing below that line re-fits a model.
+``stage2_util/derivation/disease_deg.R`` (limma on the deposited log2 matrix) is run through
+``stage2_util.derivation.disease_deg.run_deg_worker``. Nothing below that line re-fits a model.
 
 Verified design (from the deposit, not from the ticket prose):
 

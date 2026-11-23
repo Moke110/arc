@@ -20,7 +20,7 @@ sys.path[:0] = [str(path) for path in (
     STEP / "output/api",
     STAGE / "util/output/api",
     STAGE / "01_corpus/output/api",
-    STAGE / "02_axis_view/02.1_hvg-deg/output/api",
+    STAGE / "02_gene_axis/02.1_hvg-deg/output/api",
 )]
 
 import normalization

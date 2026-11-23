@@ -1,6 +1,6 @@
 """The one live derivation for in-vitro bulk cardiomyocyte deposits (ticket #188).
 
-ADR 0066 / spec D9 fixes one DEG implementation, ``bases/disease_deg.R`` (limma:
+ADR 0066 / spec D9 fixes one DEG implementation, ``stage2_util/derivation/disease_deg.R`` (limma:
 voom for integer counts, ``lmFit`` for normalised log-scale expression), and
 ADR 0062 fixes one place for the science: the step's public API boundary. This
 module is the single *source adapter* the six isogenic ADR 0030 items share, so
