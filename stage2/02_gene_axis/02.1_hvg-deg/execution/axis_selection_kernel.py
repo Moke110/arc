@@ -10,10 +10,10 @@ publishes the products; ``execution/tests/test_gene_axis.py`` exercises these
 definitions on hermetic fixtures.
 
 Level 1 (a disease's source fusion and its ``DEG1000`` cut) is the published
-product of ADR 0071 decision 4 and lives in :mod:`bases.disease_deg`
+product of ADR 0071 decision 4 and lives in :mod:`stage2_util.derivation.disease_deg`
 (``level_one_rank`` / ``fuse_disease``); this module consumes its
 ``output/disease-fusion/`` product through
-:class:`bases.disease_deg.DiseaseFusion` and never re-reads a within-dataset
+:class:`stage2_util.derivation.disease_deg.DiseaseFusion` and never re-reads a within-dataset
 measured-gene rank. Level 2 (ADR 0071 decision 5) is::
 
     f1000(g)    = the number of active diseases whose DEG1000_d contains g
@@ -53,8 +53,6 @@ import pandas as pd
 
 from stage2_util.derivation import disease_deg
 
-# The #186 contract: ``bases.gene_axis`` re-exports the DEG/rank functions now
-# owned by ``bases.deg_rank`` (one live implementation, no second copy).
 from stage2_util.derivation.deg_rank import (
     ALIGNMENT_CATEGORIES,
     AXIS_SIZE,
@@ -197,9 +195,9 @@ def category_rank(ranks, n_deg, gene_index=None, axis_size=None):
 
     Each ``ranks`` entry is a dataset's full frozen-axis **DEG rank frame**: its
     DEGs carry ``1..n_DEG`` and every other gene carries ``n_DEG + 1``
-    (:func:`bases.deg_rank.complete_deg_rank`), and the matching ``n_deg`` entry is
+    (:func:`stage2_util.derivation.deg_rank.complete_rank`), and the matching ``n_deg`` entry is
     that dataset's DEG count. ``rank_norm`` is ``rank / n_DEG``
-    (:func:`bases.deg_rank.normalized_deg_rank`), so a non-DEG contributes
+    (:func:`stage2_util.derivation.deg_rank.normalized_rank`), so a non-DEG contributes
     ``(n_DEG + 1) / n_DEG`` -- strictly worse than every DEG of that source and
     never clamped to 1.0. The denominator is the **DEG** count; the measured-gene
     rank and its ``n_measured`` denominator are retired (ADR 0071 decision 3).
@@ -207,8 +205,8 @@ def category_rank(ranks, n_deg, gene_index=None, axis_size=None):
     A dataset with ``n_DEG = 0`` has no defined ``rank_norm``; it is
     non-informative and this function rejects it rather than dividing by zero.
     The caller excludes it and records the exclusion (ADR 0068), exactly as the
-    disease contract does (:func:`bases.disease_deg.fuse_disease`). The shared
-    implementation is :func:`bases.disease_deg.level_one_rank`; the released axis
+    disease contract does (:func:`stage2_util.derivation.disease_deg.fuse_disease`). The shared
+    implementation is :func:`stage2_util.derivation.disease_deg.level_one_rank`; the released axis
     consumes the published level-1 product (``output/disease-fusion/``) and never
     re-derives this from a within-dataset frame.
 

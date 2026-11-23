@@ -314,7 +314,7 @@ def per_gene_deg(gene_index, log2fc, padj, contrast=None):
 def complete_rank(measured_gene_index, measured_rank, axis_size=AXIS_SIZE):
     """Raw rank vector over the whole axis; unranked genes get ``n + 1``.
 
-    Generic pre-v2 primitive (kept for ``bases.gene_axis`` until its v2 ticket):
+    Generic pre-v2 primitive:
     ``measured`` is any set of ``n`` ranked genes and the fill for everything
     else is ``n + 1``. The v2 DEG contract uses :func:`complete_deg_rank`.
     """
@@ -331,7 +331,7 @@ def complete_rank(measured_gene_index, measured_rank, axis_size=AXIS_SIZE):
 def normalized_rank(rank, n_measured):
     """``rank / n`` for every gene — generic pre-v2 primitive.
 
-    Kept for the pre-v2 fusion reader (``bases.gene_axis``); the v2 DEG contract
+    The v2 DEG contract
     uses :func:`normalized_deg_rank`, whose denominator is the DEG count and
     which is defined for a dataset with no DEGs. ``n_measured`` must be
     positive here, so a zero-count frame is rejected rather than divided by 0.

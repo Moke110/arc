@@ -97,7 +97,7 @@ the frozen test identities across paths, source-only selection and formal
 resource evidence. The plot renderer reads only the two panel CSVs. Run
 `script/check_paths.sh`, `script/check_tracked.sh` and
 `script/verify_all.sh` on the data-owning checkout before release.
-Run the offline manifest scan outside formal training under the Step 04 cap
+Run the offline manifest scan outside formal training under the Step 07 cap
 and record its resource use.
 
 ```bash

@@ -31,7 +31,7 @@ their sealed inputs, metrics and figures remain tied to that generation.
 ## Historical comparison protocol
 
 Implementation of approved [#226](https://github.com/Moke110/arc/issues/226).
-The new step uses the released Bases G_5000 view, 1 µM treated wells and
+The accepted comparison used the historical G_5000 view, 1 µM treated wells and
 matched controls. No normalization or axis is refitted here. Stage 3 is frozen.
 The complete three-fold successor matrix was accepted on 2026-11-17 (#231):
 54 newly trained learner identities, each with exact fresh-process sampled replay,
@@ -40,7 +40,7 @@ wells and 459 drug parents enter complete out-of-fold evaluation. The old
 `02_models_tenv` step is retired; its verified archive and migration are recorded
 in [the retirement receipt](log/231-retirement.json).
 
-Current approved protocol (2026-11-17, ADR 0074): complete new three-fold
+Accepted protocol (2026-11-17, ADR 0074): complete new three-fold
 partitions, initial Adam learning rate 1e-4 for all three learners, float32
 learning and saved predictions, and 54 fresh learner runs. The 18 deterministic
 Mean slots contain 15 applicable results and three cold-drug Mean_drug N/A.
@@ -92,10 +92,11 @@ sealed plotting CSV by `figure/ecfp4/script/render.py` without model payloads.
 See [231-acceptance.json](log/231-acceptance.json) for all 54 trained origins,
 method identities, complete-population evidence and exact metric/PNG replay.
 
-## Data and native model contract
+## Historical data and native model contract
 
-`execution/prepare.py --view <accepted view-5k> --candidate <empty directory>`
-freezes bounded reader inputs, population, original-control mapping, ECFP4,
+For new inputs, use the [raw-first preparation command](#raw-first-inputs-evaluation-and-figures).
+The protocol below describes the sealed inputs and model runs of the accepted comparison.
+Its preparation froze bounded reader inputs, population, original-control mapping, ECFP4,
 and two shared complete 3-fold splits. Split seed 226 is registered before training;
 validation units round up with `ceil(0.1 * outer_training_units)` (parents for
 cold-drug, wells for warm-start). Warm wells are shuffled per parent and assigned
@@ -123,8 +124,7 @@ Run `execution/means.py --inputs <prepared directory> --candidate <empty directo
 for all deterministic fold baselines. Each applicable run writes `prediction.npy`,
 `identity.csv`, `per_well.csv`, `per_drug.csv`; `status.csv` explicitly marks the
 three cold-drug Mean_drug runs unavailable. Payloads are candidates until #231's
-complete matrix acceptance. Reconstruct inputs with prepare rather than copying
-large accepted view payloads into a worktree.
+complete matrix acceptance. The historical freeze digests identify the inputs used in these runs.
 
 The historical five-fold freeze is recorded in `log/frozen-inputs/` with input/output
 hashes and shared identities. The real 30-entry Mean slice completed with 25

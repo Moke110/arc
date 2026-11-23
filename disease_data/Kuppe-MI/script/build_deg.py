@@ -271,7 +271,7 @@ def main():
             'published_contrast': published_counts,
             'all_contrasts': deg_counts,
             'axis': axis_counts,
-            'axis_definition': 'frozen 18,164-gene axis, resolved by bases.disease_deg',
+            'axis_definition': 'frozen 18,164-gene axis, resolved by stage2_util.derivation.disease_deg',
         },
         'alignment': alignment,
         'method': {

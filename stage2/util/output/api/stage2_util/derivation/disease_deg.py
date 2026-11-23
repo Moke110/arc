@@ -7,10 +7,10 @@ public boundary for that product family:
 
 * ``align_source_table`` — attach the frozen ``gene_index`` to an item-local DEG
   table (symbol first, then source identifier/Ensembl) through
-  :class:`bases.deg_rank.SymbolResolver`; unresolved rows are reported, never
+  :class:`stage2_util.derivation.deg_rank.SymbolResolver`; unresolved rows are reported, never
   guessed.
 * ``build_dataset_products`` — collapse an item-local per-contrast DEG table with
-  the ticket-01 contract (:func:`bases.deg_rank.dataset_deg_rank`), carry the
+  the ticket-01 contract (:func:`stage2_util.derivation.deg_rank.dataset_deg_rank`), carry the
   winning contrast's ``stat``/``p_value``/``base_mean``, the pass-any-contrast
   ``deg`` flag and the frozen ``gene_symbol``, and return the compact table, the
   full-axis DEG-only rank frame and the statistics (ADR 0071 v2, republished by
@@ -414,7 +414,7 @@ def source_deg_rank(table, axis_size=AXIS_SIZE):
       flag is authoritative: the rank is rebuilt over exactly those DEGs.
     * a **v1 table** carries one collapsed winning-contrast row per measured gene
       and no ``deg`` flag. The v2 flag is then derived from that row with
-      :func:`bases.deg_rank.dataset_deg_rank` (the one live implementation), i.e.
+      :func:`stage2_util.derivation.deg_rank.dataset_deg_rank` (the one live implementation), i.e.
       the collapse rule applied to the winning contrast the table already stores.
       That convention can under-count a gene whose non-winning contrast passed
       the threshold; the ticket-8 republish replaces it with the published flag.
@@ -504,7 +504,7 @@ def level_one_rank(rank_frames, n_deg, gene_index=None, axis_size=None):
     ``rank_frames`` are the full frozen-axis DEG rank frames
     (:func:`source_deg_rank`), i.e. a DEG at ``1..n_DEG`` and every other gene at
     ``n_DEG + 1``; ``n_deg`` is the matching DEG count per frame.
-    :func:`bases.deg_rank.normalized_deg_rank` supplies ``rank / n_DEG``, so a
+    :func:`stage2_util.derivation.deg_rank.normalized_deg_rank` supplies ``rank / n_DEG``, so a
     non-DEG contributes ``(n_DEG + 1) / n_DEG`` — worse than every DEG of that
     source and never clamped to 1.0. The denominator is the DEG count, never the
     measured-gene count (ADR 0071 decision 3).
@@ -1360,7 +1360,7 @@ def contrast_selection(rows, dataset_id, contrasts):
 # The single live DEG worker (ADR 0066 D9). The `arc` conda env's R wrapper is
 # mis-patched on this workstation, so the R entry point is invoked as
 # R_HOME=<home> <home>/bin/exec/R. Which R that is, is configuration, not
-# science: `bases.r_env` resolves it (explicit argument, then `ARC_R_HOME`, then
+# science: `stage2_util.derivation.r_env` resolves it (explicit argument, then `ARC_R_HOME`, then
 # the running conda env's own `lib/R`, then the `Rscript` on PATH and its
 # `R.home()`), and item scripts record only the env name/version, never a host
 # path.
@@ -1373,7 +1373,7 @@ def r_entry_point(r_home=None):
 
     ``r_home`` / ``ARC_R_HOME`` select the home explicitly; unset means the
     running conda env's own ``lib/R``, then the ``Rscript`` on ``PATH`` (see
-    :mod:`bases.r_env`). The `arc` env's own ``lib/R`` is the documented setting
+    :mod:`stage2_util.derivation.r_env`). The `arc` env's own ``lib/R`` is the documented setting
     for this workstation.
     """
     return r_env.entry_point(r_home)
