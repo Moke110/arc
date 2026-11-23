@@ -5,3 +5,6 @@ output/*
 output/api/**/__pycache__/
 output/api/**/*.py[cod]
 execution/checkpoints/
+
+# Runtime lock for publication of output/.
+/.output.publication.lock
