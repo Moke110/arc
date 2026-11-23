@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import operator
+import sys
 from hashlib import file_digest, sha256 as hash_bytes
 from pathlib import Path
 
@@ -15,8 +16,12 @@ PAYLOAD_SCHEMA = "stage2-hvg-deg-views-raw-first-v1"
 SCHEMA = "stage2-hvg-deg-5k-release-v2"
 DEFAULT = Path(__file__).resolve().parents[1] / "release"
 REPO = next(parent for parent in DEFAULT.parents if (parent / ".git").exists())
-CORPUS_MANIFEST = REPO / "stage2/01_corpus/output/native/manifest.json"
+CORPUS_MANIFEST = REPO / "stage2/01_corpus/output/manifest.json"
+HISTORICAL_CORPUS_MANIFEST = REPO / "stage2/01_corpus/historical/native-v1/manifest.json"
 CANONICAL_AXIS = REPO / "stage2/02_gene_axis/02.1_hvg-deg/output/release/gene_axis_5000.csv"
+sys.path.insert(0, str(CORPUS_MANIFEST.parent / "api"))
+from native_corpus import resolve_generation
+
 NORMALIZATION = "sum selected-axis integer counts, then separate CP10K and log1p"
 CONTROL = "union matched vehicle rows by source observation identity"
 DELTA = "X minus control"
@@ -150,15 +155,15 @@ def open_view(path=None, *, source, family="full", corpus_sha256=None, axis_sha2
     root = DEFAULT if path is None else Path(path)
     if root.resolve() == DEFAULT.resolve():
         corpus = CORPUS_MANIFEST.read_bytes()
-        if json.loads(corpus).get("schema") != "stage2-native-corpus-v1":
-            raise ValueError("canonical native corpus provenance is missing")
+        selected = json.loads((root / "manifest.json").read_bytes())["corpus_sha256"]
+        verified = resolve_generation(json.loads(corpus), hash_bytes(corpus).hexdigest(), selected,
+                                      SOURCES, HISTORICAL_CORPUS_MANIFEST)
         axis = sha256(CANONICAL_AXIS)
         axis_manifest = json.loads(CANONICAL_AXIS.with_name("manifest.json").read_bytes())
         if axis_manifest["axes"]["5000"] != axis:
             raise ValueError("canonical prediction axis payload digest differs")
-        canonical = (hash_bytes(corpus).hexdigest(), axis)
-        specified = (corpus_sha256, axis_sha256)
-        if any(pin is not None and pin != current for pin, current in zip(specified, canonical, strict=True)):
+        if ((corpus_sha256 is not None and corpus_sha256 != verified)
+                or (axis_sha256 is not None and axis_sha256 != axis)):
             raise ValueError("requested corpus or axis does not match the canonical release inputs")
-        corpus_sha256, axis_sha256 = canonical
+        corpus_sha256, axis_sha256 = verified, axis
     return View(root, source, family, corpus_sha256, axis_sha256)

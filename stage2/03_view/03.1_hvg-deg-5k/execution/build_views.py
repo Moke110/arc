@@ -155,8 +155,8 @@ def _build_source(root, name, corpus, axis, tags, var):
         cache.unlink()
 
 
-def _build(root, corpus, axis, sources):
-    tags = {"schema": PAYLOAD_SCHEMA, "corpus_sha256": corpus.manifest_sha256, "axis_sha256": axis.sha256}
+def _build(root, corpus, axis, sources, corpus_sha256):
+    tags = {"schema": PAYLOAD_SCHEMA, "corpus_sha256": corpus_sha256, "axis_sha256": axis.sha256}
     var = pd.DataFrame({"gene_index": axis.gene_indices, "symbol": axis.symbols},
                        index=pd.Index([str(gene) for gene in axis.gene_indices], name="gene_index_label"))
     for name in sources:
@@ -167,7 +167,7 @@ def _build(root, corpus, axis, sources):
     release.write_json(root / "manifest.json", manifest)
 
 
-def _verify(root, corpus, axis, sources):
+def _verify(root, axis, sources, corpus_sha256):
     manifest = release.read_json(root / "manifest.json")
     release.check_relative_paths(manifest)
     if tuple(check_inventory(manifest)) != tuple(sources):
@@ -175,7 +175,7 @@ def _verify(root, corpus, axis, sources):
     if {path.name for path in root.iterdir()} != {"manifest.json", *manifest["outputs"]}:
         raise ValueError("expression view release inventory differs")
     for name in sources:
-        with open_view(root, source=name, corpus_sha256=corpus.manifest_sha256,
+        with open_view(root, source=name, corpus_sha256=corpus_sha256,
                        axis_sha256=axis.sha256) as view:
             if tuple(view.var.gene_index) != axis.gene_indices:
                 raise ValueError("expression view axis order differs")
@@ -189,23 +189,28 @@ def publish_views(destination, corpus, axis, *, sources=SOURCES, staging=None):
         raise ValueError("unknown or duplicate expression sources")
     with publication_lock(destination) as output:
         return publish_candidate(
-            release, output, lambda root: _build(root, corpus, axis, sources),
-            lambda root: _verify(root, corpus, axis, sources), staging=staging,
+            release, output, lambda root: _build(root, corpus, axis, sources, corpus.manifest_sha256),
+            lambda root: _verify(root, axis, sources, corpus.manifest_sha256), staging=staging,
             verify_existing=lambda root: release.check_manifest(root, release.read_json(root / "manifest.json")),
         )
 
 
-def replay_views(destination, corpus, axis, *, sources=SOURCES, staging=None):
+def replay_views(destination, corpus, axis, *, sources=SOURCES, staging=None,
+                 historical_manifest=None):
     with publication_lock(destination) as output:
-        return release.replay(output, lambda root: _build(root, corpus, axis, sources),
-                              lambda root: _verify(root, corpus, axis, sources), root=staging)
+        selected = release.read_json(output / "manifest.json")["corpus_sha256"]
+        verified = corpus.resolve_generation(selected, sources, historical_manifest=historical_manifest)
+        return release.replay(output, lambda root: _build(root, corpus, axis, sources, verified),
+                              lambda root: _verify(root, axis, sources, verified), root=staging)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("publish", "verify"))
-    parser.add_argument("--corpus", type=Path, default=STAGE / "01_corpus/output/native")
+    parser.add_argument("--corpus", type=Path, default=STAGE / "01_corpus/output")
     parser.add_argument("--axis", type=Path)
+    parser.add_argument("--historical-corpus", type=Path,
+                        help="historical v1 corpus directory for replay of a sealed view")
     parser.add_argument("--destination", type=Path, default=DEFAULT)
     parser.add_argument("--staging", type=Path, default=STEP / "execution/checkpoints")
     parser.add_argument("--source", choices=SOURCES, action="append")
@@ -214,9 +219,13 @@ def main():
     if sources != SOURCES and args.destination.resolve() == DEFAULT.resolve():
         parser.error("single-source rehearsals require an explicit non-default destination")
     operation = publish_views if args.action == "publish" else replay_views
+    options = {"sources": sources, "staging": args.staging}
+    if args.historical_corpus is not None:
+        if args.action != "verify":
+            parser.error("--historical-corpus is only used to replay sealed views")
+        options["historical_manifest"] = args.historical_corpus / "manifest.json"
     with open_corpus(args.corpus) as corpus:
-        result = operation(args.destination, corpus, open_axes(args.axis).axis(5000),
-                           sources=sources, staging=args.staging)
+        result = operation(args.destination, corpus, open_axes(args.axis).axis(5000), **options)
     print(json.dumps(result) if isinstance(result, dict) else result)
 
 

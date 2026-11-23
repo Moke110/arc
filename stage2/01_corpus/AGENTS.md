@@ -6,7 +6,11 @@ Retain unmatched observations. Paired expression, dataset exclusions from model
 views, axis selection and normalized matrices belong to their consuming steps.
 
 - `output/api/native_corpus.py` provides the bounded corpus API.
+- `output/manifest.json` inventories seven per-dataset releases beside `output/api/`.
 - `execution/build_corpus.py` publishes and independently replays candidates.
+  Use `migrate --predecessor <sealed-v1> --output <candidate>` to rehearse
+  migration away from the accepted output.
+- `historical/native-v1` retains the sealed predecessor used by existing views.
 - `execution/checkpoints/` holds disposable build state.
 - `log/` records build and replay acceptance evidence.
 

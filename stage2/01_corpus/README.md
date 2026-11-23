@@ -12,20 +12,28 @@ The builder rejects an incomplete common axis for tenv and Tahoe.
 | tenv | GSE262419 plate well and resolved native HGNC gene | Same-plate vehicle. The paired-study DMSO group is kept separate from Media. |
 | Tahoe bulk | Plate, well, cell line and deposited Ensembl/token gene | Same plate and cell line, vehicle DMSO_TF. |
 | DToxS-iPSC | Separate conventional and DGE read counts by published sample and gene | Experiment design records with cell, plate, time and control state. |
-| LINCS LDS-1593 | Separate native read-count partition per publisher table, with design well and gene identity | Source design state retained. A vehicle match requires an identified compatible solvent. |
-| GSE244740 | Published ScreenSeq well barcode and Ensembl row | Optimization and Screening plate identities kept distinct with separate DMSO and untreated groups. |
+| LINCS LDS-1593 | One DToxS-primary count matrix keyed by Plate, Well, Cell, Experiment, Dish, State and Time | Each original control context is retained with its publisher table. A match requires an identified compatible solvent. |
+| sctox (GSE244740) | Published ScreenSeq well barcode and Ensembl row | Optimization and Screening plate identities kept distinct with separate DMSO and untreated groups. |
 | GSE247541 | Published sample replicate and versioned Ensembl row | Published DMSO replicate group. |
 
 XPert-L1000 has no verified native raw integer count publication in the
 materialized source. Annotation is reference metadata with no observations.
-The additional cardiac sources are inventoried in the release manifest.
-The [acceptance receipt](log/acceptance.json) records released populations,
-coverage, source replay and payload digests.
+The release manifest inventories seven dataset directories directly under
+`output/`. Each directory holds a dataset manifest and a single H5AD with
+native counts, canonical observations and native gene metadata. The tenv
+directory also contains the probe map and source-build manifest. The
+DToxS-primary directory contains `source_observations.csv`, which traces
+842 merged observations to all 956 original rows across eight tables.
+Counts for shared observations must agree after alignment by native gene ID.
+The [original acceptance receipt](log/acceptance.json) records the v1
+populations, coverage, source replay and payload digests. The
+[migration receipt](log/migration-303.json) records the archived and candidate
+manifest digests, bounded count parity, primary membership and downstream checks.
 
 ```python
 from native_corpus import open_corpus
 
-with open_corpus("stage2/01_corpus/output/native") as corpus:
+with open_corpus("stage2/01_corpus/output") as corpus:
     source = corpus.source("tenv")
     native_columns = source.native_columns([9, 20, 10])
     counts = source.counts(0, 64)[:, native_columns]
@@ -43,10 +51,14 @@ python stage2/01_corpus/execution/build_corpus.py publish
 python stage2/01_corpus/execution/build_corpus.py verify
 ```
 
-The driver replays tenv and native Tahoe counts against pinned external inputs.
+The publisher replays tenv and native Tahoe counts against pinned external inputs.
 Tahoe aggregation checkpoints can resume after source pins are checked again.
-The verification command rebuilds a separate candidate, compares every sealed
-digest, and retains the accepted release. A separately staged native Tahoe
+Verification rebuilds a separate candidate, compares every sealed digest, and
+retains the accepted release. A release installed with `migrate` replays its
+layout from the sealed v1 generation in `historical/native-v1`. Migration
+compares native matrices, observations and gene mappings for the six unchanged
+datasets before installation. Existing full 5k views keep the manifest digest
+of their original derivation. New view builds pin the current corpus digest. A separately staged native Tahoe
 build can be read with `--tahoe-built` and goes through the same independent
 source replay before it can supply the release. For linked Git worktrees,
 `--materialized-root` can select the checkout holding the immutable inputs.
