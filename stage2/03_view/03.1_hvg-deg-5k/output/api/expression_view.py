@@ -15,7 +15,8 @@ PAYLOAD_SCHEMA = "stage2-hvg-deg-views-raw-first-v1"
 SCHEMA = "stage2-hvg-deg-5k-release-v2"
 DEFAULT = Path(__file__).resolve().parents[1] / "release"
 REPO = next(parent for parent in DEFAULT.parents if (parent / ".git").exists())
-CORPUS_MANIFEST = REPO / "stage2/01_corpus/output/native/manifest.json"
+CORPUS_MANIFEST = REPO / "stage2/01_corpus/output/manifest.json"
+HISTORICAL_CORPUS_MANIFEST = REPO / "stage2/01_corpus/historical/native-v1/manifest.json"
 CANONICAL_AXIS = REPO / "stage2/02_gene_axis/02.1_hvg-deg/output/release/gene_axis_5000.csv"
 NORMALIZATION = "sum selected-axis integer counts, then separate CP10K and log1p"
 CONTROL = "union matched vehicle rows by source observation identity"
@@ -146,19 +147,37 @@ class View:
         self.close()
 
 
+def corpus_pin(manifest, current, requested, sources):
+    """Resolve current corpus provenance or the sealed equivalent v1 derivation."""
+    if manifest.get("schema") not in {"stage2-native-corpus-v1", "stage2-native-corpus-v2"}:
+        raise ValueError("canonical native corpus provenance is missing")
+    if requested == current:
+        return current
+    predecessor = manifest.get("predecessor", {})
+    unchanged = predecessor.get("unchanged_sources", {})
+    if (manifest["schema"] == "stage2-native-corpus-v2"
+            and predecessor.get("manifest_sha256") == requested
+            and all(unchanged.get(source) == source for source in sources)
+            and HISTORICAL_CORPUS_MANIFEST.is_file()):
+        payload = HISTORICAL_CORPUS_MANIFEST.read_bytes()
+        if (hash_bytes(payload).hexdigest() == requested
+                and json.loads(payload).get("schema") == "stage2-native-corpus-v1"):
+            return requested
+    raise ValueError("requested corpus or axis does not match the canonical release inputs")
+
+
 def open_view(path=None, *, source, family="full", corpus_sha256=None, axis_sha256=None):
     root = DEFAULT if path is None else Path(path)
     if root.resolve() == DEFAULT.resolve():
         corpus = CORPUS_MANIFEST.read_bytes()
-        if json.loads(corpus).get("schema") != "stage2-native-corpus-v1":
-            raise ValueError("canonical native corpus provenance is missing")
+        selected = json.loads((root / "manifest.json").read_bytes())["corpus_sha256"]
+        verified = corpus_pin(json.loads(corpus), hash_bytes(corpus).hexdigest(), selected, SOURCES)
         axis = sha256(CANONICAL_AXIS)
         axis_manifest = json.loads(CANONICAL_AXIS.with_name("manifest.json").read_bytes())
         if axis_manifest["axes"]["5000"] != axis:
             raise ValueError("canonical prediction axis payload digest differs")
-        canonical = (hash_bytes(corpus).hexdigest(), axis)
-        specified = (corpus_sha256, axis_sha256)
-        if any(pin is not None and pin != current for pin, current in zip(specified, canonical, strict=True)):
+        if ((corpus_sha256 is not None and corpus_sha256 != verified)
+                or (axis_sha256 is not None and axis_sha256 != axis)):
             raise ValueError("requested corpus or axis does not match the canonical release inputs")
-        corpus_sha256, axis_sha256 = canonical
+        corpus_sha256, axis_sha256 = verified, axis
     return View(root, source, family, corpus_sha256, axis_sha256)

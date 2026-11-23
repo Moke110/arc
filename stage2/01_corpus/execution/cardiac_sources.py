@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import gzip
+import json
 import re
 
 import h5py
@@ -10,7 +11,7 @@ import numpy as np
 import pandas as pd
 from anndata.io import write_elem
 
-from native_corpus import CorpusError
+from native_corpus import CorpusError, Source
 
 GENE_BATCH = 256
 
@@ -177,6 +178,74 @@ def _antiviral_metadata(series):
     return align
 
 
+PRIMARY_KEY = ["Plate", "Well", "Cell", "Experiment", "Dish", "State", "Time"]
+PRIMARY_MEMBERSHIP = "source_observations.csv"
+
+
+def merge_primary_tables(candidate, tables, axis):
+    """Pool primary-CM tables by experimental observation and native gene identity."""
+    observations, membership = [], []
+    destination_rows = {}
+    path = candidate / "dtoxs_primary.h5ad"
+    with h5py.File(path, "w") as output:
+        output.attrs.update({"encoding-type": "anndata", "encoding-version": "0.1.0"})
+        for source_table, table_path in tables.items():
+            with Source(table_path, {}, 0) as source:
+                genes = pd.Index(source.var.source_gene_id)
+                if genes.has_duplicates or genes.hasnans or "" in genes:
+                    raise CorpusError(f"{source_table}: invalid native gene identities")
+                if not observations:
+                    canonical_genes = genes
+                    write_elem(output, "var", source.var)
+                    matrix = output.create_dataset(
+                        "X", (0, len(genes)), maxshape=(None, len(genes)), dtype="i4",
+                        chunks=(1, min(len(genes), 4096)), compression="gzip",
+                        compression_opts=1, shuffle=True,
+                    )
+                    matrix.attrs.update({"encoding-type": "array", "encoding-version": "0.2.0"})
+                order = genes.get_indexer(canonical_genes)
+                if len(genes) != len(canonical_genes) or (order < 0).any():
+                    raise CorpusError(f"{source_table}: primary native gene set differs")
+                for start, counts in source.batches(32):
+                    metadata = source.obs.iloc[start:start + len(counts)]
+                    for offset, (source_id, row) in enumerate(metadata.iterrows()):
+                        key = tuple(row[PRIMARY_KEY])
+                        if any(not isinstance(value, str) or not value for value in key):
+                            raise CorpusError(f"{source_table}: incomplete primary observation {source_id!r}")
+                        profile_id = json.dumps(key, ensure_ascii=False, separators=(",", ":"))
+                        values = counts[offset, order]
+                        if profile_id in destination_rows:
+                            index = destination_rows[profile_id]
+                            if not np.array_equal(matrix[index], values):
+                                raise CorpusError(f"{source_table}: conflicting counts for {profile_id}")
+                        else:
+                            index = len(observations)
+                            destination_rows[profile_id] = index
+                            matrix.resize(index + 1, axis=0)
+                            matrix[index] = values
+                            observations.append({
+                                **row.to_dict(), "profile_id": profile_id, "control_contexts": [],
+                            })
+                        if row.matched_control_group:
+                            context = [source_table, row.matched_control_group]
+                            contexts = observations[index]["control_contexts"]
+                            if context not in contexts:
+                                contexts.append(context)
+                        membership.append({
+                            "profile_id": profile_id, "source_table": source_table,
+                            "source_profile_id": source_id, "source_row": start + offset,
+                            **row.to_dict(),
+                        })
+        if not observations:
+            raise CorpusError("primary CM count tables contain no observations")
+        obs = pd.DataFrame(observations).set_index("profile_id")
+        obs["control_contexts"] = obs.control_contexts.map(
+            lambda contexts: json.dumps(contexts, ensure_ascii=False, separators=(",", ":"))
+        )
+        write_elem(output, "obs", obs.fillna(""))
+    pd.DataFrame(membership).to_csv(candidate / PRIMARY_MEMBERSHIP, index=False)
+    return _coverage(canonical_genes, "symbol", axis)
+
 def build_cardiac_sources(candidate, data, axis, pin_source, inputs):
     mappings = {}
     consumed = {}
@@ -203,14 +272,21 @@ def build_cardiac_sources(candidate, data, axis, pin_source, inputs):
     tables = sorted((source / "Data/Level3").glob("**/*Read-Counts*.tsv"))
     if not tables:
         raise CorpusError("LINCS-LDS-1593 has no deposited read-count tables")
+    primary = {}
     for index, table in enumerate(tables, 1):
         design = table.with_name(table.name.replace("Read-Counts", "Experiment-Design"))
-        register(f"dtoxs_primary_{index:02}", item, table, design,
+        name = f"dtoxs_primary_{index:02}"
+        register(name, item, table, design,
                  lambda path: _dtoxs_metadata(path, plates_are_separate=True), "symbol")
+        del mappings[name]
+        primary[table.relative_to(source).as_posix()] = candidate / f"{name}.h5ad"
+    mappings["dtoxs_primary"] = merge_primary_tables(candidate, primary, axis)
+    for path in primary.values():
+        path.unlink()
 
     item = "GSE244740"
     source = data / item / "source"
-    register("screen_ctox", item, source / "GSE244740_processed_data_counts.txt.gz",
+    register("sctox", item, source / "GSE244740_processed_data_counts.txt.gz",
              source / "GSE244740_series_matrix.txt.gz", _screen_metadata, "ensembl_id")
 
     item = "GSE247541"

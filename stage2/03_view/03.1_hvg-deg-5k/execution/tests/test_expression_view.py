@@ -138,3 +138,51 @@ class ExpressionViewTest(unittest.TestCase):
         path.write_text(json.dumps(manifest))
         with self.assertRaisesRegex(ValueError, "expression view recipe"):
             open_view(self.output, source="tenv", corpus_sha256=self.corpus.manifest_sha256)
+
+    def test_canonical_reader_keeps_the_sealed_view_pin_after_migration(self):
+        from unittest.mock import patch
+        import expression_view
+
+        from shutil import copyfile
+
+        archived = self.root / "corpus-v1"
+        archived.mkdir()
+        manifest = {
+            **self.corpus.manifest,
+            "schema": "stage2-native-corpus-v1", "outputs": {},
+            "sources": {name: {key: value for key, value in source.items()
+                               if key != "manifest_sha256"}
+                        for name, source in self.corpus.manifest["sources"].items()},
+        }
+        for name, source in manifest["sources"].items():
+            file = f"{name}.h5ad"
+            copyfile(self.corpus.root / name / file, archived / file)
+            manifest["outputs"][file] = source["sha256"]
+        archived_manifest = archived / "manifest.json"
+        archived_manifest.write_text(json.dumps(manifest))
+        axis = self.root / "gene_axis_5000.csv"
+        axis.write_text("fixture")
+        digest = sha256(axis.read_bytes()).hexdigest()
+        axis.with_name("manifest.json").write_text(json.dumps({"axes": {"5000": digest}}))
+        accepted_axis = PredictionAxis(self.axis.gene_indices, self.axis.symbols, digest)
+        with open_corpus(archived) as previous:
+            old_pin = previous.manifest_sha256
+            publish_views(self.output, previous, accepted_axis)
+        successor_manifest = self.corpus.root / "manifest.json"
+        manifest = self.corpus.manifest
+        manifest["predecessor"] = {
+            "manifest_sha256": old_pin,
+            "unchanged_sources": {"tenv": "tenv", "tahoe_bulk": "tahoe_bulk"},
+        }
+        successor_manifest.write_text(json.dumps(manifest))
+        successor = self.enterContext(open_corpus(self.corpus.root))
+        with patch.object(expression_view, "HISTORICAL_CORPUS_MANIFEST", archived_manifest):
+            self.assertEqual(replay_views(self.output, successor, accepted_axis)["result"], "PASS")
+            with (patch.object(expression_view, "DEFAULT", self.output),
+                  patch.object(expression_view, "CORPUS_MANIFEST", successor_manifest),
+                  patch.object(expression_view, "CANONICAL_AXIS", axis)):
+                with open_view(source="tenv") as view:
+                    self.assertEqual(view.read(0, 1).shape, (1, 2))
+                archived_manifest.write_text("{}")
+                with self.assertRaisesRegex(ValueError, "requested corpus or axis"):
+                    open_view(source="tenv")

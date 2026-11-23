@@ -3,6 +3,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import h5py
+from anndata.io import read_elem
+
 import numpy as np
 import pandas as pd
 from anndata import AnnData
@@ -23,6 +26,12 @@ class NativeCorpusTest(unittest.TestCase):
             AnnData(np.array([[0, 7, 2], [4, 0, 8], [1, 2, 0]], dtype=np.int32),
                     obs=obs, var=var).write_h5ad(root / "mini.h5ad")
             seal_corpus(root, {"mini": {0: 1, 2: 0}}, 3, "1" * 64, {}, {})
+            self.assertEqual(sorted(path.name for path in root.iterdir()), ["manifest.json", "mini"])
+            self.assertEqual(sorted(path.name for path in (root / "mini").iterdir()),
+                             ["manifest.json", "mini.h5ad"])
+            with h5py.File(root / "mini/mini.h5ad") as handle:
+                self.assertEqual(read_elem(handle["obs"]).match_status.tolist(),
+                                 ["matched", "vehicle", "unmatched"])
             with open_corpus(root) as corpus:
                 data = corpus.source("mini")
                 self.assertEqual(data.obs.index.tolist(), ["drug-1", "vehicle-1", "drug-2"])
