@@ -1,7 +1,9 @@
 """Worked examples through published view builder and reader."""
+import json
 import sys
 import tempfile
 import unittest
+from hashlib import sha256
 from pathlib import Path
 
 import numpy as np
@@ -19,7 +21,8 @@ sys.path[:0] = [str(item) for item in (
 from native_corpus import open_corpus, seal_corpus
 from prediction_axis import COMMON_SHA256, PredictionAxis
 from build_views import publish_views, replay_views
-from expression_view import open_view
+from expression_view import PAYLOAD_SCHEMA, open_view
+from migrate_release import stage_migration
 
 
 class ExpressionViewTest(unittest.TestCase):
@@ -56,29 +59,54 @@ class ExpressionViewTest(unittest.TestCase):
             np.testing.assert_allclose(view.read(1, 3), np.log1p([[10000, 0], [0, 10000]]))
             self.assertEqual(view.exclusions.set_index("profile_id").loc["unmatched", "reason"],
                              "no_matched_vehicle")
-        with open_view(self.output, source="tenv", family="merge") as view:
-            np.testing.assert_allclose(view.read(0, 1, "control")[0], np.log1p([5500, 4500]))
-            np.testing.assert_allclose(view.read(0, 1)[0], np.log1p([4000, 6000]))
             np.testing.assert_allclose(view.read(0, 1, "delta"), view.read(0, 1) - view.read(0, 1, "control"))
 
-    def test_families_and_pooled_label_release_are_replayable(self):
+    def test_flat_release_is_replayable(self):
         publish_views(self.output, self.corpus, self.axis)
-        with open_view(self.output, source="tenv", family="full-pooled-label") as view:
-            np.testing.assert_allclose(view.read(0, 1)[0], np.log1p([10000, 0]))
-            np.testing.assert_allclose(view.read(0, 1, "control")[0], np.log1p([1000, 9000]))
-            delta = np.log1p([4000, 6000]) - np.log1p([5500, 4500])
-            np.testing.assert_allclose(view.read(0, 1, "delta")[0], delta, atol=1e-6)
-            np.testing.assert_allclose(view.read(3, 5, "delta"), [delta, delta], atol=1e-6)
-        with open_view(self.output, source="tenv", family="solo-deepest") as view:
-            self.assertEqual(list(view.obs.index), ["t3"])
-            np.testing.assert_allclose(view.read(0, 1, "control")[0], np.log1p([10000, 0]))
+        self.assertEqual({path.name for path in self.output.iterdir()}, {
+            "manifest.json", "tenv.h5ad", "tahoe_bulk.h5ad", "tenv.members.csv",
+            "tahoe_bulk.members.csv", "tenv.exclusions.csv", "tahoe_bulk.exclusions.csv",
+        })
         for source in ("tenv", "tahoe_bulk"):
-            with open_view(self.output, source=source, family="solo") as view:
-                self.assertEqual(view.shape, (1, 2))
-                self.assertIn(view.obs.index[0], {"t1", "t2", "t3"})
+            with open_view(self.output, source=source, family="full") as view:
+                self.assertEqual(view.shape, (6, 2))
         with self.assertRaisesRegex(ValueError, "unknown expression view arm"):
-            open_view(self.output, source="tahoe_bulk", family="solo-deepest")
+            open_view(self.output, source="tenv", family="merge")
         self.assertEqual(replay_views(self.output, self.corpus, self.axis)["result"], "PASS")
+
+    def test_migration_preserves_payloads_and_cleans_up_when_receipt_cannot_be_written(self):
+        genes = tuple(range(5000))
+        axis = PredictionAxis(genes, tuple(map(str, genes)), self.axis.sha256)
+        publish_views(self.output, self.corpus, axis)
+        manifest_path = self.output / "manifest.json"
+        predecessor = json.loads(manifest_path.read_bytes())
+        predecessor["schema"] = PAYLOAD_SCHEMA
+        (self.output / "full").mkdir()
+        for name in list(predecessor["outputs"]):
+            if name.endswith((".h5ad", ".members.csv")):
+                old_name = f"full/{name}"
+                (self.output / name).rename(self.output / old_name)
+                predecessor["outputs"][old_name] = predecessor["outputs"].pop(name)
+        raw_manifest = json.dumps(predecessor).encode()
+        manifest_path.write_bytes(raw_manifest)
+
+        candidate = self.root / "candidate"
+        occupied = self.root / "file"
+        occupied.touch()
+        with self.assertRaises(OSError):
+            stage_migration(self.output, candidate, occupied / "receipt.json")
+        self.assertFalse(candidate.exists())
+        self.assertEqual(manifest_path.read_bytes(), raw_manifest)
+
+        receipt_path = self.root / "receipt.json"
+        stage_migration(self.output, candidate, receipt_path)
+        receipt = json.loads(receipt_path.read_bytes())
+        self.assertEqual(receipt["previous_manifest"]["sha256"],
+                         sha256(raw_manifest).hexdigest())
+        self.assertEqual(receipt["release_manifest"]["sha256"],
+                         sha256((candidate / "manifest.json").read_bytes()).hexdigest())
+        self.assertEqual((candidate / "tenv.h5ad").read_bytes(),
+                         (self.output / "full/tenv.h5ad").read_bytes())
 
     def test_reader_rejects_stale_digest_and_modified_payload(self):
         publish_views(self.output, self.corpus, self.axis)
@@ -87,37 +115,26 @@ class ExpressionViewTest(unittest.TestCase):
         with open_view(self.output, source="tenv") as view:
             with self.assertRaisesRegex(ValueError, "expression window"):
                 view.read(0, 257)
-        path = self.output / "full/tenv.h5ad"
+        path = self.output / "tenv.h5ad"
         with path.open("ab") as output:
             output.write(b"unexpected")
         with self.assertRaisesRegex(ValueError, "payload digest"):
             open_view(self.output, source="tenv")
 
     def test_canonical_reader_rejects_stale_corpus_and_coherent_wrong_recipe(self):
-        import json
         from unittest.mock import patch
         import expression_view
 
-        candidate = self.root / "coherent"
-        candidate.mkdir()
+        publish_views(self.output, self.corpus, self.axis)
         corpus = self.root / "accepted-corpus.json"
         corpus.write_text('{"schema":"stage2-native-corpus-v1"}')
-        previous_digest = "a" * 64
-        manifest = {
-            "schema": expression_view.SCHEMA, "axis_sha256": "b" * 64,
-            "corpus_sha256": previous_digest, "default_family": "full",
-            "normalization": "sum selected-axis integer counts, then separate CP10K and log1p",
-            "control": "union matched vehicle rows by source observation identity",
-            "delta": "X minus control, or the corresponding merge delta for pooled labels",
-            "solo_seed": 20261122,
-        }
-        path = candidate / "manifest.json"
-        path.write_text(json.dumps(manifest))
-        with (patch.object(expression_view, "DEFAULT", candidate),
+        path = self.output / "manifest.json"
+        manifest = json.loads(path.read_bytes())
+        with (patch.object(expression_view, "DEFAULT", self.output),
               patch.object(expression_view, "CORPUS_MANIFEST", corpus)):
             with self.assertRaisesRegex(ValueError, "requested corpus or axis"):
                 open_view(source="tenv")
         manifest["normalization"] = "average normalized vehicles"
         path.write_text(json.dumps(manifest))
         with self.assertRaisesRegex(ValueError, "expression view recipe"):
-            open_view(candidate, source="tenv", corpus_sha256=previous_digest)
+            open_view(self.output, source="tenv", corpus_sha256=self.corpus.manifest_sha256)

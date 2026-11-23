@@ -1,6 +1,6 @@
 # TranSiGen Tahoe-to-tenv transfer
 
-See the [historical evidence index](../03_view/03.1_hvg-deg_views/historical/README.md) for sealed records.
+See the [historical evidence index](../03_view/03.1_hvg-deg-5k/historical/README.md) for sealed records.
 
 [Path migration and sealed evidence](../07_tsg_dose/log/step-path-migration.md).
 

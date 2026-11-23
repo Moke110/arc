@@ -9,11 +9,11 @@ import numpy as np
 import pandas as pd
 
 STAGE2 = Path(__file__).resolve().parents[4]
-for relative in ("util/output/api", "03_view/03.1_hvg-deg_views/output/api",
+for relative in ("util/output/api", "03_view/03.1_hvg-deg-5k/output/api",
                  "02_gene_axis/02.1_hvg-deg/output/api"):
     sys.path.insert(0, str(STAGE2 / relative))
 
-from expression_view import DEFAULT, SCHEMA as VIEW_SCHEMA, open_view, sha256
+from expression_view import DEFAULT, PAYLOAD_SCHEMA, SCHEMA as VIEW_SCHEMA, open_view, sha256
 from prediction_axis import open_axes
 from stage2_util import metrics, palette, plotting
 from stage2_util.representations import RepresentationTable, ordered_parents
@@ -64,7 +64,8 @@ class Inputs:
         self.config = read_json(self.directory / "config.json")
         generation = self.config["view_generation"]
         axis = open_axes().axis(AXIS_SIZE)
-        if (generation != self.manifest["view_generation"] or generation["schema"] != VIEW_SCHEMA
+        if (generation != self.manifest["view_generation"]
+                or generation["schema"] not in (VIEW_SCHEMA, PAYLOAD_SCHEMA)
                 or generation["family"] != "full" or generation["source"] != "tenv"
                 or generation["axis_sha256"] != axis.sha256 or self.config["dose_um"] != DOSE
                 or self.config["axis_size"] != AXIS_SIZE
@@ -148,7 +149,7 @@ def _freeze(source, destination, axis, representations):
         "schema": source.manifest["schema"], "source": source.source, "family": source.family,
         "view_sha256": source.manifest_sha256, "axis_sha256": axis.sha256,
         "corpus_sha256": source.manifest["corpus_sha256"],
-        "payload_sha256": source.manifest["outputs"]["full/tenv.h5ad"],
+        "payload_sha256": source.payload_sha256,
     }
     write_json(destination / "config.json", {
         "view_generation": generation, "representation_sha256": representations.manifest_sha256,

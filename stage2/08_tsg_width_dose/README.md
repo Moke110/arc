@@ -1,6 +1,6 @@
 # TranSiGen width and dose encoding
 
-See the [historical evidence index](../03_view/03.1_hvg-deg_views/historical/README.md) for sealed records.
+See the [historical evidence index](../03_view/03.1_hvg-deg-5k/historical/README.md) for sealed records.
 
 The experiment crosses four dose encodings (no dose, latent numeric, latent
 embedding, and FiLM) with four TranSiGen widths (original, 1.5×, 2×, and 2.5×).

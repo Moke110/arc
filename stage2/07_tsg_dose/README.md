@@ -1,10 +1,10 @@
 # TranSiGen dose-input optimization — round1
 
-See the [historical evidence index](../03_view/03.1_hvg-deg_views/historical/README.md) for sealed records.
+See the [historical evidence index](../03_view/03.1_hvg-deg-5k/historical/README.md) for sealed records.
 
 ## Raw-first inputs, evaluation and figures
 
-The [HVG-DEG full expression view](../03_view/03.1_hvg-deg_views/README.md) is the
+The [HVG-DEG full expression view](../03_view/03.1_hvg-deg-5k/README.md) is the
 default input for new comparisons. The paired input receipt pins the view
 manifest, common corpus generation, ordered G_5000 axis and source-specific
 payloads. Each source retains its own matched vehicle rows and study folds.

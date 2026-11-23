@@ -24,3 +24,8 @@ Source observations can support new aggregation recipes. The shared axis has a s
 - [ADR 0077](0077-five-k-only-axis-local-normalization.md)
 - [ADR 0082](0082-view-variants-tenv-tahoe-replicate-structure.md)
 - [Implementation spec](https://github.com/Moke110/arc/issues/286)
+
+[Spec 2](https://github.com/Moke110/arc/issues/301) supersedes the active
+variant publication in this decision. The [HVG-DEG 5k substep](../../stage2/03_view/03.1_hvg-deg-5k/README.md)
+publishes full views for both sources. The previous generations and study
+receipts remain under its historical boundary.

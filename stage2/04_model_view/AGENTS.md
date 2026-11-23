@@ -1,6 +1,6 @@
 # Single-dose tenv 5k comparison
 
-Use the [historical evidence index](../03_view/03.1_hvg-deg_views/historical/README.md) for sealed records.
+Use the [historical evidence index](../03_view/03.1_hvg-deg-5k/historical/README.md) for sealed records.
 
 Read README.md, ../AGENTS.md and ADR 0074 before changing this step.
 Use `execution/raw_first.py` and `output/api/tenv5k_raw_first` for new inputs and

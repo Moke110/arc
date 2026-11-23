@@ -184,14 +184,14 @@ Per-workflow rows are isolated `du -sb` values that each include their own hard-
 ## Stage 2 — published products and comparison payloads
 
 The [Stage 2 routing](../stage2/AGENTS.md) identifies the current study and
-product owners. [Historical evidence](../stage2/03_view/03.1_hvg-deg_views/historical/README.md)
+product owners. [Historical evidence](../stage2/03_view/03.1_hvg-deg-5k/historical/README.md)
 keeps accepted figures, reports, and their original receipt paths.
 
 | Owner | Accepted products |
 | --- | --- |
 | [Corpus](../stage2/01_corpus/README.md) | Source-native count payloads and manifest in `output/native/`. |
 | [Prediction axes](../stage2/02_gene_axis/README.md) | Four ordered axes and compact selection evidence in `02.1_hvg-deg/output/release/`. |
-| [Views](../stage2/03_view/README.md) | Accepted expression view payloads under `03.1_hvg-deg/output/raw-first-v1/`. |
+| [Views](../stage2/03_view/README.md) | Accepted expression view payloads under `03.1_hvg-deg-5k/output/release/`. |
 | [Util](../stage2/util/README.md) | Accepted gene identity and representation products plus shared operations. |
 
 ### `stage2/04_model_view/` — accepted three-fold comparison (#226/#231)

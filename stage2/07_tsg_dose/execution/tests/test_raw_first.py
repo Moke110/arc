@@ -66,19 +66,15 @@ def write_manifest(path, value):
 
 def make_views(root):
     from prediction_axis import open_axes
-    from expression_view import SCHEMA, ARMS
+    from expression_view import PAYLOAD_SCHEMA, RECIPE, SCHEMA, SOURCES
 
     axis = open_axes().axis(5000)
     var = pd.DataFrame({"gene_index": axis.gene_indices, "symbol": axis.symbols},
                        index=[str(gene) for gene in axis.gene_indices])
-    (root / "full").mkdir(parents=True)
+    root.mkdir(parents=True)
     manifest = {"schema": SCHEMA, "axis_sha256": axis.sha256, "axis_size": 5000,
-                "corpus_sha256": "a" * 64, "default_family": "full", "sources": list(ARMS),
-                "normalization": "sum selected-axis integer counts, then separate CP10K and log1p",
-                "control": "union matched vehicle rows by source observation identity",
-                "delta": "X minus control, or the corresponding merge delta for pooled labels",
-                "solo_seed": 20261122, "outputs": {}}
-    for source in ARMS:
+                "corpus_sha256": "a" * 64, "sources": list(SOURCES), **RECIPE, "outputs": {}}
+    for source in SOURCES:
         ids = [f"{source}-vehicle-0"]
         rows = [("vehicle", "", "", 0.)]
         doses = (0.2, 1., 10.) if source == "tenv" else (0.05, 0.5, 5.)
@@ -96,18 +92,21 @@ def make_views(root):
         matrix[-1, :3] = [1, 1, 2]
         control = np.zeros_like(matrix)
         control[:, :3] = [1, 2, 3]
-        payload = f"full/{source}.h5ad"
+        payload = f"{source}.h5ad"
         AnnData(matrix, obs=obs, var=var, layers={"control": control, "delta": matrix-control}).write_h5ad(
             root / payload
         )
         with h5py.File(root / payload, "r+") as handle:
-            for key in ("schema", "axis_sha256", "corpus_sha256"):
+            handle.attrs["schema"] = PAYLOAD_SCHEMA
+            for key in ("axis_sha256", "corpus_sha256"):
                 handle.attrs[key] = manifest[key]
             handle.attrs["source"] = source
             handle.attrs["family"] = "full"
         exclusion = f"{source}.exclusions.csv"
         (root / exclusion).write_text("profile_id,role,reason\n")
-        manifest["outputs"].update({name: sha256(root / name) for name in (payload, exclusion)})
+        membership = f"{source}.members.csv"
+        (root / membership).write_text("profile_id,member_profile_id,role\n")
+        manifest["outputs"].update({name: sha256(root / name) for name in (payload, exclusion, membership)})
     write_manifest(root / "manifest.json", manifest)
     return root
 

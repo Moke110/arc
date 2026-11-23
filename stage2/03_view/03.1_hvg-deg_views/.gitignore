@@ -1,7 +1,0 @@
-/execution/checkpoints/
-!/output/
-/output/*
-!/output/api/
-!/output/raw-first-v1/
-/output/raw-first-v1/*
-!/output/raw-first-v1/manifest.json

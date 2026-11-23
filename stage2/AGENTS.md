@@ -15,8 +15,8 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   and match status.
 - [02_gene_axis](02_gene_axis/AGENTS.md) owns the four ordered HVG-DEG prediction
   axes and their selection evidence.
-- [03_view](03_view/AGENTS.md) publishes the raw-first view families. Its full
-  release is the default for downstream inputs.
+- [03_view](03_view/AGENTS.md) publishes the full raw-first 5k expression release
+  for downstream inputs.
 - [04_model_view](04_model_view/AGENTS.md) compares single-dose tenv models.
 - [05_tsg_loss](05_tsg_loss/AGENTS.md) reserves the loss comparison.
 - [06_tsg_drug_emb](06_tsg_drug_emb/AGENTS.md) compares drug representations.
@@ -26,7 +26,7 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 
 Use each study's `execution/raw_first.py` for new inputs and fixed-prediction
 evaluation. Use `figure/raw_first/render.py` or the documented `render` command
-for CSV-only rendering with util. The [historical evidence index](03_view/03.1_hvg-deg_views/historical/README.md) locates sealed records and their original provenance.
+for CSV-only rendering with util. The [historical evidence index](03_view/03.1_hvg-deg-5k/historical/README.md) locates sealed records and their original provenance.
 
 ## Step contract
 - `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,

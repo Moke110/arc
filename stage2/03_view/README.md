@@ -1,4 +1,4 @@
 # Stage 2 expression views
 
-[HVG-DEG expression views](03.1_hvg-deg_views/README.md) publish the raw-first
-full release and replicate variants.
+The [HVG-DEG 5k substep](03.1_hvg-deg-5k/README.md) publishes the raw-first
+full expression release for tenv and Tahoe bulk.
