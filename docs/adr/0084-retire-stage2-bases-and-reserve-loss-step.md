@@ -1,6 +1,6 @@
 # 0084. Retire Stage 2 Bases and reserve a loss comparison step
 
-**Status:** accepted (2026-11-23), implementation pending.
+**Status:** accepted (2026-11-23).
 
 ADR 0083 retained Bases to bridge active consumers and support historical replay. Retire that replay and remove the Bases step after active consumers have migrated. Keep accepted study results and their audit records. The corpus owns source counts and readers, the gene-axis step owns axis evidence and projection, the view step owns expression views and their readers, and util owns shared helpers, including derivation kernels still used by external DEG builders.
 
