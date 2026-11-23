@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import operator
+import sys
 from hashlib import file_digest, sha256 as hash_bytes
 from pathlib import Path
 
@@ -18,6 +19,9 @@ REPO = next(parent for parent in DEFAULT.parents if (parent / ".git").exists())
 CORPUS_MANIFEST = REPO / "stage2/01_corpus/output/manifest.json"
 HISTORICAL_CORPUS_MANIFEST = REPO / "stage2/01_corpus/historical/native-v1/manifest.json"
 CANONICAL_AXIS = REPO / "stage2/02_gene_axis/02.1_hvg-deg/output/release/gene_axis_5000.csv"
+sys.path.insert(0, str(CORPUS_MANIFEST.parent / "api"))
+from native_corpus import resolve_generation
+
 NORMALIZATION = "sum selected-axis integer counts, then separate CP10K and log1p"
 CONTROL = "union matched vehicle rows by source observation identity"
 DELTA = "X minus control"
@@ -147,31 +151,13 @@ class View:
         self.close()
 
 
-def corpus_pin(manifest, current, requested, sources):
-    """Resolve current corpus provenance or the sealed equivalent v1 derivation."""
-    if manifest.get("schema") not in {"stage2-native-corpus-v1", "stage2-native-corpus-v2"}:
-        raise ValueError("canonical native corpus provenance is missing")
-    if requested == current:
-        return current
-    predecessor = manifest.get("predecessor", {})
-    unchanged = predecessor.get("unchanged_sources", {})
-    if (manifest["schema"] == "stage2-native-corpus-v2"
-            and predecessor.get("manifest_sha256") == requested
-            and all(unchanged.get(source) == source for source in sources)
-            and HISTORICAL_CORPUS_MANIFEST.is_file()):
-        payload = HISTORICAL_CORPUS_MANIFEST.read_bytes()
-        if (hash_bytes(payload).hexdigest() == requested
-                and json.loads(payload).get("schema") == "stage2-native-corpus-v1"):
-            return requested
-    raise ValueError("requested corpus or axis does not match the canonical release inputs")
-
-
 def open_view(path=None, *, source, family="full", corpus_sha256=None, axis_sha256=None):
     root = DEFAULT if path is None else Path(path)
     if root.resolve() == DEFAULT.resolve():
         corpus = CORPUS_MANIFEST.read_bytes()
         selected = json.loads((root / "manifest.json").read_bytes())["corpus_sha256"]
-        verified = corpus_pin(json.loads(corpus), hash_bytes(corpus).hexdigest(), selected, SOURCES)
+        verified = resolve_generation(json.loads(corpus), hash_bytes(corpus).hexdigest(), selected,
+                                      SOURCES, HISTORICAL_CORPUS_MANIFEST)
         axis = sha256(CANONICAL_AXIS)
         axis_manifest = json.loads(CANONICAL_AXIS.with_name("manifest.json").read_bytes())
         if axis_manifest["axes"]["5000"] != axis:

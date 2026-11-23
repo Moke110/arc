@@ -145,8 +145,8 @@ class ExpressionViewTest(unittest.TestCase):
 
         from shutil import copyfile
 
-        archived = self.root / "corpus-v1"
-        archived.mkdir()
+        archived = self.root / "historical/native-v1"
+        archived.mkdir(parents=True)
         manifest = {
             **self.corpus.manifest,
             "schema": "stage2-native-corpus-v1", "outputs": {},
@@ -176,13 +176,19 @@ class ExpressionViewTest(unittest.TestCase):
         }
         successor_manifest.write_text(json.dumps(manifest))
         successor = self.enterContext(open_corpus(self.corpus.root))
-        with patch.object(expression_view, "HISTORICAL_CORPUS_MANIFEST", archived_manifest):
-            self.assertEqual(replay_views(self.output, successor, accepted_axis)["result"], "PASS")
-            with (patch.object(expression_view, "DEFAULT", self.output),
-                  patch.object(expression_view, "CORPUS_MANIFEST", successor_manifest),
-                  patch.object(expression_view, "CANONICAL_AXIS", axis)):
-                with open_view(source="tenv") as view:
-                    self.assertEqual(view.read(0, 1).shape, (1, 2))
-                archived_manifest.write_text("{}")
-                with self.assertRaisesRegex(ValueError, "requested corpus or axis"):
-                    open_view(source="tenv")
+        self.assertEqual(replay_views(self.output, successor, accepted_axis)["result"], "PASS")
+        moved_archive = archived.rename(self.root / "portable-v1")
+        with self.assertRaisesRegex(ValueError, "requested corpus or axis"):
+            replay_views(self.output, successor, accepted_axis)
+        self.assertEqual(replay_views(self.output, successor, accepted_axis,
+                                     historical_manifest=moved_archive / "manifest.json")["result"], "PASS")
+        moved_archive.rename(archived)
+        with (patch.object(expression_view, "DEFAULT", self.output),
+              patch.object(expression_view, "CORPUS_MANIFEST", successor_manifest),
+              patch.object(expression_view, "HISTORICAL_CORPUS_MANIFEST", archived_manifest),
+              patch.object(expression_view, "CANONICAL_AXIS", axis)):
+            with open_view(source="tenv") as view:
+                self.assertEqual(view.read(0, 1).shape, (1, 2))
+            archived_manifest.write_text("{}")
+            with self.assertRaisesRegex(ValueError, "requested corpus or axis"):
+                open_view(source="tenv")

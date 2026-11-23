@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import fcntl
 import os
 import shutil
@@ -129,7 +130,9 @@ SUPPLEMENTS = {
     "dtoxs_primary": (PRIMARY_MEMBERSHIP,),
 }
 DEFAULT = STEP / "output"
-HISTORICAL = STEP / "historical/native-v1"
+HISTORICAL = Path("historical/native-v1")
+AXES = Path("02_gene_axis/02.1_hvg-deg")
+VIEW = Path("03_view/03.1_hvg-deg-5k")
 
 
 def _seal(candidate, columns, common_axis, inputs, exclusions, predecessor):
@@ -183,6 +186,94 @@ def verify_product(root):
             if name == "dtoxs_primary":
                 _verify_primary_membership(root, dataset)
         return corpus.manifest_sha256
+
+
+def _select_predecessor(output, explicit):
+    active = output / "native"
+    archived = output.parent / HISTORICAL
+    if (active / "manifest.json").is_file():
+        if explicit is not None and sha256(explicit / "manifest.json") != sha256(active / "manifest.json"):
+            raise CorpusError("selected predecessor differs from the installed legacy corpus")
+        return active
+    if (archived / "manifest.json").is_file():
+        if explicit is not None and sha256(explicit / "manifest.json") != sha256(archived / "manifest.json"):
+            raise CorpusError("selected predecessor differs from the archived legacy corpus")
+        return archived
+    return explicit
+
+
+def _archive_file(source, destination):
+    try:
+        os.link(source, destination)
+    except OSError as error:
+        if error.errno != errno.EXDEV:
+            raise
+        shutil.copyfile(source, destination)
+
+
+def preserve_predecessor(output, predecessor, staging):
+    """Retain the verified original corpus separately from the replaced product."""
+    if predecessor is None:
+        return
+    active = output / "native"
+    if (active / "manifest.json").is_file() and sha256(active / "manifest.json") != predecessor.manifest_sha256:
+        raise CorpusError("selected predecessor differs from the installed legacy corpus")
+    archive = output.parent / HISTORICAL
+    if not archive.exists():
+        archive.parent.mkdir(parents=True, exist_ok=True)
+        staged = release.candidate(archive, staging)
+        try:
+            origin = active if (active / "manifest.json").is_file() else predecessor.root
+            shutil.copytree(origin, staged, dirs_exist_ok=True, copy_function=_archive_file)
+            release.check_manifest(staged, predecessor.manifest)
+            staged.rename(archive)
+        finally:
+            shutil.rmtree(staged, ignore_errors=True)
+    with open_corpus(archive) as archived:
+        if archived.manifest_sha256 != predecessor.manifest_sha256:
+            raise CorpusError("historical corpus differs from predecessor")
+        release.check_manifest(archive, archived.manifest)
+
+
+def verify_downstream(candidate, output, predecessor):
+    """Exercise the accepted axis and published full views before replacing the corpus."""
+    stage2 = output.parent.parent
+    source_code = STEP.parent
+    sys.path[:0] = [str(source_code / directory) for directory in (
+        AXES / "output/api", VIEW / "output/api", VIEW / "execution",
+    )]
+    from expression_view import LAYERS, SOURCES, View
+    from normalization import library_totals, log1p_cp10k
+    from prediction_axis import open_axes
+
+    view_root = stage2 / VIEW / "output/release"
+    view_manifest = view_root / "manifest.json"
+    replacing = (output / "manifest.json").is_file() or (output / "native/manifest.json").is_file()
+    if not replacing:
+        return
+
+    with open_corpus(candidate) as corpus:
+        axis = open_axes(stage2 / AXES / "output/release").axis(5000)
+        if not view_manifest.is_file():
+            raise CorpusError("accepted full view manifest is missing")
+        selected = release.read_json(view_manifest)["corpus_sha256"]
+        historical = predecessor.root / "manifest.json" if predecessor is not None else None
+        pin = corpus.resolve_generation(selected, SOURCES, historical_manifest=historical)
+        for name in SOURCES:
+            projection = axis.project(corpus, name)
+            with View(view_root, name, "full", pin, axis.sha256) as view:
+                if tuple(view.var.gene_index) != axis.gene_indices or not view.shape[0]:
+                    raise CorpusError(f"{name}: accepted view axis or population differs")
+                for index in {0, view.shape[0] - 1}:
+                    identity = view.obs.index[index]
+                    native_row = projection.source.obs.index.get_loc(identity)
+                    counts = projection.counts(native_row, native_row + 1)
+                    expected = log1p_cp10k(counts, library_totals(counts)).astype(np.float32)
+                    expression, control, delta = (view.read(index, index + 1, layer)
+                                                   for layer in LAYERS)
+                    if (not np.array_equal(expression, expected) or not np.isfinite(control).all()
+                            or not np.array_equal(delta, expression - control)):
+                        raise CorpusError(f"{name}: accepted view differs from candidate at {identity}")
 
 
 def main():
@@ -265,11 +356,8 @@ def main():
     with publication_lock(args.output) as output, (args.staging / "native-corpus.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         previous = args.predecessor
-        if previous is None and output == DEFAULT.resolve():
-            if HISTORICAL.is_dir():
-                previous = HISTORICAL
-            elif (output / "native/manifest.json").is_file():
-                previous = output / "native"
+        if output == DEFAULT.resolve():
+            previous = _select_predecessor(output, previous)
         if args.action == "migrate" and previous is None:
             parser.error("migration requires a sealed v1 release")
         if previous is None:
@@ -307,21 +395,9 @@ def _run(args, output, predecessor, build):
 
     def verify_before_install(candidate):
         verify(candidate)
-        if predecessor is not None and predecessor.root.resolve() == (output / "native").resolve():
-            archive = output.parent / "historical/native-v1"
-            archive.parent.mkdir(parents=True, exist_ok=True)
-            if not archive.exists():
-                staging = release.candidate(archive, args.staging)
-                try:
-                    shutil.copytree(predecessor.root, staging, dirs_exist_ok=True, copy_function=os.link)
-                    release.check_manifest(staging, predecessor.manifest)
-                    staging.rename(archive)
-                finally:
-                    shutil.rmtree(staging, ignore_errors=True)
-            with open_corpus(archive) as archived:
-                if archived.manifest_sha256 != predecessor.manifest_sha256:
-                    raise CorpusError("historical corpus differs from predecessor")
-                release.check_manifest(archive, archived.manifest)
+        if output == DEFAULT.resolve():
+            verify_downstream(candidate, output, predecessor)
+            preserve_predecessor(output, predecessor, args.staging)
 
     publish_candidate(release, output, prepare, verify_before_install, staging=args.staging)
 

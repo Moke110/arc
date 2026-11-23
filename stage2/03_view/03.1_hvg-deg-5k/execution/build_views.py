@@ -25,7 +25,7 @@ sys.path[:0] = [str(path) for path in (
 import normalization
 from stage2_util.derivation import release
 from expression_view import (DEFAULT, LAYERS, PAYLOAD_SCHEMA, RECIPE, SCHEMA, SOURCES,
-                             check_inventory, corpus_pin, layer_path, open_view, sha256)
+                             check_inventory, layer_path, open_view, sha256)
 from native_corpus import open_corpus
 from prediction_axis import open_axes
 from stage2_util.publication import publication_lock, publish_candidate
@@ -195,10 +195,11 @@ def publish_views(destination, corpus, axis, *, sources=SOURCES, staging=None):
         )
 
 
-def replay_views(destination, corpus, axis, *, sources=SOURCES, staging=None):
+def replay_views(destination, corpus, axis, *, sources=SOURCES, staging=None,
+                 historical_manifest=None):
     with publication_lock(destination) as output:
         selected = release.read_json(output / "manifest.json")["corpus_sha256"]
-        verified = corpus_pin(corpus.manifest, corpus.manifest_sha256, selected, sources)
+        verified = corpus.resolve_generation(selected, sources, historical_manifest=historical_manifest)
         return release.replay(output, lambda root: _build(root, corpus, axis, sources, verified),
                               lambda root: _verify(root, axis, sources, verified), root=staging)
 
@@ -208,6 +209,8 @@ def main():
     parser.add_argument("action", choices=("publish", "verify"))
     parser.add_argument("--corpus", type=Path, default=STAGE / "01_corpus/output")
     parser.add_argument("--axis", type=Path)
+    parser.add_argument("--historical-corpus", type=Path,
+                        help="historical v1 corpus directory for replay of a sealed view")
     parser.add_argument("--destination", type=Path, default=DEFAULT)
     parser.add_argument("--staging", type=Path, default=STEP / "execution/checkpoints")
     parser.add_argument("--source", choices=SOURCES, action="append")
@@ -216,9 +219,13 @@ def main():
     if sources != SOURCES and args.destination.resolve() == DEFAULT.resolve():
         parser.error("single-source rehearsals require an explicit non-default destination")
     operation = publish_views if args.action == "publish" else replay_views
+    options = {"sources": sources, "staging": args.staging}
+    if args.historical_corpus is not None:
+        if args.action != "verify":
+            parser.error("--historical-corpus is only used to replay sealed views")
+        options["historical_manifest"] = args.historical_corpus / "manifest.json"
     with open_corpus(args.corpus) as corpus:
-        result = operation(args.destination, corpus, open_axes(args.axis).axis(5000),
-                           sources=sources, staging=args.staging)
+        result = operation(args.destination, corpus, open_axes(args.axis).axis(5000), **options)
     print(json.dumps(result) if isinstance(result, dict) else result)
 
 

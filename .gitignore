@@ -150,6 +150,8 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2/04_model_view/figure/data/*.csv
 !/stage2/04_model_view/log/frozen-inputs/*.csv
 
+/stage2/01_corpus/historical/native-v1/
+
 # HVG-DEG axes and compact selection evidence. Keep candidates local.
 !/stage2/02_gene_axis/02.1_hvg-deg/output/
 /stage2/02_gene_axis/02.1_hvg-deg/output/*

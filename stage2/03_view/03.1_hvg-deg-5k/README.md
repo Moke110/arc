@@ -47,3 +47,8 @@ The full-only migration carries the six accepted assets forward byte-for-byte.
 The [migration receipt](log/full-only-migration.json) maps their paths and
 digests. The [preceding generation](historical/raw-first-v1/manifest.json)
 retains the previous release inventory.
+
+An existing full view can be replayed from the equivalent reorganized corpus
+while retaining the digest of its original derivation. For a portable checkout
+where the sealed v1 archive lives elsewhere, pass
+`--historical-corpus <v1-corpus-directory>` to `build_views.py verify`.
