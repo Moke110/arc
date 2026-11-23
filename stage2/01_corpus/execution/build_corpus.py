@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -22,10 +23,11 @@ sys.path[:0] = [str(path) for path in (
 
 from corpus_sources import identities, mapping as gene_mapping, native
 from stage2_util.derivation import release
-from cardiac_sources import build_cardiac_sources
+from cardiac_sources import PRIMARY_MEMBERSHIP, build_cardiac_sources
+from corpus_migration import predecessor_record, stage_predecessor, verify_equivalence
 from stage2_util.publication import publication_lock, publish_candidate
 import native_tahoe as tahoe
-from native_corpus import CorpusError, open_corpus, seal_corpus, sha256
+from native_corpus import DATASETS, SCHEMA, CorpusError, open_corpus, seal_corpus, sha256
 
 GSE_TENV = "GSE262419"
 TAHOE = "Tahoe-100M"
@@ -122,33 +124,84 @@ def tenv_args(data):
     )
 
 
+SUPPLEMENTS = {
+    "tenv": ("tenv_probe_mapping.csv", "tenv_manifest.json"),
+    "dtoxs_primary": (PRIMARY_MEMBERSHIP,),
+}
+DEFAULT = STEP / "output"
+HISTORICAL = STEP / "historical/native-v1"
+
+
+def _seal(candidate, columns, common_axis, inputs, exclusions, predecessor):
+    seal_corpus(candidate, columns, common_axis["size"], common_axis["sha256"], inputs,
+                exclusions, supplements=SUPPLEMENTS,
+                predecessor=predecessor_record(predecessor) if predecessor is not None else None)
+
+
+def _preserve_api(candidate, output):
+    if (output / "api").is_dir():
+        shutil.copytree(output / "api", candidate / "api", ignore=shutil.ignore_patterns("__pycache__"))
+
+
+def _verify_primary_membership(root, source):
+    ledger = pd.read_csv(root / "dtoxs_primary" / PRIMARY_MEMBERSHIP, dtype=str,
+                         keep_default_na=False)
+    if (len(source.obs) != 842 or len(ledger) != 956 or ledger.source_table.nunique() != 8
+            or ledger[["source_table", "source_row"]].duplicated().any()
+            or set(ledger.profile_id) != set(source.obs.index)):
+        raise CorpusError("DToxS-primary source membership or observation count differs")
+
+
+def migrate(predecessor, candidate):
+    """Build a candidate from the independently accepted flat native corpus."""
+    release.check_manifest(predecessor.root, predecessor.manifest)
+    axis, _ = axis_inputs()
+    columns = stage_predecessor(predecessor, candidate, axis)
+    _seal(candidate, columns, predecessor.manifest["common_axis"],
+          predecessor.manifest["inputs"], predecessor.manifest["exclusions"], predecessor)
+
+
 def verify_product(root):
     with open_corpus(root) as corpus:
+        if corpus.manifest["schema"] != SCHEMA or set(corpus.manifest["sources"]) != DATASETS:
+            raise CorpusError("unexpected corpus dataset inventory")
+        expected = {
+            f"{name}/{filename}" for name in DATASETS
+            for filename in (f"{name}.h5ad", "manifest.json", *SUPPLEMENTS.get(name, ()))
+        }
+        if set(corpus.manifest["outputs"]) != expected:
+            raise CorpusError("unexpected corpus file inventory")
+        files = {path.relative_to(root).as_posix() for path in root.glob("*/*")
+                 if path.parent.name != "api"}
+        if files != expected or {path.name for path in root.iterdir()} - {"api", "manifest.json"} != DATASETS:
+            raise CorpusError("corpus payload directory differs from release inventory")
         release.check_manifest(root, corpus.manifest)
         for name in corpus.manifest["sources"]:
-            data = corpus.source(name)
-            if name in {"tenv", "tahoe_bulk"} and not data.shared_axis_complete:
+            dataset = corpus.source(name)
+            if name in {"tenv", "tahoe_bulk"} and not dataset.shared_axis_complete:
                 raise CorpusError(f"{name}: common axis coverage is incomplete")
+            if name == "dtoxs_primary":
+                _verify_primary_membership(root, dataset)
         return corpus.manifest_sha256
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("publish", "verify"))
+    parser.add_argument("action", choices=("publish", "verify", "migrate"))
     parser.add_argument("--materialized-root", type=Path, default=REPO)
-    parser.add_argument("--output", type=Path, default=STEP / "output/native")
+    parser.add_argument("--output", type=Path, default=DEFAULT)
+    parser.add_argument("--predecessor", type=Path,
+                        help="sealed v1 release used for migration or equivalence checks")
     parser.add_argument("--tahoe-built", type=Path,
                         help="reuse a native Tahoe build, independently replayed before use")
     parser.add_argument("--staging", type=Path, default=STEP / "execution/checkpoints")
     args = parser.parse_args()
-    source_root = args.materialized_root.resolve()
-    data = source_root / "pert_data"
-    axis, crosswalk = axis_inputs()
-    tahoe_mapping, tahoe_columns = tahoe_mappings(data, axis, crosswalk)
-    drug_metadata = data / TAHOE / "source/metadata/drug_metadata.parquet"
-    pin_source(data / TAHOE, drug_metadata)
-
-    def build(candidate):
+    def build(candidate, predecessor):
+        data = args.materialized_root.resolve() / "pert_data"
+        axis, crosswalk = axis_inputs()
+        tahoe_mapping, tahoe_columns = tahoe_mappings(data, axis, crosswalk)
+        drug_metadata = data / TAHOE / "source/metadata/drug_metadata.parquet"
+        pin_source(data / TAHOE, drug_metadata)
         inputs = {
             "common_axis_sha256": gene_mapping.AXIS_SHA256,
             "crosswalk_sha256": sha256(
@@ -203,17 +256,74 @@ def main():
                            drug_metadata)
         columns = build_cardiac_sources(candidate, data, axis, pin_source, inputs)
         columns.update(tenv=tenv_columns, tahoe_bulk=tahoe_columns)
-        seal_corpus(candidate, columns, len(axis), gene_mapping.AXIS_SHA256, inputs, EXCLUSIONS,
-                    artifacts=("tenv_probe_mapping.csv", "tenv_manifest.json"))
+        if predecessor is not None:
+            inputs["publication_method"] = "external-source-replay"
+        _seal(candidate, columns, {"size": len(axis), "sha256": gene_mapping.AXIS_SHA256},
+              inputs, EXCLUSIONS, predecessor)
 
     args.staging.mkdir(parents=True, exist_ok=True)
     with publication_lock(args.output) as output, (args.staging / "native-corpus.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        if args.action == "publish":
-            publish_candidate(release, output, build, verify_product, staging=args.staging)
+        previous = args.predecessor
+        if previous is None and output == DEFAULT.resolve():
+            if HISTORICAL.is_dir():
+                previous = HISTORICAL
+            elif (output / "native/manifest.json").is_file():
+                previous = output / "native"
+        if args.action == "migrate" and previous is None:
+            parser.error("migration requires a sealed v1 release")
+        if previous is None:
+            _run(args, output, None, build)
         else:
-            release.replay(output, build, verify_product, root=args.staging)
+            with open_corpus(previous) as predecessor:
+                _run(args, output, predecessor, build)
         print(verify_product(output))
+
+
+def _run(args, output, predecessor, build):
+    migrated = args.action == "migrate"
+    if args.action == "verify":
+        accepted = release.read_json(output / "manifest.json")
+        migrated = ("predecessor" in accepted
+                    and accepted["inputs"].get("publication_method") != "external-source-replay")
+        if migrated and predecessor is None:
+            raise CorpusError("verification of a migrated release requires its sealed predecessor")
+
+    def prepare(candidate):
+        if migrated:
+            migrate(predecessor, candidate)
+        else:
+            build(candidate, predecessor)
+        _preserve_api(candidate, output)
+
+    def verify(candidate):
+        verify_product(candidate)
+        if predecessor is not None:
+            verify_equivalence(predecessor, candidate)
+
+    if args.action == "verify":
+        release.replay(output, prepare, verify, root=args.staging)
+        return
+
+    def verify_before_install(candidate):
+        verify(candidate)
+        if predecessor is not None and predecessor.root.resolve() == (output / "native").resolve():
+            archive = output.parent / "historical/native-v1"
+            archive.parent.mkdir(parents=True, exist_ok=True)
+            if not archive.exists():
+                staging = release.candidate(archive, args.staging)
+                try:
+                    shutil.copytree(predecessor.root, staging, dirs_exist_ok=True, copy_function=os.link)
+                    release.check_manifest(staging, predecessor.manifest)
+                    staging.rename(archive)
+                finally:
+                    shutil.rmtree(staging, ignore_errors=True)
+            with open_corpus(archive) as archived:
+                if archived.manifest_sha256 != predecessor.manifest_sha256:
+                    raise CorpusError("historical corpus differs from predecessor")
+                release.check_manifest(archive, archived.manifest)
+
+    publish_candidate(release, output, prepare, verify_before_install, staging=args.staging)
 
 
 if __name__ == "__main__":

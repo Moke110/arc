@@ -9,7 +9,7 @@ from pathlib import Path
 STEP = Path(__file__).resolve().parents[1]
 REPO = next(parent for parent in STEP.parents if (parent / ".git").exists())
 STAGE2 = REPO / "stage2"
-NATIVE_CORPUS = STAGE2 / "01_corpus/output/native"
+NATIVE_CORPUS = STAGE2 / "01_corpus/output"
 sys.path.insert(0, str(STEP / "output/api"))
 sys.path.insert(0, str(STAGE2 / "01_corpus/output/api"))
 sys.path.insert(0, str(STAGE2 / "util/output/api"))

@@ -25,7 +25,7 @@ sys.path[:0] = [str(path) for path in (
 import normalization
 from stage2_util.derivation import release
 from expression_view import (DEFAULT, LAYERS, PAYLOAD_SCHEMA, RECIPE, SCHEMA, SOURCES,
-                             check_inventory, layer_path, open_view, sha256)
+                             check_inventory, corpus_pin, layer_path, open_view, sha256)
 from native_corpus import open_corpus
 from prediction_axis import open_axes
 from stage2_util.publication import publication_lock, publish_candidate
@@ -155,8 +155,8 @@ def _build_source(root, name, corpus, axis, tags, var):
         cache.unlink()
 
 
-def _build(root, corpus, axis, sources):
-    tags = {"schema": PAYLOAD_SCHEMA, "corpus_sha256": corpus.manifest_sha256, "axis_sha256": axis.sha256}
+def _build(root, corpus, axis, sources, corpus_sha256):
+    tags = {"schema": PAYLOAD_SCHEMA, "corpus_sha256": corpus_sha256, "axis_sha256": axis.sha256}
     var = pd.DataFrame({"gene_index": axis.gene_indices, "symbol": axis.symbols},
                        index=pd.Index([str(gene) for gene in axis.gene_indices], name="gene_index_label"))
     for name in sources:
@@ -167,7 +167,7 @@ def _build(root, corpus, axis, sources):
     release.write_json(root / "manifest.json", manifest)
 
 
-def _verify(root, corpus, axis, sources):
+def _verify(root, axis, sources, corpus_sha256):
     manifest = release.read_json(root / "manifest.json")
     release.check_relative_paths(manifest)
     if tuple(check_inventory(manifest)) != tuple(sources):
@@ -175,7 +175,7 @@ def _verify(root, corpus, axis, sources):
     if {path.name for path in root.iterdir()} != {"manifest.json", *manifest["outputs"]}:
         raise ValueError("expression view release inventory differs")
     for name in sources:
-        with open_view(root, source=name, corpus_sha256=corpus.manifest_sha256,
+        with open_view(root, source=name, corpus_sha256=corpus_sha256,
                        axis_sha256=axis.sha256) as view:
             if tuple(view.var.gene_index) != axis.gene_indices:
                 raise ValueError("expression view axis order differs")
@@ -189,22 +189,24 @@ def publish_views(destination, corpus, axis, *, sources=SOURCES, staging=None):
         raise ValueError("unknown or duplicate expression sources")
     with publication_lock(destination) as output:
         return publish_candidate(
-            release, output, lambda root: _build(root, corpus, axis, sources),
-            lambda root: _verify(root, corpus, axis, sources), staging=staging,
+            release, output, lambda root: _build(root, corpus, axis, sources, corpus.manifest_sha256),
+            lambda root: _verify(root, axis, sources, corpus.manifest_sha256), staging=staging,
             verify_existing=lambda root: release.check_manifest(root, release.read_json(root / "manifest.json")),
         )
 
 
 def replay_views(destination, corpus, axis, *, sources=SOURCES, staging=None):
     with publication_lock(destination) as output:
-        return release.replay(output, lambda root: _build(root, corpus, axis, sources),
-                              lambda root: _verify(root, corpus, axis, sources), root=staging)
+        selected = release.read_json(output / "manifest.json")["corpus_sha256"]
+        verified = corpus_pin(corpus.manifest, corpus.manifest_sha256, selected, sources)
+        return release.replay(output, lambda root: _build(root, corpus, axis, sources, verified),
+                              lambda root: _verify(root, axis, sources, verified), root=staging)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("publish", "verify"))
-    parser.add_argument("--corpus", type=Path, default=STAGE / "01_corpus/output/native")
+    parser.add_argument("--corpus", type=Path, default=STAGE / "01_corpus/output")
     parser.add_argument("--axis", type=Path)
     parser.add_argument("--destination", type=Path, default=DEFAULT)
     parser.add_argument("--staging", type=Path, default=STEP / "execution/checkpoints")
