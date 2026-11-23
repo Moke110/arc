@@ -1,0 +1,168 @@
+{
+  "checks": {
+    "axis": {
+      "candidate_projection_sources": [
+        "sctox",
+        "tahoe_bulk",
+        "tenv"
+      ],
+      "manifest_sha256": "ca14d9ff0dbdd83ec5ba6acf0fcd345dfc1aedb7445bbc362329754105989494",
+      "replayed_sizes": [
+        2000,
+        3000,
+        4000,
+        5000
+      ]
+    },
+    "full_5k_view": {
+      "bounded_check": "First and last rows matched candidate-derived expression, finite control and exact X minus control.",
+      "corpus_sha256": "a4cd6c42165569f77765a9c65de0d9d7e7292c192fdc7d25b455b78fdb50b4e4",
+      "historical_manifest_sha256": "038129736f94233f0b9abc45a13d4363b47d463c10a2c5c6b7921e66312030a6",
+      "manifest_sha256": "d66eed2c849fabc85fc2ae1218e1ea69181a7559bab49dfe4eaaa4e04c5eea2c",
+      "sources": [
+        "tenv",
+        "tahoe_bulk"
+      ]
+    },
+    "method": "Independent bounded comparison against the archived source-replayed v1 corpus. The original acceptance receipt records source replay.",
+    "preinstall_guard": "PASS",
+    "primary": {
+      "match_status_counts": {
+        "matched": 41,
+        "unmatched": 699,
+        "vehicle": 102
+      },
+      "merged_rows": 842,
+      "native_genes": 38478,
+      "per_table_rows": {
+        "Data/Level3/Sequencing Experiment Number 1/PromoCell-DGE-Read-Counts-20150409.tsv": 56,
+        "Data/Level3/Sequencing Experiment Number 2/PromoCell-DGE-Read-Counts-20150503.tsv": 71,
+        "Data/Level3/Sequencing Experiment Number 4/PromoCell-DGE-Read-Counts-20151120.tsv": 348,
+        "Data/Level3/Sequencing Experiment Number 5/Cor/PromoCell-DGE-Read-Counts-20161108-Cor.tsv": 328,
+        "Data/Level3/Sequencing Experiment Number 5/Spec-Fixed/PromoCell-DGE-Read-Counts-20161108-Spec-Fixed.tsv": 42,
+        "Data/Level3/Sequencing Experiment Number 5/Spec-Var-1/PromoCell-DGE-Read-Counts-20161108-Spec-Var-1.tsv": 38,
+        "Data/Level3/Sequencing Experiment Number 5/Spec-Var-2/PromoCell-DGE-Read-Counts-20161108-Spec-Var-2.tsv": 39,
+        "Data/Level3/Sequencing Experiment Number 5/Spec-Var-3/PromoCell-DGE-Read-Counts-20161108-Spec-Var-3.tsv": 34
+      },
+      "profiles_by_source_occurrences": {
+        "1": 806,
+        "2": 10,
+        "5": 26
+      },
+      "source_rows": 956
+    },
+    "source_manifest_sha256": {
+      "Annotation": "711927b3efc4df9b9138d717700ae7f77174feaf0f1021267844b42f0e156d16",
+      "DToxS-iPSC": "b2bd831ea42b4bb0080daa4638e3e1734ed941830eb07238850145c231116515",
+      "GSE244740": "df44b23a5c6ec1cd8b7bfae70ea10703573206a06fdc439251cfb968a6ed38cf",
+      "GSE247541": "0a6971a13ecec4b72a3d4ca25792fd263480c1ab0e33475455ccb257c264c1e7",
+      "GSE262419": "9f57a8d25562332ebf69d80d89dd3eabd7ab7ca55abdbd842469fe3a0293540a",
+      "LINCS-LDS-1593": "a9243ebb9e0c303d64142294ab1e946614438279ee567f86719ff4eeedb8d4d2",
+      "Tahoe-100M": "de9e3c36908cf5d15400b64f67ed55ecca0343157040b8e93cbb5a97b02fa353",
+      "XPert-L1000": "61f6ff15e5335b09a26690ee70d1e4f56bc6e46ee0242edaee8ab91e56246ba2"
+    },
+    "unchanged_dataset_values_compared": 4485998508,
+    "unchanged_datasets": {
+      "dtoxs_ipsc_conv": {
+        "predecessor": "dtoxs_ipsc_conv",
+        "shape": [
+          1171,
+          38478
+        ]
+      },
+      "dtoxs_ipsc_dge": {
+        "predecessor": "dtoxs_ipsc_dge",
+        "shape": [
+          344,
+          38478
+        ]
+      },
+      "gse247541": {
+        "predecessor": "gse247541",
+        "shape": [
+          15,
+          60656
+        ]
+      },
+      "sctox": {
+        "predecessor": "screen_ctox",
+        "shape": [
+          3072,
+          44154
+        ]
+      },
+      "tahoe_bulk": {
+        "predecessor": "tahoe_bulk",
+        "shape": [
+          67018,
+          62710
+        ]
+      },
+      "tenv": {
+        "predecessor": "tenv",
+        "shape": [
+          4510,
+          19613
+        ]
+      }
+    },
+    "unchanged_observation_and_gene_metadata": "PASS"
+  },
+  "date": "2026-11-23",
+  "previous_release": {
+    "archive_path": "historical/native-v1/manifest.json",
+    "path": "output/native/manifest.json",
+    "sha256": "a4cd6c42165569f77765a9c65de0d9d7e7292c192fdc7d25b455b78fdb50b4e4",
+    "source_replay_receipt": {
+      "path": "log/acceptance.json",
+      "sha256": "2140fc71a351cc98ccca9c34afa83f2dd51ce8face0bb4dc266867dfeb5ac24f"
+    }
+  },
+  "release": {
+    "artifacts": {
+      "dtoxs_ipsc_conv/dtoxs_ipsc_conv.h5ad": "c09d359f378129f7bb142c30c406b9a9de63c4209bb88dd4e3bbb958caf74020",
+      "dtoxs_ipsc_conv/manifest.json": "a32206b0da20f726a8b9d4627f0b22d2a258d41a9fcca42ed3cdceea3713738e",
+      "dtoxs_ipsc_dge/dtoxs_ipsc_dge.h5ad": "3e626c967dadc6bfe253e358748b1efaf1e647fe4e3bdf9db74db1babe179c22",
+      "dtoxs_ipsc_dge/manifest.json": "c00c9b17e477163c5dff5f7f01f7ad281c12f6e87292bf2dae376dda09680115",
+      "dtoxs_primary/dtoxs_primary.h5ad": "f1644be64dff0b086e8ddda69f930dc2a98ea92f5587a936081745cb7016adaf",
+      "dtoxs_primary/manifest.json": "825ec9e4eebbdd4dd820390326a09a4b30f1f13cbd1350e68d871e4eb0cd825c",
+      "dtoxs_primary/source_observations.csv": "76b7ec90759f2bcc8f8e5c4d40db74919db7ede51a38819427f2349051dd924e",
+      "gse247541/gse247541.h5ad": "95e1c41897d9d008b5d979b6d2fe0ba6ae29cd0304c8d1e9599cf6d4ba7993f7",
+      "gse247541/manifest.json": "cdb2aae6f5ac0b10443c74e40f03d00be2fd6f2bf7fc56c07ff4cc2ccc6bfbe8",
+      "sctox/manifest.json": "2e3acc3aa30368df9262dbf5d5cda2a40f846b9b5d43f900fde349b0b74bf2f0",
+      "sctox/sctox.h5ad": "c0c982c58eec361278a47fad24fb13a9680311f8de85a1d884ce4819e98a75df",
+      "tahoe_bulk/manifest.json": "3c7333f03ebaa588614002100419dba93be3dc66976dcbcfec5942cf0de7c62d",
+      "tahoe_bulk/tahoe_bulk.h5ad": "f6b57ad2bc681f270187695d98f4da139f8ddb98f7c3f6712a71e198ea2f4a59",
+      "tenv/manifest.json": "db0a9be8cac74c12b56f6a67ff5946f2ac6fd4070f5c85ba30bd32a0d3c8a703",
+      "tenv/tenv.h5ad": "5f664f4c67b9ebdf816a08355ee024a5bd6f51b2a71926e17a446ce221691815",
+      "tenv/tenv_manifest.json": "e0941b240985ed0c77687d363c8e2ba1b069d86f1227b1d512afad6c4897aa5b",
+      "tenv/tenv_probe_mapping.csv": "f3e3dfcd3e60442dedaadc126887c409fb6dedd52831f2f3811c796b457b0485"
+    },
+    "path": "output/manifest.json",
+    "schema": "stage2-native-corpus-v2",
+    "sha256": "91a54af534bb34df97619814c38ea676a074e1ec826753095c6f55b068165a90"
+  },
+  "resources": {
+    "acceptance": {
+      "peak_rss_kib": 889272,
+      "wall_clock": "2:11.34"
+    },
+    "axes": {
+      "peak_rss_kib": 350612,
+      "wall_clock": "0:03.95"
+    },
+    "migrate": {
+      "peak_rss_kib": 847336,
+      "wall_clock": "3:09.31"
+    },
+    "preinstall": {
+      "peak_rss_kib": 500064,
+      "wall_clock": "0:20.31"
+    }
+  },
+  "result": "PASS",
+  "schema": "stage2-native-corpus-migration-acceptance-v1",
+  "spec": "https://github.com/Moke110/arc/issues/303",
+  "ticket": "https://github.com/Moke110/arc/issues/304",
+  "timezone": "Asia/Shanghai"
+}

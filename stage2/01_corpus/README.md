@@ -26,7 +26,9 @@ DToxS-primary directory contains `source_observations.csv`, which traces
 842 merged observations to all 956 original rows across eight tables.
 Counts for shared observations must agree after alignment by native gene ID.
 The [original acceptance receipt](log/acceptance.json) records the v1
-populations, coverage, source replay and payload digests.
+populations, coverage, source replay and payload digests. The
+[migration receipt](log/migration-303.json) records the archived and candidate
+manifest digests, bounded count parity, primary membership and downstream checks.
 
 ```python
 from native_corpus import open_corpus
