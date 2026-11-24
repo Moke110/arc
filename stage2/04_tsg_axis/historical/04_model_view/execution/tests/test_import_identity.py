@@ -92,10 +92,10 @@ class ImportedEvidenceTests(unittest.TestCase):
         provenance=root/'import-provenance';provenance.mkdir()
         shutil.copy2(SCRIPT.parent/'tests/fixtures/original-plan-551a3c9.json',provenance/'original-plan.json')
         (provenance/'compatibility-audit.json').write_text(json.dumps(self.audit))
-        repo=SCRIPT.parents[3]
+        repo=next(parent for parent in SCRIPT.parents if (parent/'.git').exists())
         for name in self.original['code_sha256']:
             path=provenance/'runtime'/name;path.parent.mkdir(parents=True,exist_ok=True)
-            path.write_bytes(subprocess.check_output(['git','-C',str(repo),'show','551a3c9:stage2/04_model_view/'+name]))
+            path.write_bytes(subprocess.check_output(['git','-C',str(repo),'show',f'551a3c9:{self.imports.STEP_RELATIVE / name}']))
         replay=dict(status='exact',prediction_sha256=outputs['prediction.npy'],checkpoint_sha256=outputs['checkpoint.pt'],
                     input_manifest_sha256=self.original['input_manifest_sha256'],config_sha256=outputs['config.json'],environment_sha256=outputs['environment.json'])
         (provenance/'fresh-process-replay.json').write_text(json.dumps(replay))
@@ -167,7 +167,7 @@ class ImportedEvidenceTests(unittest.TestCase):
         with patch('subprocess.check_output',side_effect=['wrong-commit\n','551a3c9-original\n']):
             with self.assertRaisesRegex(ValueError,'frozen runtime'):
                 self.imports.verify_runtime(runtime,self.original,matrix.digest)
-        path=runtime/'stage2/04_model_view/execution/prnet.py'
+        path=runtime/self.imports.STEP_RELATIVE/'execution/prnet.py'
         path.parent.mkdir(parents=True);path.write_text('changed frozen runtime')
         with patch('subprocess.check_output',return_value=self.imports.FROZEN_COMMIT+'\n'):
             with self.assertRaisesRegex(ValueError,'runtime bytes changed'):

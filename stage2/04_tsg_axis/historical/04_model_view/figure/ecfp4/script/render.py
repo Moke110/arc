@@ -8,7 +8,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'util/output/api'))
+sys.path.insert(0, str(next(path for path in Path(__file__).resolve().parents if path.name == 'stage2') / 'util/output/api'))
 from stage2_util import palette
 
 SEALED_MLP_LABEL = 'MLP_Morgan'

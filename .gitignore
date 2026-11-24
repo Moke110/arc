@@ -160,16 +160,25 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 /stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/release/*
 !/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/release/manifest.json
 
-# Single-dose tenv5k successor: public code is tracked, candidates disposable.
-!/stage2/04_model_view/output/
-/stage2/04_model_view/output/*
-!/stage2/04_model_view/output/api/
-!/stage2/04_model_view/output/api/**
-/stage2/04_model_view/output/api/**/__pycache__/
-/stage2/04_model_view/output/api/**/*.py[cod]
-/stage2/04_model_view/execution/checkpoints/
-!/stage2/04_model_view/figure/data/*.csv
-!/stage2/04_model_view/log/frozen-inputs/*.csv
+# Step 04 owns axis training code. Local run payloads stay ignored.
+!/stage2/04_tsg_axis/output/
+/stage2/04_tsg_axis/output/*
+!/stage2/04_tsg_axis/output/api/
+!/stage2/04_tsg_axis/output/api/**
+/stage2/04_tsg_axis/output/api/**/__pycache__/
+
+# Archived single-dose comparison: track public code and report data.
+!/stage2/04_tsg_axis/historical/04_model_view/output/
+/stage2/04_tsg_axis/historical/04_model_view/output/*
+!/stage2/04_tsg_axis/historical/04_model_view/output/api/
+!/stage2/04_tsg_axis/historical/04_model_view/output/api/**
+/stage2/04_tsg_axis/historical/04_model_view/output/api/**/__pycache__/
+/stage2/04_tsg_axis/historical/04_model_view/output/api/**/*.py[cod]
+/stage2/04_tsg_axis/historical/04_model_view/execution/checkpoints/
+!/stage2/04_tsg_axis/historical/04_model_view/figure/data/*.csv
+!/stage2/04_tsg_axis/historical/04_model_view/log/frozen-inputs/*.csv
+!/stage2/04_tsg_axis/historical/04_model_view/log/227-threefold/input-splits.csv
+!/stage2/04_tsg_axis/historical/04_model_view/log/227-threefold/means-status.csv
 
 /stage2/01_data_raw/historical/native-v1/
 

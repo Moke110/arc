@@ -21,3 +21,6 @@ stage2/02_gene_axis/02.1_hvg-deg/execution/tests/test_prediction_axis.py:^stage2
 stage2/03_data_train/03.1_hvg-deg-5k/execution/migrate_release.py:^stage2/03_view/03[.]1_hvg-deg_views/output/raw-first-v1$
 stage2/03_data_train/03.1_hvg-deg-5k/execution/migrate_release.py:^stage2/03_view/03[.]1_hvg-deg-5k/output/release$
 stage2/03_data_train/03.1_hvg-deg-5k/execution/migrate_release.py:^stage2/03_view/03[.]1_hvg-deg-5k/historical/raw-first-v1$
+# Historical Git object lookups retain the original Step 04 path.
+stage2/04_tsg_axis/historical/04_model_view/execution/import_matrix.py:^stage2/02_models_tenv-5k$
+stage2/07_tsg_dose/execution/historical/publish_release_v1.py:^stage2/04_model_view$

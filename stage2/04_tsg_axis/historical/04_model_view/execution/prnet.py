@@ -4,8 +4,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
-ROOT = next(p for p in Path(__file__).resolve().parents if (p / '.git').exists())
-sys.path.insert(0, str(ROOT / 'stage2/04_model_view/output/api'))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'output/api'))
 from tenv5k.learner import train, accept_replay
 
 if __name__ == '__main__':
