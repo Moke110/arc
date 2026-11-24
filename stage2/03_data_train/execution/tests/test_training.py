@@ -141,6 +141,30 @@ class TrainingTest(unittest.TestCase):
         self.assertTrue((self.output / "tenv-ref-vector.h5").is_file())
         self.assertEqual(replay_tenv(*args, staging=self.staging)["result"], "PASS")
 
+    def test_tenv_axis_publication_requires_the_reference_population(self):
+        from build_tenv_training import publish_tenv, replay_tenv
+        from training_data import open_tenv_training
+
+        tenv = self.source_observations["tenv"].copy()
+        tenv.loc[tenv.cell_line.eq("other"), "plate"] = "C"
+        self.counts[:2, 3] = [1, 2]
+        corpus = self.make_corpus("tenv-raw", {"tenv": tenv})
+        folds = (self.axis, self.fold_root, self.receipt)
+        reference = self.root / "reference"
+        publish_tenv(reference, corpus, self.axis, *folds, staging=self.staging)
+
+        axes = (PredictionAxis((5, 2, 3), ("five", "two", "three"), "b" * 64),
+                PredictionAxis((2,), ("two",), "c" * 64))
+        args = self.output, corpus, axes[0], *folds
+        publish_tenv(*args, staging=self.staging, reference=reference)
+        self.assertEqual(replay_tenv(*args, staging=self.staging, reference=reference)["result"], "PASS")
+        with open_tenv_training(self.output) as data:
+            digest = data.manifest_sha256
+        with self.assertRaisesRegex(ValueError, "treatment population or fold assignment"):
+            publish_tenv(self.output, corpus, axes[1], *folds, staging=self.staging, reference=reference)
+        with open_tenv_training(self.output) as data:
+            self.assertEqual(data.manifest_sha256, digest)
+
     def freeze(self):
         rows = pd.DataFrame(self.fold_rows, columns=[
             "row", "profile_id", "drug_parent", "dose_um", "scenario", "fold", "partition",
