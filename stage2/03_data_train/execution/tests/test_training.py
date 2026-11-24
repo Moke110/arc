@@ -34,8 +34,6 @@ def digest(path):
 class TrainingTest(unittest.TestCase):
     def setUp(self):
         self.root = Path(self.enterContext(tempfile.TemporaryDirectory()))
-        raw = self.root / "raw"
-        raw.mkdir()
         ids = ["t1", "t2", "v1", "v2", "t3", "v3", "t4", "v4", "blank",
                "bad_t", "media", "zero_t", "zero_v", "missing_control", "blank_dose",
                "zero_control_t", "held_parent", "held_dose"]
@@ -66,14 +64,9 @@ class TrainingTest(unittest.TestCase):
         tahoe_obs["vehicle"] = np.where(
             obs.role.eq("vehicle"), obs.vehicle.map({"DMSO": "DMSO_TF", "Media": "DMSO"}), ""
         )
-        source_observations = {"tenv": obs, "tahoe_bulk": tahoe_obs}
-        genes = pd.DataFrame(index=map(str, range(18164)))
-        for source, observations in source_observations.items():
-            AnnData(X=counts, obs=observations, var=genes).write_h5ad(raw / f"{source}.h5ad")
-        native_columns = dict(enumerate(range(18164)))
-        seal_corpus(raw, dict.fromkeys(source_observations, native_columns),
-                    18164, COMMON_SHA256, {}, {})
-        self.corpus = self.enterContext(open_corpus(raw))
+        self.counts = counts
+        self.source_observations = {"tenv": obs, "tahoe_bulk": tahoe_obs}
+        self.corpus = self.make_corpus("raw", self.source_observations)
         self.axis = PredictionAxis((5, 2), ("five", "two"), "a" * 64)
         self.output = self.root / "output"
         self.staging = self.root / "staging"
@@ -100,6 +93,77 @@ class TrainingTest(unittest.TestCase):
                         label = "train" if drug == "P" else "validation"
                     self.fold_rows.append([row, profile, drug, dose_um, scenario, fold, label])
         self.freeze()
+
+    def make_corpus(self, name, source_observations):
+        raw = self.root / name
+        raw.mkdir()
+        genes = pd.DataFrame(index=map(str, range(18164)))
+        for source, observations in source_observations.items():
+            AnnData(X=self.counts, obs=observations, var=genes).write_h5ad(raw / f"{source}.h5ad")
+        native_columns = dict(enumerate(range(18164)))
+        seal_corpus(raw, dict.fromkeys(source_observations, native_columns),
+                    18164, COMMON_SHA256, {}, {})
+        return self.enterContext(open_corpus(raw))
+
+    def test_tenv_axis_release_has_three_keyed_products_and_replays_from_raw_counts(self):
+        import h5py
+
+        from build_tenv_training import publish_tenv, replay_tenv
+        from training_data import open_tenv_training
+
+        tenv = self.source_observations["tenv"].copy()
+        tenv.loc[tenv.cell_line.eq("other"), "plate"] = "C"
+        corpus = self.make_corpus("tenv-raw", {"tenv": tenv})
+        args = (self.output, corpus, self.axis, self.axis, self.fold_root, self.receipt)
+        publish_tenv(*args, staging=self.staging)
+        with open_tenv_training(self.output) as data:
+            self.assertEqual(data.treatments[["plate", "drug_parent", "dose_um"]].values.tolist(),
+                             [["A", "P", 1], ["B", "P", 1], ["C", "Q", 2],
+                              ["A", "P", 2], ["C", "Q", 1]])
+            expected_controls = np.log1p([[7500, 2500], [0, 10000], [5000, 5000]]).astype(np.float32)
+            expected_treated = np.log1p([[1000, 9000], [5000, 5000], [10000, 0]]).astype(np.float32)
+            np.testing.assert_array_equal(data.read_controls(0, 3), expected_controls)
+            np.testing.assert_array_equal(data.read_treatments(0, 3), expected_treated)
+            np.testing.assert_array_equal(data.read_treatments(0, 3, "delta"),
+                                          expected_treated - expected_controls)
+            np.testing.assert_allclose(data.control(), expected_controls.mean(axis=0))
+            self.assertEqual(data.treatments.cold_dose_drug_0.tolist(), ["test", "test", "valid", "", ""])
+            self.assertEqual(data.treatments.cold_dose_drug_0_reason.tolist(),
+                             ["", "", "", "held_parent", "held_dose"])
+            with self.assertRaisesRegex(ValueError, "window"):
+                data.read_treatments(0, 257)
+        with h5py.File(self.output / "plate-ref-mtx.h5", "r") as handle:
+            self.assertEqual(handle["plate"].asstr()[:].tolist(), ["A", "B", "C"])
+        with h5py.File(self.output / "pert-mtx.h5", "r") as handle:
+            self.assertEqual(handle["control_row"][:].tolist(), [0, 1, 2, 0, 2])
+            self.assertEqual(handle["cold_dose_drug_0"].asstr()[:].tolist(),
+                             ["test", "test", "valid", "", ""])
+        self.assertTrue((self.output / "tenv-ref-vector.h5").is_file())
+        self.assertEqual(replay_tenv(*args, staging=self.staging)["result"], "PASS")
+
+    def test_tenv_axis_publication_requires_the_reference_population(self):
+        from build_tenv_training import publish_tenv, replay_tenv
+        from training_data import open_tenv_training
+
+        tenv = self.source_observations["tenv"].copy()
+        tenv.loc[tenv.cell_line.eq("other"), "plate"] = "C"
+        self.counts[:2, 3] = [1, 2]
+        corpus = self.make_corpus("tenv-raw", {"tenv": tenv})
+        folds = (self.axis, self.fold_root, self.receipt)
+        reference = self.root / "reference"
+        publish_tenv(reference, corpus, self.axis, *folds, staging=self.staging)
+
+        axes = (PredictionAxis((5, 2, 3), ("five", "two", "three"), "b" * 64),
+                PredictionAxis((2,), ("two",), "c" * 64))
+        args = self.output, corpus, axes[0], *folds
+        publish_tenv(*args, staging=self.staging, reference=reference)
+        self.assertEqual(replay_tenv(*args, staging=self.staging, reference=reference)["result"], "PASS")
+        with open_tenv_training(self.output) as data:
+            digest = data.manifest_sha256
+        with self.assertRaisesRegex(ValueError, "treatment population or fold assignment"):
+            publish_tenv(self.output, corpus, axes[1], *folds, staging=self.staging, reference=reference)
+        with open_tenv_training(self.output) as data:
+            self.assertEqual(data.manifest_sha256, digest)
 
     def freeze(self):
         rows = pd.DataFrame(self.fold_rows, columns=[

@@ -1,5 +1,7 @@
 """Native TranSiGen with the accepted dose transforms and a KPGT input layer."""
 
+from operator import index
+
 import torch
 from torch import nn
 
@@ -40,11 +42,14 @@ def configuration(method, transform):
 
 
 class NativeWidth:
-    def build(self, seed, device):
+    def build(self, seed, device, *, n_genes=5000):
+        n_genes = index(n_genes)
+        if n_genes < 1:
+            raise ValueError('TranSiGen needs a positive gene-axis width')
         torch.manual_seed(seed)
         self.device = torch.device(device)
         model = self.network()(
-            n_genes=5000,
+            n_genes=n_genes,
             n_latent=100,
             n_en_hidden=[1200],
             n_de_hidden=[800],

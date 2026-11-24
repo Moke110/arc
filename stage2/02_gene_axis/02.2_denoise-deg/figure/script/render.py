@@ -14,7 +14,7 @@ import pandas as pd
 
 SCORE_COLUMNS = (
     ("p_tenv", r"$p_{\mathrm{tenv}}$  ·  tenv top-DEG occurrences"),
-    ("p_disease", r"$p_{\mathrm{disease}}$  ·  disease top-DEG occurrences"),
+    ("p_disease", "disease top-DEG1000 occurrences"),
     ("score", r"Score = $p_{\mathrm{tenv}}\times 2^{p_{\mathrm{disease}}}$"),
 )
 
@@ -86,7 +86,7 @@ def render_scores_in_axes(figure_path, histogram, save_figure, light_blue, blue)
 
 
 def render_coverage(figure_path, save_figure, palette):
-    coverage = pd.read_csv(figure_path / "data/disease-DEG200-coverage.csv")
+    coverage = pd.read_csv(figure_path / "data/disease-DEG1000-coverage.csv")
     groups = coverage.pivot(index="disease", columns="axis_size", values="coverage")
     groups = groups.reindex(coverage.disease.drop_duplicates())
     x = np.arange(len(groups))
@@ -95,8 +95,8 @@ def render_coverage(figure_path, save_figure, palette):
     for i, (size, fill) in enumerate(zip(groups.columns, palette, strict=True)):
         ax.bar(x + (i - 2) * width, groups[size], width, color=fill, label=f"{size // 1000}k")
     names = [name.replace("genetic_cardiomyopathy", "Genetic cardiomyopathy") for name in groups.index]
-    ax.set(title="Disease DEG200 coverage by prediction-axis size",
-           ylabel="Top-200 disease DEGs in axis", ylim=(0, 1))
+    ax.set(title="disease top-DEG1000 coverage",
+           ylabel="disease top-DEG1000 coverage", ylim=(0, 1))
     ax.set_xticks(x, names)
     ax.yaxis.set_major_formatter(PercentFormatter(xmax=1))
     ax.legend(title="Axis size", frameon=False, ncol=len(groups.columns), loc="upper left")

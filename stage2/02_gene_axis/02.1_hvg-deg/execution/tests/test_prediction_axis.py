@@ -12,6 +12,14 @@ from prediction_axis import open_axes
 
 
 class PredictionAxisTest(unittest.TestCase):
+    def test_denoise_deg_release_has_distinct_frozen_prediction_axes(self):
+        release = open_axes(family="denoise-deg")
+        self.assertEqual(release.sizes, (1000, 2000, 3000, 4000, 5000))
+        axis = release.axis(3000)
+        self.assertEqual(axis.sha256, "fccdb1e8290cc93e7e7af97f3b2076626fc678f59e38c4ff56aacf48efa9a94b")
+        self.assertEqual(axis.gene_indices, tuple(sorted(set(axis.gene_indices))))
+        self.assertNotEqual(axis.sha256, open_axes().axis(3000).sha256)
+
     def test_release_has_original_ordered_axes(self):
         release = open_axes()
         self.assertEqual(release.sizes, (2000, 3000, 4000, 5000))

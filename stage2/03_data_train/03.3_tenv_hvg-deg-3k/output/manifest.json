@@ -1,0 +1,50 @@
+{
+  "axis_size": 3000,
+  "counts": {
+    "candidate_controls": 16,
+    "candidate_treatments": 1383,
+    "controls": 16,
+    "excluded_raw_rows": 112,
+    "raw_rows": 4510,
+    "treatments": 1383
+  },
+  "inputs": {
+    "axis_sha256": "105b7c40b8d19a7f361bfef4d36745fd3c9122c8a62af0a240d8ff8efadc7245",
+    "folds": {
+      "axis_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+      "held_dose_um": [
+        0.2,
+        1.0,
+        10.0
+      ],
+      "pair_sha256": "eab35931bfc4dd56837647eaf932a0d6c07bf5ebf8bd97f168ad296a2027e2bc",
+      "receipt_sha256": "a50625709c9b96f836bc56bbeab791b30863eba15a39e754394df5ddc207e999",
+      "schema": "tsg-dose-round1-axis-local-pair-v1",
+      "source_manifest_sha256": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e",
+      "split_seed": 226,
+      "splits_sha256": "0fa5ea4b4edd36a6a00b229afb3ffd5257d5f088bf0dd964ff521a14016dd17b"
+    },
+    "raw_counts_sha256": "5f664f4c67b9ebdf816a08355ee024a5bd6f51b2a71926e17a446ce221691815",
+    "raw_dataset_sha256": "db0a9be8cac74c12b56f6a67ff5946f2ac6fd4070f5c85ba30bd32a0d3c8a703",
+    "raw_sha256": "91a54af534bb34df97619814c38ea676a074e1ec826753095c6f55b068165a90",
+    "raw_source": "tenv"
+  },
+  "outputs": {
+    "controls.csv": "c321d761b5ef072df392872e89d2933934fe4c621648783737dcc5138fab5aab",
+    "exclusions.csv": "63ca5e2f416efb432a1a0eddd2cc09a389f2fadb76b25ab0b7c5407970da1fbe",
+    "genes.csv": "105b7c40b8d19a7f361bfef4d36745fd3c9122c8a62af0a240d8ff8efadc7245",
+    "members.csv": "fcb33cae41ed4502d3c69169d51441ba37998493f735ff08e83f16111813a03b",
+    "pert-mtx.h5": "940d33b4339a000ba270f405b7814ad17e20cc97058761fbf952f9521663bada",
+    "plate-ref-mtx.h5": "777365c4fb1e244d7fd893aa48c81b65fc30b7a3d3bc62b47cc425f9d7bf7891",
+    "tenv-ref-vector.h5": "4f9ab70fa5e9421741d7cf7721c4b459b2d6b8f996fd2ae8e3e9693c86112a03",
+    "treatments.csv": "01dac0b2e8a52212cfbc06d1981162902ae450e62d8bcc45831fa8993069bdc4"
+  },
+  "recipe": {
+    "C": "equal-weight mean of normalized M_C rows",
+    "delta": "normalized M_T treatment minus matched normalized M_C",
+    "normalization": "ordered-axis integer sum, CP10K on selected-axis total, natural log1p in float32",
+    "vehicle": "DMSO"
+  },
+  "schema": "stage2-tenv-plate-matched-training-v2",
+  "source": "tenv"
+}

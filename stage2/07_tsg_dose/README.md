@@ -54,6 +54,8 @@ study replay.
 
 ## Historical tenv KPGT dose comparison
 
+Use the [pinned checkpoint replay](../04_tsg_axis/README.md#replay-a-sealed-runtime) for accepted pre-cutover checkpoints.
+
 [ADR 0080](../../docs/adr/0080-tenv-kpgt-dose-round1.md) fixes the accepted
 2304-dimensional float32 Step 03 KPGT representation for all 459 tenv drug
 parents. The comparison uses the exact ADR0078 tenv splits, G_5000 axis and

@@ -65,7 +65,7 @@ for old in 01_bases 01_corpus 03_tsg_dose 04_tsg_transfer 02_models_tenv 02_data
   printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
   if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
 done
-printf 'p = "stage2/01_data_raw/output/x"\nq = "stage2/04_model_view/output/x"\nr = "stage2/07_tsg_dose/output/x"\ns = "stage2/09_tsg_transfer/output/x"\nt = "stage2/06_tsg_drug_emb/output/x"\n' >"$tmp/current.py"
+printf 'p = "stage2/01_data_raw/output/x"\nq = "stage2/04_tsg_axis/output/x"\nr = "stage2/07_tsg_dose/output/x"\ns = "stage2/09_tsg_transfer/output/x"\nt = "stage2/06_tsg_drug_emb/output/x"\n' >"$tmp/current.py"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "active roots/external source must pass"
 # An active-root prefix must not exempt a longer retired-looking sibling name.
@@ -85,7 +85,7 @@ run_root() {
   STAGE2_PATH_AUDIT_ROOT="$1" STAGE2_PATH_AUDIT_FILES="$2" bash "$audit"
 }
 fixture_root="$tmp/layout/stage2"
-for step in util 01_data_raw 02_gene_axis 03_data_train 04_model_view 05_tsg_loss 06_tsg_drug_emb 07_tsg_dose 08_tsg_width_dose 09_tsg_transfer; do
+for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 06_tsg_drug_emb 07_tsg_dose 08_tsg_width_dose 09_tsg_transfer; do
   mkdir -p "$fixture_root/$step"
   printf '%s\n' "$step" >"$fixture_root/$step/AGENTS.md"
   printf '%s\n' "$step" >"$fixture_root/$step/README.md"
@@ -112,13 +112,13 @@ printf '%s\n' "$out" | grep -q 'unexpected Stage 2 entry: .*01_bases' \
   || fail "the retired root must be named in the failure"
 rmdir "$fixture_root/01_bases"
 # An active root without its routing skeleton is rejected.
-mv "$fixture_root/04_model_view/README.md" "$tmp/successor-README.off"
+mv "$fixture_root/04_tsg_axis/README.md" "$tmp/successor-README.off"
 if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
   fail "the active comparison without README.md must fail the layout guard"
 fi
-printf '%s\n' "$out" | grep -q 'missing step routing: .*04_model_view/README.md' \
+printf '%s\n' "$out" | grep -q 'missing step routing: .*04_tsg_axis/README.md' \
   || fail "the missing successor routing file must be named in the failure"
-mv "$tmp/successor-README.off" "$fixture_root/04_model_view/README.md"
+mv "$tmp/successor-README.off" "$fixture_root/04_tsg_axis/README.md"
 # The registered dose comparison requires both owning routing files too.
 for routing in AGENTS.md README.md; do
   mv "$fixture_root/07_tsg_dose/$routing" "$tmp/dose-routing.off"

@@ -194,14 +194,14 @@ keeps accepted figures, reports, and their original receipt paths.
 | [Training data](../stage2/03_data_train/README.md) | Plate-matched tenv and Tahoe bulk data under `output/tenv/` and `output/tahoe-bulk/`. The sealed well-level views remain under `03.1_hvg-deg-5k/output/release/` for replay. |
 | [Util](../stage2/util/README.md) | Accepted gene identity and representation products plus shared operations. |
 
-### `stage2/04_model_view/` — accepted three-fold comparison (#226/#231)
+### `stage2/04_tsg_axis/historical/04_model_view/` — accepted three-fold comparison (#226/#231)
 
 Canonical ignored payloads preserve the accepted complete 54-run matrix and new
 18-slot Mean release. Sizes below are regular-file byte sums, excluding directory
 metadata. The complete candidate duplicates published runs to retain registrations,
 plan, resources and verification evidence from the accepted run.
 
-| path under `stage2/04_model_view/` | files | bytes | contents / reconstruction |
+| path under `stage2/04_tsg_axis/historical/04_model_view/` | files | bytes | contents / reconstruction |
 |---|---:|---:|---|
 | `output/inputs/` | 12 | 98,265,302 | 1,402 treated wells, 459 parents, 192 unique controls, 5,000 genes, exact three-fold splits/Morgan/manifest; accepted historical input freeze |
 | `output/means/` | 62 | 142,776,780 | 18 baseline slots, 15 applicable and three cold-drug Mean_drug N/A |
