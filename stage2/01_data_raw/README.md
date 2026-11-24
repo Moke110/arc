@@ -1,4 +1,4 @@
-# Source-native perturbation counts
+# Stage 2 raw data
 
 The source-native corpus retains tenv wells, Tahoe plate/well/cell-line bulk
 profiles, four additional cardiac perturbation deposits and their observed
@@ -29,26 +29,28 @@ The [original acceptance receipt](log/acceptance.json) records the v1
 populations, coverage, source replay and payload digests. The
 [migration receipt](log/migration-303.json) records the archived and candidate
 manifest digests, bounded count parity, primary membership and downstream checks.
+The [raw-step relocation record](log/migration-306.md) locates both accepted
+generations and their original audit records after the directory rename.
 
 ```python
 from native_corpus import open_corpus
 
-with open_corpus("stage2/01_corpus/output") as corpus:
+with open_corpus("stage2/01_data_raw/output") as corpus:
     source = corpus.source("tenv")
     native_columns = source.native_columns([9, 20, 10])
     counts = source.counts(0, 64)[:, native_columns]
     control_rows = source.matched_control_rows(0)
 ```
 
-Add `stage2/01_corpus/output/api` to the Python import path. Source keys, native
+Add `stage2/01_data_raw/output/api` to the Python import path. Source keys, native
 observation metadata, output digests and ordered common-axis mappings are
 published in `manifest.json` and the bounded reader. `native_columns` fails
 on unmeasured genes. Windows have a 256-row maximum. Read subsequent windows
 through `batches()`. The reader checks a source's payload before allowing reads.
 
 ```bash
-python stage2/01_corpus/execution/build_corpus.py publish
-python stage2/01_corpus/execution/build_corpus.py verify
+python stage2/01_data_raw/execution/build_corpus.py publish
+python stage2/01_data_raw/execution/build_corpus.py verify
 ```
 
 The publisher replays tenv and native Tahoe counts against pinned external inputs.

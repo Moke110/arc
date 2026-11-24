@@ -18,7 +18,7 @@ STAGE = STEP.parents[1]
 sys.path[:0] = [str(path) for path in (
     STEP / "output/api",
     STAGE / "util/output/api",
-    STAGE / "01_corpus/output/api",
+    STAGE / "01_data_raw/output/api",
     STAGE / "02_gene_axis/02.1_hvg-deg/output/api",
 )]
 
@@ -207,7 +207,7 @@ def replay_views(destination, corpus, axis, *, sources=SOURCES, staging=None,
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("publish", "verify"))
-    parser.add_argument("--corpus", type=Path, default=STAGE / "01_corpus/output")
+    parser.add_argument("--corpus", type=Path, default=STAGE / "01_data_raw/output")
     parser.add_argument("--axis", type=Path)
     parser.add_argument("--historical-corpus", type=Path,
                         help="historical v1 corpus directory for replay of a sealed view")

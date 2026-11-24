@@ -1,6 +1,6 @@
-# Stage 2 source-native corpus
+# Stage 2 raw data
 
-Read ADR 0083 and the [step README](README.md). Owns immutable, source-granular
+Read ADRs 0083 and 0085 and the [step README](README.md). Owns immutable, source-granular
 raw integer counts, observation metadata, matched vehicles and gene coverage.
 Retain unmatched observations. Paired expression, dataset exclusions from model
 views, axis selection and normalized matrices belong to their consuming steps.
