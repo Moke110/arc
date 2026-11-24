@@ -173,6 +173,7 @@ dispatcher verifies the exact Git revision. For the 18 formal fits, pass the
 materialized matrix, Step 03 folder, frozen KPGT folder and native model source.
 
 ```bash
+export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2
 python stage2/04_tsg_axis/execution/replay_pinned.py axes \
   --runtime "$PWD/tmp/axis-runtime" --matrix stage2/04_tsg_axis/output/formal \
   --step03 stage2/03_data_train --representations stage2/util/output/representations \
