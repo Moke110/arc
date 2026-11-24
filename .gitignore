@@ -139,6 +139,15 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # Independent linked checkouts have their own Git indexes and are not repo content.
 /.worktrees/
 
+
+# Plate-matched training payloads are local, and the public reader is tracked.
+!/stage2/03_data_train/output/
+/stage2/03_data_train/output/*
+!/stage2/03_data_train/output/api/
+!/stage2/03_data_train/output/api/*.py
+/stage2/03_data_train/.output.previous/
+/stage2/03_data_train/.output.publication.lock
+
 # Single-dose tenv5k successor: public code is tracked, candidates disposable.
 !/stage2/04_model_view/output/
 /stage2/04_model_view/output/*
