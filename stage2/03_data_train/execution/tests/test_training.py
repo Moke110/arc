@@ -60,16 +60,22 @@ class TrainingTest(unittest.TestCase):
         counts[:, [5, 2]] = [[1, 0], [0, 9], [3, 0], [0, 1], [2, 2], [0, 8],
                              [4, 0], [1, 1], [0, 0], [1, 1], [99, 0], [0, 0],
                              [0, 0], [2, 2], [2, 2], [2, 2], [1, 3], [99, 1]]
-        AnnData(X=counts, obs=obs, var=pd.DataFrame(index=map(str, range(18164)))).write_h5ad(
-            raw / "tenv.h5ad"
+        tahoe_obs = obs.copy()
+        tahoe_obs["vehicle"] = np.where(
+            obs.role.eq("vehicle"), obs.vehicle.map({"DMSO": "DMSO_TF", "Media": "DMSO"}), ""
         )
-        seal_corpus(raw, {"tenv": dict(enumerate(range(18164)))}, 18164, COMMON_SHA256, {}, {})
+        source_observations = {"tenv": obs, "tahoe_bulk": tahoe_obs}
+        genes = pd.DataFrame(index=map(str, range(18164)))
+        for source, observations in source_observations.items():
+            AnnData(X=counts, obs=observations, var=genes).write_h5ad(raw / f"{source}.h5ad")
+        native_columns = dict(enumerate(range(18164)))
+        seal_corpus(raw, dict.fromkeys(source_observations, native_columns),
+                    18164, COMMON_SHA256, {}, {})
         self.corpus = self.enterContext(open_corpus(raw))
         self.axis = PredictionAxis((5, 2), ("five", "two"), "a" * 64)
         self.output = self.root / "output"
         self.staging = self.root / "staging"
         self.fold_root = self.root / "folds"
-        self.fold_root.joinpath("tenv").mkdir(parents=True)
         self.receipt = self.root / "receipt.json"
         self.fold_rows = []
         for scenario in ("cold-drug", "cold-drug-dose"):
@@ -94,22 +100,27 @@ class TrainingTest(unittest.TestCase):
         self.freeze()
 
     def freeze(self):
-        source = self.fold_root / "tenv"
-        pd.DataFrame(self.fold_rows, columns=[
+        rows = pd.DataFrame(self.fold_rows, columns=[
             "row", "profile_id", "drug_parent", "dose_um", "scenario", "fold", "partition",
-        ]).to_csv(source / "splits.csv", index=False)
-        (source / "manifest.json").write_text(json.dumps({
-            "outputs": {"splits.csv": digest(source / "splits.csv")},
-        }))
+        ])
+        source_digests = {}
+        for key in ("tenv", "tahoe_bulk"):
+            source = self.fold_root / key
+            source.mkdir(parents=True, exist_ok=True)
+            rows.to_csv(source / "splits.csv", index=False)
+            (source / "manifest.json").write_text(json.dumps({
+                "outputs": {"splits.csv": digest(source / "splits.csv")},
+            }))
+            source_digests[key] = digest(source / "manifest.json")
         pair = self.fold_root / "manifest.json"
         pair.write_text(json.dumps({
             "schema": "tsg-dose-round1-axis-local-pair-v1",
             "view_generation": {"axis": {"sha256": self.axis.sha256}},
-            "sources": {"tenv": digest(source / "manifest.json")},
+            "sources": source_digests,
         }))
         self.receipt.write_text(json.dumps({
             "pair_sha256": digest(pair),
-            "input_source_evidence": {"tenv": {"split_seed": 226}},
+            "input_source_evidence": {"tenv": {"split_seed": 226}, "tahoe_bulk": {"split_seed": 2026}},
         }))
 
     def publish(self):
@@ -159,6 +170,34 @@ class TrainingTest(unittest.TestCase):
             self.assertEqual(rows.cold_drug_dose_0_reason.tolist(), ["held_parent", "held_dose"])
             np.testing.assert_allclose(data.read_treatments(3, 5),
                                        np.log1p([[2500, 7500], [9900, 100]]))
+
+    def test_pair_adds_tahoe_using_its_compatible_vehicle_and_frozen_strips(self):
+        self.publish()
+        tenv_digest = digest(self.output / "tenv/manifest.json")
+        args = (self.output, self.corpus, self.axis, self.fold_root, self.receipt)
+        publish_training(*args, staging=self.staging)
+        self.assertEqual(digest(self.output / "tenv/manifest.json"), tenv_digest)
+        with open_training(self.output, source="tahoe-bulk") as data:
+            self.assertEqual(list(data.genes.gene_index), [5, 2])
+            self.assertEqual(data.manifest["inputs"]["raw_source"], "tahoe_bulk")
+            self.assertEqual(data.manifest["inputs"]["folds"]["split_seed"], 2026)
+            self.assertEqual(list(zip(data.controls.plate, data.controls.cell_line)),
+                             [("A", "CM"), ("B", "CM"), ("A", "other")])
+            self.assertEqual(data.treatments.control_row.tolist(), [0, 1, 2, 0, 2])
+            expected_controls = np.log1p([[7500, 2500], [0, 10000], [5000, 5000]]).astype(np.float32)
+            expected_treatment = np.log1p([[1000, 9000], [5000, 5000], [10000, 0]]).astype(np.float32)
+            np.testing.assert_array_equal(data.read_controls(0, 3), expected_controls)
+            np.testing.assert_array_equal(data.read_treatments(0, 3), expected_treatment)
+            np.testing.assert_array_equal(data.read_treatments(0, 3, "delta"),
+                                          expected_treatment - expected_controls)
+            np.testing.assert_allclose(data.control(), expected_controls.mean(axis=0))
+            excluded = data.exclusions().set_index("profile_id")
+            self.assertEqual(excluded.loc["media", "reason"], "incompatible_vehicle")
+            strips = data.treatments.iloc[-2:]
+            self.assertEqual(strips.cold_drug_dose_0.tolist(), ["excluded", "excluded"])
+            self.assertEqual(strips.cold_drug_dose_0_reason.tolist(), ["held_parent", "held_dose"])
+        result = replay_training(*args, staging=self.staging)
+        self.assertEqual(result["sources"], ["tenv", "tahoe-bulk"])
 
     def test_failed_publication_keeps_previous_accepted_bytes(self):
         self.publish()

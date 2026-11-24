@@ -7,15 +7,16 @@ projects source-native counts to that axis, sums compatible replicates, then
 applies CP10K and natural log1p to each pooled profile.
 
 - `C` is the equal-weight mean of all normalized plate/cell-line controls.
-- `M_C` contains one normalized DMSO control per tenv plate and cell line.
+- `M_C` contains one normalized control per plate and cell line. It pools DMSO
+  wells for tenv and DMSO_TF wells for Tahoe bulk.
 - `M_T` contains normalized treatment and Delta for each plate, cell line,
   canonical drug parent and measured dose. Delta uses that row's matching
   normalized plate/cell-line control.
 
-The release manifest binds each dataset manifest to the same raw release and
-axis order. Each dataset directory contains those matrices in `training.h5`,
-the ordered genes, control and treatment row metadata, a membership ledger and
-an exclusion ledger. The treatment metadata carries six frozen source-specific
+The release publishes `tenv/` and `tahoe-bulk/` and binds both dataset
+manifests to the same raw release and axis order. Each dataset directory holds
+`training.h5`, the ordered genes, control and treatment row metadata, and
+membership and exclusion ledgers. The treatment metadata carries six frozen source-specific
 Step 07 fold labels. Cold-drug-dose rows in either excluded strip remain
 available with a separate `held_parent` or `held_dose` reason.
 
@@ -33,8 +34,9 @@ with open_training(source="tenv") as training:
     labels = training.treatments.iloc[:8]
 ```
 
-Use the CLI with a separate destination to build and replay a candidate from
-the accepted raw, axis and frozen fold inputs.
+Use the CLI with a separate destination to build and replay a paired candidate
+from the accepted raw, axis and frozen fold inputs. Use `--source tenv` or
+`--source tahoe-bulk` for an isolated candidate.
 
 ```bash
 D=stage2/03_data_train
@@ -43,3 +45,7 @@ python "$D/execution/build_training.py" publish \
 python "$D/execution/build_training.py" verify \
   --output "$PWD/tmp/training-release" --staging "$PWD/tmp/training-staging"
 ```
+
+The [paired candidate acceptance](log/308-tahoe-paired-candidate.json) records
+both release bindings, the Tahoe populations and six-fold checks, and exact
+replay before the stable-path cutover.
