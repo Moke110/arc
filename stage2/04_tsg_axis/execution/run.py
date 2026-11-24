@@ -204,15 +204,18 @@ def verified_receipt(root, name, registration_sha, files):
     return record
 
 
-def execute(output, phase):
+def execute(output, phase, paths):
     start = time.monotonic()
     with publication_lock(output) as root:
         path = root / "registration.json"
         config, registration_sha = read_json(path), digest(path)
-        args = config["arguments"]
+        args = {**config["arguments"], **paths}
         output_receipt = {"train": "training.json", "predict": "predictions.json", "replay": "manifest.json"}[phase]
-        if (root / output_receipt).exists():
+        already_recorded = (root / output_receipt).exists()
+        if already_recorded and phase != "replay":
             raise ValueError(f"run phase already recorded: {phase}")
+        sealed_files = (*TRAINING_FILES, *PREDICTION_FILES, "training.json", "predictions.json")
+        sealed = verified_receipt(root, output_receipt, registration_sha, sealed_files) if already_recorded else None
         with open_inputs(args["training"], args["representations"]) as (data, vectors):
             if bind(args, data, vectors) != {key: value for key, value in config.items()
                                            if key not in {"arguments", "nonce"}}:
@@ -235,10 +238,12 @@ def execute(output, phase):
                     values, test = predict_test(root, native, model, data, config, registration_sha, training)
                     details = record_predictions(root, scratch, values, test, data, config, replay=phase == "replay")
                     files = PREDICTION_FILES
+                if sealed is not None:
+                    return sealed
                 if phase == "replay":
                     details.update(test_replay="exact", axis=args["axis"], fold=args["fold"],
                                    smoke=args["smoke"], seed=SEED, schema=SCHEMA)
-                    hashes = file_hashes(root, (*TRAINING_FILES, *PREDICTION_FILES, "training.json", "predictions.json"))
+                    hashes = file_hashes(root, sealed_files)
                 else:
                     hashes = file_hashes(scratch, files)
                     for name in files:
@@ -265,7 +270,9 @@ def main():
     registration.add_argument("--device", choices=("cpu", "cuda"), default="cuda")
     registration.add_argument("--smoke", action="store_true")
     for phase in ("train", "predict", "replay"):
-        commands.add_parser(phase)
+        command = commands.add_parser(phase)
+        for field in ("training", "representations", "source"):
+            command.add_argument(f"--{field}", type=Path, help="same pinned input at a new location")
     for child in commands.choices.values():
         child.add_argument("--output", type=Path, required=True)
     args = vars(parser.parse_args())
@@ -275,7 +282,8 @@ def main():
                           for key, value in args.items()})
         print(json.dumps({"registration_sha256": digest(output / "registration.json")}))
     else:
-        print(json.dumps(execute(output, phase), sort_keys=True))
+        paths = {key: str(value.resolve()) for key, value in args.items() if value is not None}
+        print(json.dumps(execute(output, phase, paths), sort_keys=True))
 
 
 if __name__ == "__main__":

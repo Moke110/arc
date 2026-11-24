@@ -34,7 +34,9 @@ caps for each phase. Registration binds dataset and gene order, parent
 and condition partitions, feature and native code digests and the runtime.
 Prediction exactly replays validation before producing held-out predictions.
 A fresh replay verifies all scores' source arrays and row identities against
-the recorded values and publishes the run manifest.
+the recorded values and publishes the run manifest. Repeating replay checks
+the sealed run again without changing it. Pass the corresponding path flags
+when an input has moved. Its registered digests still apply.
 
 Pass `--smoke` only for a bounded two-epoch fit with 64 training, 24
 validation and 24 test conditions. Its manifest marks it as smoke and it is
