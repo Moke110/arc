@@ -7,7 +7,7 @@ from pathlib import Path
 STEP = Path(__file__).resolve().parents[2]
 STAGE2 = STEP.parents[1]
 sys.path.insert(0, str(STEP / "output/api"))
-sys.path.insert(0, str(STAGE2 / "01_corpus/output/api"))
+sys.path.insert(0, str(STAGE2 / "01_data_raw/output/api"))
 from prediction_axis import open_axes
 
 

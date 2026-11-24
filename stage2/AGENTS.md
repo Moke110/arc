@@ -11,7 +11,7 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   R worker resolution, and derivation manifest verification. Read the
   [public API inventory](util/README.md) and reuse compatible operations.
   Keep fold validation, metric aggregation and report tables with the study.
-- [01_corpus](01_corpus/AGENTS.md) publishes source-native integer counts, coverage
+- [01_data_raw](01_data_raw/AGENTS.md) publishes source-native integer counts, coverage
   and match status.
 - [02_gene_axis](02_gene_axis/AGENTS.md) owns the four ordered HVG-DEG prediction
   axes and their selection evidence.

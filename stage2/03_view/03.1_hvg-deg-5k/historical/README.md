@@ -4,7 +4,7 @@
 
 | Former route | Current owner or evidence |
 | --- | --- |
-| `01_bases` | [Bases records](bases/), [corpus](../../../01_corpus/README.md), [prediction axes](../../../02_gene_axis/README.md), [expression views](../README.md), and [util](../../../util/README.md) |
+| `01_bases` | [Bases records](bases/), [corpus](../../../01_data_raw/README.md), [prediction axes](../../../02_gene_axis/README.md), [expression views](../README.md), and [util](../../../util/README.md) |
 | `02_axis_view` | [Prediction axes](../../../02_gene_axis/README.md) |
 | `04_models_tenv-5k` | [Single-dose tenv](../../../04_model_view/README.md) |
 | `05_tsg_drug_emb` | [Drug representations](../../../06_tsg_drug_emb/README.md) |

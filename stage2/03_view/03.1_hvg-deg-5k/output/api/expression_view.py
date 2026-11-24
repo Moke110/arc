@@ -16,8 +16,8 @@ PAYLOAD_SCHEMA = "stage2-hvg-deg-views-raw-first-v1"
 SCHEMA = "stage2-hvg-deg-5k-release-v2"
 DEFAULT = Path(__file__).resolve().parents[1] / "release"
 REPO = next(parent for parent in DEFAULT.parents if (parent / ".git").exists())
-CORPUS_MANIFEST = REPO / "stage2/01_corpus/output/manifest.json"
-HISTORICAL_CORPUS_MANIFEST = REPO / "stage2/01_corpus/historical/native-v1/manifest.json"
+CORPUS_MANIFEST = REPO / "stage2/01_data_raw/output/manifest.json"
+HISTORICAL_CORPUS_MANIFEST = REPO / "stage2/01_data_raw/historical/native-v1/manifest.json"
 CANONICAL_AXIS = REPO / "stage2/02_gene_axis/02.1_hvg-deg/output/release/gene_axis_5000.csv"
 sys.path.insert(0, str(CORPUS_MANIFEST.parent / "api"))
 from native_corpus import resolve_generation
