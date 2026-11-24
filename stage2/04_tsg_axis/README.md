@@ -43,6 +43,47 @@ validation and 24 test conditions. Its manifest marks it as smoke and it is
 excluded from formal results. The [acceptance receipt](log/314-smoke-and-migration.json)
 records the verified 5k fit and archived prediction replay.
 
+## Score and replay an axis comparison
+
+Pass one `--run` per sealed fit. The formal report requires all 18 axis–fold
+coordinates. Add `--smoke` to score a single replayed HVG-DEG 5k smoke fit.
+The evaluator checks all registered partitions and prediction arrays against
+the Stage 03 releases. Use `--step03` and `--raw` for materialized inputs in
+another checkout.
+
+```bash
+STEP=stage2/04_tsg_axis
+REPORT=$PWD/tmp/tsg-axis/report
+python "$STEP/execution/evaluate.py" score --smoke --run "$RUN" --output "$REPORT"
+python "$STEP/execution/evaluate.py" verify --smoke --run "$RUN" --output "$REPORT"
+python "$STEP/figure/script/render.py" --data "$REPORT/figure/data" \
+  --output "$PWD/tmp/tsg-axis/figures"
+```
+
+The report orders the metrics as JAC_top200, JAC_pos100, JAC_neg100, Δ PCC,
+Δ Spearman, Δ RMSE, Δ E-distance, Δ MMD and Δ R². Jaccard counts strictly
+positive and strictly negative genes separately and breaks ties by frozen gene
+index. E-distance and RBF MMD use Euclidean distance divided by the square
+root of axis width and include the empirical diagonal terms. Each fold uses
+one kernel bandwidth for all six axes. It is the median over distinct
+condition pairs in the full HVG-DEG 5k training measured Delta. The distance
+and kernel bandwidth evidence is in `bandwidths.csv` and its condition
+membership is in `fold-memberships.csv`.
+
+For each eligible disease, signed DEG F1 compares the full model-axis
+predictions against nonzero directions in its DEG1000 list, measured from
+raw pooled counts and matched plate controls on the full common CM axis.
+Opposite signs count as one false positive and one false negative. An off-axis
+reference gene counts as a false negative. Two empty sets produce NA. The
+same `reference/` files supply all models' disease targets.
+
+The report retains per-condition and per-fold CSVs, eligibility counts and
+the two aggregate CSVs consumed by the figures. It weights defined conditions
+equally within a fold and defined folds equally within each axis. These are
+retrospective results on published fixed axes built with tenv evidence.
+The [evaluation acceptance receipt](log/315-metrics-smoke.json) records the
+bounded evaluation and figure replay.
+
 ## Historical single-dose comparison
 
 The [archive](historical/04_model_view/README.md) retains the accepted
