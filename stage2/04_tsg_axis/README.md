@@ -27,9 +27,10 @@ For the formal dataset, use the full cold-drug folds and seed 42.
 STEP=stage2/04_tsg_axis
 WORK=$PWD/tmp/tsg-axis-formal
 export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2
-python "$STEP/execution/matrix.py" --output "$WORK/matrix"
+python "$STEP/execution/matrix.py" --output "$WORK/matrix" --logs "$WORK/matrix-audit/logs"
 python "$STEP/execution/report_formal.py" build \
-  --matrix "$WORK/matrix" --report "$WORK/report" --figures "$WORK/figures" \
+  --matrix "$WORK/matrix" --matrix-audit "$WORK/matrix-audit" \
+  --report "$WORK/report" --figures "$WORK/figures" \
   --logs "$WORK/logs"
 ```
 
@@ -37,13 +38,14 @@ Use a single capped CUDA job for fitting. Run report generation and replay
 after training completes. The accepted [formal receipt](log/316-formal.json)
 pins all 18 run manifests, the report and its two CSV-reproducible PNGs.
 The materialized paths are `output/formal` for the checkpoints, registrations,
-predictions and per-process resource logs, and `output/report` for the
-per-condition metrics, fold and eligibility tables, bandwidths and shared
+and predictions, `log/316-runs` for resource and process evidence, and
+`output/report` for per-condition metrics, fold and eligibility tables, bandwidths and shared
 disease reference. The two summary CSVs live next to the figure source.
 
 ```bash
 python "$STEP/execution/report_formal.py" verify \
-  --matrix "$STEP/output/formal" --report "$STEP/output/report" --figures "$STEP/figure" \
+  --matrix "$STEP/output/formal" --matrix-audit "$STEP/log/316-runs" \
+  --report "$STEP/output/report" --figures "$STEP/figure" \
   --logs "$WORK/verify"
 ```
 
@@ -151,6 +153,37 @@ per-fold and per-condition values and the full CM direction reference.
 
 The [archive](historical/04_model_view/README.md) retains the accepted
 single-dose comparison, receipts, payloads and original rendering data.
-Run `python stage2/04_tsg_axis/execution/verify_historical.py` against a
-materialized archive to verify the sealed assets and replay an accepted
-fixed prediction.
+Use `python stage2/04_tsg_axis/execution/verify_historical.py --full` to
+verify the sealed assets and replay all 54 fits' fixed predictions, the
+nine aggregate artifacts and the three CSV-only figures. Replay writes to
+scratch. The archive retains the original run plans, checkpoints and receipts.
+
+### Replay a sealed runtime
+
+Use the Git checkout matching the registration when replaying archived
+checkpoints. Prepare the two runtime worktrees under the checkout's root `tmp/`.
+
+```bash
+git worktree add --detach "$PWD/tmp/axis-runtime" 986f8ea
+git worktree add --detach "$PWD/tmp/dose-width-runtime" e4587a8
+```
+
+Use the same Python and CUDA environment as the recorded fit. The Step 04
+dispatcher verifies the exact Git revision. For the 18 formal fits, pass the
+materialized matrix, Step 03 folder, frozen KPGT folder and native model source.
+
+```bash
+python stage2/04_tsg_axis/execution/replay_pinned.py axes \
+  --runtime "$PWD/tmp/axis-runtime" --matrix stage2/04_tsg_axis/output/formal \
+  --step03 stage2/03_data_train --representations stage2/util/output/representations \
+  --source pert_model/TranSiGen/source
+```
+
+For a recorded Step 07 or 08 checkpoint, use the same dispatcher with
+`dose` or `width`, `--runtime "$PWD/tmp/dose-width-runtime"`, `--run` for
+the sealed checkpoint folder, `--inputs` for the recorded tenv KPGT input
+freeze and `--source` for the native TranSiGen source. Add `--scratch`
+under `tmp/` for width replay. Step 07 checks exact validation and test
+predictions. Step 08 checks exact validation predictions and held-out
+test-score CSVs. The [compatibility receipt](log/310-runtime-replay.json)
+records those checks against the accepted generations.

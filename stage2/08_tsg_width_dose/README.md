@@ -51,6 +51,8 @@ no swap use, and a maximum total GPU memory use of 9,232 MiB.
 
 ## Raw-first comparison
 
+Use the [pinned checkpoint replay](../04_tsg_axis/README.md#replay-a-sealed-runtime) for accepted pre-cutover checkpoints.
+
 `execution/raw_first.py` prepares the versioned tenv KPGT inputs, evaluates
 fixed predictions for a registered width, dose encoding and cold-drug-dose
 fold, and renders the resulting summary. Preparation defaults to the

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import argparse
-from hashlib import file_digest
 import json
 import os
 from pathlib import Path
@@ -18,8 +17,8 @@ import pandas as pd
 import torch
 
 STEP = Path(__file__).resolve().parents[1]
-STAGE = STEP.parent
-REPO = STAGE.parent
+REPO = next(parent for parent in STEP.parents if (parent / ".git").exists())
+STAGE = REPO / "stage2"
 DOSE = STAGE / "07_tsg_dose/output/api"
 sys.path[:0] = [str(STEP / "output/api"), str(DOSE)]
 
@@ -27,7 +26,7 @@ from tsg_axis.inputs import open_inputs, score_fixed_prediction
 from tsg_dose import shared
 from tsg_kpgt import model as kpgt
 from tenv5k.learning import EarlyStopping, fixed_rng
-from stage2_util.derivation.release import write_json
+from stage2_util.derivation.release import check_outputs, read_json, sha256 as digest, write_json
 from stage2_util.publication import publication_lock
 
 METHOD = "latent-numeric"
@@ -46,15 +45,6 @@ SMOKE_LIMITS = dict(zip(PARTITIONS, (64, 24, 24), strict=True))
 TRAINING_FILES = ("checkpoint.pt", "validation_prediction.npy", "learning_curve.csv")
 PREDICTION_FILES = ("prediction.npy", "conditions.csv", "genes.csv", "predicted_delta.npy", "measured_delta.npy")
 PROCESS = secrets.token_hex(16)
-
-
-def digest(path):
-    with Path(path).open("rb") as stream:
-        return file_digest(stream, "sha256").hexdigest()
-
-
-def read_json(path):
-    return json.loads(path.read_bytes())
 
 
 def file_hashes(root, names):
@@ -199,8 +189,9 @@ def record_predictions(root, output, values, test, data, config, *, replay):
 def verified_receipt(root, name, registration_sha, files):
     record = read_json(root / name)
     if (record["registration_sha256"] != registration_sha or record["process_token"] == PROCESS
-            or record["outputs"] != file_hashes(root, files)):
+            or set(record["outputs"]) != set(files)):
         raise ValueError(f"run receipt changed or is not from a separate process: {name}")
+    check_outputs(root, record)
     return record
 
 

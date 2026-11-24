@@ -12,10 +12,11 @@ import numpy as np
 
 STEP = Path(__file__).resolve().parents[1]
 TRAINING = STEP.parent
-STAGE = TRAINING.parent
+REPO = next(parent for parent in STEP.parents if (parent / ".git").exists())
+STAGE = REPO / "stage2"
 ARCHIVE = TRAINING / "03.1_hvg-deg-5k/output"
 DEFAULT = STEP / "output/release"
-STAGING = STAGE.parent / "tmp/stage2-tahoe-training-staging"
+STAGING = REPO / "tmp/stage2-tahoe-training-staging"
 SOURCE = "tahoe_bulk"
 sys.path[:0] = [str(ARCHIVE / "api"), str(STAGE / "util/output/api")]
 

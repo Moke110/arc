@@ -13,10 +13,10 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   Keep fold validation, metric aggregation and report tables with the study.
 - [01_data_raw](01_data_raw/AGENTS.md) publishes source-native integer counts, coverage
   and match status.
-- [02_gene_axis](02_gene_axis/AGENTS.md) owns the four ordered HVG-DEG prediction
-  axes and their selection evidence.
-- [03_data_train](03_data_train/AGENTS.md) publishes pooled tenv and Tahoe bulk
-  training data on the ordered 5k prediction axis.
+- [02_gene_axis](02_gene_axis/AGENTS.md) owns the ordered HVG-DEG and Denoise-DEG
+  prediction axes and their selection evidence.
+- [03_data_train](03_data_train/AGENTS.md) publishes six plate-pooled tenv axes
+  and the Tahoe well-level HVG-DEG 5k release.
 - [04_tsg_axis](04_tsg_axis/AGENTS.md) compares fixed tenv prediction axes with TranSiGen.
 - [05_tsg_loss](05_tsg_loss/AGENTS.md) reserves the loss comparison.
 - [06_tsg_drug_emb](06_tsg_drug_emb/AGENTS.md) compares drug representations.
@@ -24,9 +24,9 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 - [08_tsg_width_dose](08_tsg_width_dose/AGENTS.md) compares width and dose encodings.
 - [09_tsg_transfer](09_tsg_transfer/AGENTS.md) compares Tahoe-to-tenv transfer.
 
-Use each study's `execution/raw_first.py` for well-level study inputs and
-fixed-prediction evaluation. Use `figure/raw_first/render.py` or the documented `render` command
-for CSV-only rendering with util. The
+Use Step 04's `execution/matrix.py` for plate-pooled fits and `execution/evaluate.py`
+for prediction scoring. For well-level studies, follow each owner's raw-first and
+CSV-only rendering commands. The
 [historical evidence index](03_data_train/03.1_hvg-deg-5k/historical/README.md)
 locates sealed records and their original provenance.
 
