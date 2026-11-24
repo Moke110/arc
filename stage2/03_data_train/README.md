@@ -4,6 +4,8 @@
 HVG-DEG 5k axis. [03.2 Tahoe](03.2_tahoe_hvg-deg-5k/README.md) exposes the
 accepted Tahoe well-level data on the same gene axis. These source-specific
 routes implement [Spec 5](https://github.com/Moke110/arc/issues/310).
+The [acceptance receipt](log/312-source-specific-releases.json) records the
+real tenv replay, Tahoe asset equality and sealed combined-view replay.
 
 ## ADR 0085 paired release
 

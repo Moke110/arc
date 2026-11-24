@@ -1,0 +1,139 @@
+{
+  "archived_combined_view": {
+    "byte_exact_replay": {
+      "manifest_sha256": "d66eed2c849fabc85fc2ae1218e1ea69181a7559bab49dfe4eaaa4e04c5eea2c",
+      "outputs": [
+        "tahoe_bulk.exclusions.csv",
+        "tahoe_bulk.h5ad",
+        "tahoe_bulk.members.csv",
+        "tenv.exclusions.csv",
+        "tenv.h5ad",
+        "tenv.members.csv"
+      ],
+      "peak_rss_kib": 3030408,
+      "result": "PASS",
+      "wall_time": "2:06.94"
+    },
+    "release": "stage2/03_data_train/03.1_hvg-deg-5k/output/release/manifest.json"
+  },
+  "checks": {
+    "check_stage2_paths.sh": "PASS",
+    "check_tracked.sh": "PASS"
+  },
+  "date": "2026-11-24",
+  "fixture_suites": {
+    "archived_well_level_view": 12,
+    "pooled_training": 11,
+    "result": "PASS"
+  },
+  "implementation_commit": "f007600",
+  "issue": 312,
+  "result": "PASS",
+  "tahoe": {
+    "digest_equality_and_bounded_read": {
+      "manifest_sha256": "653f5845f81205e3ce95351b1464493b393ada8eff981c883184f15470f58df8",
+      "outputs": {
+        "tahoe_bulk.exclusions.csv": "9c9e61ede74b0b8b0bff5b074f3c1499cd1e165ec8a792597b0f5750fc538d86",
+        "tahoe_bulk.h5ad": "79e06aeaf3135a8564d5889508e375e77a05c61325e497efc0d6d19365085e7c",
+        "tahoe_bulk.members.csv": "b9db6704d52d9597052a11ca83409b11f2bd4bc4e5e7cba0fef14b42ae7fa353"
+      },
+      "peak_rss_kib": 281616,
+      "result": "PASS",
+      "shape": [
+        66718,
+        5000
+      ],
+      "wall_time": "0:01.69"
+    },
+    "publication": {
+      "manifest_sha256": "653f5845f81205e3ce95351b1464493b393ada8eff981c883184f15470f58df8",
+      "peak_rss_kib": 281088,
+      "result": "PASS",
+      "wall_time": "0:01.96"
+    },
+    "release": "stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/release/manifest.json"
+  },
+  "tenv": {
+    "byte_exact_replay": {
+      "counts": {
+        "candidate_controls": 16,
+        "candidate_treatments": 1383,
+        "controls": 16,
+        "excluded_raw_rows": 112,
+        "raw_rows": 4510,
+        "treatments": 1383
+      },
+      "manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+      "peak_rss_kib": 315232,
+      "result": "PASS",
+      "wall_time": "0:03.41"
+    },
+    "candidate": {
+      "manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+      "peak_rss_kib": 312600,
+      "result": "PASS",
+      "wall_time": "0:03.18"
+    },
+    "partition_checks": {
+      "fold_counts": {
+        "cold_dose_drug_0": {
+          "test": 154,
+          "train": 552,
+          "unassigned": 615,
+          "valid": 62
+        },
+        "cold_dose_drug_0_reason": {
+          "held_dose": 307,
+          "held_parent": 308
+        },
+        "cold_dose_drug_1": {
+          "test": 153,
+          "train": 554,
+          "unassigned": 614,
+          "valid": 62
+        },
+        "cold_dose_drug_1_reason": {
+          "held_dose": 308,
+          "held_parent": 306
+        },
+        "cold_dose_drug_2": {
+          "test": 154,
+          "train": 552,
+          "unassigned": 615,
+          "valid": 62
+        },
+        "cold_dose_drug_2_reason": {
+          "held_dose": 307,
+          "held_parent": 308
+        },
+        "cold_drug_0": {
+          "test": 462,
+          "train": 828,
+          "valid": 93
+        },
+        "cold_drug_1": {
+          "test": 459,
+          "train": 831,
+          "valid": 93
+        },
+        "cold_drug_2": {
+          "test": 462,
+          "train": 828,
+          "valid": 93
+        }
+      },
+      "raw_exclusion_counts": {
+        "incompatible_vehicle": 80,
+        "technical_blank": 32
+      },
+      "result": "PASS"
+    },
+    "promotion": {
+      "manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+      "peak_rss_kib": 312380,
+      "result": "PASS",
+      "wall_time": "0:03.13"
+    },
+    "release": "stage2/03_data_train/03.1_tenv_hvg-deg-5k/output/manifest.json"
+  }
+}
