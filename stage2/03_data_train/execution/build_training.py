@@ -29,7 +29,10 @@ from training_data import (DEFAULT, DATASET_SCHEMA, FILES, FOLD_COLUMNS, SCHEMA,
 
 from frozen_folds import load_folds
 
-SOURCES = {"tenv": ("tenv", "DMSO")}
+SOURCES = {
+    "tenv": ("tenv", "DMSO"),
+    "tahoe-bulk": ("tahoe_bulk", "DMSO_TF"),
+}
 STAGING = STAGE.parent / "tmp/stage2-training-staging"
 TREATMENT_KEY = ("plate", "cell_line", "drug_parent", "dose_um")
 CONTROL_KEY = TREATMENT_KEY[:2]
