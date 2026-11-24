@@ -15,8 +15,8 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   and match status.
 - [02_gene_axis](02_gene_axis/AGENTS.md) owns the four ordered HVG-DEG prediction
   axes and their selection evidence.
-- [03_view](03_view/AGENTS.md) publishes the full raw-first 5k expression release
-  for downstream inputs.
+- [03_data_train](03_data_train/AGENTS.md) publishes pooled tenv and Tahoe bulk
+  training data on the ordered 5k prediction axis.
 - [04_model_view](04_model_view/AGENTS.md) compares single-dose tenv models.
 - [05_tsg_loss](05_tsg_loss/AGENTS.md) reserves the loss comparison.
 - [06_tsg_drug_emb](06_tsg_drug_emb/AGENTS.md) compares drug representations.
@@ -24,9 +24,11 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 - [08_tsg_width_dose](08_tsg_width_dose/AGENTS.md) compares width and dose encodings.
 - [09_tsg_transfer](09_tsg_transfer/AGENTS.md) compares Tahoe-to-tenv transfer.
 
-Use each study's `execution/raw_first.py` for new inputs and fixed-prediction
-evaluation. Use `figure/raw_first/render.py` or the documented `render` command
-for CSV-only rendering with util. The [historical evidence index](03_view/03.1_hvg-deg-5k/historical/README.md) locates sealed records and their original provenance.
+Use each study's `execution/raw_first.py` for well-level study inputs and
+fixed-prediction evaluation. Use `figure/raw_first/render.py` or the documented `render` command
+for CSV-only rendering with util. The
+[historical evidence index](03_data_train/03.1_hvg-deg-5k/historical/README.md)
+locates sealed records and their original provenance.
 
 ## Step contract
 - `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,

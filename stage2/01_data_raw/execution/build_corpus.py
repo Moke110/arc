@@ -132,7 +132,7 @@ SUPPLEMENTS = {
 DEFAULT = STEP / "output"
 HISTORICAL = Path("historical/native-v1")
 AXES = Path("02_gene_axis/02.1_hvg-deg")
-VIEW = Path("03_view/03.1_hvg-deg-5k")
+VIEW = Path("03_data_train/03.1_hvg-deg-5k")
 
 
 def _seal(candidate, columns, common_axis, inputs, exclusions, predecessor):

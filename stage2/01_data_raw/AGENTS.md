@@ -2,8 +2,8 @@
 
 Read ADRs 0083 and 0085 and the [step README](README.md). Owns immutable, source-granular
 raw integer counts, observation metadata, matched vehicles and gene coverage.
-Retain unmatched observations. Paired expression, dataset exclusions from model
-views, axis selection and normalized matrices belong to their consuming steps.
+Retain unmatched observations. The training step owns pooled expression,
+Delta and training exclusions. The prediction-axis step owns gene selection.
 
 - `output/api/native_corpus.py` provides the bounded corpus API.
 - `output/manifest.json` inventories seven per-dataset releases beside `output/api/`.

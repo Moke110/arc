@@ -1,6 +1,8 @@
-# Raw-first HVG-DEG expression views
+# Archived raw-first HVG-DEG full view
 
-The versioned release uses the ordered HVG-DEG 5,000-gene prediction axis.
+Existing study workflows use this sealed well-level release for input
+preparation and fixed-prediction replay. The versioned release uses the
+ordered HVG-DEG 5,000-gene prediction axis.
 The full release retains eligible matched treatment profiles and individual
 vehicles in native source order. For each profile, the builder sums the
 matched vehicles' selected-axis raw counts, counting each vehicle once.
@@ -13,7 +15,7 @@ X, control and delta, with stable profile IDs, `obs.role`, and ordered
 `var.gene_index`. The versioned manifest seals all six assets, records the
 original H5AD schema, and binds the corpus and prediction axis.
 
-Add `stage2/03_view/03.1_hvg-deg-5k/output/api` to the Python import path
+Add `stage2/03_data_train/03.1_hvg-deg-5k/output/api` to the Python import path
 and use the bounded public reader:
 
 ```python
@@ -30,16 +32,16 @@ A separate verified release path can be supplied as the first argument.
 Batches support `X`, `control` or `delta` up to 256 rows.
 
 ```bash
-STEP=stage2/03_view/03.1_hvg-deg-5k
-python "$STEP/execution/build_views.py" publish --corpus /path/to/native-corpus
+STEP=stage2/03_data_train/03.1_hvg-deg-5k
 python "$STEP/execution/build_views.py" verify --corpus /path/to/native-corpus
 python -m unittest discover -s "$STEP/execution/tests" -v
 ```
 
-Publish and verify both use the same pinned corpus and axis, and verification
-rebuilds separately and compares bytes. An isolated tenv rehearsal may use
-`--source tenv --destination /path/to/rehearsal`.
+Verification rebuilds separately from the pinned corpus and axis and compares
+bytes. For a build rehearsal, use `publish --destination /path/to/rehearsal`.
+A tenv-only rehearsal also passes `--source tenv`.
 
+The [plate-matched training release](../README.md) owns shared training data.
 The prior 45-fit study and its acceptance records are documented in
 [the historical view-study boundary](historical/README.md).
 

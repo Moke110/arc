@@ -911,7 +911,7 @@ substitute: it flatters any dataset whose measurable genes happen to be large-ef
 _Avoid_: random-gene null, permutation p (unqualified)
 
 **Source dataset table**:
-The category subtables at the start of the [archived gene-axis rule document](stage2/03_view/03.1_hvg-deg-5k/historical/bases/gene_axis_fill_rule.docx): one row per released dataset record with its
+The category subtables at the start of the [archived gene-axis rule document](stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/gene_axis_fill_rule.docx): one row per released dataset record with its
 category, accession, sample type, groups, sample sizes, sequencing technology and the published
 v2 DEG count (`catalog.json` `n_deg`, never the padj-only `n_significant`), plus a separately labelled tenv-HVG non-disease row. Shared studies/controls and sample units remain explicit.
 _Avoid_: dataset summary, metadata table

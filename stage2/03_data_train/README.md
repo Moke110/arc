@@ -49,3 +49,18 @@ python "$D/execution/build_training.py" verify \
 The [paired candidate acceptance](log/308-tahoe-paired-candidate.json) records
 both release bindings, the Tahoe populations and six-fold checks, and exact
 replay before the stable-path cutover.
+
+Promote a verified pair to the stable output using the manifest digest printed
+by the verification run. Promotion verifies the staged bytes and retains the
+public reader.
+
+```bash
+python "$D/execution/build_training.py" promote \
+  --candidate "$PWD/tmp/training-release" --expected-sha256 "$VERIFIED_SHA256" \
+  --staging "$PWD/tmp/training-staging"
+```
+
+The [archived well-level full view](03.1_hvg-deg-5k/README.md) supports existing
+study inputs and fixed-prediction replay. The
+[cutover receipt](log/309-cutover.json) records the path mapping and verified
+training and replay digests.

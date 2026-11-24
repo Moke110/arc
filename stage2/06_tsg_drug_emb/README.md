@@ -1,6 +1,6 @@
 # TranSiGen drug representation comparison
 
-See the [historical evidence index](../03_view/03.1_hvg-deg-5k/historical/README.md) for sealed records.
+See the [historical evidence index](../03_data_train/03.1_hvg-deg-5k/historical/README.md) for sealed records.
 
 Seven representations were compared on all 459 tenv parents across three cold-drug
 folds at seed 42. Each arm used FiLM, the same G_5000 input, and the same fold rows.
@@ -37,8 +37,8 @@ The [Tahoe comparison](log/tahoe/README.md) uses the three frozen Tahoe cold-dru
 
 ## Raw-first inputs, evaluation and figures
 
-New comparisons use the [raw-first dose input pair](../07_tsg_dose/README.md#raw-first-inputs-evaluation-and-figures)
-prepared from the default [HVG-DEG full view](../03_view/03.1_hvg-deg-5k/README.md).
+Study input preparation uses the [raw-first dose input pair](../07_tsg_dose/README.md#raw-first-inputs-evaluation-and-figures)
+prepared from the archived [well-level HVG-DEG full view](../03_data_train/03.1_hvg-deg-5k/README.md).
 The preparation command freezes the selected source from the default full
 view. Use `--inputs` to reuse a verified source freeze.
 A comparison receipt pins the source's pair, expression payload, view, corpus,

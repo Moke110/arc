@@ -216,6 +216,8 @@ def main():
     parser.add_argument("--source", choices=SOURCES, action="append")
     args = parser.parse_args()
     sources = SOURCES if not args.source else tuple(args.source)
+    if args.action == "publish" and args.destination.resolve() == DEFAULT.resolve():
+        parser.error("cannot replace the archived full view; select a separate destination")
     if sources != SOURCES and args.destination.resolve() == DEFAULT.resolve():
         parser.error("single-source rehearsals require an explicit non-default destination")
     operation = publish_views if args.action == "publish" else replay_views

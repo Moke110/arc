@@ -1,6 +1,6 @@
 # TranSiGen Tahoe-to-tenv transfer
 
-See the [historical evidence index](../03_view/03.1_hvg-deg-5k/historical/README.md) for sealed records.
+See the [historical evidence index](../03_data_train/03.1_hvg-deg-5k/historical/README.md) for sealed records.
 
 [Path migration and sealed evidence](../07_tsg_dose/log/step-path-migration.md).
 
@@ -45,8 +45,8 @@ is the effect of tenv adaptation from the same Tahoe checkpoint.
 
 ## Raw-first inputs and assessment
 
-Use `execution/raw_first.py prepare` for new input freezes. It opens the
-accepted full view by default via the dose step and verifies both sources
+Use `execution/raw_first.py prepare` for study input freezes. It opens the
+archived well-level full view via the dose step and verifies both sources
 in one pair. Pass `--pair` to reuse an existing raw-first pair or `--view`
 to prepare from an explicit raw-first view release. The transfer receipt pins
 the pair and its view, axis and corpus digests, both representation manifests,

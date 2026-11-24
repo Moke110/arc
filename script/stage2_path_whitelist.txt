@@ -16,3 +16,8 @@
 #
 # The axis contract looks up its sealed predecessor manifest by original name.
 stage2/02_gene_axis/02.1_hvg-deg/execution/tests/test_prediction_axis.py:^stage2/01_bases/output/gene-axis/gene_axis_$
+
+# The #302 receipt generator reuses its original provenance strings.
+stage2/03_data_train/03.1_hvg-deg-5k/execution/migrate_release.py:^stage2/03_view/03[.]1_hvg-deg_views/output/raw-first-v1$
+stage2/03_data_train/03.1_hvg-deg-5k/execution/migrate_release.py:^stage2/03_view/03[.]1_hvg-deg-5k/output/release$
+stage2/03_data_train/03.1_hvg-deg-5k/execution/migrate_release.py:^stage2/03_view/03[.]1_hvg-deg-5k/historical/raw-first-v1$

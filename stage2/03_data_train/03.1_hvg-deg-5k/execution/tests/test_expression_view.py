@@ -1,5 +1,6 @@
 """Worked examples through published view builder and reader."""
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -23,6 +24,16 @@ from prediction_axis import COMMON_SHA256, PredictionAxis
 from build_views import publish_views, replay_views
 from expression_view import PAYLOAD_SCHEMA, open_view
 from migrate_release import stage_migration
+
+
+class ArchivedViewTest(unittest.TestCase):
+    def test_canonical_archive_rejects_publication(self):
+        result = subprocess.run(
+            [sys.executable, str(STEP / "execution/build_views.py"), "publish"],
+            capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("cannot replace the archived full view", result.stderr)
 
 
 class ExpressionViewTest(unittest.TestCase):
