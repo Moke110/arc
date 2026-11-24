@@ -1,0 +1,46 @@
+{
+  "outputs": {
+    "all_obs.csv": "01becc92d8a17fdfe79ea62d469bc8400afc10ceefc92f67abfe350f0e838cbd",
+    "config.json": "08053db3045686e2766f964c1588219e108bc5ac420e0917e8697a6a9e79b65f",
+    "control.npy": "75a02d9354046c861d617d56d6a7d97dccf97ef11d5de6da7a11bb6dc4011c96",
+    "expression.npy": "ba3bd19a8bf215e5ddcf98c535d7cef7fb635e79c2d46a4efc752da7021bcf25",
+    "genes.csv": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+    "matched_controls.json": "2f900f07681b7a94c72b38444c410c13a72e314db7cd2e5dfafde3ad1735ad3f",
+    "morgan.npy": "f61b3979ed6cb234b7af6a19bf48008cb873029c63dcdba2359e36278be4bf3e",
+    "parents.csv": "f5164f16e5c5b719b35b00812003946c91d65829051a51dc8c830c5dac8de139",
+    "population.csv": "c69ef0096194f495c2c2a4fbd3b5cfc47be93607ae19ea2e2ef2090b0784790e",
+    "splits.csv": "cf5306d073e373c25477a3463c0c3b843cb35db869c64cd33ddf6d9345f2ffb2"
+  },
+  "schema": "tsg-dose-round1-axis-local-inputs-v1",
+  "view_generation": {
+    "axis": {
+      "algorithm": "tier-first-deg1000-f1000-four-axes-v3",
+      "ascending": true,
+      "columns_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+      "file": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+      "gene_index_max": 18155,
+      "gene_index_min": 2,
+      "renumbered": false,
+      "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+      "size": 5000
+    },
+    "control": {
+      "correspondence": "matched_control_group is carried verbatim from the integer corpus",
+      "delta": "delta = X - control, elementwise",
+      "rule": "control = arithmetic mean over matched_control_group vehicle rows, each normalized on its own selected-axis library total"
+    },
+    "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+    "normalization": {
+      "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+      "formula": "log1p(count * 10000 / selected_axis_library_total)",
+      "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+      "source": "ADR 0077 five-k-only axis-local normalization"
+    },
+    "payload_sha256": {
+      "tahoe_bulk": "6fbd84e5e9b99ec743681ae878af8c350f2b6135fc692a8966826f91779bee33",
+      "tenv": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+    },
+    "recipe": "Stream bounded integer corpus batches; select G_5000 in ascending original gene_index; sum selected counts in int64; normalize every row independently with natural log1p(CP10K); average normalized matched vehicles for control; delta = X - control. Publish float32.",
+    "schema": "stage2-view-v3"
+  }
+}

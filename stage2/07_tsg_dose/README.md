@@ -37,6 +37,21 @@ the pair manifest and its tenv input, keeping Tahoe provenance without copying
 the Tahoe arrays. The original runtime, inputs, metrics and figure recipes below
 remain available for historical replay.
 
+
+## Frozen folds for Stage 2 training
+
+[`output/frozen-folds/`](output/frozen-folds/) preserves the original ADR 0078
+pair manifest, source manifests and six member-level fold assignments for
+each source. The archive contains the original `splits.csv` bytes in gzip
+containers. The reader verifies their decompressed SHA-256 digests through the
+source and pair manifests and the [original receipt](log/247-axis-local-smoke.json).
+
+The pooled training builder uses this archive by default. Its `--fold-root`
+option can use the same `manifest.json` and uncompressed split ledgers at
+`execution/checkpoints/round1-axis-local-inputs/` when the original checkpoint
+is materialized. The remaining payloads in that checkpoint support historical
+study replay.
+
 ## Historical tenv KPGT dose comparison
 
 [ADR 0080](../../docs/adr/0080-tenv-kpgt-dose-round1.md) fixes the accepted

@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 from collections import defaultdict
 import csv
+from dataclasses import dataclass
 import json
 from pathlib import Path
 import shutil
@@ -17,7 +18,7 @@ STEP = Path(__file__).resolve().parents[1]
 STAGE = STEP.parent
 sys.path[:0] = [str(path) for path in (
     STEP / "output/api", STAGE / "util/output/api", STAGE / "01_data_raw/output/api",
-    STAGE / "02_gene_axis/02.1_hvg-deg/output/api",
+    STAGE / "02_gene_axis/02.1_hvg-deg/output/api", STAGE / "07_tsg_dose/output/api",
 )]
 
 from native_corpus import open_corpus
@@ -27,7 +28,9 @@ from stage2_util.publication import publication_lock, publish_candidate
 from training_data import (DEFAULT, DATASET_SCHEMA, FILES, FOLD_COLUMNS, SCHEMA, STRIP_COLUMNS,
                            open_training, sha256)
 
-from frozen_folds import load_folds
+from tsg_round1.fold_ledger import FOLD_RECEIPT, FOLD_ROOT, load_folds
+
+from frozen_folds import group_labels
 
 SOURCES = {
     "tenv": ("tenv", "DMSO"),
@@ -41,6 +44,18 @@ RECIPE = {
     "C": "equal-weight mean of normalized M_C rows",
     "delta": "normalized M_T treatment minus matched normalized M_C",
 }
+
+
+@dataclass(frozen=True)
+class PooledGroup:
+    key: tuple
+    pooled_row: int
+    members: list[int]
+    library_total: int
+
+    @property
+    def control_key(self):
+        return self.key[:2]
 
 
 def _treatment_reason(row):
@@ -110,7 +125,7 @@ def _select_groups(pooled, controls, treatments, exclusions):
     for group_index, (key, members) in enumerate(controls.items()):
         total = pooled[group_index].sum(dtype=np.int64)
         if total > 0:
-            active_controls[key] = (group_index, members, total)
+            active_controls[key] = PooledGroup(key, group_index, members, total)
         else:
             exclusions.update(dict.fromkeys(members, "zero_control_counts"))
     for group_index, (key, members) in enumerate(treatments.items(), len(controls)):
@@ -120,7 +135,7 @@ def _select_groups(pooled, controls, treatments, exclusions):
         elif total <= 0:
             exclusions.update(dict.fromkeys(members, "zero_treatment_counts"))
         else:
-            active_treatments.append((key, group_index, members, total))
+            active_treatments.append(PooledGroup(key, group_index, members, total))
     if not active_controls or not active_treatments:
         raise ValueError("training release requires usable controls and treatments")
     return active_controls, active_treatments
@@ -131,16 +146,18 @@ def _normalize(counts, totals):
 
 
 def _write_tables(root, obs, controls, treatments, exclusions, folds, control_rows):
-    control_table = [(*key, len(members), total) for key, (_, members, total) in controls.items()]
+    control_table = [(*group.key, len(group.members), group.library_total)
+                     for group in controls.values()]
     pd.DataFrame(control_table, columns=[*CONTROL_KEY, "member_count", "library_total"]).to_csv(
         root / "controls.csv", index=False
     )
-    members = [member for _, _, group, _ in treatments for member in group]
-    groups = np.repeat(np.arange(len(treatments)), [len(group) for _, _, group, _ in treatments])
-    labels = folds.group_labels(obs.iloc[members], groups)
+    sizes = [len(group.members) for group in treatments]
+    members = [member for group in treatments for member in group.members]
+    groups = np.repeat(np.arange(len(treatments)), sizes)
+    labels = group_labels(folds, obs.iloc[members], groups)
     treatment_table = [
-        (*key, control_rows[key[:2]], len(group), total, *label)
-        for (key, _, group, total), label in zip(treatments, labels, strict=True)
+        (*group.key, control_rows[group.control_key], size, group.library_total, *label)
+        for group, size, label in zip(treatments, sizes, labels, strict=True)
     ]
     pd.DataFrame(treatment_table, columns=[
         *TREATMENT_KEY, "control_row", "member_count", "library_total", *FOLD_COLUMNS, *STRIP_COLUMNS,
@@ -148,10 +165,9 @@ def _write_tables(root, obs, controls, treatments, exclusions, folds, control_ro
     with (root / "members.csv").open("w", newline="") as file:
         writer = csv.writer(file, lineterminator="\n")
         writer.writerow(("profile_id", "role", "row"))
-        for row, (_, members, _) in enumerate(controls.values()):
-            writer.writerows((obs.index[member], "control", row) for member in members)
-        for row, (_, _, members, _) in enumerate(treatments):
-            writer.writerows((obs.index[member], "treatment", row) for member in members)
+        for role, groups in (("control", controls.values()), ("treatment", treatments)):
+            for row, group in enumerate(groups):
+                writer.writerows((obs.index[member], role, row) for member in group.members)
     with (root / "exclusions.csv").open("w", newline="") as file:
         writer = csv.writer(file, lineterminator="\n")
         writer.writerow(("profile_id", "role", "reason"))
@@ -161,11 +177,13 @@ def _write_tables(root, obs, controls, treatments, exclusions, folds, control_ro
 
 def _write_matrices(root, pooled, controls, treatments, control_rows):
     width = pooled.shape[1]
-    control_indices, _, control_totals = zip(*controls.values(), strict=True)
+    control_groups = list(controls.values())
     matrix = np.empty((len(controls), width), dtype=np.float32)
     for start in range(0, len(controls), 64):
-        stop = start + 64
-        matrix[start:stop] = _normalize(pooled[list(control_indices[start:stop])], control_totals[start:stop])
+        groups = control_groups[start:start + 64]
+        rows = [group.pooled_row for group in groups]
+        totals = [group.library_total for group in groups]
+        matrix[start:start + len(groups)] = _normalize(pooled[rows], totals)
     with h5py.File(root / "training.h5", "w") as handle:
         handle.create_dataset("C", data=matrix.mean(axis=0, dtype=np.float64).astype(np.float32))
         handle.create_dataset("M_C", data=matrix)
@@ -177,9 +195,10 @@ def _write_matrices(root, pooled, controls, treatments, control_rows):
                                       chunks=chunk, compression="gzip", compression_opts=1)
         for start in range(0, len(treatments), 64):
             block = treatments[start:start + 64]
-            keys, rows, _, totals = zip(*block, strict=True)
-            values = _normalize(pooled[list(rows)], totals)
-            matched = matrix[[control_rows[key[:2]] for key in keys]]
+            rows = [group.pooled_row for group in block]
+            totals = [group.library_total for group in block]
+            values = _normalize(pooled[rows], totals)
+            matched = matrix[[control_rows[group.control_key] for group in block]]
             treatment[start:start + len(block)] = values
             delta[start:start + len(block)] = values - matched
 
@@ -341,7 +360,9 @@ def _install_training(destination, corpus, axis, selected, build, staging):
 
 
 def publish_training(destination, corpus, axis, fold_root, fold_receipt, *, sources=None, staging=None):
-    """Build and verify a separate candidate before replacing the destination."""
+    """Build and verify a release at a caller-specified scratch destination."""
+    if Path(destination).resolve() == DEFAULT.resolve():
+        raise ValueError("publish requires a scratch destination; use promote for the stable output")
     selected = _sources(sources)
 
     def build(candidate):
@@ -350,33 +371,33 @@ def publish_training(destination, corpus, axis, fold_root, fold_receipt, *, sour
     return _install_training(destination, corpus, axis, selected, build, staging)
 
 
-def promote_training(candidate, destination, corpus, axis, *, expected_sha256, staging=None):
-    """Install the pinned paired candidate after verifying an independent copy."""
+def promote_training(candidate, destination, corpus, axis, fold_root=FOLD_ROOT,
+                     fold_receipt=FOLD_RECEIPT, *, expected_sha256, staging=None):
+    """Rebuild and install a complete pair only when it matches the pinned candidate."""
     source = Path(candidate).resolve()
     output = Path(destination).resolve()
     stage = Path(staging or STAGING).resolve()
     if source.is_relative_to(output) or output.is_relative_to(source) or stage.is_relative_to(source):
         raise ValueError("training candidate, output and staging must keep the candidate separate")
+    if output == DEFAULT.resolve() and sha256(Path(fold_receipt)) != sha256(FOLD_RECEIPT):
+        raise ValueError("stable promotion requires the original Step 07 fold receipt")
     selected = _sources(None)
 
     def build(prepared):
-        manifest = Path("manifest.json")
-        files = [manifest]
-        if {path.name for path in source.iterdir()} - {"api"} != {manifest.name, *selected}:
-            raise ValueError("promotion requires a complete paired training candidate")
-        for key in selected:
-            directory = source / key
-            if directory.is_symlink() or {path.name for path in directory.iterdir()} != FILES | {manifest.name}:
-                raise ValueError(f"training candidate dataset inventory differs: {key}")
-            (prepared / key).mkdir()
-            files.extend(Path(key) / name for name in sorted(FILES | {manifest.name}))
-        for relative in files:
-            path = source / relative
-            if path.is_symlink() or not path.is_file():
-                raise ValueError(f"training candidate asset must be a regular file: {relative}")
-            shutil.copyfile(path, prepared / relative)
-            if relative == manifest and sha256(prepared / manifest) != expected_sha256:
-                raise ValueError("training candidate manifest digest differs from the accepted digest")
+        for directory in (source, *(source / key for key in selected)):
+            if directory.is_symlink() or not directory.is_dir():
+                raise ValueError(f"training candidate directory must be a real directory: {directory.name}")
+            for path in directory.iterdir():
+                if path.name != "api" and path.is_symlink():
+                    raise ValueError(f"training candidate asset must not be a symlink: {path.name}")
+        if sha256(source / "manifest.json") != expected_sha256:
+            raise ValueError("training candidate manifest digest differs from the accepted digest")
+        accepted = verify_training(source, corpus, axis, sources=selected)
+        if accepted["manifest_sha256"] != expected_sha256:
+            raise ValueError("training candidate manifest changed during verification")
+        _build(prepared, corpus, axis, fold_root, fold_receipt, selected)
+        if sha256(prepared / "manifest.json") != expected_sha256:
+            raise ValueError("replayed training manifest differs from the pinned candidate")
 
     return _install_training(destination, corpus, axis, selected, build, stage)
 
@@ -407,13 +428,14 @@ def main():
     parser.add_argument("--staging", type=Path, default=STAGING)
     parser.add_argument("--raw", type=Path, default=STAGE / "01_data_raw/output")
     parser.add_argument("--axis", type=Path, default=STAGE / "02_gene_axis/02.1_hvg-deg/output/release")
-    parser.add_argument("--fold-root", type=Path,
-                        default=STAGE / "07_tsg_dose/execution/checkpoints/round1-axis-local-inputs")
-    parser.add_argument("--fold-receipt", type=Path, default=STAGE / "07_tsg_dose/log/247-axis-local-smoke.json")
+    parser.add_argument("--fold-root", type=Path, default=FOLD_ROOT)
+    parser.add_argument("--fold-receipt", type=Path, default=FOLD_RECEIPT)
     parser.add_argument("--source", choices=tuple(SOURCES), action="append")
     parser.add_argument("--candidate", type=Path, help="accepted paired candidate for promotion")
     parser.add_argument("--expected-sha256", help="paired manifest SHA-256 from verification")
     args = parser.parse_args()
+    if args.command == "publish" and args.output.resolve() == DEFAULT.resolve():
+        parser.error("publish requires a scratch destination via --output; use promote for the stable output")
     if args.command == "promote":
         if args.candidate is None or args.expected_sha256 is None or args.source is not None:
             parser.error("promote requires --candidate and --expected-sha256 for the complete pair")
@@ -424,7 +446,7 @@ def main():
         arguments = (args.output, corpus, axis, args.fold_root, args.fold_receipt)
         kwargs = {"sources": args.source, "staging": args.staging}
         if args.command == "promote":
-            output = promote_training(args.candidate, args.output, corpus, axis,
+            output = promote_training(args.candidate, *arguments,
                                       expected_sha256=args.expected_sha256, staging=args.staging)
             result = {"result": "PASS", "manifest_sha256": sha256(output / "manifest.json")}
         elif args.command == "publish":
