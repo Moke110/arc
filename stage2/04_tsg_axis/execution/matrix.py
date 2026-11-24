@@ -11,13 +11,13 @@ import time
 import numpy as np
 
 STEP = Path(__file__).resolve().parents[1]
-STAGE = STEP.parent
-REPO = STAGE.parent
+REPO = next(parent for parent in STEP.parents if (parent / ".git").exists())
+STAGE = REPO / "stage2"
 sys.path.insert(0, str(STEP / "output/api"))
 
 from tsg_axis.inputs import AxisInputs
-from training_data import TENV_AXIS_STEPS, open_tenv_axis_training, tenv_axis_output, sha256 as file_sha256
-from stage2_util.derivation.release import write_json
+from training_data import TENV_AXIS_STEPS, open_tenv_axis_training, tenv_axis_output
+from stage2_util.derivation.release import check_outputs, read_json as read, sha256 as file_sha256, write_json
 from stage2_util.publication import publication_lock
 
 SCHEMA = "stage2-tenv-transigen-axis-matrix-v1"
@@ -35,10 +35,6 @@ def match_rosters(axes):
                 if current[partition] != expected[partition]:
                     raise ValueError(f"{axis} fold {fold} {partition} condition order differs")
     return reference
-
-
-def read(path):
-    return json.loads(path.read_bytes())
 
 
 def roster_digest(values):
@@ -118,8 +114,7 @@ def verify_run(path, axis, fold, registration):
         or any(record["registration_sha256"] != registration for record in (training, prediction, manifest))
         or len({record["process_token"] for record in (training, prediction, manifest)}) != 3):
         raise ValueError(f"{axis} fold {fold} lacks distinct, exact fresh-process evidence")
-    if any(file_sha256(path / name) != digest for name, digest in manifest["outputs"].items()):
-        raise ValueError(f"{axis} fold {fold} run payload changed")
+    check_outputs(path, manifest)
     return {"axis": axis, "fold": fold, "registration_sha256": registration,
             "run_manifest_sha256": file_sha256(path / "manifest.json"),
             "epochs": training["epochs"], "best_epoch": training["best_epoch"],
@@ -127,7 +122,9 @@ def verify_run(path, axis, fold, registration):
             "train_wall_seconds": training["wall_seconds"], "train_peak_rss_kib": training["peak_rss_kib"]}
 
 
-def execute(root, step03, representations, source, device):
+def execute(root, logs, step03, representations, source, device):
+    if logs.is_relative_to(root) or root.is_relative_to(logs):
+        raise ValueError("matrix and process logs require separate directories")
     root.mkdir(parents=True, exist_ok=True)
     with publication_lock(root) as output:
         paths = run_paths(output)
@@ -147,7 +144,7 @@ def execute(root, step03, representations, source, device):
             args = ["--axis", axis, "--fold", str(fold), "--device", device,
                     "--training", str(tenv_axis_output(axis, step03)), "--representations", str(representations),
                     "--source", str(source), "--output", str(path)]
-            invoke(output / "logs" / axis / f"fold-{fold}", "register", args)
+            invoke(logs / axis / f"fold-{fold}", "register", args)
         registrations = check_registrations(paths, rosters, evidence)
         print(json.dumps({"phase": "registered", "coordinates": len(registrations)}), flush=True)
         completed = []
@@ -156,13 +153,13 @@ def execute(root, step03, representations, source, device):
                               "completed": len(completed)}), flush=True)
             for phase, receipt in PHASES.items():
                 if not (path / receipt).is_file():
-                    invoke(output / "logs" / axis / f"fold-{fold}", phase, ["--output", str(path)])
+                    invoke(logs / axis / f"fold-{fold}", phase, ["--output", str(path)])
             result = verify_run(path, axis, fold, registrations[axis, fold])
             completed.append(result)
             print(json.dumps({"phase": "complete", "completed": len(completed), **result}), flush=True)
         receipt = {"schema": SCHEMA, "preflight_sha256": file_sha256(preflight_path), "fits": completed,
-                   "resource_logs": {path.relative_to(output).as_posix(): file_sha256(path)
-                                     for path in sorted((output / "logs").rglob("*")) if path.is_file()}}
+                   "resource_logs": {("logs" / path.relative_to(logs)).as_posix(): file_sha256(path)
+                                     for path in sorted(logs.rglob("*")) if path.is_file()}}
         write_json(output / "manifest.json", receipt)
         return {"result": "PASS", "fits": len(completed), "manifest_sha256": file_sha256(output / "manifest.json")}
 
@@ -173,9 +170,10 @@ def main():
     parser.add_argument("--representations", type=Path, default=STAGE / "util/output/representations")
     parser.add_argument("--source", type=Path, default=REPO / "pert_model/TranSiGen/source")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--logs", type=Path, required=True)
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cuda")
     args = parser.parse_args()
-    print(json.dumps(execute(args.output.resolve(), args.step03.resolve(), args.representations.resolve(),
+    print(json.dumps(execute(args.output.resolve(), args.logs.resolve(), args.step03.resolve(), args.representations.resolve(),
                              args.source.resolve(), args.device), sort_keys=True))
 
 

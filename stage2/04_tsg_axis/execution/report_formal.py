@@ -14,7 +14,7 @@ FIGURES = ("delta-metrics.png", "disease-f1.png")
 FIGURE_CSVS = ("delta-metrics.csv", "disease-f1.csv")
 
 
-def matrix_inputs(matrix):
+def matrix_inputs(matrix, audit):
     """Verify the full matrix receipt before providing runs to the evaluator."""
     receipt = read(matrix / "manifest.json")
     paths = run_paths(matrix)
@@ -28,8 +28,8 @@ def matrix_inputs(matrix):
         registration = file_sha256(path / "registration.json")
         if records[axis, fold] != verify_run(path, axis, fold, registration):
             raise ValueError(f"formal matrix fit identity differs: {axis}, fold {fold}")
-    logs = {path.relative_to(matrix).as_posix(): file_sha256(path)
-            for path in sorted((matrix / "logs").rglob("*")) if path.is_file()}
+    logs = {path.relative_to(audit).as_posix(): file_sha256(path)
+            for path in sorted((audit / "logs").rglob("*")) if path.is_file()}
     if not logs or logs != receipt["resource_logs"]:
         raise ValueError("formal matrix process logs differ from their receipt")
     return paths
@@ -44,7 +44,7 @@ def command(script, args, logs, name):
 
 
 def report(args):
-    paths = matrix_inputs(args.matrix)
+    paths = matrix_inputs(args.matrix, args.matrix_audit or args.matrix)
     args.logs.mkdir(parents=True, exist_ok=True)
     evaluate = STEP / "execution/evaluate.py"
     render = STEP / "figure/script/render.py"
@@ -93,6 +93,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("build", "verify"))
     parser.add_argument("--matrix", type=Path, required=True)
+    parser.add_argument("--matrix-audit", type=Path, help="directory holding the matrix process logs")
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--figures", type=Path, required=True)
     parser.add_argument("--logs", type=Path, required=True)

@@ -22,8 +22,8 @@ from tsg_axis.disease_reference import disease_gene_sets, write_cm_directions
 from tsg_axis.inputs import AxisInputs, score_fixed_prediction
 from tsg_axis.metrics import (CONDITION, DISTRIBUTION, METRICS, condition_scores, distribution_scores,
                               fold_bandwidth, signed_disease_f1, summarize_conditions, summarize_folds)
-from training_data import TENV_AXIS_STEPS, TENV_BASELINE_AXIS, open_tenv_axis_training, sha256
-from stage2_util.derivation.release import write_json
+from training_data import TENV_AXIS_STEPS, TENV_BASELINE_AXIS, open_tenv_axis_training
+from stage2_util.derivation.release import check_outputs, read_json as _read, sha256, write_json
 from stage2_util.publication import publication_lock
 
 RUN_SCHEMA = "stage2-tenv-transigen-axis-run-v1"
@@ -33,10 +33,6 @@ RUN_OUTPUTS = {"checkpoint.pt", "validation_prediction.npy", "learning_curve.csv
                "predictions.json", "prediction.npy", "predicted_delta.npy", "measured_delta.npy",
                "conditions.csv", "genes.csv"}
 DISEASE_RELEASE = STAGE / "02_gene_axis/02.1_hvg-deg/output/release"
-
-
-def _read(path):
-    return json.loads(path.read_bytes())
 
 
 def _csv(path):
@@ -64,9 +60,7 @@ def _run_inputs(paths, smoke):
                 or manifest["registration_sha256"] != sha256(config_path)
                 or set(manifest["outputs"]) != RUN_OUTPUTS):
             raise ValueError(f"not an exactly replayed run for this report: {path}")
-        for name, digest in manifest["outputs"].items():
-            if sha256(path / name) != digest:
-                raise ValueError(f"run payload digest differs: {path / name}")
+        check_outputs(path, manifest)
         if (axis, fold) in runs:
             raise ValueError(f"duplicate run coordinate: {axis} fold {fold}")
         runs[axis, fold] = (path, config, manifest)
