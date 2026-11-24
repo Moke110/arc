@@ -1,0 +1,19 @@
+{
+  "disease_catalog_sha256": "6beb71773c59e70c2cca0a77eed12356d0f608506b960d1aad5322564af039b1",
+  "plate_contrasts": 1383,
+  "unique_conditions": 1377,
+  "conditions_without_hits": 253,
+  "tenv_votes": 77348,
+  "disease_votes": 800,
+  "diseases": {
+    "ICM": 200,
+    "TOX": 200,
+    "genetic_cardiomyopathy": 200,
+    "nHF": 200
+  },
+  "positive_scores": {
+    "p_tenv": 15664,
+    "p_disease": 744,
+    "score": 15664
+  }
+}

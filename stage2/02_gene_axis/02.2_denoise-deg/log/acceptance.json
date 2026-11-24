@@ -1,0 +1,30 @@
+{
+  "excluded_genes": 3093,
+  "retained_genes": 15071,
+  "positive_score_genes": 13166,
+  "axis_cutoff_scores": {
+    "1000": 12,
+    "2000": 8,
+    "3000": 7,
+    "4000": 5,
+    "5000": 4
+  },
+  "nesting_verified": true,
+  "tenv_native_projection_rows": 8,
+  "disease_coverage_cells_verified": 20,
+  "evidence_only_release_replay": "identical",
+  "csv_only_figure_replay": "identical",
+  "native_tenv_deg_replay": {
+    "votes_and_scores": "identical",
+    "hit_ledger_uncompressed_sha256": "de5faebf952b488b9c940e5aa40834144bc1c3b0e5eb567f7c5af8e43e6482c5",
+    "wall_seconds": 160.01,
+    "peak_rss_kib": 591120
+  },
+  "png_sha256": {
+    "deg-scores.png": "0416996ac7639952fb471b7cbb632e9eb3527726c6f3278e4aa978a3f2d79ccc",
+    "denoise.png": "5be757eb734dc52599bc41968ed14bdd8ba16488c684b7862890b897eb27ddee",
+    "disease-DEG200-coverage.png": "9cf319ecae8c420d625dfdc95409b25c0601dff4050083e7fa1337c4ba562020",
+    "score-in-axis.png": "96b2260668573afca2c6878618c67801a3f44378829bc386ad16b3b3a86a2be4"
+  },
+  "score_in_axis_panels_verified": 15
+}
