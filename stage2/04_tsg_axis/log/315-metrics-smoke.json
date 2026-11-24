@@ -1,0 +1,46 @@
+{
+  "ticket": 315,
+  "smoke": true,
+  "axis": "hvg-deg-5k",
+  "fold": 0,
+  "condition_count": 24,
+  "ordered_metrics": [
+    "JAC_top200",
+    "JAC_pos100",
+    "JAC_neg100",
+    "Δ PCC",
+    "Δ Spearman",
+    "Δ RMSE",
+    "Δ E-distance",
+    "Δ MMD",
+    "Δ R²"
+  ],
+  "replayed_run_manifest_sha256": "702b5c6a74f1c5d1021d61b7919fc1ab46ccaa9f267deca11061749d372ac614",
+  "report_manifest_sha256": "47d5f8cbe78a6360e8bf5014e29735cc116b57ede46a115c180723c49aeb7187",
+  "verify_replay": "byte-identical",
+  "shared_cm_direction_shape": [
+    1383,
+    18164
+  ],
+  "independent_raw_common_axis_spot_checks": [
+    0,
+    35
+  ],
+  "independent_distance_and_rbf_recalculation": "PASS",
+  "independent_bandwidth_recalculation": "PASS",
+  "resources": {
+    "score": {
+      "wall_seconds": 4.64,
+      "peak_rss_kib": 514292
+    },
+    "verify": {
+      "wall_seconds": 4.86,
+      "peak_rss_kib": 514572
+    }
+  },
+  "csv_only_png_replay_sha256": {
+    "delta-metrics.png": "f05871cd44b0a254ca374e4966ca429bf364b35d6287b9b679babe8e0f526ac5",
+    "disease-f1.png": "460e5d913f94ed76ded3506eaf27a31551b0f0785abc93305f0daa17b3e52725"
+  },
+  "formal_comparison": false
+}
