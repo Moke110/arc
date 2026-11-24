@@ -1,10 +1,12 @@
 """Public publication, replay and reader examples for plate-matched training."""
+import gzip
 import json
 from hashlib import file_digest
 from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from anndata import AnnData
 import numpy as np
@@ -211,6 +213,7 @@ class TrainingTest(unittest.TestCase):
         expected = digest(candidate / "manifest.json")
 
         promote_training(candidate, self.output, self.corpus, self.axis,
+                             self.fold_root, self.receipt,
                          expected_sha256=expected, staging=self.staging)
 
         self.assertEqual(digest(self.output / "manifest.json"), expected)
@@ -234,6 +237,7 @@ class TrainingTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "training payload digest differs"):
             promote_training(candidate, self.output, self.corpus, self.axis,
+                             self.fold_root, self.receipt,
                              expected_sha256=expected, staging=self.staging)
 
         self.assertEqual(digest(self.output / "manifest.json"), before)
@@ -260,3 +264,49 @@ class TrainingTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "assignments disagree"):
             self.publish()
         self.assertFalse(self.output.exists())
+
+    def test_canonical_destination_requires_promotion(self):
+        with patch("build_training.DEFAULT", self.output):
+            with self.assertRaisesRegex(ValueError, "scratch destination"):
+                self.publish()
+        self.assertFalse(self.output.exists())
+
+    def test_promotion_rejects_self_consistent_candidate_that_does_not_replay(self):
+        self.publish()
+        accepted = digest(self.output / "manifest.json")
+        candidate = self.root / "candidate"
+        publish_training(candidate, self.corpus, self.axis, self.fold_root, self.receipt,
+                         staging=self.staging)
+        source = candidate / "tenv"
+        treatments = source / "treatments.csv"
+        rows = pd.read_csv(treatments, keep_default_na=False)
+        rows.loc[0, "cold_drug_0"] = "train"
+        rows.to_csv(treatments, index=False)
+        dataset_manifest = source / "manifest.json"
+        record = json.loads(dataset_manifest.read_text())
+        record["outputs"]["treatments.csv"] = digest(treatments)
+        dataset_manifest.write_text(json.dumps(record))
+        pair_manifest = candidate / "manifest.json"
+        record = json.loads(pair_manifest.read_text())
+        record["sources"]["tenv"] = digest(dataset_manifest)
+        pair_manifest.write_text(json.dumps(record))
+        with self.assertRaisesRegex(ValueError, "replay"):
+            promote_training(candidate, self.output, self.corpus, self.axis,
+                             self.fold_root, self.receipt, expected_sha256=digest(pair_manifest),
+                             staging=self.staging)
+        self.assertEqual(digest(self.output / "manifest.json"), accepted)
+
+    def test_compressed_fold_archive_uses_original_decompressed_bytes(self):
+        self.publish()
+        accepted = digest(self.output / "manifest.json")
+        path = self.fold_root / "tenv/splits.csv"
+        original = path.read_bytes()
+        archived = path.with_suffix(".csv.gz")
+        archived.write_bytes(gzip.compress(original, mtime=0))
+        path.unlink()
+        self.publish()
+        self.assertEqual(digest(self.output / "manifest.json"), accepted)
+        archived.write_bytes(gzip.compress(original + b"modified", mtime=0))
+        with self.assertRaisesRegex(ValueError, "fold digest differs"):
+            self.publish()
+        self.assertEqual(digest(self.output / "manifest.json"), accepted)

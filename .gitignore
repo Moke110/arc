@@ -184,6 +184,7 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2/07_tsg_dose/output/
 /stage2/07_tsg_dose/output/*
 !/stage2/07_tsg_dose/output/api/
+!/stage2/07_tsg_dose/output/frozen-folds/
 !/stage2/07_tsg_dose/output/api/**
 /stage2/07_tsg_dose/output/api/**/__pycache__/
 /stage2/07_tsg_dose/output/api/**/*.py[cod]

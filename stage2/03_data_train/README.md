@@ -34,9 +34,12 @@ with open_training(source="tenv") as training:
     labels = training.treatments.iloc[:8]
 ```
 
-Use the CLI with a separate destination to build and replay a paired candidate
-from the accepted raw, axis and frozen fold inputs. Use `--source tenv` or
-`--source tahoe-bulk` for an isolated candidate.
+Use `publish --output <scratch-directory>` to build a paired candidate from
+the accepted raw, axis and frozen fold inputs. Use `--source tenv` or
+`--source tahoe-bulk` for an isolated candidate. The default fold input is
+the [Step 07 frozen fold archive](../07_tsg_dose/README.md#frozen-folds-for-stage-2-training).
+To use the original materialized Step 07 checkpoint, pass
+`--fold-root stage2/07_tsg_dose/execution/checkpoints/round1-axis-local-inputs`.
 
 ```bash
 D=stage2/03_data_train
@@ -51,8 +54,10 @@ both release bindings, the Tahoe populations and six-fold checks, and exact
 replay before the stable-path cutover.
 
 Promote a verified pair to the stable output using the manifest digest printed
-by the verification run. Promotion verifies the staged bytes and retains the
-public reader.
+by the verification run. Promotion rechecks the candidate and rebuilds the
+paired release from the pinned raw, axis and original Step 07 folds under
+the output lock. It installs the verified rebuild when its manifest digest
+matches the candidate's and preserves the public reader.
 
 ```bash
 python "$D/execution/build_training.py" promote \
