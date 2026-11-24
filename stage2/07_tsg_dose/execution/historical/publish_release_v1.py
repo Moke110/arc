@@ -64,7 +64,7 @@ def capture_preservation(root):
     verifies large assets after the long trainer has stopped.
     """
     root=Path(root).resolve()
-    protected=['stage2/01_corpus','stage2/02_gene_axis','stage2/03_view','stage2/util',
+    protected=['stage2/01_data_raw','stage2/02_gene_axis','stage2/03_data_train','stage2/util',
                'stage2/04_model_view','stage3','pert_model/TranSiGen']
     raw=subprocess.check_output(['git','-C',str(root),'ls-files','-z','--',*protected])
     tracked=[p for p in raw.decode().split('\0') if p]

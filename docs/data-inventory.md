@@ -184,14 +184,14 @@ Per-workflow rows are isolated `du -sb` values that each include their own hard-
 ## Stage 2 — published products and comparison payloads
 
 The [Stage 2 routing](../stage2/AGENTS.md) identifies the current study and
-product owners. [Historical evidence](../stage2/03_view/03.1_hvg-deg-5k/historical/README.md)
+product owners. [Historical evidence](../stage2/03_data_train/03.1_hvg-deg-5k/historical/README.md)
 keeps accepted figures, reports, and their original receipt paths.
 
 | Owner | Accepted products |
 | --- | --- |
-| [Corpus](../stage2/01_corpus/README.md) | Seven source-native datasets and their release manifest directly in `output/`; sealed v1 files in `historical/native-v1/`. |
+| [Raw data](../stage2/01_data_raw/README.md) | Seven source-native datasets and their release manifest directly in `output/`; sealed v1 files in `historical/native-v1/`. |
 | [Prediction axes](../stage2/02_gene_axis/README.md) | Four ordered axes and compact selection evidence in `02.1_hvg-deg/output/release/`. |
-| [Views](../stage2/03_view/README.md) | Accepted expression view payloads under `03.1_hvg-deg-5k/output/release/`. |
+| [Training data](../stage2/03_data_train/README.md) | Plate-matched tenv and Tahoe bulk data under `output/tenv/` and `output/tahoe-bulk/`. The sealed well-level views remain under `03.1_hvg-deg-5k/output/release/` for replay. |
 | [Util](../stage2/util/README.md) | Accepted gene identity and representation products plus shared operations. |
 
 ### `stage2/04_model_view/` — accepted three-fold comparison (#226/#231)

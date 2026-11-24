@@ -26,6 +26,7 @@ Source observations can support new aggregation recipes. The shared axis has a s
 - [Implementation spec](https://github.com/Moke110/arc/issues/286)
 
 [Spec 2](https://github.com/Moke110/arc/issues/301) supersedes the active
-variant publication in this decision. The [HVG-DEG 5k substep](../../stage2/03_view/03.1_hvg-deg-5k/README.md)
-publishes full views for both sources. The previous generations and study
-receipts remain under its historical boundary.
+variant publication in this decision. The [HVG-DEG 5k substep](../../stage2/03_data_train/03.1_hvg-deg-5k/README.md)
+retains full views for both sources. [ADR 0085](0085-stage2-raw-and-training-data.md)
+sets the active raw and training data boundaries. The previous generations
+and study receipts remain available for replay.

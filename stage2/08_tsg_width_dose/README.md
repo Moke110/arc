@@ -1,6 +1,6 @@
 # TranSiGen width and dose encoding
 
-See the [historical evidence index](../03_view/03.1_hvg-deg-5k/historical/README.md) for sealed records.
+See the [historical evidence index](../03_data_train/03.1_hvg-deg-5k/historical/README.md) for sealed records.
 
 The experiment crosses four dose encodings (no dose, latent numeric, latent
 embedding, and FiLM) with four TranSiGen widths (original, 1.5×, 2×, and 2.5×).
@@ -54,7 +54,7 @@ no swap use, and a maximum total GPU memory use of 9,232 MiB.
 `execution/raw_first.py` prepares the versioned tenv KPGT inputs, evaluates
 fixed predictions for a registered width, dose encoding and cold-drug-dose
 fold, and renders the resulting summary. Preparation defaults to the
-published full raw-first view. It can also reuse the verified tenv input from
+archived well-level raw-first full view. It can also reuse the verified tenv input from
 the [dose comparison](../07_tsg_dose/README.md) with `prepare --tenv`.
 
 ```bash

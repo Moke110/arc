@@ -6,12 +6,12 @@ tmp="$(mktemp -d)"
 trap 'rm -rf -- "$tmp"' EXIT
 mkdir -p "$tmp/script" "$tmp/.worktrees/worker"
 cp "$root/script/check_stage2_paths.sh" "$root/script/check_tracked.sh" "$tmp/script/"
-for step in util 01_corpus 02_gene_axis 03_view 04_model_view 05_tsg_loss 06_tsg_drug_emb 07_tsg_dose 08_tsg_width_dose 09_tsg_transfer; do
+for step in util 01_data_raw 02_gene_axis 03_data_train 04_model_view 05_tsg_loss 06_tsg_drug_emb 07_tsg_dose 08_tsg_width_dose 09_tsg_transfer; do
   mkdir -p "$tmp/stage2/$step"
   printf '%s\n' "$step" > "$tmp/stage2/$step/AGENTS.md"
   printf '%s\n' "$step" > "$tmp/stage2/$step/README.md"
 done
-printf 'x = 1\n' > "$tmp/stage2/01_corpus/run.py"
+printf 'x = 1\n' > "$tmp/stage2/01_data_raw/run.py"
 printf 'x = 1\n' > "$tmp/stage2/04_model_view/run.py"
 printf 'x = 1\n' > "$tmp/.worktrees/worker/run.py"
 git -C "$tmp" init -q
@@ -23,7 +23,7 @@ if bash "$tmp/script/check_stage2_paths.sh" >/dev/null 2>&1; then
   echo 'FAIL: an extra Stage 2 entry must fail' >&2; exit 1
 fi
 rmdir "$tmp/stage2/evaluation"
-printf 'x = 1\n' > "$tmp/stage2/01_corpus/untracked.py"
+printf 'x = 1\n' > "$tmp/stage2/01_data_raw/untracked.py"
 if bash "$tmp/script/check_tracked.sh" >/dev/null 2>&1; then
   echo 'FAIL: active untracked executable must fail' >&2; exit 1
 fi

@@ -94,7 +94,7 @@ main() {
   # The retired step roots, then the retired bundle name handled per line.
   local step_pattern='stage2/[[:alnum:]_./+@-]+'
 
-  local active_roots=(util 01_corpus 02_gene_axis 03_view 04_model_view 05_tsg_loss 06_tsg_drug_emb 07_tsg_dose 08_tsg_width_dose 09_tsg_transfer)
+  local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_model_view 05_tsg_loss 06_tsg_drug_emb 07_tsg_dose 08_tsg_width_dose 09_tsg_transfer)
   # Layout guard: fail closed on retired step entries.  Only the active step
   # directories and the Stage 2 routing document stage2/AGENTS.md (present at the
   # review base a53c9ff) may sit at the Stage 2 root; any other regular file,

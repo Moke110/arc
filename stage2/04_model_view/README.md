@@ -1,11 +1,11 @@
 # Single-dose tenv 5k model comparison
 
-See the [historical evidence index](../03_view/03.1_hvg-deg-5k/historical/README.md) for sealed records.
+See the [historical evidence index](../03_data_train/03.1_hvg-deg-5k/historical/README.md) for sealed records.
 
 ## Raw-first inputs, evaluation and figures
 
-New inputs use the full HVG-DEG expression view. The freeze records the actual
-corpus, view, payload and axis digests and reads shared parent identities,
+Study input preparation uses the archived well-level HVG-DEG full view.
+The freeze records the corpus, view, payload and axis digests and reads shared parent identities,
 ECFP4 vectors and seeds. The single-dose comparison retains its 1 µM filter,
 original vehicle rows and cold-drug and warm-start folds.
 

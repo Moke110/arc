@@ -324,6 +324,22 @@ Counts derived from immutable source expression before normalization or treated-
 A source-preserving collection of verified raw integer expression counts at the finest published observation granularity. It retains native gene coverage and observation identity, dose, role and control-match status. Unmatched observations remain available. Normalized expression and Delta are properties of derived views.
 _Avoid_: training set, normalized corpus
 
+**Stage 2 raw data**:
+The source-native raw integer counts and observation metadata across the seven retained perturbation datasets, including controls, technical blanks and unmatched observations. Tahoe bulk represents the original cell counts aggregated per well and cell line.
+_Avoid_: normalized corpus, training data
+
+**Stage 2 training data**:
+The gene-axis-aligned tenv and Tahoe bulk products that contain pooled treatment profiles, matched control profiles, perturbation effects and fold memberships.
+_Avoid_: raw data, full view
+
+**Plate-level perturbation condition**:
+One drug parent at one measured dose within one source dataset, plate and cell line. Its treatment profile pools the repeated wells within that group.
+_Avoid_: dataset-wide drug–dose condition, individual treatment well
+
+**Plate-level control profile**:
+The pooled expression profile of compatible vehicle wells within one source dataset, plate and cell line. It provides the matched reference for perturbation effects in that group.
+_Avoid_: dataset-wide control, individual vehicle well
+
 **Prediction gene axis**:
 An ordered subset of the fixed 18,164-gene CM gene axis. All sources used in the shared prediction workflow cover the complete CM gene axis.
 _Avoid_: corpus gene universe
@@ -895,7 +911,7 @@ substitute: it flatters any dataset whose measurable genes happen to be large-ef
 _Avoid_: random-gene null, permutation p (unqualified)
 
 **Source dataset table**:
-The category subtables at the start of the [archived gene-axis rule document](stage2/03_view/03.1_hvg-deg-5k/historical/bases/gene_axis_fill_rule.docx): one row per released dataset record with its
+The category subtables at the start of the [archived gene-axis rule document](stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/gene_axis_fill_rule.docx): one row per released dataset record with its
 category, accession, sample type, groups, sample sizes, sequencing technology and the published
 v2 DEG count (`catalog.json` `n_deg`, never the padj-only `n_significant`), plus a separately labelled tenv-HVG non-disease row. Shared studies/controls and sample units remain explicit.
 _Avoid_: dataset summary, metadata table
