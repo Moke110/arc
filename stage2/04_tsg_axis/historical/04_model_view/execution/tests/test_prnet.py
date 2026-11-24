@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 import unittest
 ROOT = next(p for p in Path(__file__).resolve().parents if (p / '.git').exists())
-sys.path.insert(0, str(ROOT / 'stage2/04_model_view/output/api'))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'output/api'))
 from tenv5k.learning import EarlyStopping
 
 class StopTests(unittest.TestCase):

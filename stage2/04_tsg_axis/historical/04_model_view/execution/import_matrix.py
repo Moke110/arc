@@ -26,7 +26,7 @@ APPROVED_CODE_TRANSITIONS = {
     'output/api/tenv5k/attempt_identity.py': (
         None, '58d13fa2b0426941bc29c4772c64e36eb9bb965a2bf26d95b31d872a1bf20641'),
 }
-STEP_RELATIVE = Path('stage2/04_model_view')
+STEP_RELATIVE = Path('stage2/02_models_tenv-5k')
 
 
 def read(path):

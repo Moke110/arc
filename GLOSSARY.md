@@ -737,8 +737,11 @@ comparison retains parent-equal evaluation.
 The mean transcriptional response of repeated treated wells for one drug
 parent at one measured dose, retaining that dose as a distinct evaluation unit.
 
-**Tenv comparison step** (`04_model_view`):
-The active Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result. It owns the shared comparison splits, entrants, predictions and figures; the full expression view supplies inputs and util supplies the palette.
+**Tenv axis comparison** (`04_tsg_axis`):
+The Stage 2 comparison of fixed prediction axes with TranSiGen on plate–parent–dose `tenv` conditions. It uses matched plate controls for training and the overall axis-specific reference for validation and test.
+
+**Historical single-dose tenv comparison** (`04_model_view`):
+The archived Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result.
 _Avoid_: benchmark step (when meaning this comparison)
 
 **Direct metric**:

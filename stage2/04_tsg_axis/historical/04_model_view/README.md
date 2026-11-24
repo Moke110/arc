@@ -1,6 +1,6 @@
-# Single-dose tenv 5k model comparison
+# Archived single-dose tenv 5k model comparison
 
-See the [historical evidence index](../03_data_train/03.1_hvg-deg-5k/historical/README.md) for sealed records.
+See the [historical evidence index](../../../03_data_train/03.1_hvg-deg-5k/historical/README.md) for sealed records.
 
 ## Raw-first inputs, evaluation and figures
 
@@ -10,7 +10,7 @@ ECFP4 vectors and seeds. The single-dose comparison retains its 1 µM filter,
 original vehicle rows and cold-drug and warm-start folds.
 
 ```bash
-D=stage2/04_model_view
+D=stage2/04_tsg_axis/historical/04_model_view
 python "$D/execution/raw_first.py" prepare --candidate /path/to/new/inputs
 python "$D/execution/raw_first.py" evaluate --inputs /path/to/new/inputs \
   --scenario cold-drug --fold 0 --model ECFP4_MLP --seed 42 --run-id mlp-42 \
@@ -50,7 +50,7 @@ no historical checkpoint or prediction can enter the current comparison.
 ECFP4_MLP is the current display name for the accepted method. The sealed 02
 CSV tables, original renderer, checkpoints and receipts still use `MLP_Morgan`
 and `mlp-morgan-project-f32-lr1e4-v1`. See the
-[ECFP4 migration record](../07_tsg_dose/log/ecfp4-contract.md) for a canonical
+[ECFP4 migration record](../../../07_tsg_dose/log/ecfp4-contract.md) for a canonical
 fingerprint contract derived from the existing freeze.
 
 ## Accepted result

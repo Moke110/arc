@@ -17,7 +17,7 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   axes and their selection evidence.
 - [03_data_train](03_data_train/AGENTS.md) publishes pooled tenv and Tahoe bulk
   training data on the ordered 5k prediction axis.
-- [04_model_view](04_model_view/AGENTS.md) compares single-dose tenv models.
+- [04_tsg_axis](04_tsg_axis/AGENTS.md) compares fixed tenv prediction axes with TranSiGen.
 - [05_tsg_loss](05_tsg_loss/AGENTS.md) reserves the loss comparison.
 - [06_tsg_drug_emb](06_tsg_drug_emb/AGENTS.md) compares drug representations.
 - [07_tsg_dose](07_tsg_dose/AGENTS.md) compares dose methods in Tahoe and tenv.
