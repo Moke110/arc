@@ -1,5 +1,5 @@
 {
-  "schema": "stage2-denoise-deg-axes-v1",
+  "schema": "stage2-denoise-deg-axes-v2",
   "common_axis": {
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
@@ -17,23 +17,23 @@
   "tie_break": "ascending frozen gene_index",
   "axis_order": "ascending frozen gene_index",
   "axes": {
-    "1000": "31cdc8d0c7741714ebb520e0b12492d4fc1958e4b414971758340d0b3b1afd66",
-    "2000": "c66615cdc236a3b1944bc8c6b5856c20f0bf0998e06a5900cf0bd54dbff9a583",
-    "3000": "d6bba06a72bf38f18da1f9e39ad7868ea77a22a86e6384de4e275d354113afaf",
-    "4000": "4df1059e12f28dc361f517f4e1a78b8dbc6fc6296d0ce4a24d2c220f56a3a07d",
-    "5000": "e961706d2ff32666a8f42c57c0c2776615bb0f01e373edc250da838959ef950f"
+    "1000": "2df0b9b8abbb10a7518d6a973d2e0208b08695a8c0a650ea5d540d700006eb42",
+    "2000": "485d1d32779b8525e1a7566b426fcf383e6112c0dbec4630642ff856a12e4011",
+    "3000": "fccdb1e8290cc93e7e7af97f3b2076626fc678f59e38c4ff56aacf48efa9a94b",
+    "4000": "c6c1585ff8c619bc6f083e355ab28d81bcaf28c4320634ce70b000338cc9744a",
+    "5000": "1c23ae7db2df90bb6d82d2f64a77c7e83b39933ceaf55d33ceffcaed3d51279d"
   },
   "ranked_genes": 15071,
-  "ranking_sha256": "8a0cc6751f6b46b98830e7734f95b788c3944cfffc3b5c76bb1c41aaaf58727c",
+  "ranking_sha256": "608a083e14d638ab21f3163be2d57025e3ebc76d7504e41af1c5d6486be3658b",
   "evidence": {
     "figure/data/diagnostics_genes.csv.gz": "b0ceb95f8b700883aae39aba8c2bce9dae0f4bd2a0bb4fdca248067a10fe5846",
     "figure/data/diagnostics_gene_exclusions.csv": "3a0bc238521fc6802f4a5e19ff2a0c10733e558aadb1efe4ddac3628de6cf042",
-    "figure/data/diagnostics_scores.csv": "c16ee8dc8cee14edf02f4d316b2f4dbda2f05d66e7c225d7f3ee734e9cdce9c6",
-    "figure/data/diagnostics_disease_top200.csv": "9226c6ad82949625b2319e876bd4bd0a9a1734de264f1a0034ae5c20e8f5a9a3",
+    "figure/data/diagnostics_scores.csv": "f3031fe80ce021843365b5a028f418324ea248a52255e2e6d90e9083459a7796",
+    "figure/data/diagnostics_disease_deg1000.csv": "2cb9df7f8d0c36acc905752bde231a442913bf2418e7bff0b2f8d1919a5cb954",
     "figure/data/diagnostics_population.json": "9ffaea43dc2cdd225de73a6d6f3f45bb849aecba3dc03e7ddda320d08e65f1bc",
-    "figure/data/diagnostics_score_summary.json": "58f242bbf80d7dd20a63ba8bd9c30a61552ba8788198b1ed1e3f6280c1d023d1",
+    "figure/data/diagnostics_score_summary.json": "f5c7d3a70b4818aa5ec3fc7158537de3a9e6e166aba3a56248a1673024bffb35",
     "figure/data/diagnostics_variance_boundaries.csv": "fa3c275a28b6c9411aa7b1172a0b5bbd7f59fdd5a87521b1bf6e88aaed40a1fa",
-    "figure/data/disease-DEG200-coverage.csv": "ae0f322cb891e31d78be6ff25163e5ee3bca277dd7fd7e2b71863c926b0b8bc9",
-    "figure/data/score-in-axis.csv": "71af35a39feb88e9483faa64f452c120b5afd1fc32d01e61da72be2ff577632c"
+    "figure/data/disease-DEG1000-coverage.csv": "342de85547b43dc41b0a9950fa80c43e4d4c62664141cf7dc8b470af40e1ed87",
+    "figure/data/score-in-axis.csv": "ac8dfcd2786c584bc900314a613a39a190027f59610f506d0ab6935cf974b29d"
   }
 }

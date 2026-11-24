@@ -52,10 +52,8 @@ def select(repo, step):
     disease, disease_pins = disease_evidence(repo)
     if disease_pins["disease_catalog_sha256"] != read_json(data / "diagnostics_score_summary.json")["disease_catalog_sha256"]:
         raise ValueError("score evidence came from a different disease release")
-    if (data / "diagnostics_disease_top200.csv").read_text() != disease.to_csv(index=False):
-        raise ValueError("DEG200 evidence differs from released disease ranks")
-    if disease.duplicated(["disease", "gene_index"]).any() or not disease.groupby("disease").size().eq(200).all():
-        raise ValueError("each eligible disease must contain exactly 200 distinct genes")
+    if (data / "diagnostics_disease_deg1000.csv").read_text() != disease.to_csv(index=False):
+        raise ValueError("DEG1000 evidence differs from released disease ranks")
 
     identities = ["gene_index", "symbol"]
     genes_path = repo / "stage2/util/output/gene-identity/genes.csv"
@@ -107,18 +105,18 @@ def select(repo, step):
             hits = int(top.gene_index.isin(selected.gene_index).sum())
             coverage.append({"disease": name, "axis_size": size, "hits": hits,
                              "total": len(top), "coverage": hits / len(top)})
-    coverage_path = data / "disease-DEG200-coverage.csv"
+    coverage_path = data / "disease-DEG1000-coverage.csv"
     pd.DataFrame(coverage).to_csv(coverage_path, index=False)
     histogram_path = data / "score-in-axis.csv"
     pd.DataFrame(axis_score_histograms(ranking)).to_csv(histogram_path, index=False)
     evidence_names = (
         "diagnostics_genes.csv.gz", "diagnostics_gene_exclusions.csv",
-        "diagnostics_scores.csv", "diagnostics_disease_top200.csv",
+        "diagnostics_scores.csv", "diagnostics_disease_deg1000.csv",
         "diagnostics_population.json", "diagnostics_score_summary.json",
         "diagnostics_variance_boundaries.csv", coverage_path.name, histogram_path.name,
     )
     manifest = {
-        "schema": "stage2-denoise-deg-axes-v1",
+        "schema": "stage2-denoise-deg-axes-v2",
         "common_axis": previous["common_axis"],
         "inputs": {str(path.relative_to(repo)): sha256(path)
                    for path in (corpus_manifest, disease_manifest, genes_path)},
