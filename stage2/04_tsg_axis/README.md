@@ -16,7 +16,38 @@ prediction seam, `prediction.npy` stores absolute treated expression,
 and `measured_delta.npy` is measured treatment minus its matched plate
 control. All three matrices follow `conditions.csv` and `genes.csv`.
 
-## Register and replay a fit
+## Run the formal matrix
+
+The matrix driver checks the complete ordered condition and fold rosters
+across all six releases. It registers all 18 coordinates before training,
+then runs each fit, prediction and exact replay in separate processes.
+For the formal dataset, use the full cold-drug folds and seed 42.
+
+```bash
+STEP=stage2/04_tsg_axis
+WORK=$PWD/tmp/tsg-axis-formal
+export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2
+python "$STEP/execution/matrix.py" --output "$WORK/matrix"
+python "$STEP/execution/report_formal.py" build \
+  --matrix "$WORK/matrix" --report "$WORK/report" --figures "$WORK/figures" \
+  --logs "$WORK/logs"
+```
+
+Use a single capped CUDA job for fitting. Run report generation and replay
+after training completes. The accepted [formal receipt](log/316-formal.json)
+pins all 18 run manifests, the report and its two CSV-reproducible PNGs.
+The materialized paths are `output/formal` for the checkpoints, registrations,
+predictions and per-process resource logs, and `output/report` for the
+per-condition metrics, fold and eligibility tables, bandwidths and shared
+disease reference. The two summary CSVs live next to the figure source.
+
+```bash
+python "$STEP/execution/report_formal.py" verify \
+  --matrix "$STEP/output/formal" --report "$STEP/output/report" --figures "$STEP/figure" \
+  --logs "$WORK/verify"
+```
+
+## Register and replay one fit
 
 ```bash
 STEP=stage2/04_tsg_axis
@@ -83,6 +114,38 @@ equally within a fold and defined folds equally within each axis. These are
 retrospective results on published fixed axes built with tenv evidence.
 The [evaluation acceptance receipt](log/315-metrics-smoke.json) records the
 bounded evaluation and figure replay.
+
+## Formal results
+
+All 18 fits passed exact validation and held-out prediction replay. All six
+axes evaluated the same 462, 459 and 462 conditions in folds 0, 1 and 2.
+The fold RBF bandwidths were 0.430414, 0.425762 and 0.439392. Every metric
+and every disease score was defined in all three folds.
+
+| Delta metric | HVG-DEG 3k | HVG-DEG 4k | HVG-DEG 5k | Denoise-DEG 3k | Denoise-DEG 4k | Denoise-DEG 5k |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| JAC_top200 | 0.0602 | 0.0532 | 0.0526 | 0.0575 | 0.0555 | 0.0598 |
+| JAC_pos100 | 0.0622 | 0.0402 | 0.0425 | 0.0492 | 0.0486 | 0.0481 |
+| JAC_neg100 | 0.0631 | 0.0696 | 0.0664 | 0.0672 | 0.0646 | 0.0744 |
+| Δ PCC | 0.0464 | 0.0399 | 0.0496 | 0.0410 | 0.0561 | 0.0571 |
+| Δ Spearman | 0.0591 | 0.0627 | 0.0711 | 0.0453 | 0.0559 | 0.0577 |
+| Δ RMSE | 0.4238 | 0.3865 | 0.3518 | 0.3819 | 0.3498 | 0.3143 |
+| Δ E-distance | 0.0682 | 0.0915 | 0.0785 | 0.0575 | 0.0530 | 0.0500 |
+| Δ MMD | 0.2882 | 0.3152 | 0.2753 | 0.2491 | 0.2280 | 0.2009 |
+| Δ R² | -0.6011 | -0.7141 | -0.6488 | -0.7249 | -0.6680 | -0.6456 |
+
+| Signed disease DEG F1 | HVG-DEG 3k | HVG-DEG 4k | HVG-DEG 5k | Denoise-DEG 3k | Denoise-DEG 4k | Denoise-DEG 5k |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| nHF | 0.1415 | 0.1472 | 0.1723 | 0.1056 | 0.0933 | 0.0859 |
+| ICM | 0.0946 | 0.1118 | 0.1542 | 0.1049 | 0.0917 | 0.0841 |
+| genetic cardiomyopathy | 0.1889 | 0.2210 | 0.1975 | 0.1063 | 0.0927 | 0.0841 |
+| TOX | 0.2637 | 0.2283 | 0.1913 | 0.1128 | 0.0994 | 0.0901 |
+
+See the [nine-metric figure](figure/delta-metrics.png) and the
+[disease F1 figure](figure/disease-f1.png). The [metric CSV](figure/data/delta-metrics.csv)
+and [disease CSV](figure/data/disease-f1.csv) retain the full numerical
+precision and eligibility counts. The materialized report retains the
+per-fold and per-condition values and the full CM direction reference.
 
 ## Historical single-dose comparison
 
