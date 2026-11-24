@@ -1,6 +1,7 @@
 """Bounded reads of the plate-matched Stage 2 training release."""
 from __future__ import annotations
 
+from contextlib import ExitStack
 from hashlib import file_digest
 import json
 import operator
@@ -19,6 +20,15 @@ FOLD_COLUMNS = tuple(f"{scenario.replace('-', '_')}_{fold}" for scenario in SCEN
 STRIP_COLUMNS = tuple(f"{column}_reason" for column in FOLD_COLUMNS[3:])
 STRIPS = {"excluded-held-parent": "held_parent", "excluded-held-dose": "held_dose"}
 FILES = {"training.h5", "genes.csv", "controls.csv", "treatments.csv", "members.csv", "exclusions.csv"}
+TENV_DEFAULT = DEFAULT.parent / "03.1_tenv_hvg-deg-5k/output"
+TENV_SCHEMA = "stage2-tenv-plate-matched-training-v2"
+TENV_FOLD_COLUMNS = (*FOLD_COLUMNS[:3], *(f"cold_dose_drug_{fold}" for fold in range(3)))
+TENV_STRIP_COLUMNS = tuple(f"{column}_reason" for column in TENV_FOLD_COLUMNS[3:])
+TENV_MATRIX_FILES = {
+    "C": "tenv-ref-vector.h5", "M_C": "plate-ref-mtx.h5",
+    "M_T/treatment": "pert-mtx.h5", "M_T/delta": "pert-mtx.h5",
+}
+TENV_FILES = FILES - {"training.h5"} | set(TENV_MATRIX_FILES.values())
 
 
 def sha256(path):
@@ -36,6 +46,11 @@ def _csv(path, **kwargs):
 
 class TrainingData:
     """One dataset with C, M_C and M_T in the frozen prediction-axis order."""
+
+    control_key = ("plate", "cell_line")
+    fold_columns = FOLD_COLUMNS
+    strip_columns = STRIP_COLUMNS
+    strip_label = "excluded"
 
     def __init__(self, root, source):
         path = root / "manifest.json"
@@ -60,12 +75,18 @@ class TrainingData:
         for name, digest in self.manifest["outputs"].items():
             if sha256(self.root / name) != digest:
                 raise ValueError(f"training payload digest differs: {source}/{name}")
+        self._open_matrices(dict.fromkeys(TENV_MATRIX_FILES, "training.h5"))
+
+    def _open_matrices(self, files):
         self.genes = _csv(self.root / "genes.csv")
-        identity_types = {"plate": str, "cell_line": str}
+        identity_types = dict.fromkeys((*self.control_key, "drug_parent"), str)
         self.controls = _csv(self.root / "controls.csv", dtype=identity_types)
         self.treatments = _csv(self.root / "treatments.csv", dtype=identity_types)
-        self._handle = h5py.File(self.root / "training.h5", "r")
+        self._handles = ExitStack()
         try:
+            handles = {file: self._handles.enter_context(h5py.File(self.root / file, "r"))
+                       for file in dict.fromkeys(files.values())}
+            self._arrays = {key: handles[file][key] for key, file in files.items()}
             self._check_shapes()
         except BaseException:
             self.close()
@@ -74,9 +95,11 @@ class TrainingData:
     def _check_shapes(self):
         width = len(self.genes)
         n_controls, n_treatments = len(self.controls), len(self.treatments)
+        control_key = list(self.control_key)
+        treatment_key = [*control_key, "drug_parent", "dose_um"]
         if (self.genes.gene_index.duplicated().any() or width != self.manifest["axis_size"]
-                or self.controls.duplicated(["plate", "cell_line"]).any()
-                or self.treatments.duplicated(["plate", "cell_line", "drug_parent", "dose_um"]).any()):
+                or self.controls.duplicated(control_key).any()
+                or self.treatments.duplicated(treatment_key).any()):
             raise ValueError("training matrix identities differ from the manifest")
         if (n_controls, n_treatments) != (
                 self.manifest["counts"]["controls"], self.manifest["counts"]["treatments"]):
@@ -84,31 +107,31 @@ class TrainingData:
         positions = self.treatments.control_row.to_numpy()
         if not np.issubdtype(positions.dtype, np.integer) or ((positions < 0) | (positions >= n_controls)).any():
             raise ValueError("invalid matched control row")
-        matches = self.controls.iloc[positions][["plate", "cell_line"]].to_numpy()
-        if not np.array_equal(matches, self.treatments[["plate", "cell_line"]].to_numpy()):
+        matches = self.controls.iloc[positions][control_key].to_numpy()
+        if not np.array_equal(matches, self.treatments[control_key].to_numpy()):
             raise ValueError("treatment points to a control from another plate or cell line")
-        for column in FOLD_COLUMNS:
-            allowed = {"train", "valid", "test"} if column not in FOLD_COLUMNS[3:] else {
-                "train", "valid", "test", "excluded"
-            }
+        for column in self.fold_columns:
+            allowed = {"train", "valid", "test"}
+            if column in self.fold_columns[3:]:
+                allowed.add(self.strip_label)
             if not self.treatments[column].isin(allowed).all():
                 raise ValueError(f"invalid partition in {column}")
-        for column, strip in zip(FOLD_COLUMNS[3:], STRIP_COLUMNS, strict=True):
+        for column, strip in zip(self.fold_columns[3:], self.strip_columns, strict=True):
             labels, reasons = self.treatments[column], self.treatments[strip]
-            if not ((labels.eq("excluded") & reasons.isin(STRIPS.values()))
-                    | (labels.ne("excluded") & reasons.eq(""))).all():
+            if not ((labels.eq(self.strip_label) & reasons.isin(STRIPS.values()))
+                    | (labels.ne(self.strip_label) & reasons.eq(""))).all():
                 raise ValueError(f"invalid exclusion reason in {strip}")
         for name, shape in {
             "C": (width,), "M_C": (n_controls, width),
             "M_T/treatment": (n_treatments, width), "M_T/delta": (n_treatments, width),
         }.items():
-            dataset = self._handle[name]
+            dataset = self._arrays[name]
             if dataset.shape != shape or dataset.dtype != np.float32:
                 raise ValueError(f"unsupported training matrix shape or dtype: {name}")
 
     def control(self):
         """Return the equal-weight dataset-wide control C."""
-        return self._handle["C"][:]
+        return self._arrays["C"][:]
 
     def read_controls(self, start, stop):
         """Read consecutive rows of M_C."""
@@ -121,7 +144,7 @@ class TrainingData:
         return self._read_window(f"M_T/{layer}", start, stop)
 
     def _read_window(self, name, start, stop):
-        matrix = self._handle[name]
+        matrix = self._arrays[name]
         start, stop = operator.index(start), operator.index(stop)
         if not 0 <= start <= stop <= matrix.shape[0] or stop - start > MAX_ROWS:
             raise ValueError(f"training window must contain at most {MAX_ROWS} valid rows")
@@ -136,7 +159,7 @@ class TrainingData:
         return _csv(self.root / "exclusions.csv", dtype={"profile_id": str})
 
     def close(self):
-        self._handle.close()
+        self._handles.close()
 
     def __enter__(self):
         return self
@@ -148,3 +171,41 @@ class TrainingData:
 def open_training(root=None, *, source):
     """Open an accepted training dataset and verify its manifest and payloads."""
     return TrainingData(DEFAULT if root is None else Path(root), source)
+
+
+class TenvTrainingData(TrainingData):
+    """An audited axis release containing one control row per tenv plate."""
+
+    control_key = ("plate",)
+    fold_columns = TENV_FOLD_COLUMNS
+    strip_columns = TENV_STRIP_COLUMNS
+    strip_label = ""
+
+    def __init__(self, root):
+        self.root = root
+        path = root / "manifest.json"
+        self.manifest_sha256 = self.release_sha256 = sha256(path)
+        self.manifest = _read(path)
+        if (self.manifest.get("schema") != TENV_SCHEMA or self.manifest.get("source") != "tenv"
+                or set(self.manifest.get("outputs", ())) != TENV_FILES
+                or {path.name for path in root.iterdir()} != TENV_FILES | {"manifest.json"}):
+            raise ValueError("tenv training dataset inventory differs")
+        for name, digest in self.manifest["outputs"].items():
+            if sha256(root / name) != digest:
+                raise ValueError(f"tenv training payload digest differs: {name}")
+        self._open_matrices(TENV_MATRIX_FILES)
+
+    def _check_shapes(self):
+        super()._check_shapes()
+        for matrix, table in (("M_C", self.controls), ("M_T/treatment", self.treatments)):
+            handle = self._arrays[matrix].file
+            for column in table:
+                values = handle[column]
+                stored = values.asstr()[:] if h5py.check_string_dtype(values.dtype) else values[:]
+                if not np.array_equal(stored, table[column].to_numpy()):
+                    raise ValueError(f"tenv matrix row metadata differs: {matrix}/{column}")
+
+
+def open_tenv_training(root=None):
+    """Verify and open the split-file tenv contract on a published prediction axis."""
+    return TenvTrainingData(TENV_DEFAULT if root is None else Path(root))
