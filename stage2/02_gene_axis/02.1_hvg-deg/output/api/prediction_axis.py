@@ -1,4 +1,4 @@
-"""Ordered HVG-DEG gene axes and bounded projection of source-native counts."""
+"""Ordered Stage 2 prediction axes and bounded projection of source-native counts."""
 from __future__ import annotations
 
 import csv
@@ -11,6 +11,10 @@ SCHEMA = "stage2-hvg-deg-axes-v1"
 SIZES = (2000, 3000, 4000, 5000)
 COMMON_SIZE = 18164
 COMMON_SHA256 = "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+AXIS_RELEASES = {
+    "hvg-deg": ("02.1_hvg-deg", SCHEMA, SIZES),
+    "denoise-deg": ("02.2_denoise-deg", "stage2-denoise-deg-axes-v2", (1000, 2000, 3000, 4000, 5000)),
+}
 
 
 def sha256(path):
@@ -50,22 +54,26 @@ class Projection:
 
 
 class Axes:
-    def __init__(self, root):
-        self.root = Path(root)
+    def __init__(self, root, *, family="hvg-deg"):
+        if family not in AXIS_RELEASES:
+            raise ValueError(f"unknown prediction-axis family: {family}")
+        step, schema, self.sizes = AXIS_RELEASES[family]
+        self.family = family
+        default = Path(__file__).resolve().parents[3] / step / "output/release"
+        self.root = default if root is None else Path(root)
         path = self.root / "manifest.json"
         self.manifest = json.loads(path.read_text())
         self.manifest_sha256 = sha256(path)
-        if self.manifest.get("schema") != SCHEMA:
-            raise ValueError("unsupported HVG-DEG axes release")
+        if self.manifest.get("schema") != schema:
+            raise ValueError(f"unsupported {family} axes release")
         if self.manifest["common_axis"] != {"size": COMMON_SIZE, "sha256": COMMON_SHA256}:
-            raise ValueError("HVG-DEG release must use the fixed Stage 2 common axis")
-        if set(self.manifest["axes"]) != {str(size) for size in SIZES}:
-            raise ValueError("HVG-DEG release must contain the four accepted axis sizes")
-        self.sizes = SIZES
+            raise ValueError(f"{family} release must use the fixed Stage 2 common axis")
+        if set(self.manifest["axes"]) != {str(size) for size in self.sizes}:
+            raise ValueError(f"{family} release does not contain the accepted axis sizes")
 
     def axis(self, size):
         if size not in self.sizes:
-            raise ValueError(f"unknown HVG-DEG prediction axis size: {size}")
+            raise ValueError(f"unknown {self.family} prediction axis size: {size}")
         path = self.root / f"gene_axis_{size}.csv"
         digest = sha256(path)
         if digest != self.manifest["axes"][str(size)]:
@@ -84,6 +92,6 @@ class Axes:
         return PredictionAxis(indices, symbols, digest)
 
 
-def open_axes(root=None):
-    """Open the accepted HVG-DEG axis release by default."""
-    return Axes(Path(__file__).resolve().parents[1] / "release" if root is None else root)
+def open_axes(root=None, *, family="hvg-deg"):
+    """Open a published axis family, defaulting to the accepted HVG-DEG release."""
+    return Axes(root, family=family)

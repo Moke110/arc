@@ -20,7 +20,16 @@ FOLD_COLUMNS = tuple(f"{scenario.replace('-', '_')}_{fold}" for scenario in SCEN
 STRIP_COLUMNS = tuple(f"{column}_reason" for column in FOLD_COLUMNS[3:])
 STRIPS = {"excluded-held-parent": "held_parent", "excluded-held-dose": "held_dose"}
 FILES = {"training.h5", "genes.csv", "controls.csv", "treatments.csv", "members.csv", "exclusions.csv"}
-TENV_DEFAULT = DEFAULT.parent / "03.1_tenv_hvg-deg-5k/output"
+TENV_BASELINE_AXIS = "hvg-deg-5k"
+TENV_AXIS_STEPS = {
+    "hvg-deg-3k": "03.3_tenv_hvg-deg-3k",
+    "hvg-deg-4k": "03.4_tenv_hvg-deg-4k",
+    TENV_BASELINE_AXIS: "03.1_tenv_hvg-deg-5k",
+    "denoise-deg-3k": "03.5_tenv_denoise-deg-3k",
+    "denoise-deg-4k": "03.6_tenv_denoise-deg-4k",
+    "denoise-deg-5k": "03.7_tenv_denoise-deg-5k",
+}
+TENV_DEFAULT = DEFAULT.parent / TENV_AXIS_STEPS[TENV_BASELINE_AXIS] / "output"
 TENV_SCHEMA = "stage2-tenv-plate-matched-training-v2"
 TENV_FOLD_COLUMNS = (*FOLD_COLUMNS[:3], *(f"cold_dose_drug_{fold}" for fold in range(3)))
 TENV_STRIP_COLUMNS = tuple(f"{column}_reason" for column in TENV_FOLD_COLUMNS[3:])
@@ -209,3 +218,16 @@ class TenvTrainingData(TrainingData):
 def open_tenv_training(root=None):
     """Verify and open the split-file tenv contract on a published prediction axis."""
     return TenvTrainingData(TENV_DEFAULT if root is None else Path(root))
+
+
+def tenv_axis_output(axis_name, root=None):
+    """Resolve a named tenv release under a Step 03 root."""
+    if axis_name not in TENV_AXIS_STEPS:
+        raise ValueError(f"unknown tenv training axis: {axis_name}")
+    step = DEFAULT.parent if root is None else Path(root)
+    return step / TENV_AXIS_STEPS[axis_name] / "output"
+
+
+def open_tenv_axis_training(axis_name, root=None):
+    """Verify and open one named tenv axis under a Step 03 root."""
+    return open_tenv_training(tenv_axis_output(axis_name, root))
