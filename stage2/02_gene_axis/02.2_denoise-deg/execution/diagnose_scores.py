@@ -20,9 +20,8 @@ def disease_evidence(repo):
     for row in catalog["diseases"]:
         if row["eligible"]:
             frame = pd.read_csv(root / row["deg1000_file"])
-            frame = frame.nsmallest(200, "disease_rank")
-            if frame.gene_index.duplicated().any():
-                raise ValueError(f"duplicate disease gene in {row['category']}")
+            if len(frame) != row["deg1000"] or frame.gene_index.duplicated().any():
+                raise ValueError(f"invalid published DEG1000 list for {row['category']}")
             tables.append(frame.assign(disease=row["category"]))
     return pd.concat(tables, ignore_index=True), {
         "disease_catalog_sha256": hashlib.sha256((root / "catalog.json").read_bytes()).hexdigest(),
@@ -126,7 +125,7 @@ def main():
     output = step / "figure/data"
     scores.to_csv(output / "diagnostics_scores.csv", index=False)
     hits.to_csv(output / "diagnostics_tenv_top_deg.csv.gz", index=False)
-    disease.to_csv(output / "diagnostics_disease_top200.csv", index=False)
+    disease.to_csv(output / "diagnostics_disease_deg1000.csv", index=False)
     summary.update(
         plate_contrasts=len(population),
         unique_conditions=population.condition.nunique(),

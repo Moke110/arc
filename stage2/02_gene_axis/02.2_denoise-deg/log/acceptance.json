@@ -1,30 +1,47 @@
 {
+  "disease_evidence": "eligible 02.1 published DEG1000 lists",
+  "disease_votes": 4000,
   "excluded_genes": 3093,
   "retained_genes": 15071,
   "positive_score_genes": 13166,
   "axis_cutoff_scores": {
-    "1000": 12,
-    "2000": 8,
-    "3000": 7,
-    "4000": 5,
-    "5000": 4
+    "1000": 14,
+    "2000": 10,
+    "3000": 8,
+    "4000": 6,
+    "5000": 5
+  },
+  "axis_members_replaced_vs_deg200": {
+    "1000": 288,
+    "2000": 452,
+    "3000": 562,
+    "4000": 540,
+    "5000": 476
   },
   "nesting_verified": true,
-  "tenv_native_projection_rows": 8,
+  "tenv_native_projection_rows_per_axis": 8,
   "disease_coverage_cells_verified": 20,
   "evidence_only_release_replay": "identical",
   "csv_only_figure_replay": "identical",
   "native_tenv_deg_replay": {
-    "votes_and_scores": "identical",
-    "hit_ledger_uncompressed_sha256": "de5faebf952b488b9c940e5aa40834144bc1c3b0e5eb567f7c5af8e43e6482c5",
-    "wall_seconds": 160.01,
-    "peak_rss_kib": 591120
+    "per_gene_votes": "identical to previous accepted release",
+    "votes": 77348,
+    "previous_diagnostics_scores_sha256": "c16ee8dc8cee14edf02f4d316b2f4dbda2f05d66e7c225d7f3ee734e9cdce9c6",
+    "hit_ledger_uncompressed_sha256": "b0fc6b038ba039afb578fd04b784ad640cdb67e8402782cacba3b759e930ee76",
+    "previous_hit_ledger_uncompressed_sha256": "de5faebf952b488b9c940e5aa40834144bc1c3b0e5eb567f7c5af8e43e6482c5",
+    "hit_keys_order_and_log2fc": "identical",
+    "hit_ledger_max_absolute_float_difference": {
+      "padj": 4.996003610813204e-16,
+      "effect": 1.4779288903810084e-12
+    },
+    "wall_seconds": 147.81,
+    "peak_rss_kib": 590564
   },
   "png_sha256": {
-    "deg-scores.png": "0416996ac7639952fb471b7cbb632e9eb3527726c6f3278e4aa978a3f2d79ccc",
+    "deg-scores.png": "803d1bbad2136bd18cd59e12abae5d9fc7dd550ba0dc4e9774e294809cdb5241",
     "denoise.png": "5be757eb734dc52599bc41968ed14bdd8ba16488c684b7862890b897eb27ddee",
-    "disease-DEG200-coverage.png": "9cf319ecae8c420d625dfdc95409b25c0601dff4050083e7fa1337c4ba562020",
-    "score-in-axis.png": "96b2260668573afca2c6878618c67801a3f44378829bc386ad16b3b3a86a2be4"
+    "disease-DEG200-coverage.png": "25d61ad6e748a591838cf43b3bcac5740f1293334b78cbb4fb0f9f8ca0bf67c5",
+    "score-in-axis.png": "cac047b05b46170b05c727029ee61561ab99bfdd37bb7bc1f43565f63a086408"
   },
   "score_in_axis_panels_verified": 15
 }

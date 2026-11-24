@@ -4,16 +4,16 @@
   "unique_conditions": 1377,
   "conditions_without_hits": 253,
   "tenv_votes": 77348,
-  "disease_votes": 800,
+  "disease_votes": 4000,
   "diseases": {
-    "ICM": 200,
-    "TOX": 200,
-    "genetic_cardiomyopathy": 200,
-    "nHF": 200
+    "ICM": 1000,
+    "TOX": 1000,
+    "genetic_cardiomyopathy": 1000,
+    "nHF": 1000
   },
   "positive_scores": {
     "p_tenv": 15664,
-    "p_disease": 744,
+    "p_disease": 3481,
     "score": 15664
   }
 }
