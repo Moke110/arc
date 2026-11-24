@@ -1,0 +1,34 @@
+{
+  "observed_roles": {
+    "treated": 4206,
+    "vehicle": 272,
+    "blank": 32
+  },
+  "expression_wells": 4478,
+  "expression_wells_by_role": {
+    "treated": 4206,
+    "vehicle": 272
+  },
+  "zero_depth_nonblank_wells": 0,
+  "dmso_wells": 192,
+  "plate_count": 16,
+  "dmso_wells_per_plate": {
+    "Plate1": 12,
+    "Plate2": 12,
+    "Plate3": 12,
+    "Plate4": 12,
+    "Plate5": 12,
+    "Plate6": 12,
+    "Plate7": 12,
+    "Plate8": 12,
+    "Plate9": 12,
+    "Plate10": 12,
+    "Plate11": 12,
+    "Plate12": 12,
+    "Plate13": 12,
+    "Plate14": 12,
+    "Plate15": 12,
+    "Plate16": 12
+  },
+  "corpus_manifest_sha256": "91a54af534bb34df97619814c38ea676a074e1ec826753095c6f55b068165a90"
+}

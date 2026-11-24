@@ -1,0 +1,39 @@
+{
+  "schema": "stage2-denoise-deg-axes-v1",
+  "common_axis": {
+    "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "size": 18164
+  },
+  "inputs": {
+    "stage2/01_data_raw/output/manifest.json": "91a54af534bb34df97619814c38ea676a074e1ec826753095c6f55b068165a90",
+    "stage2/02_gene_axis/02.1_hvg-deg/output/release/manifest.json": "ca14d9ff0dbdd83ec5ba6acf0fcd345dfc1aedb7445bbc362329754105989494",
+    "stage2/util/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57"
+  },
+  "screening": {
+    "nonzero_fraction_min": 0.1,
+    "dmso_variance_upper_fraction": 0.1
+  },
+  "score": "p_tenv * 2 ** p_disease",
+  "tie_break": "ascending frozen gene_index",
+  "axis_order": "ascending frozen gene_index",
+  "axes": {
+    "1000": "31cdc8d0c7741714ebb520e0b12492d4fc1958e4b414971758340d0b3b1afd66",
+    "2000": "c66615cdc236a3b1944bc8c6b5856c20f0bf0998e06a5900cf0bd54dbff9a583",
+    "3000": "d6bba06a72bf38f18da1f9e39ad7868ea77a22a86e6384de4e275d354113afaf",
+    "4000": "4df1059e12f28dc361f517f4e1a78b8dbc6fc6296d0ce4a24d2c220f56a3a07d",
+    "5000": "e961706d2ff32666a8f42c57c0c2776615bb0f01e373edc250da838959ef950f"
+  },
+  "ranked_genes": 15071,
+  "ranking_sha256": "8a0cc6751f6b46b98830e7734f95b788c3944cfffc3b5c76bb1c41aaaf58727c",
+  "evidence": {
+    "figure/data/diagnostics_genes.csv.gz": "b0ceb95f8b700883aae39aba8c2bce9dae0f4bd2a0bb4fdca248067a10fe5846",
+    "figure/data/diagnostics_gene_exclusions.csv": "3a0bc238521fc6802f4a5e19ff2a0c10733e558aadb1efe4ddac3628de6cf042",
+    "figure/data/diagnostics_scores.csv": "c16ee8dc8cee14edf02f4d316b2f4dbda2f05d66e7c225d7f3ee734e9cdce9c6",
+    "figure/data/diagnostics_disease_top200.csv": "9226c6ad82949625b2319e876bd4bd0a9a1734de264f1a0034ae5c20e8f5a9a3",
+    "figure/data/diagnostics_population.json": "9ffaea43dc2cdd225de73a6d6f3f45bb849aecba3dc03e7ddda320d08e65f1bc",
+    "figure/data/diagnostics_score_summary.json": "58f242bbf80d7dd20a63ba8bd9c30a61552ba8788198b1ed1e3f6280c1d023d1",
+    "figure/data/diagnostics_variance_boundaries.csv": "fa3c275a28b6c9411aa7b1172a0b5bbd7f59fdd5a87521b1bf6e88aaed40a1fa",
+    "figure/data/disease-DEG200-coverage.csv": "ae0f322cb891e31d78be6ff25163e5ee3bca277dd7fd7e2b71863c926b0b8bc9",
+    "figure/data/score-in-axis.csv": "71af35a39feb88e9483faa64f452c120b5afd1fc32d01e61da72be2ff577632c"
+  }
+}
