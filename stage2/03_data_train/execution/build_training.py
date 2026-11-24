@@ -310,13 +310,12 @@ def _sources(sources):
     return selected
 
 
-def publish_training(destination, corpus, axis, fold_root, fold_receipt, *, sources=None, staging=None):
-    """Build and verify a separate candidate before replacing the destination."""
-    selected = _sources(sources)
+def _install_training(destination, corpus, axis, selected, build, staging):
     with publication_lock(destination) as output:
         stage = Path(staging or STAGING).resolve()
         if stage.is_relative_to(output):
             raise ValueError("training staging must be outside the accepted output")
+
         def verify_existing(root):
             sources = tuple(release.read_json(root / "manifest.json")["sources"])
             return verify_training(root, corpus, axis, sources=sources)
@@ -328,16 +327,58 @@ def publish_training(destination, corpus, axis, fold_root, fold_receipt, *, sour
         elif output.exists() and {path.name for path in output.iterdir()} - {"api"}:
             raise ValueError("refusing to replace unrecognized files in training output")
 
-        def build(candidate):
-            _build(candidate, corpus, axis, fold_root, fold_receipt, selected)
+        def prepare(candidate):
+            build(candidate)
             if (output / "api").is_dir():
-                shutil.copytree(output / "api", candidate / "api", ignore=shutil.ignore_patterns("__pycache__"))
+                shutil.copytree(output / "api", candidate / "api",
+                                ignore=shutil.ignore_patterns("__pycache__"))
 
         return publish_candidate(
-            release, output, build,
+            release, output, prepare,
             lambda root: verify_training(root, corpus, axis, sources=selected),
             staging=stage, verify_existing=verify_existing,
         )
+
+
+def publish_training(destination, corpus, axis, fold_root, fold_receipt, *, sources=None, staging=None):
+    """Build and verify a separate candidate before replacing the destination."""
+    selected = _sources(sources)
+
+    def build(candidate):
+        _build(candidate, corpus, axis, fold_root, fold_receipt, selected)
+
+    return _install_training(destination, corpus, axis, selected, build, staging)
+
+
+def promote_training(candidate, destination, corpus, axis, *, expected_sha256, staging=None):
+    """Install the pinned paired candidate after verifying an independent copy."""
+    source = Path(candidate).resolve()
+    output = Path(destination).resolve()
+    stage = Path(staging or STAGING).resolve()
+    if source.is_relative_to(output) or output.is_relative_to(source) or stage.is_relative_to(source):
+        raise ValueError("training candidate, output and staging must keep the candidate separate")
+    selected = _sources(None)
+
+    def build(prepared):
+        manifest = Path("manifest.json")
+        files = [manifest]
+        if {path.name for path in source.iterdir()} - {"api"} != {manifest.name, *selected}:
+            raise ValueError("promotion requires a complete paired training candidate")
+        for key in selected:
+            directory = source / key
+            if directory.is_symlink() or {path.name for path in directory.iterdir()} != FILES | {manifest.name}:
+                raise ValueError(f"training candidate dataset inventory differs: {key}")
+            (prepared / key).mkdir()
+            files.extend(Path(key) / name for name in sorted(FILES | {manifest.name}))
+        for relative in files:
+            path = source / relative
+            if path.is_symlink() or not path.is_file():
+                raise ValueError(f"training candidate asset must be a regular file: {relative}")
+            shutil.copyfile(path, prepared / relative)
+            if relative == manifest and sha256(prepared / manifest) != expected_sha256:
+                raise ValueError("training candidate manifest digest differs from the accepted digest")
+
+    return _install_training(destination, corpus, axis, selected, build, stage)
 
 
 def replay_training(destination, corpus, axis, fold_root, fold_receipt, *, sources=None, staging=None):
@@ -361,7 +402,7 @@ def replay_training(destination, corpus, axis, fold_root, fold_receipt, *, sourc
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("publish", "verify"))
+    parser.add_argument("command", choices=("publish", "verify", "promote"))
     parser.add_argument("--output", type=Path, default=DEFAULT)
     parser.add_argument("--staging", type=Path, default=STAGING)
     parser.add_argument("--raw", type=Path, default=STAGE / "01_data_raw/output")
@@ -370,12 +411,23 @@ def main():
                         default=STAGE / "07_tsg_dose/execution/checkpoints/round1-axis-local-inputs")
     parser.add_argument("--fold-receipt", type=Path, default=STAGE / "07_tsg_dose/log/247-axis-local-smoke.json")
     parser.add_argument("--source", choices=tuple(SOURCES), action="append")
+    parser.add_argument("--candidate", type=Path, help="accepted paired candidate for promotion")
+    parser.add_argument("--expected-sha256", help="paired manifest SHA-256 from verification")
     args = parser.parse_args()
+    if args.command == "promote":
+        if args.candidate is None or args.expected_sha256 is None or args.source is not None:
+            parser.error("promote requires --candidate and --expected-sha256 for the complete pair")
+    elif args.candidate is not None or args.expected_sha256 is not None:
+        parser.error("--candidate and --expected-sha256 apply to promote only")
     with open_corpus(args.raw) as corpus:
         axis = open_axes(args.axis).axis(5000)
         arguments = (args.output, corpus, axis, args.fold_root, args.fold_receipt)
         kwargs = {"sources": args.source, "staging": args.staging}
-        if args.command == "publish":
+        if args.command == "promote":
+            output = promote_training(args.candidate, args.output, corpus, axis,
+                                      expected_sha256=args.expected_sha256, staging=args.staging)
+            result = {"result": "PASS", "manifest_sha256": sha256(output / "manifest.json")}
+        elif args.command == "publish":
             output = publish_training(*arguments, **kwargs)
             result = {"result": "PASS", "manifest_sha256": sha256(output / "manifest.json")}
         else:

@@ -20,7 +20,7 @@ sys.path[:0] = [str(path) for path in (
 from native_corpus import open_corpus, seal_corpus
 from prediction_axis import COMMON_SHA256, PredictionAxis
 
-from build_training import publish_training, replay_training
+from build_training import promote_training, publish_training, replay_training
 from training_data import open_training
 
 
@@ -198,6 +198,46 @@ class TrainingTest(unittest.TestCase):
             self.assertEqual(strips.cold_drug_dose_0_reason.tolist(), ["held_parent", "held_dose"])
         result = replay_training(*args, staging=self.staging)
         self.assertEqual(result["sources"], ["tenv", "tahoe-bulk"])
+
+    def test_verified_pair_can_be_promoted_with_the_public_api_intact(self):
+        self.publish()
+        api = self.output / "api"
+        api.mkdir()
+        reader = api / "reader.py"
+        reader.write_text("PUBLISHED = True\n")
+        candidate = self.root / "candidate"
+        publish_training(candidate, self.corpus, self.axis, self.fold_root, self.receipt,
+                         staging=self.staging)
+        expected = digest(candidate / "manifest.json")
+
+        promote_training(candidate, self.output, self.corpus, self.axis,
+                         expected_sha256=expected, staging=self.staging)
+
+        self.assertEqual(digest(self.output / "manifest.json"), expected)
+        self.assertEqual(reader.read_text(), "PUBLISHED = True\n")
+        candidate_counts = candidate / "tahoe-bulk/training.h5"
+        accepted_counts = self.output / "tahoe-bulk/training.h5"
+        self.assertFalse(candidate_counts.samefile(accepted_counts))
+        self.assertEqual(digest(candidate_counts), digest(accepted_counts))
+        with open_training(self.output, source="tahoe-bulk") as data:
+            self.assertEqual(data.treatments.control_row.iloc[0], 0)
+
+    def test_promotion_rejects_corrupt_payload_under_the_accepted_manifest(self):
+        self.publish()
+        before = digest(self.output / "manifest.json")
+        candidate = self.root / "candidate"
+        publish_training(candidate, self.corpus, self.axis, self.fold_root, self.receipt,
+                         staging=self.staging)
+        expected = digest(candidate / "manifest.json")
+        with (candidate / "tahoe-bulk/training.h5").open("ab") as handle:
+            handle.write(b"changed after verification")
+
+        with self.assertRaisesRegex(ValueError, "training payload digest differs"):
+            promote_training(candidate, self.output, self.corpus, self.axis,
+                             expected_sha256=expected, staging=self.staging)
+
+        self.assertEqual(digest(self.output / "manifest.json"), before)
+        self.assertFalse((self.output / "tahoe-bulk").exists())
 
     def test_failed_publication_keeps_previous_accepted_bytes(self):
         self.publish()

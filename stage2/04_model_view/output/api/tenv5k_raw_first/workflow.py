@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 STAGE2 = Path(__file__).resolve().parents[4]
-for relative in ("util/output/api", "03_view/03.1_hvg-deg-5k/output/api",
+for relative in ("util/output/api", "03_data_train/03.1_hvg-deg-5k/output/api",
                  "02_gene_axis/02.1_hvg-deg/output/api"):
     sys.path.insert(0, str(STAGE2 / relative))
 

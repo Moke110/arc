@@ -207,12 +207,12 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # fit state are disposable and stay local to the checkout that produced them.
 # The global `output/` rule hides the directory, so re-include it before the
 # payload patterns below re-exclude the heavy files.
-!/stage2/03_view/03.1_hvg-deg-5k/historical/tsg_view/figure/data/*.csv
-!/stage2/03_view/03.1_hvg-deg-5k/historical/tsg_view/output/
-!/stage2/03_view/03.1_hvg-deg-5k/historical/tsg_view/output/**
-/stage2/03_view/03.1_hvg-deg-5k/historical/tsg_view/output/**/*.h5ad
-/stage2/03_view/03.1_hvg-deg-5k/historical/tsg_view/output/**/*.npy
-/stage2/03_view/03.1_hvg-deg-5k/historical/tsg_view/output/runs/
+!/stage2/03_data_train/03.1_hvg-deg-5k/historical/tsg_view/figure/data/*.csv
+!/stage2/03_data_train/03.1_hvg-deg-5k/historical/tsg_view/output/
+!/stage2/03_data_train/03.1_hvg-deg-5k/historical/tsg_view/output/**
+/stage2/03_data_train/03.1_hvg-deg-5k/historical/tsg_view/output/**/*.h5ad
+/stage2/03_data_train/03.1_hvg-deg-5k/historical/tsg_view/output/**/*.npy
+/stage2/03_data_train/03.1_hvg-deg-5k/historical/tsg_view/output/runs/
 
 # Authoritative shared identities are tracked; representation vectors remain local.
 !/stage2/util/output/
@@ -224,5 +224,5 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 /stage2/util/output/representations/
 
 # Retained local historical view payloads.
-/stage2/03_view/03.1_hvg-deg-5k/historical/tsg_view/execution/freezes/
-/stage2/03_view/03.1_hvg-deg-5k/historical/tsg_view/execution/checkpoints/
+/stage2/03_data_train/03.1_hvg-deg-5k/historical/tsg_view/execution/freezes/
+/stage2/03_data_train/03.1_hvg-deg-5k/historical/tsg_view/execution/checkpoints/

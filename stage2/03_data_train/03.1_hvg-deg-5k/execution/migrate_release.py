@@ -13,6 +13,7 @@ from pathlib import Path
 from build_views import (PAYLOAD_SCHEMA, RECIPE, SCHEMA, SOURCES,
                          open_view, release, sha256)
 
+# Keep the original paths when regenerating the sealed #302 receipt.
 PREVIOUS = Path("stage2/03_view/03.1_hvg-deg_views/output/raw-first-v1")
 CURRENT = Path("stage2/03_view/03.1_hvg-deg-5k/output/release")
 ARCHIVED = Path("stage2/03_view/03.1_hvg-deg-5k/historical/raw-first-v1")

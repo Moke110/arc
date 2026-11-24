@@ -1,6 +1,6 @@
 # 0085. Publish source-native raw data and plate-matched training data
 
-**Status** — Accepted design, 2026-11-24. Implementation pending.
+**Status** — Accepted, 2026-11-24. [Implementation and acceptance](../../stage2/03_data_train/README.md).
 
 Stage 2 training needs one expression row per plate-level perturbation condition. Tahoe and tenv both have conditions that recur on different plates. Keeping a row for each plate and cell line gives every perturbation effect a single experimentally matched reference. This supersedes ADR 0083's active expression publication boundary while preserving its source-data and gene-axis boundaries.
 
