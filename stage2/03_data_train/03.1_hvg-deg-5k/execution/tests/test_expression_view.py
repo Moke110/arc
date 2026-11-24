@@ -85,6 +85,23 @@ class ExpressionViewTest(unittest.TestCase):
             open_view(self.output, source="tenv", family="merge")
         self.assertEqual(replay_views(self.output, self.corpus, self.axis)["result"], "PASS")
 
+    def test_tahoe_substep_preserves_well_level_payload_and_combined_replay(self):
+        sys.path.insert(0, str(STEP.parent / "03.2_tahoe_hvg-deg-5k/execution"))
+        from publish_tahoe import publish_tahoe, verify_tahoe
+
+        publish_views(self.output, self.corpus, self.axis)
+        sealed = json.loads((self.output / "manifest.json").read_bytes())
+        tahoe = self.root / "tahoe"
+        publish_tahoe(self.output, tahoe, staging=self.root / "staging")
+        result = verify_tahoe(self.output, tahoe)
+        self.assertEqual(result["outputs"], {key: value for key, value in sealed["outputs"].items()
+                                            if key.startswith("tahoe_bulk.")})
+        with open_view(tahoe, source="tahoe_bulk") as view:
+            self.assertEqual(list(view.obs.index), ["t1", "v1", "v2", "t2", "t3", "v3"])
+        with self.assertRaisesRegex(ValueError, "missing from expression view"):
+            open_view(tahoe, source="tenv")
+        self.assertEqual(replay_views(self.output, self.corpus, self.axis)["result"], "PASS")
+
     def test_migration_preserves_payloads_and_cleans_up_when_receipt_cannot_be_written(self):
         genes = tuple(range(5000))
         axis = PredictionAxis(genes, tuple(map(str, genes)), self.axis.sha256)

@@ -1,0 +1,20 @@
+{
+  "axis_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+  "axis_size": 5000,
+  "control": "union matched vehicle rows by source observation identity",
+  "corpus_sha256": "a4cd6c42165569f77765a9c65de0d9d7e7292c192fdc7d25b455b78fdb50b4e4",
+  "default_family": "full",
+  "delta": "X minus control",
+  "normalization": "sum selected-axis integer counts, then separate CP10K and log1p",
+  "outputs": {
+    "tahoe_bulk.exclusions.csv": "9c9e61ede74b0b8b0bff5b074f3c1499cd1e165ec8a792597b0f5750fc538d86",
+    "tahoe_bulk.h5ad": "79e06aeaf3135a8564d5889508e375e77a05c61325e497efc0d6d19365085e7c",
+    "tahoe_bulk.members.csv": "b9db6704d52d9597052a11ca83409b11f2bd4bc4e5e7cba0fef14b42ae7fa353"
+  },
+  "payload_schema": "stage2-hvg-deg-views-raw-first-v1",
+  "schema": "stage2-hvg-deg-5k-release-v2",
+  "sealed_manifest_sha256": "d66eed2c849fabc85fc2ae1218e1ea69181a7559bab49dfe4eaaa4e04c5eea2c",
+  "sources": [
+    "tahoe_bulk"
+  ]
+}

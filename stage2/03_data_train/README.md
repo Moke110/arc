@@ -1,7 +1,16 @@
 # Plate-matched training data
 
+[03.1 tenv](03.1_tenv_hvg-deg-5k/README.md) publishes plate-pooled tenv on the
+HVG-DEG 5k axis. [03.2 Tahoe](03.2_tahoe_hvg-deg-5k/README.md) exposes the
+accepted Tahoe well-level data on the same gene axis. These source-specific
+routes implement [Spec 5](https://github.com/Moke110/arc/issues/310).
+The [acceptance receipt](log/312-source-specific-releases.json) records the
+real tenv replay, Tahoe asset equality and sealed combined-view replay.
+
+## ADR 0085 paired release
+
 [ADR 0085](../../docs/adr/0085-stage2-raw-and-training-data.md)
-defines the pooled training release. The prediction axis remains the ordered
+defines the earlier paired tenv and Tahoe pooled release. Its axis is the ordered
 5,000 genes published by [02_gene_axis](../02_gene_axis/README.md). The builder
 projects source-native counts to that axis, sums compatible replicates, then
 applies CP10K and natural log1p to each pooled profile.
