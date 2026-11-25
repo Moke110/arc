@@ -41,6 +41,8 @@ fell to 0.249215, compared with 0.406610 and 0.259575 at weight zero.
 The 22 report figures use the [Stage 2 palette and drawing API](util/README.md#plotting).
 The verifier checks the current render receipts and reproduces each PNG
 twice from its published plot data using the `arc` rendering environment.
+For byte-identical replay, use the exact Python, Matplotlib, NumPy and,
+where listed, pandas versions in the receipts’ `environment` fields.
 
 ```bash
 mkdir -p "$PWD/tmp"

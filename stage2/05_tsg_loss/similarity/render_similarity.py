@@ -10,20 +10,20 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 import numpy as np
 
 LOSS = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script"),
                 str(LOSS / "05.3_mse-l1_mse-x/figure/script")]
 
-from loss_plot_style import FOLD_HUES, metric_direction
+from loss_plot_style import FOLD_HUES, curve_legend_handles, metric_direction
 from render_metrics import FIGURES, LABELS
 from render_learning_curves import EPOCH_SOURCE, FIGURE_NAME, FOLDS, read_curves
-from stage2_util import palette, plotting
+from stage2_util import plotting
 
-# The accepted CSV report coordinates. Keep figure rendering independent of
-# the Torch-based objective module, whose code is bound by run registrations.
+# These are the accepted CSV report coordinates. Importing them from the
+# objective would require PyTorch for CSV-only rendering. Moving them out
+# of the objective would change the code digest sealed by run registrations.
 ALPHAS = ("0", "0.1", "0.2", "0.3", "0.4", "0.5")
 REFERENCE_ALPHA = "0"
 SMOKE_ALPHAS = (REFERENCE_ALPHA, "0.5")
@@ -102,10 +102,7 @@ def render_curves(data, output, metric, *, smoke):
         plot.grid(axis="y", color="#dedede", linewidth=.55)
         plot.spines[["top", "right"]].set_visible(False)
 
-    handles = [Line2D([], [], color=palette.color_pair(FOLD_HUES[fold]).main, label=f"Fold {fold}") for fold in folds]
-    handles.extend((Line2D([], [], color="#333333", linestyle="--", label="Train"),
-                    Line2D([], [], color="#333333", label="Validation"),
-                    Line2D([], [], color="#333333", linestyle="None", marker="o", label="Selected epoch")))
+    handles = curve_legend_handles(folds, selected_epoch=True)
     fig.legend(handles=handles, ncols=len(handles), loc="outside upper center", frameon=False)
     fig.supxlabel(f"Epoch · Delta {METRIC_LABELS[metric]} loss")
     fig.supylabel("Objective per condition (log scale)")

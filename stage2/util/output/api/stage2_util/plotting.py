@@ -80,11 +80,10 @@ def scatter(axis, x, y, *, hue=220, depth=2, **kwargs):
 
 
 def bubble(axis, x, y, sizes, *, hue=220, depth=2, **kwargs):
-    """Draw size-encoded points with secondary faces and main edges."""
-    colors = palette.color_pair(hue, depth)
+    """Draw size-encoded points with the main color for both faces and edges."""
+    color = palette.color_pair(hue, depth).main
     kwargs.setdefault("linewidths", .8)
-    return axis.scatter(x, y, s=sizes, facecolors=colors.secondary,
-                        edgecolors=colors.main, **kwargs)
+    return axis.scatter(x, y, s=sizes, facecolors=color, edgecolors=color, **kwargs)
 
 
 def heatmap(axis, values, *, hue=220, vmin=None, vmax=None, colorbar_label=None, **kwargs):
