@@ -749,6 +749,12 @@ The Stage 2 study comparing alternative objectives for predicted Delta at fixed 
 **Delta loss weight** (`alpha`):
 In the TranSiGen loss comparison, the coefficient of the predicted Delta loss when each reconstruction MSE has coefficient one.
 
+**TranSiGen MSE + L1 study** (`05.2_mse_l1`):
+The Stage 2 study of the effect of adding an L1 penalty on predicted Delta to the native TranSiGen objective.
+
+**Delta L1 weight** (`alpha` in `05.2_mse_l1`):
+The coefficient of the additional Delta L1 penalty. The native Delta MSE keeps coefficient one.
+
 **Historical single-dose tenv comparison** (`04_model_view`):
 The archived Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result.
 _Avoid_: benchmark step (when meaning this comparison)

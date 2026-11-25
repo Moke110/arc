@@ -1,0 +1,130 @@
+{
+  "axis": "denoise-5k",
+  "checkpoint_rule": "earliest minimum registered validation objective",
+  "code_sha256": {
+    "execution/additive_objective.py": "099c8a3b6c232eb0ceea23ccf3abb6cc06f602f58c54dd153060d94b7eb6663b",
+    "execution/evaluate_sweep.py": "5557b54d40ae48660ae5fb985eabae904e18d98855fac26b7aee379dd332174a",
+    "execution/run_sweep.py": "5526acbc56d9e21191f37213828c2392d849bb863d166c0f4e08cbf1df78a8a8",
+    "figure/script/render_learning_curves.py": "1941340f2279e59335fe539279b490ed89ccf77d1c4a361fcee4cca9ace00535",
+    "figure/script/render_metrics.py": "a336e3fc60fce3ed89afccdba9b136f74fca02d4c49a0eb7e072501cc674c2db"
+  },
+  "csv_only_figure_sha256": {
+    "delta-metrics-improvement.png": "32b8bcf81227ff11bbc172f472662c0d4d02935a5328123d0deb41fe177df943",
+    "delta-metrics.png": "c1eaec959160bb82800701aebe969878fda56efe5ec4a5db9069f45f9c1ef96b",
+    "learning-curves.png": "9eb394cd926fc68ab484c15208bfade2da9883821c9604c33d4b99560db5f15a"
+  },
+  "device": "cuda",
+  "environment": {
+    "cuda": "13.0",
+    "hardware": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "numpy": "2.4.6",
+    "python": "3.13.13",
+    "torch": "2.12.0+cu130",
+    "torch_threads": 2
+  },
+  "fold": 0,
+  "fold_scores": 18,
+  "independent_csv_render": "byte-identical",
+  "missing_coordinate_rejected": true,
+  "report_sha256": "896f32b2092f89b849b0a9e8936d5eadcb9d7e7141d8a9fe0c5a6d0bea6a5adb",
+  "resource_monitor": {
+    "max_gpu_used_mib": 2770,
+    "max_observed_sample_gap_seconds": 10.015,
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "min_wsl_available_kib": 19796996,
+    "sample_interval_seconds": 10,
+    "samples": 11
+  },
+  "runs": [
+    {
+      "best_epoch": 2,
+      "manifest_sha256": "1a31d1910e58f7e23bea987e722a81eb662f2bc76318626394beff4815a2f3b2",
+      "objective": {
+        "alpha": "0",
+        "delta_l1_weight": 0.0,
+        "delta_mse_weight": 1.0,
+        "kl_weight": 0.1,
+        "reconstruction_weight": 1.0
+      },
+      "partition_counts": {
+        "test": 24,
+        "train": 64,
+        "valid": 24
+      },
+      "raw_delta_terms_per_condition": {
+        "train_delta_l1": [
+          2540.13330078125,
+          2507.455322265625
+        ],
+        "train_delta_mse": [
+          2752.1650390625,
+          2703.388671875
+        ],
+        "validation_delta_l1": [
+          2435.762044270833,
+          2402.00146484375
+        ],
+        "validation_delta_mse": [
+          2813.666341145833,
+          2762.071614583333
+        ]
+      },
+      "registration_sha256": "fed5e4a74b92f3815591b02dc5b55b8eb739b507b6c0fe972840d20a07c53924",
+      "replay": {
+        "test_replay": "exact",
+        "validation_objective_replay": "exact",
+        "validation_replay": "exact"
+      },
+      "stopping_epoch": 2,
+      "trace_sha256": "8ff5843b4bad71e04e9662fff61b0d7fe049545fad08a58e63e9bbb3e522a4e1",
+      "train_peak_rss_kib": 1785224
+    },
+    {
+      "best_epoch": 2,
+      "manifest_sha256": "da43c67c62fb7674e3523e1320801836bc2c2bc162f8f7c780df2db1027fb548",
+      "objective": {
+        "alpha": "1",
+        "delta_l1_weight": 1.0,
+        "delta_mse_weight": 1.0,
+        "kl_weight": 0.1,
+        "reconstruction_weight": 1.0
+      },
+      "partition_counts": {
+        "test": 24,
+        "train": 64,
+        "valid": 24
+      },
+      "raw_delta_terms_per_condition": {
+        "train_delta_l1": [
+          2540.13330078125,
+          2507.48681640625
+        ],
+        "train_delta_mse": [
+          2752.1650390625,
+          2703.5498046875
+        ],
+        "validation_delta_l1": [
+          2436.008138020833,
+          2402.4225260416665
+        ],
+        "validation_delta_mse": [
+          2813.5865885416665,
+          2761.909505208333
+        ]
+      },
+      "registration_sha256": "be2808dc586b78aecbc49a5301d7eb6ab48bb7bf7793b32bb8ae2d3fa6314e4b",
+      "replay": {
+        "test_replay": "exact",
+        "validation_objective_replay": "exact",
+        "validation_replay": "exact"
+      },
+      "stopping_epoch": 2,
+      "trace_sha256": "2d40c5bf5d2a1f6e417b71b61ab05f6ec628e158e5faa476c51f2dec329c81ac",
+      "train_peak_rss_kib": 1785472
+    }
+  ],
+  "seed": 42,
+  "status": "PASS",
+  "ticket": 332
+}

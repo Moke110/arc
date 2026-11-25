@@ -21,7 +21,7 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 - [05_tsg_loss](05_tsg_loss/AGENTS.md) compares TranSiGen Delta losses and weights on the fixed denoise-5k axis.
 
 Use Step 04's `execution/matrix.py` and `execution/evaluate.py` for the axis comparison.
-Step 05.1 reuses the matched-control runtime and metric primitives with its own run and report commands.
+Steps 05.1 and 05.2 reuse the matched-control runtime and metric primitives with their own run and report commands.
 
 ## Local history
 
