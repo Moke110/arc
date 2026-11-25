@@ -214,8 +214,23 @@ See the [nine-metric figure](figure/canonical-axis/delta-metrics.png) and the
 [disease CSV](figure/canonical-axis/data/disease-f1.csv) retain the full numerical
 precision and eligibility counts. The materialized report retains the
 per-fold and per-condition values and the full CM direction reference.
-The [canonical export receipt](log/322-canonical-axis-report.json) records
-the six ID mappings, sealed table hashes and current figure digests.
+Reproduce the current figures from both published canonical CSVs.
+
+```bash
+STEP=stage2/04_tsg_axis
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/tsg-axis-figures.XXXXXX")
+export TMPDIR="$WORK" MPLCONFIGDIR="$WORK/mpl"
+python "$STEP/figure/script/render.py" --data "$STEP/figure/canonical-axis/data" \
+  --output "$WORK/figures"
+```
+
+The [current rendering receipt](log/342-figure-render.json) records the CSV
+and PNG hashes. Metric panel arrows show the preferred direction. The
+[canonical export receipt](log/322-canonical-axis-report.json) records the
+six ID mappings, sealed table hashes and pre-refresh figure hashes. Use
+revision `7f48f6a881bea57598b40b0da2becd62917569c8` to reproduce those
+canonical PNG bytes.
 Revision `3f4cbb65` retains the figures and renderer pinned by the formal
 receipt. Revision `0067ce54` retains the first revision of the Delta figure
 styling and its receipt.
