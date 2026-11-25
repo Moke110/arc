@@ -1,2 +1,0 @@
-caps: systemd-run user scope MemoryMax=10G MemorySwapMax=8G threads=2
-Running as unit: run-r13938bfae19f40c995a0a938c920d478.scope; invocation ID: 1d12ec7dd3d54632af14aea14cabb39b

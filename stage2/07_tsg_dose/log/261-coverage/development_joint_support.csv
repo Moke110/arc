@@ -1,7 +1,0 @@
-scenario,fold,occupied_similarity_bins_in_both,shared_exact_doses_um,shared_exact_cell_lines,shared_exact_dose_cell_groups
-cold-drug,0,0–0.25;>0.25–0.50;>0.50–0.75,,,0
-cold-drug,1,0–0.25;>0.25–0.50;>0.50–0.75;>0.75–1,,,0
-cold-drug,2,0–0.25;>0.25–0.50;>0.50–0.75,,,0
-cold-drug-dose,0,0–0.25;>0.25–0.50;>0.50–0.75,,,0
-cold-drug-dose,1,0–0.25;>0.25–0.50;>0.50–0.75;>0.75–1,,,0
-cold-drug-dose,2,0–0.25;>0.25–0.50;>0.50–0.75,,,0

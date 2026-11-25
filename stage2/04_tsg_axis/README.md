@@ -220,68 +220,10 @@ Revision `3f4cbb65` retains the figures and renderer pinned by the formal
 receipt. Revision `0067ce54` retains the first revision of the Delta figure
 styling and its receipt.
 
-## Historical single-dose comparison
+## Historical comparisons
 
-The [archive](historical/04_model_view/README.md) retains the accepted
-single-dose comparison, receipts, payloads and original rendering data.
-Use `python stage2/04_tsg_axis/execution/verify_historical.py --full` to
-verify the sealed assets and replay all 54 fits' fixed predictions, the
-nine aggregate artifacts and the three CSV-only figures. Replay writes to
-scratch. The archive retains the original run plans, checkpoints and receipts.
-
-## Replay the preceding axis-wide-control comparison
-
-[Spec 5](https://github.com/Moke110/arc/issues/310) used an axis-wide
-control for validation and test inputs and predicted Delta. It selected
-the checkpoint by treated-expression MSE with 50-epoch patience. The
-[original formal receipt](log/316-formal.json) records that comparison.
-Its figures and plot CSVs are available in Git revision `85bc014`.
-Its checkpoints, report and audit retain `output/formal`, `output/report`
-and `log/316-runs`.
-
-Use the Git checkout matching the registration when replaying archived
-checkpoints. Prepare the axis runtime worktree under the checkout's root `tmp/`.
-
-```bash
-git worktree add --detach "$PWD/tmp/axis-runtime" 986f8ea
-```
-
-Use the same Python and CUDA environment as the recorded fit. The Step 04
-dispatcher verifies the exact Git revision. For the 18 preceding formal fits,
-pass the materialized matrix, Step 03 folder, frozen KPGT and native model source.
-
-```bash
-export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2
-python stage2/04_tsg_axis/execution/replay_pinned.py axes \
-  --runtime "$PWD/tmp/axis-runtime" --matrix stage2/04_tsg_axis/output/formal \
-  --step03 stage2/03_data_train --representations stage2/util/output/representations \
-  --source pert_model/TranSiGen/source
-```
-
-Replay the predecessor's scores and CSV-only figures with the runtime that
-reads the separately materialized `log/316-runs` audit.
-
-```bash
-git worktree add --detach "$PWD/tmp/axis-report-runtime" 85bc014
-STEP=stage2/04_tsg_axis
-python "$PWD/tmp/axis-report-runtime/$STEP/execution/report_formal.py" verify \
-  --matrix "$STEP/output/formal" --matrix-audit "$STEP/log/316-runs" \
-  --report "$STEP/output/report" --figures "$PWD/tmp/axis-report-runtime/$STEP/figure" \
-  --step03 stage2/03_data_train --raw stage2/01_data_raw/output \
-  --logs "$PWD/tmp/axis-predecessor-report-verify"
-```
-
-## Replay downstream sealed runtimes
-
-```bash
-git worktree add --detach "$PWD/tmp/dose-width-runtime" e4587a8
-```
-
-For a recorded Step 07 or 08 checkpoint, use the same dispatcher with
-`dose` or `width`, `--runtime "$PWD/tmp/dose-width-runtime"`, `--run` for
-the sealed checkpoint folder, `--inputs` for the recorded tenv KPGT input
-freeze and `--source` for the native TranSiGen source. Add `--scratch`
-under `tmp/` for width replay. Step 07 checks exact validation and test
-predictions. Step 08 checks exact validation predictions and held-out
-test-score CSVs. The [compatibility receipt](log/310-runtime-replay.json)
-records those checks against the accepted generations.
+The [previous routing](https://github.com/Moke110/arc/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/04_tsg_axis/README.md)
+records the original inputs and pinned replay commands for the single-dose and
+axis-wide-control comparisons and the subsequent dose and width studies.
+The [local archive inventory](../README.md#local-history) maps their
+original paths to the preserved materialized files.

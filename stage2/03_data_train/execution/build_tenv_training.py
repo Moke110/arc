@@ -79,7 +79,7 @@ def publish_tenv(destination, corpus, axis, fold_axis, fold_root=FOLD_ROOT,
         break
 
     def build(candidate):
-        _build_dataset(candidate, "tenv", corpus, axis, fold_root, fold_receipt, tenv_fold_axis=fold_axis)
+        _build_dataset(candidate, corpus, axis, fold_axis, fold_root, fold_receipt)
 
     def verify(candidate):
         result = verify_tenv(candidate, corpus, axis, fold_axis, fold_root, fold_receipt,
@@ -108,8 +108,7 @@ def replay_tenv(destination, corpus, axis, fold_axis, fold_root=FOLD_ROOT,
         accepted = verify_tenv(output, *args, reference=reference)
         candidate = release.candidate(output, stage)
         try:
-            _build_dataset(candidate, "tenv", corpus, axis, fold_root, fold_receipt,
-                           tenv_fold_axis=fold_axis)
+            _build_dataset(candidate, corpus, axis, fold_axis, fold_root, fold_receipt)
             if verify_tenv(candidate, *args, reference=reference) != accepted:
                 raise ValueError("replayed tenv training manifest differs from the accepted release")
         finally:

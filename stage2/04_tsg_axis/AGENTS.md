@@ -16,8 +16,5 @@ command to replay the report. Render with `figure/script/render.py` using the
 report summary CSVs. Publish the accepted matched-control figures under
 `figure/`. Keep smoke evaluations outside the formal comparison.
 
-Replay Spec 5 scores and figures using the pinned checkout in the README.
-
 The active TranSiGen adapter and training utilities live in `output/api/tsg_axis/`.
-The [single-dose archive](historical/04_model_view/README.md) preserves the
-earlier comparison and its pinned replay.
+Replay the sealed matched-control report using the pinned checkout in the README.

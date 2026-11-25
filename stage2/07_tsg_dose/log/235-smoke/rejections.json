@@ -1,6 +1,0 @@
-{
-  "mismatched_persisted_transform": "method/transform identity mismatch",
-  "nonfinite_inf": "non-finite serialized prediction",
-  "nonfinite_nan": "non-finite serialized prediction",
-  "nonfinite_1e+100": "non-finite serialized prediction"
-}
