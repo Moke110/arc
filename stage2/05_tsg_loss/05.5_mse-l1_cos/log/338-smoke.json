@@ -51,7 +51,7 @@
   },
   "report_sha256": "be127463bc7acbbc3810cbc4562e93e4c9833a7e8f2a58cf722ff551569fee21",
   "resource_monitor": {
-    "capture": "similarity/338-coordinator-resources.jsonl",
+    "capture": "05.4_mse-l1_pcc/log/338-coordinator-resources.jsonl",
     "finish_utc": "2026-11-25T11:21:03.365345+00:00",
     "max_gpu_used_mib": 3037,
     "max_monotonic_sample_gap_seconds": 10.001,
