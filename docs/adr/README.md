@@ -119,3 +119,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0084](0084-retire-stage2-bases-and-reserve-loss-step.md) | Retire Stage 2 Bases and reserve the loss comparison step |
 | [0085](0085-stage2-raw-and-training-data.md) | Publish source-native raw data and plate-matched training data |
 | [0086](0086-tenv-axis-matched-plate-control.md) | Condition the tenv axis comparison on matched plate controls in every partition |
+| [0087](0087-stage2-active-steps-and-history.md) | Keep Steps 01–04 active and retain Stage 2 history in one local archive |
