@@ -83,6 +83,9 @@ def render_panels(scores, field, output, alphas):
                     extent=(0, 1, 0, 1), transform=plot.transAxes,
                     interpolation="bicubic", zorder=0)
         plot.set(xlim=limits[0], ylim=limits[1], xticks=x, xticklabels=alphas, title=label)
+        if len(alphas) > len(SMOKE_ALPHAS):
+            for tick in plot.get_xticklabels():
+                tick.set(rotation=45, ha="right", fontsize=9)
         plot.title.set_fontweight("bold")
         plot.axhline(0, color="#666666", linewidth=.8, zorder=2)
         plot.grid(axis="y", color="#777777", alpha=.25, zorder=1)
