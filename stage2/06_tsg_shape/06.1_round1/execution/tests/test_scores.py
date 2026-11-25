@@ -15,7 +15,7 @@ class PairScoresTest(unittest.TestCase):
             {"shape": shape, "fold": fold, "metric": "Δ PCC", "value": value,
              "n_conditions": 1, "n_eligible": int(math.isfinite(value)),
              "n_undefined": int(not math.isfinite(value))}
-            for shape, values in (("widen_z-100", (-0.25, 0.75, -0.1)),
+            for shape, values in (("original", (-0.25, 0.75, -0.1)),
                                   ("widen_z-130", (0.25, math.nan, 0.2)))
             for fold, value in enumerate(values)
         ])

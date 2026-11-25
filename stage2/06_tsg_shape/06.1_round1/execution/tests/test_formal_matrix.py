@@ -12,7 +12,8 @@ class FormalMatrixTest(unittest.TestCase):
     def test_training_requires_every_distinct_preregistered_coordinate(self):
         with TemporaryDirectory() as temporary:
             paths = run_paths(Path(temporary))
-            self.assertEqual(len(paths), 24)
+            self.assertEqual(list(paths), [(shape, fold) for shape in
+                                          ("widen_enc-2k", "widen_enc-4k") for fold in range(3)])
             expected = {}
             for index, ((shape, fold), path) in enumerate(paths.items()):
                 identity = {"shape": shape, "fold_identity": fold}

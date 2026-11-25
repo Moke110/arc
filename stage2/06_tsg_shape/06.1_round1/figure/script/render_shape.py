@@ -12,9 +12,11 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-STAGE = Path(__file__).resolve().parents[4]
-sys.path.insert(0, str(STAGE / "util/output/api"))
+STEP = Path(__file__).resolve().parents[2]
+STAGE = STEP.parents[1]
+sys.path[:0] = [str(STAGE / "util/output/api"), str(STEP / "execution")]
 
+from shape_roster import SHAPES, SMOKE_SHAPES
 from stage2_util import palette, plotting
 
 LOWER_IS_BETTER = {"Δ RMSE", "Δ E-distance", "Δ MMD"}
@@ -29,12 +31,18 @@ LABELS = {
     "Δ MMD": "Δ MMD",
     "Δ R²": "Δ R²",
 }
-SHAPE_HUES = dict(zip(
-    ("widen_z-100", "widen_z-110", "widen_z-120", "widen_z-130",
-     "widen_enc", "deepen_enc", "deepen_dec", "deepen-both"),
-    palette.HUES[:8],
-    strict=True,
-))
+SHAPE_COLORS = {
+    "original": (20, 2),
+    "widen_z-110": (60, 2),
+    "widen_z-120": (100, 2),
+    "widen_z-130": (140, 2),
+    "widen_enc-2k": (180, 3),
+    "widen_enc-4k": (180, 2),
+    "widen_enc-6k": (180, 1),
+    "deepen_enc": (220, 2),
+    "deepen_dec": (260, 2),
+    "deepen_both": (300, 2),
+}
 FIELDS = {"value": "delta-metrics.png", "score_difference": "delta-metrics-paired-difference.png"}
 CURVE_NAME = "learning-curves.png"
 
@@ -55,7 +63,7 @@ def score_table(path, replicate=False):
 def read_scores(data, smoke):
     summary = score_table(data / "delta-metrics.csv")
     replicates = score_table(data / "fold-scores.csv", replicate=True)
-    shapes = tuple(shape for shape in SHAPE_HUES if not smoke or shape not in ("widen_z-110", "widen_z-120"))
+    shapes = SMOKE_SHAPES if smoke else tuple(SHAPES)
     folds = (0,) if smoke else range(3)
     if set(summary) != set(product(shapes, LABELS)) or set(replicates) != set(product(shapes, LABELS, folds)):
         raise ValueError("aggregate plotting CSV requires the complete architecture-by-metric grid")
@@ -77,7 +85,7 @@ def render_metrics(data, output, smoke):
     positions = range(len(shapes))
     for field, filename in FIELDS.items():
         difference = field == "score_difference"
-        figure, plots = plt.subplots(3, 3, figsize=(15, 10), layout="constrained")
+        figure, plots = plt.subplots(3, 3, figsize=(17, 10), layout="constrained")
         for (metric, label), plot in zip(LABELS.items(), plots.flat, strict=True):
             plot.set_title(f"{label} {'↓' if metric in LOWER_IS_BETTER else '↑'}", fontweight="bold")
             means = [summary[shape, metric][field] for shape in shapes]
@@ -85,7 +93,8 @@ def render_metrics(data, output, smoke):
                 plot.axhline(0, color="#666666", linewidth=.8, zorder=2)
             groups = [[replicates[shape, metric, fold][field] for fold in folds] for shape in shapes]
             for position, shape, mean, values in zip(positions, shapes, means, groups, strict=True):
-                plotting.replicate_bar(plot, position, values, hue=SHAPE_HUES[shape], width=.68)
+                hue, depth = SHAPE_COLORS[shape]
+                plotting.replicate_bar(plot, position, values, hue=hue, depth=depth, width=.68)
                 if math.isnan(mean):
                     plot.text(position, .02, "NA", ha="center", fontsize=7, transform=plot.get_xaxis_transform())
             if not difference:
@@ -107,7 +116,7 @@ def render_metrics(data, output, smoke):
 
 
 def read_curves(path):
-    curves = {shape: {} for shape in SHAPE_HUES}
+    curves = {shape: {} for shape in SHAPES}
     for row in plotting.read_rows(path):
         shape = row["shape"]
         run = int(row["fold"]), int(row["seed"])
@@ -118,27 +127,26 @@ def read_curves(path):
             raise ValueError(f"invalid objective in {shape}, run {run}, epoch {epoch}")
         points.append((epoch, *values))
     roster = set(next(iter(curves.values())))
-    if {fold for fold, _ in roster} != {0, 1, 2} or any(set(runs) != roster for runs in curves.values()):
+    if roster != {(fold, 42) for fold in range(3)} or any(set(runs) != roster for runs in curves.values()):
         raise ValueError("epoch CSV requires a common three-fold run roster across architectures")
     return curves
 
 
 def render_curves(data, output):
     curves = read_curves(data / "epoch-objectives.csv")
-    figure, plots = plt.subplots(3, 3, figsize=(13, 9), sharex=True, layout="constrained")
-    for index, ((shape, runs), plot) in enumerate(zip(curves.items(), plots.flat)):
-        separate_scale = shape == "widen_enc"
+    columns = 5
+    figure, plots = plt.subplots(2, columns, figsize=(16, 7), sharex=True, layout="constrained")
+    for index, ((shape, runs), plot) in enumerate(zip(curves.items(), plots.flat, strict=True)):
+        separate_scale = shape == "widen_enc-6k"
         if index and not separate_scale:
             plot.sharey(plots.flat[0])
-        if index % 3 and not separate_scale:
+        if index % columns and not separate_scale:
             plot.tick_params(labelleft=False)
         plotting.learning_curve(plot, [tuple(zip(*runs[run], strict=True)) for run in sorted(runs)])
         plot.set_title(f"{shape} (separate y-scale)" if separate_scale else shape, fontsize=10)
         plot.set_yscale("log")
         plot.grid(axis="y", color="#dedede", linewidth=.55)
         plot.spines[["top", "right"]].set_visible(False)
-    plots.flat[-1].set_axis_off()
-    plots.flat[5].tick_params(labelbottom=True)
     handles = [Line2D([], [], color=palette.color_pair(hue).main, label=label)
                for hue, label in ((220, "Train"), (140, "Validation"))]
     figure.legend(handles=handles, ncols=len(handles), loc="outside upper center", frameon=False)

@@ -13,12 +13,13 @@ import time
 import pandas as pd
 import torch
 
-from shape_model import SHAPES, ShapeAdapter, axis_run, dimensions
+from shape_model import ShapeAdapter, axis_run
+from shape_roster import SHAPES, SMOKE_SHAPES, dimensions
 from run_sweep import (AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING,
                        INPUT_PATHS, PHASES, AdditiveObjective, bind as bind_loss, fit as fit_loss)
 
-SCHEMA = "stage2-tenv-transigen-shape-round1-run-v1"
-PROTOCOL = "matched-plate-control-transigen-shape-round1-v1"
+SCHEMA = "stage2-tenv-transigen-shape-width-extension-run-v1"
+PROTOCOL = "matched-plate-control-transigen-shape-width-extension-v1"
 ALPHA = "1.75"
 OBJECTIVE = AdditiveObjective(Fraction(ALPHA))
 TRAINING_FILES = (*axis_run.TRAINING_FILES, "kl-diagnostics.csv")
@@ -37,13 +38,15 @@ def kl_diagnostics(trace, latent):
 
 
 def bind(args, data, vectors):
+    if args["smoke"] and args["shape"] not in SMOKE_SHAPES:
+        raise ValueError("shape is outside the bounded smoke roster")
     config = bind_loss({**args, "alpha": ALPHA}, data, vectors)
     config.update(schema=SCHEMA, protocol=PROTOCOL, shape=args["shape"])
     dims = dimensions(args["shape"])
     replacement = f"replace both predictive heads Linear{dims['predictive_head_dim']}→{dims['n_latent']} with PyTorch defaults"
     config["model"].update(dims, constructor_order=[config["model"]["constructor_order"][0], replacement])
     config["model"]["initialization"] = "; ".join(config["model"]["constructor_order"])
-    for path in (Path(__file__), Path(__file__).with_name("shape_model.py")):
+    for path in (Path(__file__), *(Path(__file__).with_name(name) for name in ("shape_model.py", "shape_roster.py"))):
         config["code_sha256"][path.relative_to(axis_run.REPO).as_posix()] = axis_run.digest(path)
     return config
 

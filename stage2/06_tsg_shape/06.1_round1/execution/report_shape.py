@@ -14,15 +14,17 @@ import numpy as np
 import pandas as pd
 import torch
 
-from evaluate_shape import METRICS, REPORT_SCHEMA
-from matrix_shape import SCHEMA as MATRIX_SCHEMA, run_paths
+from evaluate_shape import METRICS, REPORT_SCHEMA, verify_configurations, verify_historical_runs
+from matrix_shape import FIT_COORDINATES, SCHEMA as MATRIX_SCHEMA, run_paths
+from prior_shape import PRIOR_MATRIX, PRIOR_RECEIPT, load_prior, verify_matrix
 from report_formal import ANCHOR_ARRAYS, command
 from report_sweep import SCORE_FIELDS
 from run_shape import AXIS, DEFAULT_TRAINING
-from shape_model import CONTROL, LOSS, SHAPES, STEP, axis_run
+from shape_model import LOSS, STEP, axis_run
+from shape_roster import CONTROL, SHAPES, coordinates
 from training_data import TENV_DEFAULT
 
-RECEIPT = "log/347-formal.json"
+RECEIPT = "log/350-formal.json"
 FIGURE_RECEIPT = "log/figure-render.json"
 REFERENCE_RECEIPT = "log/333-formal.json"
 REFERENCE_SHA256 = "bdc65b62eafb834cbe1cc498a8d63c7ab00bbe6fc1d9bd545f5f0ad2a606bcf8"
@@ -31,7 +33,8 @@ FIGURES = ("delta-metrics.png", "delta-metrics-paired-difference.png", "learning
 EPOCH_OBJECTIVES = "figure/data/epoch-objectives.csv"
 FIGURE_SOURCES = ("figure/data/delta-metrics.csv", "figure/data/fold-scores.csv", EPOCH_OBJECTIVES)
 SCIENTIFIC_CODE = ("execution/matrix_shape.py", "execution/run_shape.py",
-                   "execution/shape_model.py", "execution/evaluate_shape.py")
+                   "execution/shape_model.py", "execution/shape_roster.py",
+                   "execution/prior_shape.py", "execution/evaluate_shape.py")
 PROJECTIONS = {
     "runs.csv": "log/runs.csv",
     "bandwidths.csv": "log/bandwidths.csv",
@@ -39,8 +42,8 @@ PROJECTIONS = {
     "fold-scores.csv": "figure/data/fold-scores.csv",
     "delta-metrics.csv": "figure/data/delta-metrics.csv",
 }
-RESOURCE_LOG = "log/347-resources.jsonl"
-COORDINATOR_LOG = "log/347-coordinator-resources.jsonl"
+RESOURCE_LOG = "log/350-resources.jsonl"
+COORDINATOR_LOG = "log/350-coordinator-resources.jsonl"
 GIB = 1024**3
 
 
@@ -62,28 +65,11 @@ def verify_checkpoint(candidate, reference, candidate_registration, reference_re
             raise ValueError(f"selected checkpoint tensor differs: {name}")
 
 
-def verify_matrix(matrix):
-    paths = run_paths(matrix)
-    receipt = axis_run.read_json(matrix / "manifest.json")
-    if (receipt["schema"] != MATRIX_SCHEMA
-            or receipt["preflight_sha256"] != axis_run.digest(matrix / "preflight.json")
-            or [(fit["shape"], fit["fold"]) for fit in receipt["fits"]] != list(paths)):
-        raise ValueError("formal matrix receipt has an invalid preflight or coordinate roster")
-    fits = dict(zip(paths, receipt["fits"], strict=True))
-    for key, path in paths.items():
-        fit = fits[key]
-        if (fit["path"] != path.relative_to(matrix).as_posix()
-                or fit["run_manifest_sha256"] != axis_run.digest(path / "manifest.json")
-                or fit["registration_sha256"] != axis_run.digest(path / "registration.json")):
-            raise ValueError(f"sealed matrix run differs: {key}")
-    return paths, fits
-
-
 def verify_evaluation(report, fits):
     receipt = axis_run.read_json(report / "manifest.json")
     if (receipt["schema"], receipt["status"], receipt["axis"], receipt["smoke"], receipt["runs"],
             receipt["fold_reference"], receipt["metrics"], receipt["fold_scores"]) != (
-            REPORT_SCHEMA, "PASS", AXIS, False, 24, CONTROL, list(METRICS), 216):
+            REPORT_SCHEMA, "PASS", AXIS, False, len(fits), CONTROL, list(METRICS), len(fits) * len(METRICS)):
         raise ValueError("formal scoring receipt differs from the held-out shape comparison")
     axis_run.check_outputs(report, receipt)
     runs = pd.read_csv(report / "runs.csv")
@@ -101,10 +87,10 @@ def verify_evaluation(report, fits):
             or (eligibility < 0).any().any()
             or not scores.n_conditions.eq(scores.n_eligible + scores.n_undefined).all()
             or not scores.value.notna().eq(scores.n_eligible.gt(0)).all()):
-        raise ValueError("formal scores require all 216 fold/metric coordinates and valid eligibility")
+        raise ValueError("formal scores require all 270 fold/metric coordinates and valid eligibility")
     summary = pd.read_csv(report / "delta-metrics.csv", float_precision="round_trip")
     if list(zip(summary["shape"], summary.metric)) != list(product(SHAPES, METRICS)):
-        raise ValueError("formal scoring requires all 72 equal-fold aggregates")
+        raise ValueError("formal scoring requires all 90 equal-fold aggregates")
     return receipt, scores
 
 
@@ -258,7 +244,8 @@ def write_epoch_objectives(destination, paths, fits):
 
 def figure_evidence(candidate, trace_hashes):
     stage = STEP.parents[1]
-    dependencies = (stage / "util/output/api/stage2_util/palette.py",
+    dependencies = (STEP / "execution/shape_roster.py",
+                    stage / "util/output/api/stage2_util/palette.py",
                     stage / "util/output/api/stage2_util/plotting.py")
     return {
         "schema": "stage2-figure-render-v1", "status": "PASS", "step": STEP.name,
@@ -275,30 +262,19 @@ def figure_evidence(candidate, trace_hashes):
     }
 
 
-def verify_scientific_receipt(candidate, evidence):
-    """Compare the scientific fields of the original or current publication receipt."""
-    recorded = axis_run.read_json(candidate / RECEIPT)
-    if "rendering_environment" in recorded:
-        # The original combined receipt seals now-historical PNGs and replay code.
-        recorded.pop("rendering_environment")
-        recorded.pop("independent_csv_render")
-        recorded["outputs"] = {name: digest for name, digest in recorded["outputs"].items()
-                               if not (name.startswith("figure/") and name.endswith(".png"))}
-        recorded["publication_code_sha256"] = {
-            name: digest for name, digest in recorded["publication_code_sha256"].items()
-            if name not in ("execution/report_shape.py", "figure/script/render_shape.py")}
-    if recorded != evidence:
-        raise ValueError("formal scientific receipt differs from the verified replay")
-    axis_run.check_outputs(candidate, recorded)
-
-
 def publish(args):
     args.activity.mkdir(parents=True, exist_ok=True)
-    paths, fits = verify_matrix(args.matrix)
+    current_paths, current_fits = verify_matrix(args.matrix, FIT_COORDINATES, MATRIX_SCHEMA)
+    prior_paths, prior_fits, prior_provenance = load_prior(args.prior_matrix, args.prior_receipt)
+    all_paths = prior_paths | current_paths
+    all_fits = prior_fits | current_fits
+    paths = {key: all_paths[key] for key in coordinates()}
+    fits = {key: all_fits[key] for key in coordinates()}
     evaluate = STEP / "execution/evaluate_shape.py"
     options = ["--training", str(args.training), "--bandwidth-training", str(args.bandwidth_training),
-               "--output", str(args.report), "--scratch", str(args.scratch)]
-    for path in paths.values():
+               "--output", str(args.report), "--scratch", str(args.scratch),
+               "--prior-matrix", str(args.prior_matrix), "--prior-receipt", str(args.prior_receipt)]
+    for path in current_paths.values():
         options.extend(("--run", str(path)))
     with (axis_run.publication_lock(args.publication) as publication,
           TemporaryDirectory(prefix="step06.1-formal-", dir=args.scratch) as scratch):
@@ -315,7 +291,11 @@ def publish(args):
             revision = axis_run.read_json(publication / RECEIPT)["matrix_code_revision"]
         command(evaluate, ["verify", *options], args.activity, "score-verify")
         report_receipt, scores = verify_evaluation(args.report, fits)
+        if report_receipt["prior_release"] != prior_provenance:
+            raise ValueError("scoring provenance differs from the sealed #347 evidence")
         parity = verify_predecessor(args.previous_step, args.report, scores, paths)
+        if parity != prior_provenance["step_05_2_reference_parity"]:
+            raise ValueError("original fits differ from the accepted Step 05.2 reference parity")
 
         projections = {destination: args.report / source for source, destination in PROJECTIONS.items()}
         projections.update({RESOURCE_LOG: args.matrix_audit / "resource-samples.jsonl",
@@ -333,12 +313,14 @@ def publish(args):
             if axis_run.digest(candidate / "figure" / name) != axis_run.digest(Path(scratch) / "repeat-render" / name):
                 raise ValueError(f"CSV-only figure replay differs: {name}")
         evidence = {
-            "status": "PASS", "ticket": 347, "matrix_code_revision": revision,
+            "status": "PASS", "ticket": 350, "matrix_code_revision": revision,
             "matrix_manifest_sha256": axis_run.digest(args.matrix / "manifest.json"),
             "preflight_sha256": axis_run.digest(args.matrix / "preflight.json"),
             "report_manifest_sha256": axis_run.digest(args.report / "manifest.json"),
             "report_outputs_sha256": report_receipt["outputs"],
-            "fits": len(fits), "independent_exact_replays": len(fits), "fold_scores": len(scores),
+            "fits": len(fits), "new_fits": len(current_fits), "reused_fits": len(prior_fits),
+            "independent_exact_replays": len(fits), "fold_scores": len(scores),
+            "prior_release": prior_provenance,
             "equal_fold_aggregates": len(SHAPES) * len(METRICS),
             "reference_parity": parity, "resources": resources,
             "publication_code_sha256": axis_run.file_hashes(STEP, SCIENTIFIC_CODE),
@@ -351,7 +333,9 @@ def publish(args):
                 raise ValueError("publication destination appeared during acceptance")
             candidate.rename(publication)
         else:
-            verify_scientific_receipt(publication, evidence)
+            if axis_run.read_json(publication / RECEIPT) != evidence:
+                raise ValueError("formal scientific receipt differs from the verified replay")
+            axis_run.check_outputs(publication, evidence)
             shutil.copyfile(publication / RECEIPT, candidate / RECEIPT)
             renders = figure_evidence(candidate, trace_hashes)
             if renders != axis_run.read_json(publication / FIGURE_RECEIPT):
@@ -365,15 +349,26 @@ def publish(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("build", "verify"))
+    parser.add_argument("command", choices=("build", "verify", "verify-prior"))
+    parser.add_argument("--prior-matrix", type=Path, default=PRIOR_MATRIX)
+    parser.add_argument("--prior-receipt", type=Path, default=PRIOR_RECEIPT)
     parser.add_argument("--training", type=Path, default=DEFAULT_TRAINING)
     parser.add_argument("--bandwidth-training", type=Path, default=TENV_DEFAULT)
     parser.add_argument("--previous-step", type=Path, default=LOSS / "05.2_mse_l1")
     for name in ("matrix", "matrix-audit", "report", "publication", "activity", "scratch"):
-        parser.add_argument(f"--{name}", type=Path, required=True)
+        parser.add_argument(f"--{name}", type=Path)
     parser.add_argument("--coordinator-samples", type=Path)
     parser.add_argument("--code-revision")
     args = parser.parse_args()
+    args.prior_matrix = args.prior_matrix.resolve()
+    if args.command == "verify-prior":
+        paths, _, provenance = load_prior(args.prior_matrix, args.prior_receipt)
+        verify_configurations(verify_historical_runs(paths))
+        print(json.dumps(provenance, sort_keys=True))
+        return
+    for name in ("matrix", "matrix_audit", "report", "publication", "activity", "scratch"):
+        if getattr(args, name) is None:
+            parser.error(f"{args.command} requires --{name.replace('_', '-')}")
     if args.command == "build" and (args.coordinator_samples is None or not args.code_revision):
         parser.error("build requires --coordinator-samples and --code-revision")
     print(json.dumps(publish(args), sort_keys=True))

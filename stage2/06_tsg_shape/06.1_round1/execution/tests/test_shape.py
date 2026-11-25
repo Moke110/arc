@@ -7,20 +7,23 @@ import torch
 
 EXECUTION = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(EXECUTION))
-from shape_model import SHAPES, ShapeAdapter, axis_run
+from shape_model import ShapeAdapter, axis_run
+from shape_roster import SHAPES
 
 
 class ShapeTest(unittest.TestCase):
-    def test_native_model_build_matches_round_one_architectures(self):
+    def test_native_model_build_matches_registered_architectures(self):
         coordinates = {
-            "widen_z-100": ((1200,), (800,), 100),
+            "original": ((1200,), (800,), 100),
             "widen_z-110": ((1200,), (800,), 110),
             "widen_z-120": ((1200,), (800,), 120),
             "widen_z-130": ((1200,), (800,), 130),
-            "widen_enc": ((6000,), (800,), 100),
+            "widen_enc-2k": ((2000,), (800,), 100),
+            "widen_enc-4k": ((4000,), (800,), 100),
+            "widen_enc-6k": ((6000,), (800,), 100),
             "deepen_enc": ((1200, 1200), (800,), 100),
             "deepen_dec": ((1200,), (800, 800), 100),
-            "deepen-both": ((1200, 1200), (800, 800), 100),
+            "deepen_both": ((1200, 1200), (800, 800), 100),
         }
         self.assertEqual(SHAPES, coordinates)
         source = Path(os.environ.get("TSG_SOURCE", axis_run.REPO / "pert_model/TranSiGen/source"))
@@ -50,7 +53,7 @@ class ShapeTest(unittest.TestCase):
                     self.assertEqual(pred[-1].shape, (2, latent))
                 del network
         original = axis_run.kpgt.Adapter(source, transform).build(42, "cpu")
-        refit = ShapeAdapter(source, transform, "widen_z-100").build(42, "cpu")
+        refit = ShapeAdapter(source, transform, "original").build(42, "cpu")
         self.assertEqual(list(original.state_dict()), list(refit.state_dict()))
         for name, value in original.state_dict().items():
             self.assertTrue(torch.equal(value, refit.state_dict()[name]), name)

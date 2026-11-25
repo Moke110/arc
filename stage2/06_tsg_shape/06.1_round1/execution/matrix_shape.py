@@ -1,6 +1,7 @@
-"""Preregister, fit and independently replay the 24 formal shape coordinates."""
+"""Preregister, fit and independently replay the six new encoder-width coordinates."""
 
 import argparse
+from itertools import product
 import json
 from pathlib import Path
 import signal
@@ -11,17 +12,19 @@ import time
 from evaluate_shape import read_run
 from run_shape import (AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING,
                        PHASES, axis_run, bind)
-from shape_model import STEP, coordinates
+from shape_model import STEP
+from shape_roster import NEW_WIDTHS
 from matrix import (SAMPLE_SECONDS, ResourceMonitor, digest_values, enforce_record,
                     register_coordinate, scope_directory)
 from matrix_sweep import signal_process_group
 
-SCHEMA = "stage2-tenv-transigen-shape-round1-matrix-v1"
+SCHEMA = "stage2-tenv-transigen-shape-width-extension-matrix-v1"
+FIT_COORDINATES = tuple(product(NEW_WIDTHS, range(3)))
 
 
 def run_paths(root):
     return {(shape, fold): root / "runs" / shape / f"fold-{fold}"
-            for shape, fold in coordinates()}
+            for shape, fold in FIT_COORDINATES}
 
 
 def preflight(training, representations, source):
@@ -29,18 +32,18 @@ def preflight(training, representations, source):
     with axis_run.open_inputs(training, representations) as (data, vectors):
         expected = {(shape, fold): bind({"axis": AXIS, "fold": fold, "shape": shape,
                                          "smoke": False, "device": "cuda", **inputs}, data, vectors)
-                    for shape, fold in coordinates()}
+                    for shape, fold in FIT_COORDINATES}
     return expected, {"schema": SCHEMA, "axis": AXIS, "seed": axis_run.SEED,
                       "expected_config_sha256": digest_values(list(expected.values())),
                       "folds": [{"fold": fold,
                                  "ordered_conditions_sha256": {part: digest_values(ids)
                                                                for part, ids in config["conditions"].items()},
                                  "counts": {part: len(ids) for part, ids in config["conditions"].items()}}
-                                for (shape, fold), config in expected.items() if shape == coordinates()[0][0]]}
+                                for (shape, fold), config in expected.items() if shape == NEW_WIDTHS[0]]}
 
 
 def check_registrations(paths, expected):
-    if tuple(paths) != coordinates() or paths.keys() != expected.keys():
+    if tuple(paths) != FIT_COORDINATES or paths.keys() != expected.keys():
         raise ValueError("formal registration plan is incomplete")
     seen, hashes = set(), {}
     for key, run in paths.items():
