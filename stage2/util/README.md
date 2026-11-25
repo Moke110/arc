@@ -11,9 +11,34 @@ indexed gene identities, seed selection, generic metrics, CSV rendering and deri
 | `ecfp4` | `open_ecfp4(path)` verifies the accepted binary fingerprint and parent order. `publish_ecfp4(source, candidate)` preserves frozen input provenance. |
 | `seeds` | `read_seeds()` returns the accepted seed tuple. Pass a count to select a prefix. |
 | `metrics` | `vector_metrics(truth, prediction)` scores paired finite vectors, including the accepted constant-vector policy. |
-| `plotting`, `palette` | `read_rows(path)`, `save_figure(figure, path, **kwargs)` and the Stage 2 color and role APIs support rendering solely from plotted CSV values. |
+| `plotting`, `palette` | `read_rows(path)`, `save_figure(figure, path, **kwargs)` and the drawing functions below support rendering solely from plotted CSV values. |
 | `publication` | `publication_lock(destination)` and `replace_release(...)` coordinate verified replacement of accepted releases. |
 | `derivation` | `bulk_deg`, `disease_deg`, and `deg_rank` provide common DEG, rank, and worker interfaces. `r_env` locates R resources and `release` provides derivation manifest and candidate verification. |
+
+## Plotting
+
+The [palette figure](figure/palette.png) shows all 45 hue–depth coordinates
+and the mark roles defined in [ADR 0093](../../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md).
+Run `python stage2/util/figure/script/render_palette.py` from the repository
+root to reproduce it. Use `--output PATH` to render to a different file.
+
+- `palette.color_pair(hue, depth=2)` returns the `main` and `secondary`
+  RGBA colors. Hue is in degrees and depth runs from 0 (darkest) to 4
+  (lightest). The palette figure labels those depths 1 to 5.
+- `plotting.bar(axis, x, height, hue=..., depth=...)` accepts one palette
+  coordinate for the series or per-bar hue and depth arrays.
+  `grouped_bar(axis, x, groups, width=.8)` centers each group at its x
+  value and divides the total width among its series. Each series provides
+  `(heights, hue, depth, label)`.
+- `line`, `scatter`, `errorbar`, `range_band`, `bubble`, and `histogram`
+  take one coordinate per series. Pass measurement errors as `yerr` or
+  `xerr` to `errorbar` and the existing bin edges as `bins` to `histogram`.
+- `heatmap(axis, values, hue=..., vmin=..., vmax=..., colorbar_label=...)`
+  uses the five ordered depths of one hue and adds a numeric color scale.
+
+Study renderers select hue and depth from their CSV categories, and own the
+report layout, axis labels and legend wording. The drawing functions return
+Matplotlib artists for use in those report layouts.
 
 The default readers open the accepted gene and feature products under util.
 For a separate materialized checkout, pass the directory explicitly to `load_gene_table` or `RepresentationTable`. The

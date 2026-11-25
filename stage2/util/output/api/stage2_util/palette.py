@@ -1,4 +1,8 @@
-"""The Stage 2 palette: six hue families crossed with nine shades.
+"""Stage 2 hue-depth coordinates and transitional family-shade colors.
+
+Use :func:`color_pair` for the active palette (ADR 0093).
+
+The original Stage 2 palette has six hue families crossed with nine shades.
 
 Every Stage 2 comparison figure selects its colours from this one table so that a
 hue means the same entry or split across steps (ADR 0063).  The table is a pure
@@ -18,7 +22,40 @@ import colorsys
 import hashlib
 import json
 import math
+from numbers import Integral
 from pathlib import Path
+from typing import NamedTuple
+
+
+HUES = tuple(range(20, 341, 40))
+DEPTHS = tuple(range(5))
+DEPTH_LEVELS = ((.24, .80), (.33, .76), (.42, .72), (.52, .66), (.62, .60))
+MAIN_OPACITY = .90
+SECONDARY_OPACITY = .40
+
+
+class ColorPair(NamedTuple):
+    """RGBA colors for main marks and secondary fills at one coordinate."""
+
+    main: tuple[float, float, float, float]
+    secondary: tuple[float, float, float, float]
+
+
+def color_pair(hue, depth=2):
+    """Resolve an approved hue in degrees and zero-based depth into RGBA colors."""
+    if not isinstance(hue, Integral) or hue not in HUES:
+        raise ValueError(f"palette hue must be one of {HUES}, got {hue!r}")
+    if isinstance(depth, bool) or not isinstance(depth, Integral) or depth not in DEPTHS:
+        raise ValueError(f"palette depth must be one of {DEPTHS}, got {depth!r}")
+    lightness, saturation = DEPTH_LEVELS[depth]
+    rgb = colorsys.hls_to_rgb(hue / 360, lightness, saturation)
+    return ColorPair((*rgb, MAIN_OPACITY), (*rgb, SECONDARY_OPACITY))
+
+
+def sequential_colors(hue):
+    """Return the five main colors of one hue from light to dark."""
+    return tuple(color_pair(hue, depth).main for depth in reversed(DEPTHS))
+
 
 SCHEMA = "stage2-tenv-stage-palette-v1"
 FAMILIES = ("gray", "blue", "green", "orange", "purple", "magenta")
