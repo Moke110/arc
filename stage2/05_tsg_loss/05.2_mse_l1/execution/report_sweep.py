@@ -3,6 +3,7 @@
 import argparse
 from itertools import product
 import json
+import math
 from pathlib import Path
 import shutil
 from tempfile import TemporaryDirectory
@@ -20,6 +21,8 @@ from training_data import TENV_DEFAULT
 
 RECEIPT = Path("log/333-formal.json")
 SAMPLES = Path("log/333-resources.jsonl")
+COORDINATOR_AUDIT = "coordinator-resource-samples.jsonl"
+COORDINATOR_SAMPLES = Path("log/333-coordinator-resources.jsonl")
 FIGURES = ("delta-metrics.png", "delta-metrics-improvement.png", "learning-curves.png")
 PROJECTIONS = {
     "delta-metrics.csv": "figure/data/delta-metrics.csv",
@@ -180,6 +183,19 @@ def audit_resources(audit):
             "phase_audit_sha256": phase_logs}
 
 
+def coordinator_resource_summary(data):
+    samples = [json.loads(line) for line in data.splitlines()]
+    times = [sample["seconds_since_start"] for sample in samples]
+    gaps = [later - earlier for earlier, later in zip(times, times[1:])]
+    if not gaps or any(not math.isfinite(gap) or gap <= 0 for gap in gaps):
+        raise ValueError("coordinator resource samples must be in monotonic order")
+    return {"sample_interval_seconds": SAMPLE_SECONDS, "samples": len(samples),
+            "maximum_observed_sample_gap_seconds": round(max(gaps), 3),
+            "sample_gaps_over_12_seconds": sum(gap > 12 for gap in gaps),
+            "minimum_wsl_available_kib": min(row["wsl_available_kib"] for row in samples),
+            "maximum_gpu_used_mib": max(row["gpu_used_mib"] for row in samples)}
+
+
 def render(data, figures, activity, attempt):
     args = ["--data", str(data), "--output", str(figures)]
     for filename in ("render_metrics", "render_learning_curves"):
@@ -215,6 +231,13 @@ def publish(args):
             projected.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(args.report / name, projected)
         shutil.copyfile(args.matrix_audit / "resource-samples.jsonl", candidate / SAMPLES)
+        sample_paths = [str(SAMPLES)]
+        coordinator_audit = args.matrix_audit / COORDINATOR_AUDIT
+        if coordinator_audit.exists():
+            coordinator_data = coordinator_audit.read_bytes()
+            resources["coordinator"] = coordinator_resource_summary(coordinator_data)
+            (candidate / COORDINATOR_SAMPLES).write_bytes(coordinator_data)
+            sample_paths.append(str(COORDINATOR_SAMPLES))
         data, figures, replay = candidate / "figure/data", candidate / "figure", scratch / "replay"
         render(data, figures, args.activity, "render")
         render(data, replay, args.activity, "independent-render")
@@ -222,7 +245,7 @@ def publish(args):
             if axis_run.digest(figures / name) != axis_run.digest(replay / name):
                 raise ValueError(f"independent CSV-only renders differ: {name}")
         published = axis_run.file_hashes(
-            candidate, (*PROJECTIONS.values(), *(f"figure/{name}" for name in FIGURES), str(SAMPLES))
+            candidate, (*PROJECTIONS.values(), *(f"figure/{name}" for name in FIGURES), *sample_paths)
         )
         code = ("execution/additive_objective.py", "execution/evaluate_sweep.py", "execution/run_sweep.py",
                 "execution/matrix_sweep.py", "execution/report_sweep.py",
@@ -240,7 +263,10 @@ def publish(args):
             "publication_code_sha256": axis_run.file_hashes(STEP, code),
         })
         if args.command == "build":
-            candidate.rename(args.publication)
+            with axis_run.publication_lock(args.publication) as destination:
+                if destination.exists():
+                    raise ValueError("formal publication requires an unused output directory")
+                candidate.rename(destination)
         else:
             for path in (*published, RECEIPT):
                 if axis_run.digest(candidate / path) != axis_run.digest(args.publication / path):
