@@ -132,9 +132,12 @@ class PredictionTargets:
 def score_fixed_prediction(data, fold, prediction, condition_ids, *, rows=None):
     """Pair held-out predictions with plate-matched truth in registered row order."""
     test = data.rows(fold, "test")
-    rows = test if rows is None else np.asarray(rows, dtype=np.int64)
-    if rows.ndim != 1 or not len(rows) or np.any(np.diff(rows) <= 0) or not np.isin(rows, test).all():
+    rows = test if rows is None else np.asarray(rows)
+    if (rows.ndim != 1 or rows.dtype.kind not in "iu" or not len(rows)
+            or np.any((rows < 0) | (rows >= len(data.treatments)))
+            or np.any(rows[1:] <= rows[:-1]) or not np.isin(rows, test).all()):
         raise ValueError("prediction rows must be ordered members of the cold-drug test partition")
+    rows = rows.astype(np.int64, copy=False)
     expected = data.condition_ids(rows)
     if tuple(condition_ids) != expected:
         raise ValueError("prediction condition identities differ from the registered held-out rows")

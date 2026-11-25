@@ -21,6 +21,29 @@ control. All three matrices follow `conditions.csv` and `genes.csv`. Test
 treated expression is used for scoring after prediction. The control and
 validation protocol is recorded in [ADR 0086](../../docs/adr/0086-tenv-axis-matched-plate-control.md).
 
+## Prepare the capped runtime
+
+Activate the `arc` environment and run from the repository root. Use one CUDA
+job at a time. The launcher checks for at least 12 GiB of available WSL RAM
+before each command and sets the measured run's limits of 10 GiB of memory,
+8 GiB of swap and two CPU threads. Monitor available RAM and GPU usage every
+10 seconds while fitting.
+
+```bash
+capped_step04() {
+  if ! LC_ALL=C free -g | awk '
+    { print }
+    $1 == "Mem:" { available = $7 }
+    END { exit available < 12 }
+  '; then
+    printf '%s\n' 'Step 04 requires at least 12 GiB of available RAM.' >&2
+    return 1
+  fi
+  systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- \
+    env OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 "$@"
+}
+```
+
 ## Run the formal matrix
 
 The matrix driver checks the complete ordered condition and fold rosters
@@ -31,15 +54,14 @@ For the formal dataset, use the full cold-drug folds and seed 42.
 ```bash
 STEP=stage2/04_tsg_axis
 WORK=$(mktemp -d "$PWD/tmp/tsg-axis-matched-control.XXXXXX")
-export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2
-python "$STEP/execution/matrix.py" --output "$WORK/matrix" --logs "$WORK/matrix-audit/logs"
-python "$STEP/execution/report_formal.py" build \
+capped_step04 python "$STEP/execution/matrix.py" \
+  --output "$WORK/matrix" --logs "$WORK/matrix-audit/logs" &&
+capped_step04 python "$STEP/execution/report_formal.py" build \
   --matrix "$WORK/matrix" --matrix-audit "$WORK/matrix-audit" \
   --report "$WORK/report" --figures "$WORK/figures" \
   --logs "$WORK/logs"
 ```
 
-Use one capped CUDA job for fitting, then build and verify the report.
 The accepted [formal receipt](log/319-formal.json) pins all 18 run
 manifests, the report and its two CSV-reproducible PNGs. The materialized
 paths are `output/formal-matched-control` for checkpoints, registrations
@@ -51,7 +73,7 @@ bandwidths and the shared disease reference. The two summary CSVs are in
 ```bash
 STEP=stage2/04_tsg_axis
 VERIFY=$(mktemp -d "$PWD/tmp/tsg-axis-verify.XXXXXX")
-python "$STEP/execution/report_formal.py" verify \
+capped_step04 python "$STEP/execution/report_formal.py" verify \
   --matrix "$STEP/output/formal-matched-control" --matrix-audit "$STEP/log/319-runs" \
   --report "$STEP/output/report-matched-control" --figures "$STEP/figure/matched-control" \
   --logs "$VERIFY"
@@ -62,11 +84,11 @@ python "$STEP/execution/report_formal.py" verify \
 ```bash
 STEP=stage2/04_tsg_axis
 RUN=$PWD/tmp/tsg-axis/hvg-deg-5k-fold-0
-python "$STEP/execution/run.py" register --axis hvg-deg-5k --fold 0 \
-  --training stage2/03_data_train/03.1_tenv_hvg-deg-5k/output --device cuda --output "$RUN"
-python "$STEP/execution/run.py" train --output "$RUN"
-python "$STEP/execution/run.py" predict --output "$RUN"
-python "$STEP/execution/run.py" replay --output "$RUN"
+capped_step04 python "$STEP/execution/run.py" register --axis hvg-deg-5k --fold 0 \
+  --training stage2/03_data_train/03.1_tenv_hvg-deg-5k/output --device cuda --output "$RUN" &&
+capped_step04 python "$STEP/execution/run.py" train --output "$RUN" &&
+capped_step04 python "$STEP/execution/run.py" predict --output "$RUN" &&
+capped_step04 python "$STEP/execution/run.py" replay --output "$RUN"
 ```
 
 Pass `--representations` and `--source` when frozen KPGT or immutable native

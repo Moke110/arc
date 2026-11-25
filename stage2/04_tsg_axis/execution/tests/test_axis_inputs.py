@@ -56,6 +56,18 @@ class AxisInputsTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "ordered members"):
             score_fixed_prediction(data, 0, prediction[:1], data.condition_ids(train), rows=train)
 
+    def test_prediction_rows_require_exact_integer_positions(self):
+        data = AxisInputs(TrainingReleaseFixture())
+        ids = data.condition_ids([2, 3])
+        prediction = np.ones((2, 2), dtype=np.float32)
+        for rows in ([2, 3], np.asarray([2, 3], dtype=np.uint64)):
+            with self.subTest(rows=rows):
+                self.assertEqual(score_fixed_prediction(data, 0, prediction, ids, rows=rows).condition_ids, ids)
+        for rows in ([2.9, 3.9], ["2", "3"], np.asarray([3, 2], dtype=np.uint64),
+                     np.asarray([2, np.iinfo(np.uint64).max], dtype=np.uint64)):
+            with self.subTest(rows=rows), self.assertRaisesRegex(ValueError, "ordered members"):
+                score_fixed_prediction(data, 0, prediction, ids, rows=rows)
+
     def test_selected_gene_width_keeps_native_latent_and_kpgt_dimensions(self):
         import os
         import torch
