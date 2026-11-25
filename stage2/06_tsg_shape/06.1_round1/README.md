@@ -132,9 +132,24 @@ WORK=$(mktemp -d "$WORK_ROOT/tsg-shape-formal.XXXXXX")
 mkdir -p "$WORK/scratch" "$WORK/matplotlib"
 export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
 REVISION=$(git rev-parse HEAD)
+COORDINATOR_SAMPLES="$WORK/coordinator-resources.jsonl"
+python "$STEP/execution/sample_resources.py" --output "$COORDINATOR_SAMPLES" &
+COORDINATOR_PID=$!
+stop_coordinator() {
+  kill -TERM "$COORDINATOR_PID" 2>/dev/null || true
+  wait "$COORDINATOR_PID"
+}
+trap 'stop_coordinator || true' EXIT
+while [ ! -s "$COORDINATOR_SAMPLES" ]; do
+  kill -0 "$COORDINATOR_PID" 2>/dev/null || exit 1
+  sleep 1
+done
 
 capped_step04 python "$STEP/execution/matrix_shape.py" \
   --output "$WORK/matrix" --logs "$WORK/matrix-audit"
+stop_coordinator
+trap - EXIT
+
 capped_step04 python "$STEP/execution/report_shape.py" build \
   --matrix "$WORK/matrix" --matrix-audit "$WORK/matrix-audit" \
   --report "$WORK/report" --publication "$WORK/publication" \
@@ -142,13 +157,14 @@ capped_step04 python "$STEP/execution/report_shape.py" build \
   --coordinator-samples "$COORDINATOR_SAMPLES" --code-revision "$REVISION"
 ```
 
-Set `COORDINATOR_SAMPLES` to the ten-second coordinator JSONL stream.
-The accepted [sample log](log/347-coordinator-resources.jsonl) shows the
-required timestamp, WSL RAM and GPU fields. The matrix logs its resource
-samples separately and retains per-phase peak RSS. The driver can resume
-from the same paths after checking completed phases. To independently
-replay a completed coordinate again, invoke `run_shape.py replay --output`
-on the coordinate directory.
+The coordinator sampler writes GPU 0 and WSL RAM every ten seconds on
+the matrix's monotonic clock. It also samples Windows host RAM when
+PowerShell is available. Start it in the same WSL distro before the
+matrix and give it access to `nvidia-smi`. If a matrix run resumes, keep
+the sampler running across attempts in that WSL boot to preserve coverage.
+The matrix keeps its own resource samples and per-phase peak RSS. To
+independently replay a completed coordinate again, invoke
+`run_shape.py replay --output` on the coordinate directory.
 
 `report_shape.py verify` repeats formal scoring, control parity and CSV
 render verification. Use the same arguments as `build`, with the sealed
