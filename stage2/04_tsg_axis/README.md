@@ -78,7 +78,7 @@ paths are `output/formal-matched-control` for checkpoints, registrations
 and predictions, `log/319-runs` for resource and process evidence, and
 `output/report-matched-control` for condition and fold metrics, eligibility,
 bandwidths and the shared disease reference. This sealed report keeps its
-original axis IDs and digests. The tracked summary CSVs in `figure/data/`
+original axis IDs and digests. The tracked summary CSVs in `figure/canonical-axis/data/`
 and current figures use the canonical IDs.
 
 Export the six axis-bearing condition, fold and summary CSVs with canonical
@@ -208,10 +208,10 @@ and every disease score was defined in all three folds.
 | genetic cardiomyopathy | 0.2136 | 0.2469 | 0.2193 | 0.1208 | 0.1057 | 0.0950 |
 | TOX | 0.3026 | 0.2587 | 0.2162 | 0.1302 | 0.1148 | 0.1036 |
 
-See the [nine-metric figure](figure/delta-metrics.png) and the
-[disease F1 figure](figure/disease-f1.png). The
-[metric CSV](figure/data/delta-metrics.csv) and
-[disease CSV](figure/data/disease-f1.csv) retain the full numerical
+See the [nine-metric figure](figure/canonical-axis/delta-metrics.png) and the
+[disease F1 figure](figure/canonical-axis/disease-f1.png). The
+[metric CSV](figure/canonical-axis/data/delta-metrics.csv) and
+[disease CSV](figure/canonical-axis/data/disease-f1.csv) retain the full numerical
 precision and eligibility counts. The materialized report retains the
 per-fold and per-condition values and the full CM direction reference.
 The [canonical export receipt](log/322-canonical-axis-report.json) records

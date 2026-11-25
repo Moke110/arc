@@ -55,9 +55,15 @@ python stage2/01_data_raw/execution/build_corpus.py verify
 
 The publisher replays tenv and native Tahoe counts against pinned external inputs.
 Tahoe aggregation checkpoints can resume after source pins are checked again.
-Verification checks the accepted release inventory, digests, metadata and
-native coverage. Pass `--predecessor <sealed-v1>` to replay a migrated
-generation from an explicit archived input. Migration compares native matrices,
+Default `publish` on an installed release verifies its inventory, digests,
+native coverage and compatibility with active training. It returns the
+installed digest. Stage 2 training pins the whole corpus manifest. Use an
+unused `--output <scratch>` to build a different candidate and validate its
+consumer releases together before any generation cutover.
+
+Default `verify` checks the installed migrated release without its archive. Pass `--predecessor <sealed-v1>` to replay a migrated
+generation from an explicit archived input. To migrate over a legacy directory,
+first preserve it in a verified archive handoff with an inventory. Migration compares native matrices,
 observations and gene mappings for the six equivalent datasets. Active tenv
 training pins the current corpus digest. The source replay verifies newly
 published native builds. A separately staged native Tahoe build can be read

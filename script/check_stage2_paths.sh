@@ -86,7 +86,8 @@ main() {
   : >"$stale_rows"
   local files_scanned=0 occurrences=0 whitelisted=0 stale=0
 
-  local step_pattern='stage2/[[:alnum:]_./+@-]+|(05_tsg_loss|06_tsg_drug_emb|07_tsg_dose|08_tsg_width_dose|09_tsg_transfer|03[.]1_hvg-deg-5k)(/[[:alnum:]_./+@-]*)?'
+  local old_alias='03[.][1-7]_(tenv|tahoe)_(hvg|denoise)-deg-[345]k'
+  local step_pattern="stage2/[[:alnum:]_./+@-]+|(05_tsg_loss|06_tsg_drug_emb|07_tsg_dose|08_tsg_width_dose|09_tsg_transfer|03[.]1_hvg-deg-5k|$old_alias|log/316-runs)(/[[:alnum:]_./+@-]*)?"
   local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis)
   local stage2_root="${STAGE2_PATH_AUDIT_ROOT:-stage2}"
   if [ -z "${STAGE2_PATH_AUDIT_ROOT:-}" ]; then
@@ -133,7 +134,8 @@ main() {
     fi
   done
   for entry in "$stage2_root"/03_data_train/{03.1_hvg-deg-5k,output/tenv,output/tahoe-bulk,output/manifest.json} \
-               "$stage2_root"/04_tsg_axis/output/{formal,report}; do
+               "$stage2_root"/03_data_train/03.[1-7]_{tenv,tahoe}_{hvg,denoise}-deg-* \
+               "$stage2_root"/04_tsg_axis/{output/formal,output/report,output/.report.publication.lock,log/316-runs}; do
     if [ -e "$entry" ] || [ -L "$entry" ]; then
       echo "RESULT: FAIL — superseded Stage 2 release in active tree: $entry" >&2
       return 1
@@ -180,6 +182,9 @@ main() {
         */historical | */historical/* | */03.1_hvg-deg-5k | */03.1_hvg-deg-5k/*)
           active_literal=0 ;;
       esac
+      if [[ "$literal" =~ (^|/)($old_alias|log/316-runs)(/|$) ]]; then
+        active_literal=0
+      fi
       [ "$active_literal" -eq 1 ] && continue
       occurrences=$((occurrences + 1))
       if is_whitelisted "$f" "$literal"; then

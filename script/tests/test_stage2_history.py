@@ -55,7 +55,7 @@ class ArchiveInstallTest(unittest.TestCase):
         self.execute("prepare", "--target", "dev")
         self.assertEqual(self.retired.stat().st_ino, retired_inode)
         self.assertEqual(self.active.stat().st_ino, active_inode)
-        self.git("merge", "--no-ff", "--no-edit", "dev")
+        self.git("merge", "--no-overwrite-ignore", "--no-ff", "--no-edit", "dev")
         # Model an interruption after a payload was linked but before its old name was removed.
         (self.state / "archive" / RETIRED / "output/frozen.h5").hardlink_to(self.retired)
         self.execute("install")
@@ -75,9 +75,38 @@ class ArchiveInstallTest(unittest.TestCase):
         self.execute("install")
         self.execute("verify")
 
+    def test_prepare_refuses_effectively_unignored_archive(self):
+        self.write(".gitignore", b"*.h5\n/tmp/\n/stage2/history/\n!/stage2/history/\n", root=self.target)
+        self.git("commit", "-qam", "Negate archive ignore", root=self.target)
+        failed = self.execute("prepare", "--target", "dev", check=False)
+        self.assertEqual(failed.returncode, 1)
+        self.assertIn("target Git ignore does not cover", failed.stderr)
+        self.assertFalse(self.state.exists())
+        self.assertTrue(self.retired.exists())
+
+    def test_prepare_refuses_ignored_payload_collision_before_merge(self):
+        collision = self.write(NEW_RELEASE / "output/active.h5", b"other data")
+        failed = self.execute("prepare", "--target", "dev", check=False)
+        self.assertEqual(failed.returncode, 1)
+        self.assertIn("destination is occupied", failed.stderr)
+        self.assertEqual(self.git("rev-parse", "HEAD").strip(), self.old)
+        self.assertEqual(collision.read_bytes(), b"other data")
+        self.assertFalse(self.state.exists())
+        self.assertTrue(self.active.exists())
+
+    def test_prepare_refuses_ignored_tracked_destination_before_merge(self):
+        self.write(".gitignore", b"*.h5\n/tmp/\n/stage2/03_data_train/03.1_tenv_hvg-5k/\n")
+        self.git("commit", "-qam", "Old ignored local namespace")
+        collision = self.write(NEW_RELEASE / "output/manifest.json", b"other manifest")
+        failed = self.execute("prepare", "--target", "dev", check=False)
+        self.assertEqual(failed.returncode, 1)
+        self.assertIn("destination is occupied", failed.stderr)
+        self.assertEqual(collision.read_bytes(), b"other manifest")
+        self.assertFalse(self.state.exists())
+
     def test_refuses_an_occupied_canonical_destination_before_moving_payloads(self):
         self.execute("prepare", "--target", "dev")
-        self.git("merge", "--no-ff", "--no-edit", "dev")
+        self.git("merge", "--no-overwrite-ignore", "--no-ff", "--no-edit", "dev")
         collision = self.write(NEW_RELEASE / "output/active.h5", b"other data")
         failed = self.execute("install", check=False)
         self.assertEqual(failed.returncode, 1)
@@ -89,7 +118,7 @@ class ArchiveInstallTest(unittest.TestCase):
 
     def test_refuses_a_file_in_place_of_the_archive_before_moving_payloads(self):
         self.execute("prepare", "--target", "dev")
-        self.git("merge", "--no-ff", "--no-edit", "dev")
+        self.git("merge", "--no-overwrite-ignore", "--no-ff", "--no-edit", "dev")
         collision = self.write("stage2/history", b"other data")
         failed = self.execute("install", check=False)
         self.assertEqual(failed.returncode, 1)
