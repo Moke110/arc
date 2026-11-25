@@ -738,7 +738,10 @@ The mean transcriptional response of repeated treated wells for one drug
 parent at one measured dose, retaining that dose as a distinct evaluation unit.
 
 **Tenv axis comparison** (`04_tsg_axis`):
-The Stage 2 comparison of fixed prediction axes with TranSiGen on plate–parent–dose `tenv` conditions. It uses matched plate controls for training and the overall axis-specific reference for validation and test.
+The Stage 2 comparison of fixed prediction axes with TranSiGen on plate–parent–dose `tenv` conditions. The matched-control protocol estimates prediction performance given a measured same-plate DMSO control in every partition. The original Spec 5 protocol uses an overall axis-specific reference for validation and test.
+
+**Tenv matched plate control** (`C_b`):
+The pooled DMSO expression profile for the treatment condition's tenv plate on the same prediction axis. It is the common reference for the predicted and measured changes from control in the matched-control protocol.
 
 **Historical single-dose tenv comparison** (`04_model_view`):
 The archived Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result.

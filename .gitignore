@@ -178,7 +178,10 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 /stage2/04_tsg_axis/output/api/**/__pycache__/
 !/stage2/04_tsg_axis/figure/data/delta-metrics.csv
 !/stage2/04_tsg_axis/figure/data/disease-f1.csv
+!/stage2/04_tsg_axis/figure/matched-control/data/delta-metrics.csv
+!/stage2/04_tsg_axis/figure/matched-control/data/disease-f1.csv
 /stage2/04_tsg_axis/log/316-runs/
+/stage2/04_tsg_axis/log/319-runs/
 
 # Archived single-dose comparison: track public code and report data.
 !/stage2/04_tsg_axis/historical/04_model_view/output/

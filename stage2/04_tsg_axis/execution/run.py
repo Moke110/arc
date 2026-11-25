@@ -23,7 +23,9 @@ DOSE = STAGE / "07_tsg_dose/output/api"
 sys.path[:0] = [str(STEP / "output/api"), str(DOSE)]
 
 from tsg_axis.inputs import open_inputs, score_fixed_prediction
+from tsg_axis.protocol import MAX_EPOCHS, PATIENCE, PROTOCOL, RUN_SCHEMA
 from tsg_dose import shared
+from tsg_dose.model import DoseView
 from tsg_kpgt import model as kpgt
 from tenv5k.learning import EarlyStopping, fixed_rng
 from stage2_util.derivation.release import check_outputs, read_json, sha256 as digest, write_json
@@ -33,13 +35,10 @@ METHOD = "latent-numeric"
 SEED = 42
 VALIDATION_SEED = 22617
 TEST_SEED = 100042
-MAX_EPOCHS = 1000
-PATIENCE = 50
 WIDTHS = (3000, 4000, 5000)
 AXES = {f"{family}-{width // 1000}k": (owner, width)
         for family, owner in (("hvg-deg", "02.1_hvg-deg"), ("denoise-deg", "02.2_denoise-deg"))
         for width in WIDTHS}
-SCHEMA = "stage2-tenv-transigen-axis-run-v1"
 PARTITIONS = ("train", "valid", "test")
 SMOKE_LIMITS = dict(zip(PARTITIONS, (64, 24, 24), strict=True))
 TRAINING_FILES = ("checkpoint.pt", "validation_prediction.npy", "learning_curve.csv")
@@ -53,7 +52,7 @@ def file_hashes(root, names):
 
 def code_hashes():
     paths = [
-        Path(__file__), STEP / "output/api/tsg_axis/inputs.py",
+        Path(__file__), *(STEP / "output/api/tsg_axis" / name for name in ("inputs.py", "protocol.py")),
         STAGE / "03_data_train/output/api/training_data.py",
         STAGE / "util/output/api/stage2_util/representations.py",
         DOSE / "tsg_kpgt/model.py", DOSE / "tsg_round1/model.py",
@@ -81,16 +80,20 @@ def bind(args, data, vectors):
         rows = {name: part[:SMOKE_LIMITS[name]] for name, part in rows.items()}
     transform = kpgt.fit_transform(METHOD, data.doses[rows["train"]])
     model = kpgt.configuration(METHOD, transform)
-    model.update(n_genes=width, method_identity="tenv-axis-transigen-kpgt-latent-numeric-v1",
+    model.update(n_genes=width, method_identity="tenv-axis-transigen-kpgt-latent-numeric-v2",
+                 control_input="matched plate DMSO for every partition",
+                 validation_objective="native TranSiGen MSE + beta-weighted KLD, batch sums per condition",
                  adaptations=[f"{width} gene interface" if item == "5000 gene interface" else item
-                              for item in model["adaptations"]])
+                              for item in model["adaptations"]
+                              if item != "shared splits and fixed validation treated-expression MSE"]
+                 + ["shared cold-drug splits and fixed validation native MSE + KLD"])
     model.update(batch_size=64, predictive_head_dim=532, dose_vector_dim=32)
     native = file_hashes(Path(args["source"]), ("src/model.py", "src/train_TranSiGen.py", "src/utils.py"))
     if (native["src/model.py"] != kpgt.SOURCE_DIGEST
             or native["src/train_TranSiGen.py"] != model["config_script_sha256"]):
         raise ValueError("registered native TranSiGen source differs from the pinned author release")
     hardware = (torch.cuda.get_device_name() if args["device"] == "cuda" else platform.machine())
-    return {"schema": SCHEMA, "axis_sha256": axis_sha, "axis_family_manifest_sha256": digest(axis_root / "manifest.json"),
+    return {"schema": RUN_SCHEMA, "protocol": PROTOCOL, "axis_sha256": axis_sha, "axis_family_manifest_sha256": digest(axis_root / "manifest.json"),
             "training_sha256": data.release.manifest_sha256,
             "raw_sha256": data.release.manifest["inputs"]["raw_sha256"],
             "folds": data.release.manifest["inputs"]["folds"],
@@ -124,45 +127,78 @@ def prediction(native, model, data, phase, rows, seed):
     return result
 
 
+def validate(model, data, rows, config):
+    """Replay the author validation objective and its sampled predictions in one pass."""
+    inputs = DoseView(data.model_input("valid"), config["model"]["transform"])
+    batch_size = config["model"]["batch_size"]
+    parameter = next(model.parameters())
+    model.eval()
+    total = prediction_squared_error = 0.0
+    predictions = []
+    with fixed_rng(config["validation_seed"], parameter.device), torch.no_grad():
+        for start in range(0, len(rows), batch_size):
+            batch = rows[start:start + batch_size]
+            control, measured, features = (
+                torch.as_tensor(values, dtype=parameter.dtype, device=parameter.device)
+                for values in (inputs.control[batch], inputs.expression[batch], inputs.fingerprints(batch))
+            )
+            reconstructed, mu1, logvar1, predicted, mu_pred, logvar_pred, _ = model(control, features)
+            latent, mu2, logvar2 = model.encode_x2(measured)
+            measured_reconstructed = model.decode_x2(latent)
+            loss = model.loss(control, reconstructed, mu1, logvar1, measured, measured_reconstructed,
+                              mu2, logvar2, predicted, mu_pred, logvar_pred)[0]
+            total += loss.item()
+            prediction_squared_error += (predicted - measured).square().sum().item()
+            predictions.append(predicted.cpu().numpy())
+    values = np.concatenate(predictions)
+    objective, mse = total / len(rows), prediction_squared_error / values.size
+    if values.dtype != np.float32 or not np.isfinite(values).all() or not np.isfinite([objective, mse]).all():
+        raise ValueError("nonfinite or non-float32 native validation result")
+    return values, objective, mse
+
+
 def fit(root, native, model, data, config, registration_sha):
     training = np.asarray(config["partitions"]["train"])
     valid = np.asarray(config["partitions"]["valid"])
-    target = data.model_input("valid").expression[valid]
-    rng = np.random.default_rng(SEED)
+    training_inputs = data.model_input("train")
+    rng = np.random.default_rng(config["seed"])
     optimizer = native.optimizer(model)
     stopper = EarlyStopping(patience=config["patience"], max_epochs=config["max_epochs"])
     history = []
     for epoch in range(1, config["max_epochs"] + 1):
-        loss = native.train_epoch(model, data.model_input("train"), training, optimizer, rng)
-        values = prediction(native, model, data, "valid", valid, VALIDATION_SEED)
-        mse = float(np.square(values - target).mean())
+        loss = native.train_epoch(model, training_inputs, training, optimizer, rng)
+        values, objective, mse = validate(model, data, valid, config)
         if not np.isfinite(loss):
             raise ValueError("nonfinite native training loss")
-        if stopper.observe(mse, epoch):
+        if stopper.observe(objective, epoch):
             torch.save({"registration_sha256": registration_sha, "state_dict": model.state_dict(),
-                        "epoch": epoch, "validation_mse": mse}, root / "checkpoint.pt")
+                        "epoch": epoch, "validation_loss": objective, "validation_mse": mse}, root / "checkpoint.pt")
             np.save(root / "validation_prediction.npy", values)
-        history.append({"epoch": epoch, "train_loss": loss, "validation_mse": mse})
+        history.append({"epoch": epoch, "train_loss": loss, "validation_loss": objective, "validation_mse": mse})
         if stopper.stopped:
             break
     pd.DataFrame(history).to_csv(root / "learning_curve.csv", index=False)
-    return {"best_epoch": stopper.best_epoch, "validation_mse": stopper.best, "epochs": len(history),
+    return {"best_epoch": stopper.best_epoch, "validation_loss": stopper.best,
+            "validation_mse": history[stopper.best_epoch - 1]["validation_mse"], "epochs": len(history),
             "parameters": sum(p.numel() for p in model.parameters())}
 
 
 def predict_test(root, native, model, data, config, registration_sha, training):
     checkpoint = torch.load(root / "checkpoint.pt", map_location="cpu", weights_only=True)
+    metrics = ("validation_loss", "validation_mse")
     if (checkpoint["registration_sha256"] != registration_sha or checkpoint["epoch"] != training["best_epoch"]
-            or checkpoint["validation_mse"] != training["validation_mse"]):
+            or any(checkpoint[key] != training[key] for key in metrics)):
         raise ValueError("validation checkpoint identity differs from its training receipt")
     model.load_state_dict(checkpoint["state_dict"])
     del checkpoint
     valid = np.asarray(config["partitions"]["valid"])
     test = np.asarray(config["partitions"]["test"])
-    validation = prediction(native, model, data, "valid", valid, VALIDATION_SEED)
+    validation, objective, mse = validate(model, data, valid, config)
+    if (objective, mse) != tuple(training[key] for key in metrics):
+        raise ValueError("fresh process did not exactly replay the validation objective")
     if not np.array_equal(validation, np.load(root / "validation_prediction.npy", allow_pickle=False)):
         raise ValueError("fresh process did not exactly replay validation predictions")
-    values = prediction(native, model, data, "test", test, TEST_SEED)
+    values = prediction(native, model, data, "test", test, config["test_seed"])
     return values, test
 
 
@@ -183,7 +219,7 @@ def record_predictions(root, output, values, test, data, config, *, replay):
                 raise ValueError(f"fresh-process replay differs for {name}")
         else:
             (output / f"{name}.csv").write_text(csv)
-    return {"test_conditions": len(test), "validation_replay": "exact"}
+    return {"test_conditions": len(test), "validation_replay": "exact", "validation_objective_replay": "exact"}
 
 
 def verified_receipt(root, name, registration_sha, files):
@@ -233,7 +269,7 @@ def execute(output, phase, paths):
                     return sealed
                 if phase == "replay":
                     details.update(test_replay="exact", axis=args["axis"], fold=args["fold"],
-                                   smoke=args["smoke"], seed=SEED, schema=SCHEMA)
+                                   smoke=args["smoke"], seed=SEED, schema=RUN_SCHEMA, protocol=PROTOCOL)
                     hashes = file_hashes(root, sealed_files)
                 else:
                     hashes = file_hashes(scratch, files)

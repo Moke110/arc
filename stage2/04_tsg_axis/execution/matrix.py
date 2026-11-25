@@ -16,11 +16,12 @@ STAGE = REPO / "stage2"
 sys.path.insert(0, str(STEP / "output/api"))
 
 from tsg_axis.inputs import AxisInputs
+from tsg_axis.protocol import MAX_EPOCHS, PATIENCE, PROTOCOL, RUN_SCHEMA
 from training_data import TENV_AXIS_STEPS, open_tenv_axis_training, tenv_axis_output
 from stage2_util.derivation.release import check_outputs, read_json as read, sha256 as file_sha256, write_json
 from stage2_util.publication import publication_lock
 
-SCHEMA = "stage2-tenv-transigen-axis-matrix-v1"
+SCHEMA = "stage2-tenv-transigen-axis-matrix-v2"
 PARTITIONS = ("train", "valid", "test")
 PHASES = {"train": "training.json", "predict": "predictions.json", "replay": "manifest.json"}
 
@@ -92,8 +93,9 @@ def check_registrations(paths, rosters, preflight_record):
         args = config["arguments"]
         if ((args["axis"], args["fold"], args["smoke"], config["scenario"], config["seed"])
                 != (axis, fold, False, "cold-drug", 42)
-                or config["conditions"] != rosters[fold] or config["max_epochs"] != 1000
-                or config["patience"] != 50 or config["training_sha256"] !=
+                or config.get("schema") != RUN_SCHEMA or config.get("protocol") != PROTOCOL
+                or config["conditions"] != rosters[fold] or config["max_epochs"] != MAX_EPOCHS
+                or config["patience"] != PATIENCE or config["training_sha256"] !=
                 preflight_record["training_manifest_sha256"][axis]
                 or config["folds"] != preflight_record["folds"] or config["nonce"] in nonces):
             raise ValueError(f"{axis} fold {fold} differs from the fresh formal registration plan")
@@ -107,10 +109,19 @@ def check_registrations(paths, rosters, preflight_record):
 
 
 def verify_run(path, axis, fold, registration):
+    config = read(path / "registration.json")
     manifest = read(path / "manifest.json")
     training, prediction = (read(path / PHASES[phase]) for phase in ("train", "predict"))
-    if ((manifest["axis"], manifest["fold"], manifest["smoke"], manifest["seed"],
+    if (any(record.get("schema") != RUN_SCHEMA or record.get("protocol") != PROTOCOL
+            for record in (config, manifest))
+        or config["patience"] != PATIENCE
+        or (manifest["axis"], manifest["fold"], manifest["smoke"], manifest["seed"],
          manifest["validation_replay"], manifest["test_replay"]) != (axis, fold, False, 42, "exact", "exact")
+        or any(record.get("validation_objective_replay") != "exact" for record in (prediction, manifest))
+        or not 1 <= training["best_epoch"] <= training["epochs"] <= MAX_EPOCHS
+        or training["epochs"] != min(MAX_EPOCHS, training["best_epoch"] + PATIENCE)
+        or not np.isfinite(training["validation_loss"])
+        or manifest["test_conditions"] != len(config["conditions"]["test"])
         or any(record["registration_sha256"] != registration for record in (training, prediction, manifest))
         or len({record["process_token"] for record in (training, prediction, manifest)}) != 3):
         raise ValueError(f"{axis} fold {fold} lacks distinct, exact fresh-process evidence")
@@ -118,7 +129,8 @@ def verify_run(path, axis, fold, registration):
     return {"axis": axis, "fold": fold, "registration_sha256": registration,
             "run_manifest_sha256": file_sha256(path / "manifest.json"),
             "epochs": training["epochs"], "best_epoch": training["best_epoch"],
-            "validation_mse": training["validation_mse"], "test_conditions": manifest["test_conditions"],
+            "validation_loss": training["validation_loss"], "validation_mse": training["validation_mse"],
+            "test_conditions": manifest["test_conditions"],
             "train_wall_seconds": training["wall_seconds"], "train_peak_rss_kib": training["peak_rss_kib"]}
 
 
@@ -130,7 +142,7 @@ def execute(root, logs, step03, representations, source, device):
         paths = run_paths(output)
         rosters, evidence = preflight(step03)
         preflight_path = output / "preflight.json"
-        plan = {"schema": SCHEMA, "device": device, "seed": 42, "scenario": "cold-drug",
+        plan = {"schema": SCHEMA, "protocol": PROTOCOL, "device": device, "seed": 42, "scenario": "cold-drug",
                 "driver_sha256": file_sha256(Path(__file__)), **evidence}
         if preflight_path.exists() and read(preflight_path) != plan:
             raise ValueError("formal matrix preflight changed")
@@ -157,7 +169,8 @@ def execute(root, logs, step03, representations, source, device):
             result = verify_run(path, axis, fold, registrations[axis, fold])
             completed.append(result)
             print(json.dumps({"phase": "complete", "completed": len(completed), **result}), flush=True)
-        receipt = {"schema": SCHEMA, "preflight_sha256": file_sha256(preflight_path), "fits": completed,
+        receipt = {"schema": SCHEMA, "protocol": PROTOCOL,
+                   "preflight_sha256": file_sha256(preflight_path), "fits": completed,
                    "resource_logs": {("logs" / path.relative_to(logs)).as_posix(): file_sha256(path)
                                      for path in sorted(logs.rglob("*")) if path.is_file()}}
         write_json(output / "manifest.json", receipt)

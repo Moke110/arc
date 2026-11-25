@@ -22,12 +22,11 @@ from tsg_axis.disease_reference import disease_gene_sets, write_cm_directions
 from tsg_axis.inputs import AxisInputs, score_fixed_prediction
 from tsg_axis.metrics import (CONDITION, DISTRIBUTION, METRICS, condition_scores, distribution_scores,
                               fold_bandwidth, signed_disease_f1, summarize_conditions, summarize_folds)
+from tsg_axis.protocol import MAX_EPOCHS, PATIENCE, PROTOCOL, REPORT_SCHEMA, RUN_SCHEMA
 from training_data import TENV_AXIS_STEPS, TENV_BASELINE_AXIS, open_tenv_axis_training
 from stage2_util.derivation.release import check_outputs, read_json as _read, sha256, write_json
 from stage2_util.publication import publication_lock
 
-RUN_SCHEMA = "stage2-tenv-transigen-axis-run-v1"
-REPORT_SCHEMA = "stage2-tenv-transigen-axis-report-v1"
 PARTITIONS = {"train": 64, "valid": 24, "test": 24}
 RUN_OUTPUTS = {"checkpoint.pt", "validation_prediction.npy", "learning_curve.csv", "training.json",
                "predictions.json", "prediction.npy", "predicted_delta.npy", "measured_delta.npy",
@@ -52,11 +51,14 @@ def _run_inputs(paths, smoke):
         axis, fold = manifest["axis"], manifest["fold"]
         args = config["arguments"]
         if (config["schema"] != RUN_SCHEMA or manifest["schema"] != RUN_SCHEMA
+                or config.get("protocol") != PROTOCOL or manifest.get("protocol") != PROTOCOL
+                or config["patience"] != PATIENCE or config["max_epochs"] != (2 if smoke else MAX_EPOCHS)
                 or axis not in TENV_AXIS_STEPS or type(fold) is not int or fold not in range(3)
                 or (axis, fold, smoke) != (args["axis"], args["fold"], args["smoke"])
                 or manifest["smoke"] is not smoke or manifest["seed"] != config["seed"]
                 or config["seed"] != 42 or config["scenario"] != "cold-drug"
                 or manifest["validation_replay"] != "exact" or manifest["test_replay"] != "exact"
+                or manifest.get("validation_objective_replay") != "exact"
                 or manifest["registration_sha256"] != sha256(config_path)
                 or set(manifest["outputs"]) != RUN_OUTPUTS):
             raise ValueError(f"not an exactly replayed run for this report: {path}")
@@ -224,11 +226,11 @@ def _build_report(root, runs, step03, raw, smoke):
     summarize_folds(metric_folds, ["axis", "metric"]).to_csv(figures / "delta-metrics.csv", index=False)
     summarize_folds(disease_folds, ["axis", "disease"]).to_csv(figures / "disease-f1.csv", index=False)
     write_json(root / "manifest.json", {
-        "schema": REPORT_SCHEMA, "smoke": smoke, "reference": common, "runs": provenance,
+        "schema": REPORT_SCHEMA, "protocol": PROTOCOL, "smoke": smoke, "reference": common, "runs": provenance,
         "metrics": METRICS, "kernel": "exp(-scaled_euclidean² / (2 * bandwidth²))",
         "bandwidth": "median distinct-row-pair scaled Euclidean distance on full HVG-DEG 5k training measured Delta, per fold",
         "aggregation": "equal defined conditions per fold, equal defined folds per axis",
-        "interpretation": "retrospective comparison of published fixed axes built with tenv evidence",
+        "interpretation": "retrospective comparison of published fixed axes conditional on measured matched plate DMSO",
         "outputs": _file_hashes(root),
     })
 

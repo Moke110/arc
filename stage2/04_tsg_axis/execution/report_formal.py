@@ -9,6 +9,7 @@ from tempfile import TemporaryDirectory
 import time
 
 from matrix import SCHEMA, STAGE, STEP, file_sha256, read, run_paths, verify_run
+from tsg_axis.protocol import PROTOCOL, REPORT_SCHEMA
 
 FIGURES = ("delta-metrics.png", "disease-f1.png")
 FIGURE_CSVS = ("delta-metrics.csv", "disease-f1.csv")
@@ -19,7 +20,7 @@ def matrix_inputs(matrix, audit):
     receipt = read(matrix / "manifest.json")
     paths = run_paths(matrix)
     records = {(item["axis"], item["fold"]): item for item in receipt["fits"]}
-    if (receipt["schema"] != SCHEMA or set(records) != set(paths)
+    if (receipt["schema"] != SCHEMA or receipt.get("protocol") != PROTOCOL or set(records) != set(paths)
             or len(receipt["fits"]) != len(paths)
             or receipt["preflight_sha256"] != file_sha256(matrix / "preflight.json")
             or set(paths.values()) != {path for path in (matrix / "runs").glob("*/*") if path.is_dir()}):
@@ -56,6 +57,9 @@ def report(args):
             raise ValueError("report building requires an unused figures directory")
         command(evaluate, ["score", *options], args.logs, "score")
     command(evaluate, ["verify", *options], args.logs, "verify")
+    report_manifest = read(args.report / "manifest.json")
+    if report_manifest["schema"] != REPORT_SCHEMA or report_manifest.get("protocol") != PROTOCOL:
+        raise ValueError("formal report differs from the matched-control protocol")
     args.figures.parent.mkdir(parents=True, exist_ok=True)
     staging = args.figures.parent if args.command == "build" else args.logs
     with TemporaryDirectory(prefix="csv-figures-", dir=staging) as scratch:
@@ -81,7 +85,7 @@ def report(args):
                 if file_sha256(args.figures / "data" / name) != file_sha256(csvs / name):
                     raise ValueError(f"published plot CSV differs from the accepted report: {name}")
     scoring_code = (STEP / "output/api/tsg_axis/metrics.py", STEP / "output/api/tsg_axis/disease_reference.py")
-    return {"result": "PASS", "fits": len(paths),
+    return {"result": "PASS", "protocol": PROTOCOL, "fits": len(paths),
             "matrix_manifest_sha256": file_sha256(args.matrix / "manifest.json"),
             "report_manifest_sha256": file_sha256(args.report / "manifest.json"),
             "csv_only_figure_sha256": hashes,
