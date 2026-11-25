@@ -85,5 +85,7 @@ maximum gap of 14.421 seconds and peak RAM of 1.84 GiB.
 [Coordinator samples](log/339-coordinator-resources.jsonl) ·
 [Scope samples](log/339-resources.jsonl)
 
-Use the registered runtime to verify the materialized release.
-[Formal reproduction commands](../README.md#reproduce-the-formal-delta-similarity-sweeps)
+Use the [pre-refresh revision](../README.md#replay-the-original-formal-publications)
+for exact verification of the original formal receipt. The
+[current figure verification](../README.md#verify-the-current-figures)
+compares the refreshed PNGs with two independent CSV-only renders.

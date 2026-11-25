@@ -128,7 +128,11 @@ identical PNGs. [Score figure](figure/delta-metrics.png) ·
 [Metric CSV](figure/data/delta-metrics.csv) ·
 [Learning-curve CSV](figure/data/epoch-objectives.csv)
 
-In the materialized checkout, use `output/formal/{matrix,matrix-audit,report}`
-as the matrix, audit and report paths and use the step directory as
-`--publication` when repeating the report acceptance checks. Use a fresh
-directory under the checkout's `tmp/` for `--activity` and `--scratch`.
+Use the [pre-refresh revision](../README.md#replay-the-original-formal-publications)
+for exact verification of the old formal receipt. Pass the directory paths under
+the materialized `output/formal/{matrix,matrix-audit,report}` as the matrix, audit
+and report arguments, and the pinned step directory as `--publication`.
+Use fresh activity and scratch paths.
+
+The [current figure verification](../README.md#verify-the-current-figures)
+compares the refreshed PNGs with two independent CSV-only renders.
