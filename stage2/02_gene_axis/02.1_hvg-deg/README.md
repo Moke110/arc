@@ -6,6 +6,11 @@ common axis. The release contains the descriptive tenv-HVG ranking, tier-first
 DEG1000 and full-union disease fusion tables, and cross-disease candidate,
 composition and coverage evidence.
 
+[Disease top-DEG1000 coverage](figure/disease-DEG1000-coverage.png) shows the
+fraction of each eligible disease's DEG1000 list present in each prediction
+axis. The [plotted values](figure/data/disease-DEG1000-coverage_bars.csv) come
+from the accepted [source coverage table](output/release/evidence/gene-axis/source_topn_coverage.csv).
+
 [The release manifest](output/release/manifest.json) binds those files to the
 common gene identity and original selection method. Publication reuses the
 selection code in this step and independently compares its selected genes and
@@ -41,4 +46,10 @@ STEP=stage2/02_gene_axis/02.1_hvg-deg
 python "$STEP/execution/build_axes.py" publish --source-root /path/to/materialized/arc
 python "$STEP/execution/build_axes.py" verify --corpus /path/to/native-corpus
 python -m unittest discover -s "$STEP/execution/tests"
+```
+
+Reproduce the coverage plot directly from its CSV:
+
+```bash
+PYTHONPATH=stage2/util/output/api python stage2/02_gene_axis/02.1_hvg-deg/figure/script/render_coverage.py
 ```

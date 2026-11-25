@@ -100,7 +100,7 @@ def render_coverage(figure_path, save_figure, palette):
     ax.set_xticks(x, names)
     ax.yaxis.set_major_formatter(PercentFormatter(xmax=1))
     ax.legend(title="Axis size", frameon=False, ncol=len(groups.columns), loc="upper left")
-    save_figure(fig, figure_path / "disease-DEG200-coverage.png", dpi=180)
+    save_figure(fig, figure_path / "disease-DEG1000-coverage.png", dpi=180)
     plt.close(fig)
 
 
