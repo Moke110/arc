@@ -39,7 +39,7 @@ fell to 0.249215, compared with 0.406610 and 0.259575 at weight zero.
 
 ## Verify the current figures
 
-The 22 refreshed Step 02, Step 04 and Step 05 report figures use the [Stage 2 palette and drawing API](util/README.md#plotting).
+All 25 active report figures and the palette preview use the [Stage 2 palette and drawing API](util/README.md#plotting).
 The verifier checks the current render receipts and reproduces each PNG
 twice from its published plot data using the `arc` rendering environment.
 For byte-identical replay, use the exact Python, Matplotlib, NumPy and,
@@ -54,9 +54,8 @@ python stage2/util/figure/script/verify_report_figures.py --work "$WORK/replay"
 [Step 02 receipt](02_gene_axis/log/342-figure-render.json) ·
 [Step 04 receipt](04_tsg_axis/log/342-figure-render.json) ·
 [Step 05 receipt](05_tsg_loss/log/343-figure-render.json) ·
+[Step 06.1 receipt](06_tsg_shape/06.1_round1/log/figure-render.json) ·
 [ADR 0093](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
-
-For Step 06.1, use its [CSV-only figure replay command](06_tsg_shape/06.1_round1/README.md#replay-the-published-figures).
 
 ## Local history
 

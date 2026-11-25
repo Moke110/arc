@@ -1,7 +1,7 @@
 {
   "csv_files_sha256": {
     "figure/data/delta-metrics.csv": "f43a55ca8ed795ba0e524b3903557fb7445b7556f3fb8a33a24e70dfa0bad697",
-    "figure/data/epoch-objectives.csv": "d76c11e787f731d9db65b1ef3b32fb9bc18a52ebffc9dafcfde9784bb39afaa3",
+    "figure/data/epoch-objectives.csv": "4837129d5208c1786c0784f52d3e53c18cfd91b41e600927be429ac730ce967c",
     "figure/data/fold-scores.csv": "11be2e4063d7fc80a0885ebf37db6bab1744d45a36bd9e6f77cbb273be2475b0"
   },
   "environment": {
@@ -37,16 +37,16 @@
     "runs/widen_z-130/fold-2/learning_curve.csv": "388d2c2a1ba41960767f2e2bb8765de3d59e8b8d7c3e8ebcd3bfc43a6ab32e28"
   },
   "png_files_sha256": {
-    "figure/delta-metrics-paired-difference.png": "9f8744880544d734d7a75484f7583986a072e7cbe721fdfb8e1bf7ded4be459f",
-    "figure/delta-metrics.png": "5a95abe9af46026cc58eb0227f14f471556167c9a026511350b57d67490720f5",
-    "figure/learning-curves.png": "8271c5bcd373d828d6b54c5e32c757d897115eec6e48b7ad790a7f5f7168753e"
+    "figure/delta-metrics-paired-difference.png": "e91a8436a91c83fe72e6113ae05b6f531741df6d93ee2c22807196858f06650f",
+    "figure/delta-metrics.png": "c42190880e9cc0317a58796830b3ba98657db841e1a0a235447816f04bec41ee",
+    "figure/learning-curves.png": "b94d18105410fa91b176b1bc270c225466b07d815f609d32c23484f532b9f3f0"
   },
-  "publication_builder_sha256": "7e165724c11009c6890c1e6fe6f928d1c1195d1719f0f529a937e5ceee22e32a",
+  "publication_builder_sha256": "a812cc3e4afa49b86cb0391696cf9323d67f04f337f0acb51334b3debbce9d65",
   "renderer_files_sha256": {
     "05_tsg_loss/figure/script/loss_plot_style.py": "0568ea381689ce7278a6fa71a8882e3f945ee2b2e716707e4865a4c76615cc52",
-    "06_tsg_shape/06.1_round1/figure/script/render_shape.py": "05f9097549173c670f8b704356a9f23ebbc8b32bc330cb12c99d8dc460ca1c2b",
-    "util/output/api/stage2_util/palette.py": "ebc018c2f187bfc1e0ccfb2e921d70b40c71d7fa65f57d26b0e73b42605ee481",
-    "util/output/api/stage2_util/plotting.py": "beda54c5f621b5fab86142471d6e41ca9846d002bc83edc50a4c6226d9eefb6a"
+    "06_tsg_shape/06.1_round1/figure/script/render_shape.py": "dd0890bd9eeb98f20bfefdd44f86ac71d1ca8f8e7bf31f27537d7c4c446ddadc",
+    "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
+    "util/output/api/stage2_util/plotting.py": "664b318f17b778970ca1273656918f1c8fd0ac4ff4b5830e401f4e10b7f77fdd"
   },
   "schema": "stage2-figure-render-v1",
   "scientific_receipt_sha256": "1b4e65c6a764fb984201d8270b3d8b7fefcc6b510552fecdcd61c26c3098031f",

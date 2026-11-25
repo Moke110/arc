@@ -53,19 +53,18 @@ points with history unavailable before completing a cutover.
 - `figure/script/`: reproduce PNGs from those CSVs alone, without matrices, checkpoints
   or recomputing scientific metrics. Record provenance when a CSV derives from output.
   Draw marks with the [shared util plotting API](util/README.md#plotting).
-  Assign each level of one categorical grouping variable a hue–depth pair.
-  Treat fold and seed as replicate identifiers. In score comparisons,
-  draw each defined replicate as a dot in its group's color. Keep fold
-  and seed out of plot axes, facets and legends. Summarize within the
-  group for aggregate marks and learning curves.
-  Use a named `figure/<successor>/` subtree when a receipt seals the predecessor's
-  paths. Bind the successor inventory to its own acceptance receipt.
-  [ADR 0093](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
-  authorizes an in-place refresh of the 22 specified report figures. Use the
-  new rendering receipts for those paths and the pinned Git revision for
-  original PNG replay. [Current figure acceptance](README.md#verify-the-current-figures)
-  [Step 06.1](06_tsg_shape/06.1_round1/README.md#replay-the-published-figures)
-  publishes its current figures at canonical paths and replays prior figures from Git.
+  Plot learning curves as lines with one subplot per model configuration.
+  Draw one train and one validation trace for every `(fold, seed)`.
+  Use bars or grouped bars for other figures unless the request specifies
+  another chart type. Use each `(fold, seed)` as a within-group replicate.
+  Draw defined replicate values as dots, bar heights as means and error
+  bars as sample SD when at least two values are defined.
+  Encode each grouping variable on its own hue or depth axis, up to two
+  grouping variables. Replace figures at their canonical paths.
+  Keep a single current set of figures, plotted data and renderers under
+  each `figure/`, using only `data/` and `script/` as subdirectories.
+  [Plotting decision](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
+  [Current figure acceptance](README.md#verify-the-current-figures)
 - `execution/`: reproducible build/audit code, configurations, tests and disposable
   working intermediates. Keep necessary reconstruction dependencies available.
 - `log/`: execution/audit records, environments, seeds, acceptance results, hashes,

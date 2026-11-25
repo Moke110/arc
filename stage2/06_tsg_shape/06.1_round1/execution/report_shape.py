@@ -229,13 +229,12 @@ def audit_resources(audit, coordinator):
 
 
 def write_epoch_objectives(destination, paths, fits):
-    """Aggregate observed objectives over the full cohort at every plotted epoch."""
+    """Publish each sealed run’s observed train and validation objectives."""
     hashes = {}
     with destination.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.writer(stream, lineterminator="\n")
-        writer.writerow(("shape", "epoch", "mean_train_loss", "mean_validation_loss"))
+        writer.writerow(("shape", "fold", "seed", "epoch", "train_loss", "validation_loss"))
         for shape in SHAPES:
-            traces = []
             for fold in range(3):
                 fit = fits[shape, fold]
                 run = paths[shape, fold]
@@ -251,12 +250,9 @@ def write_epoch_objectives(destination, paths, fits):
                         or any(not (math.isfinite(train) and math.isfinite(validation)
                                     and train > 0 and validation > 0) for _, train, validation in rows)):
                     raise ValueError(f"invalid observed objective trace: {fit['path']}")
-                traces.append(rows)
-            for aligned in zip(*traces):
-                epoch = aligned[0][0]
-                mean_train = math.fsum(row[1] for row in aligned) / len(aligned)
-                mean_validation = math.fsum(row[2] for row in aligned) / len(aligned)
-                writer.writerow((shape, epoch, mean_train, mean_validation))
+                seed = axis_run.read_json(run / "registration.json")["seed"]
+                writer.writerows((shape, fold, seed, epoch, train, validation)
+                                 for epoch, train, validation in rows)
     return hashes
 
 

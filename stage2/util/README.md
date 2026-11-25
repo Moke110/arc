@@ -17,14 +17,14 @@ indexed gene identities, seed selection, generic metrics, CSV rendering and deri
 
 ## Plotting
 
-The [palette figure](figure/palette.png) shows all 45 hue–depth coordinates
+The [palette figure](figure/palette.png) shows all 36 hue–depth coordinates
 and the mark roles defined in [ADR 0093](../../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md).
 Run `python stage2/util/figure/script/render_palette.py` from the repository
 root to reproduce it. Use `--output PATH` to render to a different file.
 
 - `palette.color_pair(hue, depth=2)` returns the `main` and `secondary`
-  RGBA colors. Hue is in degrees and depth runs from 0 (darkest) to 4
-  (lightest). The palette figure labels those depths 1 to 5.
+  RGBA colors. Hue is in degrees and depth runs from 0 (darkest) to 3
+  (lightest). The palette figure labels those depths 1 to 4.
 - `plotting.bar(axis, x, height, hue=..., depth=...)` accepts one palette
   coordinate for the series or per-bar hue and depth arrays.
   `grouped_bar(axis, x, groups, width=.8)` centers each group at its x
@@ -37,13 +37,21 @@ root to reproduce it. Use `--output PATH` to render to a different file.
   draws one dot per defined replicate at the group center. Its symmetric
   spread separates dots without using fold or seed as a position variable.
 - `heatmap(axis, values, hue=..., vmin=..., vmax=..., colorbar_label=...)`
-  uses the five ordered depths of one hue and adds a numeric color scale.
+  uses the four ordered depths of one hue and adds a numeric color scale.
 
-For categorical marks, assign one hue–depth pair per level of a single
-grouping variable. Replicates in the same group share that pair. Fold and
-seed label replicates in the data. Use individual dots for their samples
-in score comparisons and keep those identifiers out of axes and legends. Study renderers
-own the layout and labels. Drawing functions return Matplotlib artists.
+- `plotting.replicate_bar(axis, x, values, hue=..., depth=...)` draws the
+  mean, one dot per defined replicate and sample SD for at least two
+  defined measurements. Use `replicate_errorbar` for the same dots and
+  error bars on an explicitly requested non-bar chart.
+- `plotting.learning_curve(axis, runs)` draws one training and one
+  validation line per run. Pass its observed `(epochs, train, validation)`
+  values and call once per model subplot.
+
+Use one color axis per grouping variable. Map the first variable to hue
+and the second to depth when present. Replicates inherit the color of
+their group. See the [Stage 2 contract](../AGENTS.md#step-contract) for
+publication layout and chart defaults. Study renderers own the layout
+and labels. Drawing functions return Matplotlib artists.
 
 The default readers open the accepted gene and feature products under util.
 For a separate materialized checkout, pass the directory explicitly to `load_gene_table` or `RepresentationTable`. The
