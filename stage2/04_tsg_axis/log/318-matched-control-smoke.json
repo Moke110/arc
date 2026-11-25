@@ -1,0 +1,79 @@
+{
+  "axis": "hvg-deg-5k",
+  "code_revision": "1afff809b490657eca8adf0f23ffe2acc14d91b4",
+  "csv_only_figure_replay": "byte-identical",
+  "environment": {
+    "cuda": "13.0",
+    "hardware": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "numpy": "2.4.6",
+    "python": "3.13.13",
+    "torch": "2.12.0+cu130",
+    "torch_threads": 2
+  },
+  "figure_sha256": {
+    "delta-metrics.png": "61a93aa62fc43df194710dabf5ef0c4b32840714f22ef4d16f533b71a8e0f07f",
+    "disease-f1.png": "d30bc49cfd8f4811af6490facf30c720062b3f1009eb26198dad9755a7f92361"
+  },
+  "fold": 0,
+  "folds": "cold-drug",
+  "fresh_process_replay": {
+    "test_replay": "exact",
+    "validation_objective_replay": "exact",
+    "validation_replay": "exact"
+  },
+  "independent_controls": {
+    "axis_wide_reference_produces_different_predicted_delta": true,
+    "condition_and_gene_order": "exact",
+    "partitions": {
+      "test": {
+        "conditions": 24,
+        "plates": 1
+      },
+      "train": {
+        "conditions": 64,
+        "plates": 2
+      },
+      "valid": {
+        "conditions": 24,
+        "plates": 5
+      }
+    },
+    "predicted_and_measured_delta_from_plate_control": "exact",
+    "result": "PASS"
+  },
+  "patience": 30,
+  "protocol": "matched-plate-control-native-loss-v1",
+  "registration_sha256": "46276510c9ed76aed97920b0bd93ea2af297c9621b2c00b33c7489ac0fff3703",
+  "report_manifest_sha256": "3ef03bbcc3b303b25729e0dfd6c559f45323d3e95cb5e03bbf81080e1ef42834",
+  "report_replay": "byte-identical",
+  "resources": {
+    "max_total_gpu_usage_mib": 2253,
+    "min_available_ram_kib": 20616540,
+    "peak_rss_kib_by_phase": {
+      "figure": 178388,
+      "figure-replay": 178572,
+      "predict": 1457132,
+      "preflight": 861516,
+      "register": 808596,
+      "replay": 1473276,
+      "score": 514408,
+      "train": 1784908,
+      "verify": 514556
+    }
+  },
+  "result": "PASS",
+  "run_manifest_sha256": "320711d11ba0f01229506d14e68878a00d6889506be5570a87ec7c907705ad96",
+  "run_schema": "stage2-tenv-transigen-axis-run-v2",
+  "seed": 42,
+  "smoke": true,
+  "ticket": 318,
+  "training": {
+    "best_epoch": 2,
+    "epochs": 2,
+    "parameters": 21691800,
+    "validation_loss": 7889.370442708333,
+    "validation_mse": 0.5333980143229167
+  },
+  "validation_objective": "native TranSiGen MSE + beta-weighted KLD, batch sums per condition",
+  "wall_seconds": 33.424
+}
