@@ -14,10 +14,9 @@ objective with 30-epoch patience.
 Use `execution/evaluate.py` for released predictions and run its `verify`
 command to replay the report. Render with `figure/script/render.py` using the
 report summary CSVs. Publish the accepted matched-control figures under
-`figure/matched-control/`. Keep smoke evaluations outside the formal comparison.
+`figure/`. Keep smoke evaluations outside the formal comparison.
 
-Keep the sealed Spec 5 formal paths and use the pinned runtime described in
-the README to replay that axis-wide-control generation.
+Replay Spec 5 scores and figures using the pinned checkout in the README.
 
 The [single-dose archive](historical/04_model_view/README.md) preserves the
 earlier comparison. Keep its sealed files and original provenance available
