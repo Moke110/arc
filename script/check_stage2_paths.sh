@@ -2,7 +2,7 @@
 # check_stage2_paths.sh — assert stage2/ executable code has no retired step paths.
 #
 # Scan tracked Stage 2 executable code for retired or archived paths.
-# The layout guard allows Steps 01–05, util, routing docs, and the ignored local
+# The layout guard allows Steps 01–06, util, routing docs, and the ignored local
 # history directory. STAGE2_PATH_AUDIT_ROOT supplies a fixture layout.
 # No network or dataset access. Exit 0 clean, 1 stale/layout failure, 2 usage error.
 
@@ -88,7 +88,8 @@ main() {
 
   local old_alias='03[.][1-7]_(tenv|tahoe)_(hvg|denoise)-deg-[345]k'
   local step_pattern="stage2/[[:alnum:]_./+@-]+|(06_tsg_drug_emb|07_tsg_dose|08_tsg_width_dose|09_tsg_transfer|03[.]1_hvg-deg-5k|$old_alias|log/316-runs)(/[[:alnum:]_./+@-]*)?"
-  local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss)
+  local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 06_tsg_shape)
+  local shape_round=06_tsg_shape/06.1_round1
   local stage2_root="${STAGE2_PATH_AUDIT_ROOT:-stage2}"
   if [ -z "${STAGE2_PATH_AUDIT_ROOT:-}" ]; then
     local archived_files
@@ -118,7 +119,15 @@ main() {
     echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
     return 1
   done
-  for root in "${active_roots[@]}" 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos}; do
+  for entry in "$stage2_root"/06_tsg_shape/06.*; do
+    [ -e "$entry" ] || [ -L "$entry" ] || continue
+    if [ "$entry" = "$stage2_root/$shape_round" ] && [ -d "$entry" ] && [ ! -L "$entry" ]; then
+      continue
+    fi
+    echo "RESULT: FAIL — unexpected Stage 2 shape round: $entry" >&2
+    return 1
+  done
+  for root in "${active_roots[@]}" 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} "$shape_round"; do
     for entry in "$stage2_root/$root/AGENTS.md" "$stage2_root/$root/README.md"; do
       if [ ! -f "$entry" ]; then
         echo "RESULT: FAIL — missing step routing: $entry" >&2
@@ -178,6 +187,11 @@ main() {
       for root in "${active_roots[@]}"; do
         case "$literal" in "stage2/$root" | "stage2/$root"/*) active_literal=1 ;; esac
       done
+      case "$literal" in
+        "stage2/$shape_round" | "stage2/$shape_round"/* | \
+        stage2/06_tsg_shape/AGENTS.md | stage2/06_tsg_shape/README.md) ;;
+        stage2/06_tsg_shape/?*) active_literal=0 ;;
+      esac
       case "$literal" in
         stage2/05_tsg_loss/execution | stage2/05_tsg_loss/execution/* | \
         stage2/05_tsg_loss/output | stage2/05_tsg_loss/output/* | \
