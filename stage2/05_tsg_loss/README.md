@@ -1,5 +1,20 @@
 # TranSiGen loss studies
 
+## Selected objective
+
+The best TranSiGen loss selected in Step 05 is
+`L = 0.1 * K + MSE_X1 + MSE_X2 + MSE_Δ + 1.5 * L1_Δ`.
+`K` is the sum of the three native KL terms. Both the predicted and observed
+Δ use the measured same-plate DMSO control.
+
+The selected objective is the `alpha = 1.5` coordinate in Step 05.2, with
+unit weights for both expression reconstruction MSE terms and the Δ MSE term.
+On the three frozen tenv cold-drug folds on Denoise-DEG 5k, mean Δ PCC rose
+from 0.4066 to 0.4305 and mean Δ RMSE fell from 0.2596 to 0.2499 relative
+to the zero-weight reference. [Step 05.2 equal-fold scores](05.2_mse_l1/figure/data/delta-metrics.csv)
+
+## Loss studies
+
 [Step 05.1](05.1_loss_metrics/README.md) compares MSE, cosine, Pearson correlation
 and L1 Delta losses with coefficients 0.75, 1 and 1.25 on the denoise-5k axis.
 

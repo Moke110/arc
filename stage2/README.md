@@ -13,6 +13,15 @@ and its [Step 03.7 tenv training release](03_data_train/03.7_tenv_denoise-5k/REA
 
 ## TranSiGen Delta loss comparison
 
+**Selected TranSiGen loss for Stage 2**
+
+`L = 0.1 * K + MSE_X1 + MSE_X2 + MSE_Δ + 1.5 * L1_Δ`
+
+This is the best objective selected in Step 05 on Denoise-DEG 5k across
+the three frozen tenv cold-drug folds with matched plate controls.
+The [Step 05 conclusion](05_tsg_loss/README.md#selected-objective) records
+the selected sweep coordinate and its results.
+
 [Step 05.1](05_tsg_loss/05.1_loss_metrics/README.md) studies the Delta loss form and weight on the
 selected axis with the same matched plate controls and frozen cold-drug folds.
 [ADR 0089](../docs/adr/0089-transigen-delta-metric-weight.md) defines the
