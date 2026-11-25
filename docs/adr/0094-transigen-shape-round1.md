@@ -2,6 +2,9 @@
 
 **Status:** accepted (2026-11-25).
 
+[ADR 0095](0095-transigen-shape-encoder-width-extension.md) extends this
+registered eight-coordinate comparison.
+
 Use `06_tsg_shape/06.1_round1` to compare expression encoder width,
 expression latent dimension, and expression encoder and decoder depth.
 Changing each independently isolates it from the joint width scaling studied

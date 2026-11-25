@@ -775,6 +775,11 @@ The Stage 2 study of how expression encoder width, expression latent
 dimension, and expression encoder or decoder depth affect held-out Delta
 prediction under a fixed training objective.
 
+**Step 06.1 original architecture** (`original`):
+The TranSiGen expression shape with one 1,200-unit encoder hidden layer,
+one 800-unit decoder hidden layer, and latent dimension 100. Its held-out
+score is the reference for each paired comparison on the same fold.
+
 **TranSiGen expression latent dimension**:
 The shared dimension of the control, measured treated, and predicted treated
 expression latent vectors.
