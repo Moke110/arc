@@ -13,3 +13,9 @@ Register before fitting. Run registration, training, prediction, and replay
 in separate processes. Use one memory-capped CUDA fit at a time, record WSL
 RAM and GPU usage at ten-second intervals, and preserve candidates until
 acceptance checks finish. Provide the verified figure CSVs to the renderer.
+
+The formal driver in `execution/matrix_shape.py` verifies the complete
+preregistration before fitting. Use the verified receipt and stable local
+`output/formal/` paths for follow-up reads. Recompute scores and replay the
+two figures with `execution/report_shape.py verify` against the sealed
+Step 05.2 reference. Publish only the scope described in ADR 0094.
