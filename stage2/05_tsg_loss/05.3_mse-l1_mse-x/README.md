@@ -58,3 +58,67 @@ done
 Use `--training`, `--representations` and `--source` to locate the
 pinned runner inputs in another checkout. The evaluator accepts
 `--training` and `--bandwidth-training`.
+
+## Run the formal sweep
+
+Use the capped runtime for a single CUDA fit at a time. The matrix registers
+all 27 coordinates before fitting and checks sealed phase files before
+resuming on the same paths. Its audit samples WSL RAM and GPU usage on a
+ten-second schedule and records peak RSS for each process.
+
+```bash
+set -e
+STEP="$PWD/stage2/05_tsg_loss/05.3_mse-l1_mse-x"
+WORK=$(mktemp -d "$PWD/tmp/tsg-reconstruction-formal.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+REVISION=$(git rev-parse HEAD)
+capped_step04 python -u "$STEP/execution/matrix_reconstruction.py" \
+  --output "$WORK/matrix" --logs "$WORK/matrix-audit"
+capped_step04 python "$STEP/execution/report_reconstruction.py" build \
+  --matrix "$WORK/matrix" --matrix-audit "$WORK/matrix-audit" \
+  --report "$WORK/report" --publication "$WORK/publication" \
+  --activity "$WORK/report-audit" --scratch "$WORK/scratch" \
+  --code-revision "$REVISION"
+```
+
+The report can use `--previous-step` to locate the sealed Step 05.2 release
+in another checkout. It also accepts the runner input options and
+`--bandwidth-training`. Use the same report command with `verify` and omit
+`--code-revision` to repeat the report acceptance checks.
+
+## Verify the published sweep
+
+The accepted release contains 27 independently replayed runs, 243 held-out
+fold scores and 81 equal-fold aggregates. The acceptance receipt binds
+the matrix, run ledger, ordered fold membership, frozen bandwidths and
+resource records. [Acceptance receipt](log/336-formal.json) ·
+[Run ledger](log/runs.csv) · [Fold scores](log/fold-scores.csv) ·
+[Bandwidths](log/bandwidths.csv)
+
+The coordinator recorded 125 GPU and WSL RAM samples with a maximum
+monotonic gap of 10.002 seconds. The scoped runner recorded 124 samples,
+with a maximum gap of 13.232 seconds, and recorded peak RSS for each phase.
+[Coordinator samples](log/336-coordinator-resources.jsonl) ·
+[Scoped runner samples](log/336-resources.jsonl)
+
+All three alpha-one fits reproduced Step 05.2 at Delta L1 weight 1.75
+exactly on the train and validation objective and component traces,
+selected and stopping epochs, validation and test predictions, Delta
+arrays, fold scores and eligibility counts. The nine alpha-one signed
+differences are zero.
+
+The score and signed-difference plots show the same nine held-out metrics.
+Signed differences are the plotted weight's score minus the alpha-one
+score. In the learning curves, each panel shows a reconstruction weight
+and each color shows a fold. Two renders from only the plot CSVs produced
+identical PNGs. [Score figure](figure/delta-metrics.png) ·
+[Signed differences](figure/delta-metrics-improvement.png) ·
+[Learning curves](figure/learning-curves.png) ·
+[Metric CSV](figure/data/delta-metrics.csv) ·
+[Learning-curve CSV](figure/data/epoch-objectives.csv)
+
+In the materialized checkout, use `output/formal/{matrix,matrix-audit,report}`
+as the matrix, audit and report paths and use the step directory as
+`--publication` when repeating the report acceptance checks. Use a fresh
+directory under the checkout's `tmp/` for `--activity` and `--scratch`.
