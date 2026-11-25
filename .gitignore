@@ -186,6 +186,13 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2/05_tsg_loss/05.2_mse_l1/log/fold-scores.csv
 !/stage2/05_tsg_loss/05.2_mse_l1/log/runs.csv
 
+# Step 05.3 publishes compact report tables for the reconstruction sweep.
+!/stage2/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/delta-metrics.csv
+!/stage2/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/epoch-objectives.csv
+!/stage2/05_tsg_loss/05.3_mse-l1_mse-x/log/bandwidths.csv
+!/stage2/05_tsg_loss/05.3_mse-l1_mse-x/log/fold-scores.csv
+!/stage2/05_tsg_loss/05.3_mse-l1_mse-x/log/runs.csv
+
 # HVG-DEG axes and compact selection evidence. Keep candidates local.
 !/stage2/02_gene_axis/02.1_hvg-deg/output/
 /stage2/02_gene_axis/02.1_hvg-deg/output/*
