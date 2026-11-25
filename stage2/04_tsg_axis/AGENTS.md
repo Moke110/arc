@@ -18,6 +18,6 @@ report summary CSVs. Publish the accepted matched-control figures under
 
 Replay Spec 5 scores and figures using the pinned checkout in the README.
 
+The active TranSiGen adapter and training utilities live in `output/api/tsg_axis/`.
 The [single-dose archive](historical/04_model_view/README.md) preserves the
-earlier comparison. Keep its sealed files and original provenance available
-for historical replay and the shared learner imports in downstream studies.
+earlier comparison and its pinned replay.

@@ -143,6 +143,8 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # Plate-matched training payloads are local, and the public reader is tracked.
 !/stage2/03_data_train/output/
 /stage2/03_data_train/output/*
+!/stage2/03_data_train/output/frozen-folds/
+!/stage2/03_data_train/output/frozen-folds/**
 !/stage2/03_data_train/output/api/
 !/stage2/03_data_train/output/api/*.py
 /stage2/03_data_train/.output.previous/
@@ -166,6 +168,8 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 /stage2/03_data_train/03.7_tenv_denoise-deg-5k/.output.publication.lock
 !/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/
 /stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/*
+!/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/api/
+!/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/api/*.py
 !/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/release/
 /stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/release/*
 !/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/release/manifest.json
