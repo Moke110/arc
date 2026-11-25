@@ -28,6 +28,11 @@ expression reconstruction MSE weight at Delta L1 weight 1.75.
 [ADR 0091](../docs/adr/0091-transigen-reconstruction-mse-sweep.md) defines
 the grid and the freshly fitted unit-weight reference.
 
+[Step 05.4](05_tsg_loss/05.4_mse-l1_pcc/README.md) and
+[Step 05.5](05_tsg_loss/05.5_mse-l1_cos/README.md) vary the weights of bounded
+Delta PCC and cosine similarity losses, respectively, using the unit
+reconstruction weight and fixed Delta L1 weight from Step 05.3.
+
 ## Local history
 
 [ADR 0087](../docs/adr/0087-stage2-active-steps-and-history.md) defines the archive

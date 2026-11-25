@@ -10,3 +10,11 @@ on the same axis and protocol.
 
 [Step 05.3](05.3_mse-l1_mse-x/AGENTS.md) owns the shared reconstruction MSE
 weight sweep at fixed Delta L1 weight 1.75.
+
+[Step 05.4](05.4_mse-l1_pcc/AGENTS.md) and
+[Step 05.5](05.5_mse-l1_cos/AGENTS.md) share the bounded Delta similarity
+sweep runner and own their PCC and cosine releases respectively.
+
+Keep study evidence under the numbered study's `log/` directory. The two
+smoke receipts pin the [shared coordinator capture](05.4_mse-l1_pcc/log/338-coordinator-resources.jsonl)
+under Step 05.4 because one monitor covered both studies.
