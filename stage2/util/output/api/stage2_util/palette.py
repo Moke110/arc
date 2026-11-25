@@ -5,8 +5,8 @@ from typing import NamedTuple
 
 
 HUES = tuple(range(20, 341, 40))
-DEPTHS = tuple(range(5))
-DEPTH_LEVELS = ((.24, .80), (.33, .76), (.42, .72), (.52, .66), (.62, .60))
+DEPTH_LEVELS = ((.33, .76), (.42, .72), (.52, .66), (.62, .60))
+DEPTHS = tuple(range(len(DEPTH_LEVELS)))
 MAIN_OPACITY = .90
 SECONDARY_OPACITY = .40
 
@@ -30,5 +30,5 @@ def color_pair(hue, depth=2):
 
 
 def sequential_colors(hue):
-    """Return the five main colors of one hue from light to dark."""
+    """Return the main colors of one hue from light to dark."""
     return tuple(color_pair(hue, depth).main for depth in reversed(DEPTHS))

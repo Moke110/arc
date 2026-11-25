@@ -33,6 +33,11 @@ class MetricsFigureTests(TestCase):
 
             with (data / "delta-metrics.csv").open("a", newline="") as stream:
                 csv.writer(stream).writerow(rows[-1])
+            with (data / "fold-scores.csv").open("w", newline="") as stream:
+                writer = csv.writer(stream)
+                writer.writerow(("loss", "alpha", "metric", "fold", "seed", "value"))
+                writer.writerows((*row[:3], fold, 42, row[3] + fold - 1)
+                                 for row in rows for fold in range(3))
             subprocess.run(command, capture_output=True, text=True, check=True)
             scores = root / "figures/delta-metrics.png"
             differences = root / "figures/delta-metrics-improvement.png"

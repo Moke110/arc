@@ -13,7 +13,6 @@ import sys
 
 LOSS = Path(__file__).resolve().parents[2]
 RECEIPT = LOSS / "log/343-figure-render.json"
-PRE_REFRESH_REVISION = "7f48f6a881bea57598b40b0da2becd62917569c8"
 STUDIES = {
     "05.1_loss_metrics": "330-formal.json",
     "05.2_mse_l1": "333-formal.json",
@@ -23,7 +22,11 @@ STUDIES = {
 }
 STANDARD_RENDERERS = ("render_metrics.py", "render_learning_curves.py")
 SIMILARITY_RENDERERS = ("render.py",)
-INPUTS = ("delta-metrics.csv", "epoch-objectives.csv")
+INPUTS = {
+    "delta-metrics.csv": "figure/data/delta-metrics.csv",
+    "epoch-objectives.csv": "figure/data/epoch-objectives.csv",
+    "fold-scores.csv": "log/fold-scores.csv",
+}
 FIGURES = {"delta-metrics.png", "delta-metrics-improvement.png", "learning-curves.png"}
 
 
@@ -45,11 +48,11 @@ def inventory(work):
         prior = json.loads((release / "log" / formal_receipt).read_text())
         data = work / study / "data"
         data.mkdir(parents=True)
-        for name in INPUTS:
+        for name, formal_path in INPUTS.items():
             csv_path = release / "figure/data" / name
             key = csv_path.relative_to(LOSS).as_posix()
             csv_hashes[key] = digest(csv_path)
-            if csv_hashes[key] != prior["published_files_sha256"][f"figure/data/{name}"]:
+            if csv_hashes[key] != prior["published_files_sha256"][formal_path]:
                 raise ValueError(f"plot CSV differs from the original formal receipt: {key}")
             shutil.copyfile(csv_path, data / name)
 
@@ -81,9 +84,8 @@ def inventory(work):
                    "05.3_mse-l1_mse-x/execution/sweep_protocol.py"):
         renderer_hashes[source] = digest(LOSS / source)
     return {
-        "schema": "stage2-figure-render-v1",
+        "schema": "stage2-figure-render-v2",
         "ticket": 343,
-        "pre_refresh_revision": PRE_REFRESH_REVISION,
         "independent_renders": 2,
         "environment": {
             "python": python_version(),

@@ -91,33 +91,26 @@ atomic rename.
 [signed score differences](figure/delta-metrics-improvement.png) each have
 one panel per Step 04 held-out metric. The [metric CSV](figure/data/delta-metrics.csv)
 includes the equal-fold score, the corresponding MSE at alpha 1 score and
-their signed difference. Blue backgrounds indicate metrics where higher
-scores are better. Red backgrounds indicate metrics where lower scores are
-better. [Fold scores](log/fold-scores.csv) preserve eligibility counts and
+their signed difference. The bars show means, the dots show individual runs,
+and the error bars show sample SD. Differences are paired by fold and seed.
+The [plotted fold scores](figure/data/fold-scores.csv) preserve eligibility counts and
 [bandwidths](log/bandwidths.csv) record the frozen Step 04 values.
 The accepted matrix contains 36 fits and 324 fold scores. All three MSE at
 alpha 1 fits match Step 04 exactly on the selected and stopping epochs,
 native objective trace columns, validation and test predictions, and Delta
 arrays. All 27 native fold scores and eligibility counts match Step 04.
 
-[Learning curves](figure/learning-curves.png) show the training objective
-(dashed) and validation objective (solid) through the stopping epoch, with
-one panel per loss and coefficient and one color per fold.
-The [epoch CSV](figure/data/epoch-objectives.csv) holds 4,920 rows of observed
-training and validation values. The [run ledger](log/runs.csv) records the selected
-checkpoint for each fit, and the [curve receipt](log/330-curves.json) binds
-them to the published figure.
+[Learning curves](figure/learning-curves.png) show one model per loss and
+coefficient panel. Each fold/seed run contributes one training and one validation
+line through its stopping epoch. The [epoch CSV](figure/data/epoch-objectives.csv)
+contains 4,920 observed epochs, and the [run ledger](log/runs.csv) records
+the selected checkpoint for each fit.
 
 The [formal receipt](log/330-formal.json) binds all three native Step 04
-anchors, the [resource samples](log/330-resources.jsonl), three PNGs and the
+anchors, the [resource samples](log/330-resources.jsonl) and the
 local products under `output/formal/{matrix,matrix-audit,report}`.
 The scoped monitor recorded 166 samples on a ten-second schedule. It logged
 33 intervals longer than 12 seconds and a maximum sample gap of 14.373 seconds.
-Use the [pre-refresh revision](../README.md#replay-the-original-formal-publications)
-for exact verification of the old formal receipt. Pass `verify`, the materialized
-matrix, audit and report paths, and the pinned step directory as `--publication`.
-Use fresh scratch and activity paths and omit `--code-revision`.
-
 The [current figure verification](../README.md#verify-the-current-figures)
 compares the refreshed PNGs with two independent CSV-only renders.
 

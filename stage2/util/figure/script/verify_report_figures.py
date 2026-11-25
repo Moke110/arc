@@ -1,4 +1,4 @@
-"""Verify the 22 current Stage 2 PNGs with their render receipts and plot data."""
+"""Verify every current Stage 2 PNG against its render receipt and plot data."""
 
 import argparse
 from hashlib import sha256
@@ -12,12 +12,13 @@ import subprocess
 import sys
 
 STAGE = Path(__file__).resolve().parents[3]
-AXIS_REPORTS = {
-    "02_gene_axis": (
+REPORTS = {
+    "02_gene_axis": ("342-figure-render.json", (
         ("02.1_hvg-deg/figure", "02.1_hvg-deg/figure/script/render_coverage.py"),
         ("02.2_denoise-deg/figure", "02.2_denoise-deg/figure/script/render.py"),
-    ),
-    "04_tsg_axis": (("figure/canonical-axis", "figure/script/render.py"),),
+    )),
+    "04_tsg_axis": ("342-figure-render.json", (("figure", "figure/script/render.py"),)),
+    "06_tsg_shape/06.1_round1": ("figure-render.json", (("figure", "figure/script/render_shape.py"),)),
 }
 
 
@@ -31,27 +32,30 @@ def check_hashes(root, hashes):
             raise ValueError(f"render receipt hash differs for {root / path}")
 
 
-def verify_axis_report(step, renderers, work, env):
-    receipt = json.loads((step / "log/342-figure-render.json").read_text())
-    if (receipt["schema"], receipt["ticket"], receipt["independent_renders"]) != (
-        "stage2-figure-render-v1", 342, 2,
+def verify_report(step, receipt_name, renderers, work, env):
+    receipt = json.loads((step / "log" / receipt_name).read_text())
+    if (receipt["schema"], receipt["status"], receipt["independent_renders"]) != (
+        "stage2-figure-render-v1", "PASS", 2,
     ):
         raise ValueError(f"unknown figure render receipt for {step}")
-    environment = {name: version(name) for name in ("matplotlib", "numpy", "pandas")}
+    environment = {name: version(name) for name in receipt["environment"] if name != "python"}
     if receipt["environment"] != {**environment, "python": python_version()}:
         raise ValueError(f"render environment differs from the receipt for {step}")
 
     csvs = receipt["csv_files_sha256"]
     pngs = receipt["png_files_sha256"]
     scripts = receipt["renderer_files_sha256"]
-    if set(scripts) != {script for _, script in renderers}:
+    script_root = step if receipt_name == "342-figure-render.json" else STAGE
+    paths = {(step / script).relative_to(script_root).as_posix() for _, script in renderers}
+    if not paths <= set(scripts):
         raise ValueError(f"renderer inventory differs from the receipt for {step}")
     published = {path.relative_to(step).as_posix() for directory, _ in renderers
                  for path in (step / directory).glob("*.png")}
     if set(pngs) != published:
         raise ValueError(f"published PNG inventory differs from the receipt for {step}")
-    for hashes in (csvs, pngs, scripts):
+    for hashes in (csvs, pngs):
         check_hashes(step, hashes)
+    check_hashes(script_root, scripts)
 
     for attempt in ("first", "second"):
         scratch = work / attempt
@@ -72,6 +76,15 @@ def verify_axis_report(step, renderers, work, env):
     return len(pngs)
 
 
+def check_layout(directory):
+    extra = {path.name for path in directory.iterdir() if path.is_dir()} - {"data", "script"}
+    if extra:
+        raise ValueError(f"unexpected directories in {directory}: {sorted(extra)}")
+    for child in ("data", "script"):
+        if any(path.is_dir() and path.name != "__pycache__" for path in (directory / child).glob("*")):
+            raise ValueError(f"nested figure set in {directory / child}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work", type=Path, required=True,
@@ -82,14 +95,26 @@ def main():
     for child in ("matplotlib", "scratch"):
         (work / child).mkdir()
     env = {**os.environ, "MPLCONFIGDIR": str(work / "matplotlib"), "TMPDIR": str(work / "scratch")}
-    count = sum(verify_axis_report(STAGE / step, paths, work / step, env)
-                for step, paths in AXIS_REPORTS.items())
-    if count != 7:
-        raise ValueError(f"expected seven Step 02 and Step 04 figures, verified {count}")
+    count = sum(verify_report(STAGE / step, receipt, renderers, work / step, env)
+                for step, (receipt, renderers) in REPORTS.items())
+    if count != 10:
+        raise ValueError(f"expected ten Step 02, Step 04 and Step 06 figures, verified {count}")
     loss_verifier = STAGE / "05_tsg_loss/figure/script/verify_figures.py"
     subprocess.run([sys.executable, str(loss_verifier), "--work", str(work / "loss")],
                    cwd=work, env=env, check=True)
-    print("Verified all 22 current Stage 2 PNGs")
+    palette = STAGE / "util/figure/palette.png"
+    for attempt in ("first", "second"):
+        output = work / f"palette-{attempt}.png"
+        subprocess.run([sys.executable, str(palette.parent / "script/render_palette.py"),
+                        "--output", str(output)], cwd=work, env=env, check=True)
+        if digest(output) != digest(palette):
+            raise ValueError("published palette differs from its render")
+
+    for directory in STAGE.glob("*/figure"):
+        check_layout(directory)
+    for directory in STAGE.glob("*/*/figure"):
+        check_layout(directory)
+    print("Verified all 26 current Stage 2 PNGs")
 
 
 if __name__ == "__main__":

@@ -42,19 +42,15 @@ counts. The selected epochs were 129, 116, and 85 for folds 0, 1, and 2.
 [72 equal-fold aggregates](figure/data/delta-metrics.csv) ·
 [Epoch objectives](figure/data/epoch-objectives.csv)
 
-Each bar in the score figure and each row in the table reports the
-equal-fold mean. Bar color identifies the original architecture, wider
-latent space, wider encoder, or deeper network. Dots show the individual
-replicate scores in the same architecture-change color. In the paired
-figure, dots are signed differences from the fresh control and diamonds
-are their means across eligible pairs. Panel arrows mark the preferred
-metric direction.
+Bars show equal-fold means for both the held-out scores and signed
+differences from the fresh control. Dots show the individual replicates.
+Error bars show sample SD within each architecture. Panel arrows mark
+the preferred metric direction.
 
-Each learning-curve panel shows the equal-fold mean train and validation
-objectives per condition on log y-scales. The wider encoder has its own
-y-scale to show its full objective range. Each architecture runs
-through the last epoch observed in all three fits, so every plotted epoch
-has the same replicate cohort.
+Each learning-curve panel shows one architecture with train and validation
+objectives for each fold and seed through the last epoch observed for
+that fit. Objectives are displayed on log y-scales. The wider encoder has
+its own y-scale to show its full objective range.
 
 | Coordinate | JAC_top200 | JAC_pos100 | JAC_neg100 | Δ PCC | Δ Spearman | Δ RMSE | Δ E-distance | Δ MMD | Δ R² |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -190,12 +186,8 @@ alternate verified training, bandwidth-training and Step 05.2 paths.
 
 The three canonical figures use the replicate, aggregate and epoch CSVs. Use
 the versions and digests in the [figure receipt](log/figure-render.json).
-The original formal receipt retains the original publication evidence.
-Current verification compares its scientific fields and verifies the
-canonical figures against the figure receipt. For exact replay of the
-original figures and combined receipt, use the
-[deployment revision](https://github.com/Moke110/arc/tree/9dee5fd9/stage2/06_tsg_shape/06.1_round1)
-with the same materialized formal inputs.
+The formal replay command verifies the scientific receipt and compares the
+current CSV-only renders against the figure receipt.
 
 ```bash
 STEP="$PWD/stage2/06_tsg_shape/06.1_round1"

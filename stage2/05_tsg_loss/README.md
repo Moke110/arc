@@ -37,7 +37,7 @@ reconstruction weight and fixed Delta L1 weight from Step 05.3.
 ## Verify the current figures
 
 The [figure render receipt](log/343-figure-render.json) binds all 15 current
-PNGs to the ten plotted CSVs from the original studies. The following command
+PNGs to the 15 plotted CSVs from the accepted study reports. The following command
 compares two fresh CSV-only renders with the published PNGs and checks every
 input hash against its original formal receipt. It uses the `arc` rendering
 environment and requires neither model checkpoints nor prediction matrices.
@@ -48,18 +48,11 @@ WORK=$(mktemp -d "$PWD/tmp/tsg-loss-figure-check.XXXXXX")
 python stage2/05_tsg_loss/figure/script/verify_figures.py --work "$WORK/replay"
 ```
 
-Up and down arrows on the score panels show which direction is better.
-Signed differences still subtract the comparison's reference score.
-
-## Replay the original formal publications
-
-The original formal receipts seal the original PNGs and renderer versions.
-Use the [pre-refresh revision](https://github.com/Moke110/arc/tree/7f48f6a881bea57598b40b0da2becd62917569c8/stage2/05_tsg_loss)
-to replay their bytes. Create an isolated checkout of that revision and
-run the numbered study's formal report command there with `verify`.
-Pass the materialized matrix, audit, report and input locations using the
-study's command-line options. Point `--publication` at the pinned step
-directory, or the pinned Step 05 directory for the paired similarity report.
+Bars show the group mean, dots show the individual fold/seed runs, and error
+bars show one sample standard deviation in each direction. Signed differences
+pair each run with its matching reference before aggregation. Up and down
+arrows identify the preferred direction of each metric. Learning curves show
+one model per panel and one training and validation line per run.
 
 ## Reproduce the formal Delta similarity sweeps
 
@@ -101,8 +94,3 @@ plus `--bandwidth-training` and `--previous-step` for the sealed Step 05.3
 release. The report prepares both studies before moving the verified
 candidate into place. Repeat its command with `verify` in place of `build`
 and omit `--code-revision` to check the publication again.
-
-For [original formal byte replay](#replay-the-original-formal-publications), use `output/formal/{matrix,matrix-audit,reports}`
-under either similarity step for the three input arguments and
-the pinned checkout’s `stage2/05_tsg_loss` for `--publication`. Create a fresh activity and scratch
-directory under the checkout's `tmp/`.

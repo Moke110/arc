@@ -105,20 +105,13 @@ monotonic gap of 10.147 seconds. The formal receipt binds both logs.
 
 The [raw scores](figure/delta-metrics.png) and
 [signed score differences](figure/delta-metrics-improvement.png) show one
-panel per metric. The difference is the score at the plotted alpha minus
-the zero-weight score. Blue backgrounds identify metrics where higher
-values are better. Red backgrounds identify metrics where lower values
-are better. The [learning curves](figure/learning-curves.png) show the
-training and validation objectives through the stopping epoch, with one
-panel per alpha and one color per fold. The
-[epoch CSV](figure/data/epoch-objectives.csv) retains the raw objective
+panel per metric. The bars show means, dots show the individual
+[fold scores](figure/data/fold-scores.csv), and error bars show sample SD.
+The signed difference subtracts the matching zero-weight score within each
+run. The [learning curves](figure/learning-curves.png) show one model per
+alpha and a training and validation line per fold/seed run through its stopping
+epoch. The [epoch CSV](figure/data/epoch-objectives.csv) retains the objective
 components.
-
-Use the [pre-refresh revision](../README.md#replay-the-original-formal-publications)
-for exact verification of the old formal receipt. Pass `verify`, the matrix,
-audit and report directories under the materialized `output/formal` directory,
-and the pinned step directory as `--publication`. Use fresh scratch and activity
-directories and omit `--code-revision`.
 
 The [current figure verification](../README.md#verify-the-current-figures)
 compares the refreshed PNGs with two independent CSV-only renders.

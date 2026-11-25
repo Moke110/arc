@@ -18,7 +18,7 @@ class SimilarityFigureTests(TestCase):
             (root / "torch.py").write_text("raise RuntimeError('training runtime is unavailable')\n")
             data = root / "data"
             data.mkdir()
-            for name in ("delta-metrics.csv", "epoch-objectives.csv"):
+            for name in ("delta-metrics.csv", "epoch-objectives.csv", "fold-scores.csv"):
                 (data / name).write_bytes((PCC_FIGURE / "data" / name).read_bytes())
 
             output = root / "figures"
