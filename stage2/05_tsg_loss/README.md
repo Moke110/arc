@@ -117,3 +117,32 @@ mkdir -p "$PWD/tmp/tsg-loss-figure"
 python stage2/05_tsg_loss/figure/script/render_metrics.py \
   --data stage2/05_tsg_loss/figure/data --output "$PWD/tmp/tsg-loss-figure"
 ```
+
+## Learning curves
+
+[The twelve-panel figure](figure/learning-curves.png) shows the training and
+validation objective per condition for all 36 fits. Each fold keeps the same
+color across panels. Dashed lines show training and solid lines show
+validation. Every trace ends at its observed stopping epoch. The shared
+logarithmic vertical scale keeps the early peaks and later changes visible.
+
+The [epoch CSV](figure/data/epoch-objectives.csv) preserves all 4,817 accepted
+epoch rows, including the objective components and selected and stopping
+epochs. The [learning-curve receipt](log/327-curves.json) binds it to
+the [formal receipt](log/326-formal.json) and the [run and checkpoint records](log/runs.csv).
+The audit verifies contiguous epochs, checkpoint selection and stopping for
+every run, then checks that an independent CSV-only render has the published
+PNG digest.
+
+```bash
+set -e
+STEP="$PWD/stage2/05_tsg_loss"
+WORK=$(mktemp -d "$PWD/tmp/tsg-loss-curves.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+python "$STEP/figure/script/render_learning_curves.py" \
+  --data "$STEP/figure/data" --output "$WORK"
+python "$STEP/execution/audit_learning_curves.py" \
+  --publication "$STEP" --scratch "$WORK/scratch" > "$WORK/327-curves.json"
+cmp "$WORK/327-curves.json" "$STEP/log/327-curves.json"
+```
