@@ -68,14 +68,14 @@ paths are `output/formal-matched-control` for checkpoints, registrations
 and predictions, `log/319-runs` for resource and process evidence, and
 `output/report-matched-control` for condition and fold metrics, eligibility,
 bandwidths and the shared disease reference. The two summary CSVs are in
-`figure/matched-control/data/`.
+`figure/data/`.
 
 ```bash
 STEP=stage2/04_tsg_axis
 VERIFY=$(mktemp -d "$PWD/tmp/tsg-axis-verify.XXXXXX")
 capped_step04 python "$STEP/execution/report_formal.py" verify \
   --matrix "$STEP/output/formal-matched-control" --matrix-audit "$STEP/log/319-runs" \
-  --report "$STEP/output/report-matched-control" --figures "$STEP/figure/matched-control" \
+  --report "$STEP/output/report-matched-control" --figures "$STEP/figure" \
   --logs "$VERIFY"
 ```
 
@@ -175,10 +175,10 @@ and every disease score was defined in all three folds.
 | genetic cardiomyopathy | 0.2136 | 0.2469 | 0.2193 | 0.1208 | 0.1057 | 0.0950 |
 | TOX | 0.3026 | 0.2587 | 0.2162 | 0.1302 | 0.1148 | 0.1036 |
 
-See the [nine-metric figure](figure/matched-control/delta-metrics.png) and the
-[disease F1 figure](figure/matched-control/disease-f1.png). The
-[metric CSV](figure/matched-control/data/delta-metrics.csv) and
-[disease CSV](figure/matched-control/data/disease-f1.csv) retain the full numerical
+See the [nine-metric figure](figure/delta-metrics.png) and the
+[disease F1 figure](figure/disease-f1.png). The
+[metric CSV](figure/data/delta-metrics.csv) and
+[disease CSV](figure/data/disease-f1.csv) retain the full numerical
 precision and eligibility counts. The materialized report retains the
 per-fold and per-condition values and the full CM direction reference.
 
@@ -196,8 +196,8 @@ scratch. The archive retains the original run plans, checkpoints and receipts.
 [Spec 5](https://github.com/Moke110/arc/issues/310) used an axis-wide
 control for validation and test inputs and predicted Delta. It selected
 the checkpoint by treated-expression MSE with 50-epoch patience. The
-[original formal receipt](log/316-formal.json), [metric figure](figure/delta-metrics.png),
-[disease F1 figure](figure/disease-f1.png), and their CSVs retain that comparison.
+[original formal receipt](log/316-formal.json) records that comparison.
+Its figures and plot CSVs are available in Git revision `85bc014`.
 Its checkpoints, report and audit retain `output/formal`, `output/report`
 and `log/316-runs`.
 
@@ -228,7 +228,7 @@ git worktree add --detach "$PWD/tmp/axis-report-runtime" 85bc014
 STEP=stage2/04_tsg_axis
 python "$PWD/tmp/axis-report-runtime/$STEP/execution/report_formal.py" verify \
   --matrix "$STEP/output/formal" --matrix-audit "$STEP/log/316-runs" \
-  --report "$STEP/output/report" --figures "$STEP/figure" \
+  --report "$STEP/output/report" --figures "$PWD/tmp/axis-report-runtime/$STEP/figure" \
   --step03 stage2/03_data_train --raw stage2/01_data_raw/output \
   --logs "$PWD/tmp/axis-predecessor-report-verify"
 ```

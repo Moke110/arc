@@ -486,7 +486,7 @@
       "genetic_cardiomyopathy",
       "TOX"
     ],
-    "figure_path": "figure/matched-control",
+    "figure_path": "figure",
     "fits": 18,
     "fold_bandwidths": [
       0.4304140011477142,
