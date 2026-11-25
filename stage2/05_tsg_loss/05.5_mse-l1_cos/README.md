@@ -56,3 +56,34 @@ done
 Use `--training`, `--representations` and `--source` to locate the
 pinned runner inputs in another checkout. The evaluator accepts
 `--training` and `--bandwidth-training`.
+
+## Verify the published sweep
+
+The release contains 18 fresh CUDA fits with exact independent replay, 162
+held-out fold scores and 54 equal-fold aggregates. Its three zero-weight
+fits agree exactly with the corresponding Step 05.3 unit-weight references
+on the objective and component traces, selected and stopping epochs,
+validation and test predictions, Delta arrays, nine scores and eligibility
+counts. The acceptance receipt binds the shared matrix and registered
+inputs, the exact reference comparisons, and the scoring and resource
+evidence. [Acceptance receipt](log/339-formal.json) · [Run ledger](log/runs.csv) ·
+[Fold scores](log/fold-scores.csv) · [Frozen bandwidths](log/bandwidths.csv)
+
+The signed-difference figure subtracts the score of the matching fresh
+zero-weight reference from each score. The learning curves show one panel
+per weight with one color per fold and mark the chosen checkpoint. All
+three figures were reproduced twice from only their CSVs with identical
+PNG bytes. [Scores](figure/delta-metrics.png) ·
+[Signed differences](figure/delta-metrics-improvement.png) ·
+[Learning curves](figure/learning-curves.png) ·
+[Score CSV](figure/data/delta-metrics.csv) ·
+[Curve CSV](figure/data/epoch-objectives.csv)
+
+The independent coordinator recorded 172 samples with a maximum observed
+gap of 10.002 seconds. The capped fit scope recorded 170 samples with a
+maximum gap of 14.421 seconds and peak RAM of 1.84 GiB.
+[Coordinator samples](log/339-coordinator-resources.jsonl) ·
+[Scope samples](log/339-resources.jsonl)
+
+Use the registered runtime to verify the materialized release.
+[Formal reproduction commands](../README.md#reproduce-the-formal-delta-similarity-sweeps)
