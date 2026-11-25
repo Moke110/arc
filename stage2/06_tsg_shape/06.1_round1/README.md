@@ -84,9 +84,11 @@ tenv folds at seed 42.
 
 The new widths used 30,016,600 and 50,828,600 trainable parameters and
 peaked at 0.64 and 1.03 GiB of CUDA tensor allocations, respectively.
-WSL retained at least 17.54 GiB of available RAM in the six-minute matrix.
+WSL retained at least 17.55 GiB of available RAM in the six-minute matrix.
 The [formal receipt](log/350-formal.json) binds both fit sources and their
-exact replay evidence. The [run ledger](log/runs.csv),
+exact replay evidence. The [repeat check](log/350-formal-repeat.json)
+compares the first formal candidate with the six post-smoke fits and
+records identical scores, selected epochs and learning curves. The [run ledger](log/runs.csv),
 [KL diagnostics](log/kl-diagnostics.csv), [matrix resource samples](log/350-resources.jsonl),
 and [coordinator samples](log/350-coordinator-resources.jsonl) give the
 per-run and workstation evidence. The six-fit matrix, its audit and the
@@ -130,10 +132,14 @@ git worktree remove "$WORK/code"
 
 The [CUDA smoke receipt](log/349-smoke.json) records the two added widths
 and their independent replays against the published training release.
-The model build tests exercised all ten shapes. The smoke uses the first
-64 training, 24 validation, and 24 test conditions from fold 0 for two
-epochs. The commands below also fit the original architecture on the same
-bounded inputs to exercise the score and paired-render entry points.
+The [bounded report receipt](log/349-smoke-report.json) records the original
+architecture's exact replay, all 27 scores for the three bounded fits, and
+two byte-identical renders of both score figures. This check followed the
+initial formal candidate and passed before the six fits in the published
+matrix. The model build tests exercised all ten shapes. The smoke uses
+the first 64 training, 24 validation, and 24 test conditions from fold 0
+for two epochs. The commands below reproduce the complete bounded report
+with the original architecture and both added widths.
 
 Run from the materialized checkout in the `arc` environment. Define
 `capped_step04` as shown in the [capped runtime setup](../../04_tsg_axis/README.md#prepare-the-capped-runtime).

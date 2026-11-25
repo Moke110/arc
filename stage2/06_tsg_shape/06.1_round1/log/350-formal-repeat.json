@@ -1,0 +1,65 @@
+{
+  "bounded_report_gate_receipt_sha256": "4c7968e04877b5efa02a9fbd51af3892f336d8fcfafe9fd5d065eea9c978d4dc",
+  "exact_files_per_fit": [
+    "conditions.csv",
+    "genes.csv",
+    "kl-diagnostics.csv",
+    "learning_curve.csv",
+    "measured_delta.npy",
+    "predicted_delta.npy",
+    "prediction.npy",
+    "validation_prediction.npy"
+  ],
+  "fits": [
+    {
+      "best_epoch": 129,
+      "fold": 0,
+      "shape": "widen_enc-2k",
+      "stopping_epoch": 159
+    },
+    {
+      "best_epoch": 118,
+      "fold": 1,
+      "shape": "widen_enc-2k",
+      "stopping_epoch": 148
+    },
+    {
+      "best_epoch": 92,
+      "fold": 2,
+      "shape": "widen_enc-2k",
+      "stopping_epoch": 122
+    },
+    {
+      "best_epoch": 102,
+      "fold": 0,
+      "shape": "widen_enc-4k",
+      "stopping_epoch": 132
+    },
+    {
+      "best_epoch": 107,
+      "fold": 1,
+      "shape": "widen_enc-4k",
+      "stopping_epoch": 137
+    },
+    {
+      "best_epoch": 110,
+      "fold": 2,
+      "shape": "widen_enc-4k",
+      "stopping_epoch": 140
+    }
+  ],
+  "fold_scores_exact_excluding_registration_hashes": 270,
+  "identical_publication_files_sha256": {
+    "figure/data/delta-metrics.csv": "edc0c86d24a0181354c5478306f1b6346e8cfd3978e7f979f6cbd1672dbfb49f",
+    "figure/data/epoch-objectives.csv": "e517c7097f036143acdad5e5393386f976dbb93996a878dde65b7a6414bb64da",
+    "figure/delta-metrics-paired-difference.png": "bb5bc1661237a28829c7a2a2c3a613e9f4c8ad455e3aa7eb6b55971eb541030c",
+    "figure/delta-metrics.png": "01ff460f7adbfd498f4ac1c2630952ad50a98fe6555d27e875d155f4b8bc6e46",
+    "figure/learning-curves.png": "888546dfbce8ee31824e51ca634278027e9fc533390b2988bb4ded212ab3f58d"
+  },
+  "initial_candidate_matrix_manifest_sha256": "41f26ed4944d72c71eddfdc66433ba6d8507002700e746ab1cd7df59fd96914c",
+  "new_width_fold_scores_exact_excluding_registration_hashes": 54,
+  "published_matrix_manifest_sha256": "3c8c1c66011b7d8e5b4bf63eefe335d5bcdd00a17a1de4d9044c1f55b30ad71d",
+  "schema": "stage2-tenv-transigen-shape-width-extension-rerun-v1",
+  "status": "PASS",
+  "ticket": 350
+}

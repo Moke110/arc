@@ -1,0 +1,93 @@
+{
+  "chronology": {
+    "bounded_gate_finish_monotonic_seconds": 346037.040746751,
+    "bounded_gate_start_monotonic_seconds": 346012.209015374,
+    "fresh_matrix_first_sample_monotonic_seconds": 346048.632339176,
+    "initial_candidate_last_matrix_sample_monotonic_seconds": 345093.128072205,
+    "initial_candidate_manifest_sha256": "41f26ed4944d72c71eddfdc66433ba6d8507002700e746ab1cd7df59fd96914c",
+    "note": "The initial formal candidate preceded this real bounded report gate. The fresh publication matrix started after this gate passed."
+  },
+  "code_sha256": {
+    "execution/evaluate_shape.py": "b6222dc07350f680a245eec5c65fe39e48aa4131244f5416d2a0f721cb4186e6",
+    "execution/run_shape.py": "ab3b917f4ac9f166e85d9cf3d6a1413763239d30ea5baae82bf206c12608bed7",
+    "figure/script/render_shape.py": "f9a22373ed5ac835b7d187b92a48d1fb4a4e32e7a421deecec484b419879b80a"
+  },
+  "fold": 0,
+  "fold_scores": 27,
+  "independent_csv_renders": 2,
+  "original_width_smoke_receipt_sha256": "dce299383b2cd49e6135d2e858eb70ba5435ccb5c864a09d03525f92a35d7a72",
+  "png_files_sha256": {
+    "delta-metrics-paired-difference.png": "934f5f71975dcc9c786642ce19590387a1eef8acb49c2d1efec4d88a28ea1194",
+    "delta-metrics.png": "e6d4c1beae9e1d1db156eeb5dca5763ddf4b91152df04bdc0c7df3a296c9a73d"
+  },
+  "report_manifest_sha256": "8e86fff055bc42770786bb9154b38a580e976dcfd78656284ea151af86fcc140",
+  "report_outputs_sha256": {
+    "bandwidths.csv": "38947a2f5b76487d54b7536a6769dae370526607e8ba49ef282e80e184abae70",
+    "condition-scores.csv": "168f75c904925424aeb2cc411159c56a2280eece59220f00e5b264e453e7d453",
+    "delta-metrics.csv": "f6f01d5493f70ea5e97e85af9853e1c49093c30e94dce9d04b35c12a42f08402",
+    "fold-scores.csv": "65c56b1d95af5dc23b24a1df2e092e23be8b71336a62196a9651afecfdc5368c",
+    "kl-diagnostics.csv": "12da5610fcce2cabb0e286e36ddc968da9fec0c8ec0ae1b6700bd9b259671490",
+    "runs.csv": "a04496cf127717e97ae42fc07274b22881831d625c69b1eb439feee3e292e06d"
+  },
+  "resources": {
+    "coordinator_sample_interval_seconds": 10,
+    "coordinator_sample_window_wall_time": [
+      "2026-11-26T00:46:36.029697+08:00",
+      "2026-11-26T00:47:06.024634+08:00"
+    ],
+    "coordinator_samples": 4,
+    "maximum_coordinator_sample_gap_seconds": 10.000080714002252,
+    "maximum_gpu_used_mib": 1972,
+    "minimum_wsl_available_kib": 19091828,
+    "phase_peak_rss_kib": {
+      "figures": 124644,
+      "figures-repeat": 124364,
+      "original-predict": 1470516,
+      "original-register": 758424,
+      "original-replay": 1478228,
+      "original-train": 1786344,
+      "report-score": 869040,
+      "report-verify": 868980
+    },
+    "scope_memory_limit_gib": 10,
+    "scope_swap_limit_gib": 8
+  },
+  "runs": {
+    "original": {
+      "best_epoch": 2,
+      "cuda_peak_allocated_bytes": 514601984,
+      "parameters": 21691800,
+      "registration_sha256": "bf32979b3ae10b552bea6de8f9d2c86d5adc9ab69395d07c250eb5b5991c0b45",
+      "replay_manifest_sha256": "dc45b166ddeb5232148ffaeeeaf3517159b0f6f3fe676a9760c71a3970e09ed1",
+      "test_replay": "exact",
+      "total_epochs": 2,
+      "validation_replay": "exact"
+    },
+    "widen_enc-2k": {
+      "best_epoch": 2,
+      "cuda_peak_allocated_bytes": 685040128,
+      "parameters": 30016600,
+      "registration_sha256": "c7993357d8f92686425d97968233430b39e6608663e3a1f621665a87002a4674",
+      "replay_manifest_sha256": "a26480555b71de21555cc605225839c9ec14ca9fd772a70116b4853fe4359580",
+      "test_replay": "exact",
+      "total_epochs": 2,
+      "validation_replay": "exact"
+    },
+    "widen_enc-4k": {
+      "best_epoch": 2,
+      "cuda_peak_allocated_bytes": 1102262272,
+      "parameters": 50828600,
+      "registration_sha256": "6c8e6256741c6474d0ce4805b3e157da25da944520d13c1f74671583c9907cf8",
+      "replay_manifest_sha256": "65223bf302a1109153071c84ee941ebd997dfd0d9c9e44e5a57cc7eed310690f",
+      "test_replay": "exact",
+      "total_epochs": 2,
+      "validation_replay": "exact"
+    }
+  },
+  "schema": "stage2-tenv-transigen-shape-width-extension-smoke-report-v1",
+  "score_phase_log_sha256": "235b64dac82c7ceb6fd018daabb54385c16c749905a7d36dc0f2058404557b0f",
+  "seed": 42,
+  "status": "PASS",
+  "ticket": 349,
+  "verify_phase_log_sha256": "235b64dac82c7ceb6fd018daabb54385c16c749905a7d36dc0f2058404557b0f"
+}

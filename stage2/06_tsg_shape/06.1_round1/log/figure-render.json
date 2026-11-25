@@ -2,7 +2,7 @@
   "csv_files_sha256": {
     "figure/data/delta-metrics.csv": "edc0c86d24a0181354c5478306f1b6346e8cfd3978e7f979f6cbd1672dbfb49f",
     "figure/data/epoch-objectives.csv": "e517c7097f036143acdad5e5393386f976dbb93996a878dde65b7a6414bb64da",
-    "figure/data/fold-scores.csv": "094251f347a4000029df9596a3c9409bd7db56f1308ac3af6d598f8c545c2e99"
+    "figure/data/fold-scores.csv": "39128b98167b6658e2a3c7e61990e7ea969983798c34cf37b034c1e2b042def8"
   },
   "environment": {
     "matplotlib": "3.10.9",
@@ -55,7 +55,7 @@
     "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },
   "schema": "stage2-figure-render-v1",
-  "scientific_receipt_sha256": "4460ba43286621843438a1ddfe98f461e58ae6a1bd7a40d6435d2b1f49653b78",
+  "scientific_receipt_sha256": "a3d4703b86ecfab316b0becbea9960ee2e523b50b7d155943103c2d4af039885",
   "status": "PASS",
   "step": "06.1_round1"
 }
