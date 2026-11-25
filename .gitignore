@@ -201,6 +201,7 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2/02_gene_axis/02.1_hvg-deg/output/api/
 !/stage2/02_gene_axis/02.1_hvg-deg/output/release/
 !/stage2/02_gene_axis/02.1_hvg-deg/output/release/**/*.csv
+!/stage2/02_gene_axis/02.1_hvg-deg/figure/data/disease-DEG1000-coverage_bars.csv
 /stage2/02_gene_axis/02.1_hvg-deg/execution/checkpoints/
 
 !/stage2/06_tsg_drug_emb/output/

@@ -40,7 +40,7 @@
   "png_sha256": {
     "deg-scores.png": "803d1bbad2136bd18cd59e12abae5d9fc7dd550ba0dc4e9774e294809cdb5241",
     "denoise.png": "5be757eb734dc52599bc41968ed14bdd8ba16488c684b7862890b897eb27ddee",
-    "disease-DEG200-coverage.png": "25d61ad6e748a591838cf43b3bcac5740f1293334b78cbb4fb0f9f8ca0bf67c5",
+    "disease-DEG1000-coverage.png": "25d61ad6e748a591838cf43b3bcac5740f1293334b78cbb4fb0f9f8ca0bf67c5",
     "score-in-axis.png": "cac047b05b46170b05c727029ee61561ab99bfdd37bb7bc1f43565f63a086408"
   },
   "score_in_axis_panels_verified": 15
