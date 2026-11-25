@@ -824,10 +824,10 @@ _Avoid_: delta_mean (retired name), no_change (withdrawn)
 **Fold/seed index table**:
 Shared seeds are ordered by `stage2_util.seeds.read_seeds()`. Fold indices identify the partition frozen by each study. A separately frozen comparison partition has its own fold identities; taking a prefix of a different partition does not recreate it.
 
-**Stage palette**:
-The two-dimensional `stage2_util.palette` table of plotting colors: six hue families (gray, blue, green, orange, purple, magenta) crossed with nine lightness-and-saturation shades. A color means the same thing in every Stage 2 figure.
+**Historical Stage 2 palette (ADR 0063)**:
+The six hue families and nine shades used by the earlier tenv model comparison.
 
-**Learning-curve figure**:
+**Historical learning-curve figure**:
 `figure/learning_curve.png`: one subplot per learnable model, epoch on the horizontal axis and loss on the vertical axis. The blue family is training and the green family is validation; one shade identifies one `(fold, seed)` run in both families.
 
 **Reliability figure** (`figure/metrics_indirect.png`):

@@ -23,6 +23,18 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 Use Step 04's `execution/matrix.py` and `execution/evaluate.py` for the axis comparison.
 Steps 05.1–05.5 reuse the matched-control runtime and metric primitives with their own run and report commands.
 
+## TranSiGen defaults
+
+For new Stage 2 TranSiGen experiments, use the ordered Denoise-DEG 5k
+(`denoise-5k`) axis. Use measured same-plate DMSO as model input `X1` in
+training, validation and test. Subtract that same control from both predicted
+and measured treated expression to compute Δ.
+
+Use `L = 0.1 * K + MSE_X1 + MSE_X2 + MSE_Δ + 1.75 * L1_Δ` with the three
+native KL terms summed in `K` and unit weights on both reconstruction MSEs.
+Use each pinned study protocol when replaying recorded results.
+[Selected configuration and evidence](README.md#selected-transigen-configuration)
+
 ## Local history
 
 Put retired releases, study steps and rollback material in the Git-ignored
@@ -39,8 +51,13 @@ points with history unavailable before completing a cutover.
   curve coordinates, groups, uncertainty and reference values where applicable.
 - `figure/script/`: reproduce PNGs from those CSVs alone, without matrices, checkpoints
   or recomputing scientific metrics. Record provenance when a CSV derives from output.
+  Draw marks with the [shared util plotting API](util/README.md#plotting).
   Use a named `figure/<successor>/` subtree when a receipt seals the predecessor's
   paths. Bind the successor inventory to its own acceptance receipt.
+  [ADR 0093](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
+  authorizes an in-place refresh of the 22 specified report figures. Use the
+  new rendering receipts for those paths and the pinned Git revision for
+  original PNG replay. [Current figure acceptance](README.md#verify-the-current-figures)
 - `execution/`: reproducible build/audit code, configurations, tests and disposable
   working intermediates. Keep necessary reconstruction dependencies available.
 - `log/`: execution/audit records, environments, seeds, acceptance results, hashes,
