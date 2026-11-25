@@ -14,16 +14,15 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-sys.path.insert(0, str(REPO / "stage2/util/output/api"))
+LOSS = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script")]
 
-from stage2_util.palette import color
-from stage2_util.plotting import read_rows, save_figure
+from loss_plot_style import FOLD_HUES
+from stage2_util import palette, plotting
 
 ALPHAS = ("0", "0.25", "0.5", "0.75", "1", "1.25", "1.5", "1.75", "2")
 SMOKE_ALPHAS = ("0", "1")
 FOLDS = (0, 1, 2)
-COLORS = tuple(color(family, 3) for family in ("blue", "orange", "green"))
 EPOCH_SOURCE = "epoch-objectives.csv"
 FIGURE_NAME = "learning-curves.png"
 
@@ -31,7 +30,7 @@ FIGURE_NAME = "learning-curves.png"
 def read_curves(path, alphas, folds, cap):
     """Read one continuous, checkpoint-selected trace per registered coordinate."""
     curves = defaultdict(list)
-    for row in read_rows(path):
+    for row in plotting.read_rows(path):
         key = row["alpha"], int(row["fold"])
         identity = row["run_sha256"], int(row["seed"]), int(row["best_epoch"]), int(row["stopping_epoch"])
         epoch = int(row["epoch"])
@@ -75,20 +74,20 @@ def render(data, output, *, smoke=False):
     for alpha, plot in zip(alphas, plots.flat, strict=True):
         for fold in folds:
             _, epochs, train, valid, _ = zip(*curves[alpha, fold], strict=True)
-            plot.plot(epochs, train, linestyle="--", color=COLORS[fold], linewidth=1.0)
-            plot.plot(epochs, valid, color=COLORS[fold], linewidth=1.2)
+            plotting.line(plot, epochs, train, hue=FOLD_HUES[fold], linestyle="--", linewidth=1.0)
+            plotting.line(plot, epochs, valid, hue=FOLD_HUES[fold], linewidth=1.2)
         plot.set_title(f"α = {alpha}", fontsize=10)
         plot.set_yscale("log")
         plot.grid(axis="y", color="#dedede", linewidth=.55)
         plot.spines[["top", "right"]].set_visible(False)
 
-    handles = [Line2D([], [], color=COLORS[fold], label=f"Fold {fold}") for fold in folds]
+    handles = [Line2D([], [], color=palette.color_pair(FOLD_HUES[fold]).main, label=f"Fold {fold}") for fold in folds]
     handles.extend((Line2D([], [], color="#333333", linestyle="--", label="Train"),
                     Line2D([], [], color="#333333", label="Validation")))
     fig.legend(handles=handles, ncols=len(handles), loc="outside upper center", frameon=False)
     fig.supxlabel("Epoch")
     fig.supylabel("Objective per condition (log scale)")
-    save_figure(fig, output / FIGURE_NAME, dpi=180)
+    plotting.save_figure(fig, output / FIGURE_NAME, dpi=180)
     plt.close(fig)
 
 

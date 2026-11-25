@@ -10,15 +10,14 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 
-REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-STEP = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(REPO / "stage2/util/output/api"), str(STEP / "execution")]
+LOSS = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script"),
+               str(Path(__file__).resolve().parents[2] / "execution")]
 
-from stage2_util.palette import color
-from stage2_util.plotting import read_rows, save_figure
+from loss_plot_style import metric_direction
+from stage2_util import plotting
 
 from sweep_protocol import ALPHAS, SMOKE_ALPHAS, REFERENCE_ALPHA
 
@@ -33,14 +32,13 @@ LABELS = {
     "Δ MMD": "Δ MMD",
     "Δ R²": "Δ R²",
 }
-LOWER_IS_BETTER = {"Δ RMSE", "Δ E-distance", "Δ MMD"}
 FIGURES = {"value": "delta-metrics.png",
            "score_difference": "delta-metrics-improvement.png"}
 
 
 def read_scores(path, alphas):
     scores = {}
-    for row in read_rows(path):
+    for row in plotting.read_rows(path):
         key = row["alpha"], row["metric"]
         if key in scores:
             raise ValueError(f"duplicate score in complete sweep: {key}")
@@ -67,8 +65,8 @@ def render_panels(scores, field, output, alphas):
     x = np.asarray(alphas, dtype=float)
     for (metric, label), plot in zip(LABELS.items(), plots.flat, strict=True):
         values = [scores[alpha, metric][field] for alpha in alphas]
-        hue = "magenta" if metric in LOWER_IS_BETTER else "blue"
-        plot.plot(x, values, color=color(hue, 2), marker="o", markersize=3.5, zorder=3)
+        hue = metric_direction(plot, metric, label)
+        plotting.line(plot, x, values, hue=hue, marker="o", markersize=3.5, zorder=3)
         for position, value in zip(x, values, strict=True):
             if math.isnan(value):
                 plot.text(position, .025, "NA", ha="center", fontsize=7,
@@ -76,24 +74,17 @@ def render_panels(scores, field, output, alphas):
         if difference:
             limit = max(map(abs, plot.get_ylim()))
             plot.set_ylim(-limit, limit)
-        limits = plot.get_xlim(), plot.get_ylim()
-        tint = "#efc5c5" if metric in LOWER_IS_BETTER else "#c1d0e5"
-        gradient = LinearSegmentedColormap.from_list("direction", ["#fdfdfd", tint])
-        plot.imshow([[0.], [1.]], cmap=gradient, origin="lower", aspect="auto",
-                    extent=(0, 1, 0, 1), transform=plot.transAxes,
-                    interpolation="bicubic", zorder=0)
-        plot.set(xlim=limits[0], ylim=limits[1], xticks=x, xticklabels=alphas, title=label)
+        plot.set(ylim=plot.get_ylim(), xticks=x, xticklabels=alphas)
         if len(alphas) > len(SMOKE_ALPHAS):
             for tick in plot.get_xticklabels():
                 tick.set(rotation=45, ha="right", fontsize=9)
-        plot.title.set_fontweight("bold")
         plot.axhline(0, color="#666666", linewidth=.8, zorder=2)
         plot.grid(axis="y", color="#777777", alpha=.25, zorder=1)
         plot.spines[["top", "right"]].set_visible(False)
 
     fig.supxlabel("Shared reconstruction MSE weight α")
     fig.supylabel("Signed score difference vs. α = 1" if difference else "Equal-fold score")
-    save_figure(fig, output / FIGURES[field], dpi=180)
+    plotting.save_figure(fig, output / FIGURES[field], dpi=180)
     plt.close(fig)
 
 
