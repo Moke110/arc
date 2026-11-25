@@ -1,7 +1,6 @@
 """Render equal-fold Delta scores and signed differences against native MSE."""
 
 import argparse
-import csv
 from itertools import product
 import math
 from pathlib import Path
@@ -18,7 +17,7 @@ REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(REPO / "stage2/util/output/api"))
 
 from stage2_util.palette import color
-from stage2_util.plotting import save_figure
+from stage2_util.plotting import read_rows, save_figure
 
 LOSSES = {"mse": "MSE", "cos": "Cos", "pcc": "PCC", "l1": "L1"}
 ALPHAS = ("0.75", "1", "1.25")
@@ -41,16 +40,15 @@ FIGURES = {"value": "delta-metrics.png",
 
 def read_scores(path):
     scores = {}
-    with path.open(encoding="utf-8", newline="") as stream:
-        for row in csv.DictReader(stream):
-            key = row["loss"], row["alpha"], row["metric"]
-            if key in scores:
-                raise ValueError(f"duplicate score in complete loss grid: {key}")
-            record = {name: float(row[name]) if row[name] else math.nan
-                      for name in (*FIGURES, "native_mse_score")}
-            if any(math.isinf(value) for value in record.values()):
-                raise ValueError(f"infinite score for {key}")
-            scores[key] = record
+    for row in read_rows(path):
+        key = row["loss"], row["alpha"], row["metric"]
+        if key in scores:
+            raise ValueError(f"duplicate score in complete loss grid: {key}")
+        record = {name: float(row[name]) if row[name] else math.nan
+                  for name in (*FIGURES, "native_mse_score")}
+        if any(math.isinf(value) for value in record.values()):
+            raise ValueError(f"infinite score for {key}")
+        scores[key] = record
     if set(scores) != set(product(LOSSES, ALPHAS, LABELS)):
         raise ValueError("metric summary must contain the complete loss grid")
     for key, record in scores.items():

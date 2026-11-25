@@ -8,7 +8,7 @@
     "execution/evaluate_loss.py": "5b57e66df3712d67c51021a98fc2769b0faa233e1d138dd5d269545d969f62c4",
     "execution/report_formal.py": "63387d9b4ea8df0b5b9315ae7fc708758365d2131f76e5ada30b63e5547a5013",
     "figure/script/render_learning_curves.py": "1e6c42401479056720d9d411b39d6508a4f2f4a84f1d54b91c7bf5ad151f5144",
-    "figure/script/render_metrics.py": "50018fcc9372161f904deafba4845b354cbf1afd556482a85c2dc3326d7f9f1c"
+    "figure/script/render_metrics.py": "17cdf7cf2c08d6b63ebcd5d588fd7458399c1025744cabf0491875308a4e2acf"
   },
   "published_files_sha256": {
     "figure/data/delta-metrics.csv": "2f236a7db279e5bca546fac1e88a347c18988cbdd5624d9b1c391f9f4fcf2b5e",
