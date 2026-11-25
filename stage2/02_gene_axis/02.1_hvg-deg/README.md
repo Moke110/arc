@@ -48,8 +48,16 @@ python "$STEP/execution/build_axes.py" verify --corpus /path/to/native-corpus
 python -m unittest discover -s "$STEP/execution/tests"
 ```
 
-Reproduce the coverage plot directly from its CSV:
+Reproduce the current coverage plot directly from its CSV.
 
 ```bash
-PYTHONPATH=stage2/util/output/api python stage2/02_gene_axis/02.1_hvg-deg/figure/script/render_coverage.py
+STEP=stage2/02_gene_axis/02.1_hvg-deg
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/hvg-coverage.XXXXXX")
+export TMPDIR="$WORK" MPLCONFIGDIR="$WORK/mpl"
+python "$STEP/figure/script/render_coverage.py" --data "$STEP/figure/data" --output "$WORK/figures"
 ```
+
+The [current rendering receipt](../log/342-figure-render.json) records the
+PNG and CSV hashes. For the original figure bytes, use the renderer and
+palette at revision `7f48f6a881bea57598b40b0da2becd62917569c8`.

@@ -113,10 +113,13 @@ anchors, the [resource samples](log/330-resources.jsonl), three PNGs and the
 local products under `output/formal/{matrix,matrix-audit,report}`.
 The scoped monitor recorded 166 samples on a ten-second schedule. It logged
 33 intervals longer than 12 seconds and a maximum sample gap of 14.373 seconds.
-To verify the active result from the checkout root, run the formal report
-command above with `verify`, those local matrix, audit and report paths,
-and `--publication "$STEP"`. Use fresh scratch and activity paths and omit
-`--code-revision`.
+Use the [pre-refresh revision](../README.md#replay-the-original-formal-publications)
+for exact verification of the old formal receipt. Pass `verify`, the materialized
+matrix, audit and report paths, and the pinned step directory as `--publication`.
+Use fresh scratch and activity paths and omit `--code-revision`.
+
+The [current figure verification](../README.md#verify-the-current-figures)
+compares the refreshed PNGs with two independent CSV-only renders.
 
 Render all three PNGs using only the published CSVs.
 

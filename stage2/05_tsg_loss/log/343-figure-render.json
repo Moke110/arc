@@ -1,0 +1,53 @@
+{
+  "csv_files_sha256": {
+    "05.1_loss_metrics/figure/data/delta-metrics.csv": "2f236a7db279e5bca546fac1e88a347c18988cbdd5624d9b1c391f9f4fcf2b5e",
+    "05.1_loss_metrics/figure/data/epoch-objectives.csv": "8cd79a8617d44e375722df68370a4b64ca3a33c3ddfd8caac22193d667ee6414",
+    "05.2_mse_l1/figure/data/delta-metrics.csv": "88d63d9c89c6b6d4cdd6776be5e786b4b456ea42e24f754bd184edea444aab47",
+    "05.2_mse_l1/figure/data/epoch-objectives.csv": "0621ea2ab18871981d4ae75ee07833848a266e5d09b7f60145541e7c8345724a",
+    "05.3_mse-l1_mse-x/figure/data/delta-metrics.csv": "6d46b31376caa05cbfb421c354e7633d68510be56c99a863d64fbeab2435e827",
+    "05.3_mse-l1_mse-x/figure/data/epoch-objectives.csv": "1362ee2929740e120c157bc67c7ef145497dc5413d39f6f6f27618dd6dd0826c",
+    "05.4_mse-l1_pcc/figure/data/delta-metrics.csv": "37a2d3137804b58fa92ddf8a36c1ee46d5c9d33086755c124ee49f65ca1de652",
+    "05.4_mse-l1_pcc/figure/data/epoch-objectives.csv": "f95413212f3acc523ae352da35cc9d67a8cc8783d84caab00e41628093f71975",
+    "05.5_mse-l1_cos/figure/data/delta-metrics.csv": "538ca582bfcecf866a93d64034c6adf0561c05889be77d3e78609cf9ee0ddf15",
+    "05.5_mse-l1_cos/figure/data/epoch-objectives.csv": "66d2c37057de5f0352d04a925ba4571b8bc1912da97480dd5a4bd2a5b4a1caca"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "python": "3.13.13"
+  },
+  "independent_renders": 2,
+  "png_files_sha256": {
+    "05.1_loss_metrics/figure/delta-metrics-improvement.png": "9c289457614e29901db3f5f782392d11ca7d59af2a7c26c4bffb0c7630edca7d",
+    "05.1_loss_metrics/figure/delta-metrics.png": "e4ab4262b548ff9ddf7c9bfcd8a63a256c70b494ee9bf61ccbbd2b3f7aae7efd",
+    "05.1_loss_metrics/figure/learning-curves.png": "d6a47c8cc59318ffd157acdd2559afa716830ca2909a2fc3a6c875f3f5a29f65",
+    "05.2_mse_l1/figure/delta-metrics-improvement.png": "1f0164790bd351056d45cc992aa30b1a6fe6d3b1ec0f9359bb56b7292be1fd3d",
+    "05.2_mse_l1/figure/delta-metrics.png": "fe86a41a0d8ef36c9aed0bfec7bf93e71fb5044c96f285e981b8399d06f4c997",
+    "05.2_mse_l1/figure/learning-curves.png": "9129dc450d18ae2d40a2158e9c77def0aebdd707ff927da57bd86697960effb5",
+    "05.3_mse-l1_mse-x/figure/delta-metrics-improvement.png": "e5222c90230a4776f532c586efc67c57db3a3bcd0d862bac4eed5af1715b6210",
+    "05.3_mse-l1_mse-x/figure/delta-metrics.png": "b1cac25f8e4eff2c98a326ca9e37d2ccb3eec5309cf60b3e7615c2b7168806a4",
+    "05.3_mse-l1_mse-x/figure/learning-curves.png": "d953fec468961f3bf732c6ca3965df92f883928893c387c12dc3b7658d13f9b6",
+    "05.4_mse-l1_pcc/figure/delta-metrics-improvement.png": "269ec97519f5dc0b2a660a8ecc0f1eab12f17bee07a8d4b733a165871b3cb2de",
+    "05.4_mse-l1_pcc/figure/delta-metrics.png": "06ba7999cf417513b5a82240b60e5b6e310b8aac067b517cf532a87c499fa2b0",
+    "05.4_mse-l1_pcc/figure/learning-curves.png": "375471d40e9542c900ee3d282e27b53bb77f2d2eae4ca1c4919153eeeeb68c3b",
+    "05.5_mse-l1_cos/figure/delta-metrics-improvement.png": "9df6e32ebaa83882e0af01e75dfb44288aa9bb36206399687ee15dd8924da942",
+    "05.5_mse-l1_cos/figure/delta-metrics.png": "e03938652042e8564695af64054e574a0857863622f8e13b1b0b2f0b33062e8d",
+    "05.5_mse-l1_cos/figure/learning-curves.png": "d8a8efe93660676480d2414d1f88d1720445d378ee2dbd3dc27c591861d47982"
+  },
+  "pre_refresh_revision": "7f48f6a881bea57598b40b0da2becd62917569c8",
+  "renderer_files_sha256": {
+    "05.1_loss_metrics/figure/script/render_learning_curves.py": "2ba6ef7a72a24904a11c73565992054a0d682199fccb79a70afa9e866a4b5439",
+    "05.1_loss_metrics/figure/script/render_metrics.py": "252ebca4598dfa9003dc395c21d416a249d74c6234ad3f62413480ab6ca05640",
+    "05.2_mse_l1/figure/script/render_learning_curves.py": "e11937ad065b0d4189da29013d809f2871d4ca0c58b26797076d6e239bfa74cc",
+    "05.2_mse_l1/figure/script/render_metrics.py": "730ae86cdaf0570e4c99961203b0360e913e9077af834a25ab0afb45967f879d",
+    "05.3_mse-l1_mse-x/execution/sweep_protocol.py": "f89a4ca93549d436154d3adb4348194a3350f4cadbe503a092f2993c94e1f5eb",
+    "05.3_mse-l1_mse-x/figure/script/render_learning_curves.py": "3d97c0c4e0f513e6845112a93a9ee36433bee4bb68eb4d54de32caf54f2706d0",
+    "05.3_mse-l1_mse-x/figure/script/render_metrics.py": "67cd8fc5a9c1acfd6fa2253a395a1e1f0b20dc0df8baf369cf25cf04cd47dd29",
+    "05.4_mse-l1_pcc/figure/script/render.py": "3674ba38c5fcbc1b7aadca0b069044905a96c0266af6e3c4e0daf647f050711f",
+    "05.5_mse-l1_cos/figure/script/render.py": "cddc613546de4eb594b325fde339f44724b224e2e4af237b9de0037e85d665a7",
+    "figure/script/loss_plot_style.py": "0568ea381689ce7278a6fa71a8882e3f945ee2b2e716707e4865a4c76615cc52",
+    "similarity/render_similarity.py": "73460cf92fece5ff4f382f0f6e4baaf5977011d70eaf863f5041d50852bfd706"
+  },
+  "schema": "stage2-figure-render-v1",
+  "ticket": 343
+}

@@ -2,16 +2,21 @@
 
 ## Selected objective
 
-The best TranSiGen loss selected in Step 05 is
-`L = 0.1 * K + MSE_X1 + MSE_X2 + MSE_Δ + 1.5 * L1_Δ`.
-`K` is the sum of the three native KL terms. Both the predicted and observed
-Δ use the measured same-plate DMSO control.
+The selected TranSiGen loss is
+`L = 0.1 * K + MSE_X1 + MSE_X2 + MSE_Δ + 1.75 * L1_Δ`.
+`K` is the sum of the three native KL terms. Use measured same-plate DMSO
+as model input `X1` and as the common reference for predicted and observed Δ.
+The results assume a measured matched control is available.
 
-The selected objective is the `alpha = 1.5` coordinate in Step 05.2, with
-unit weights for both expression reconstruction MSE terms and the Δ MSE term.
-On the three frozen tenv cold-drug folds on Denoise-DEG 5k, mean Δ PCC rose
-from 0.4066 to 0.4305 and mean Δ RMSE fell from 0.2596 to 0.2499 relative
-to the zero-weight reference. [Step 05.2 equal-fold scores](05.2_mse_l1/figure/data/delta-metrics.csv)
+This is the `alpha = 1.75` coordinate in Step 05.2, with unit weights on
+both expression reconstruction MSEs and the Δ MSE. On the three frozen tenv
+cold-drug folds on Denoise-DEG 5k, mean Δ PCC increased from 0.406610 to
+0.431920 and mean Δ RMSE decreased from 0.259575 to 0.249215 compared with
+the zero-weight reference. These are the best mean Δ PCC and Δ RMSE among
+the published Step 05 coordinates. Weight 1.5 gave marginally lower
+Δ E-distance and Δ MMD within Step 05.2.
+[Step 05.2 equal-fold scores](05.2_mse_l1/figure/data/delta-metrics.csv) ·
+[Stage 2 trade-offs](../README.md#active-experiments-and-releases)
 
 ## Loss studies
 
@@ -28,6 +33,33 @@ reconstruction MSE weight at fixed Delta L1 weight 1.75.
 [Step 05.5](05.5_mse-l1_cos/README.md) vary the weights of bounded
 Delta PCC and cosine similarity losses, respectively, using the unit
 reconstruction weight and fixed Delta L1 weight from Step 05.3.
+
+## Verify the current figures
+
+The [figure render receipt](log/343-figure-render.json) binds all 15 current
+PNGs to the ten plotted CSVs from the original studies. The following command
+compares two fresh CSV-only renders with the published PNGs and checks every
+input hash against its original formal receipt. It uses the `arc` rendering
+environment and requires neither model checkpoints nor prediction matrices.
+
+```bash
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/tsg-loss-figure-check.XXXXXX")
+python stage2/05_tsg_loss/figure/script/verify_figures.py --work "$WORK/replay"
+```
+
+Up and down arrows on the score panels show which direction is better.
+Signed differences still subtract the comparison's reference score.
+
+## Replay the original formal publications
+
+The original formal receipts seal the original PNGs and renderer versions.
+Use the [pre-refresh revision](https://github.com/Moke110/arc/tree/7f48f6a881bea57598b40b0da2becd62917569c8/stage2/05_tsg_loss)
+to replay their bytes. Create an isolated checkout of that revision and
+run the numbered study's formal report command there with `verify`.
+Pass the materialized matrix, audit, report and input locations using the
+study's command-line options. Point `--publication` at the pinned step
+directory, or the pinned Step 05 directory for the paired similarity report.
 
 ## Reproduce the formal Delta similarity sweeps
 
@@ -70,7 +102,7 @@ release. The report prepares both studies before moving the verified
 candidate into place. Repeat its command with `verify` in place of `build`
 and omit `--code-revision` to check the publication again.
 
-For the installed release, use `output/formal/{matrix,matrix-audit,reports}`
+For [original formal byte replay](#replay-the-original-formal-publications), use `output/formal/{matrix,matrix-audit,reports}`
 under either similarity step for the three input arguments and
-`stage2/05_tsg_loss` for `--publication`. Create a fresh activity and scratch
+the pinned checkout’s `stage2/05_tsg_loss` for `--publication`. Create a fresh activity and scratch
 directory under the checkout's `tmp/`.

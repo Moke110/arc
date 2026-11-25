@@ -114,10 +114,14 @@ panel per alpha and one color per fold. The
 [epoch CSV](figure/data/epoch-objectives.csv) retains the raw objective
 components.
 
-To verify the active result, run the formal report command above with
-`verify`, the `matrix`, `matrix-audit` and `report` directories under
-`$STEP/output/formal`, and `--publication "$STEP"`. Use fresh scratch and
-activity directories and omit `--code-revision`.
+Use the [pre-refresh revision](../README.md#replay-the-original-formal-publications)
+for exact verification of the old formal receipt. Pass `verify`, the matrix,
+audit and report directories under the materialized `output/formal` directory,
+and the pinned step directory as `--publication`. Use fresh scratch and activity
+directories and omit `--code-revision`.
+
+The [current figure verification](../README.md#verify-the-current-figures)
+compares the refreshed PNGs with two independent CSV-only renders.
 
 Render all three PNGs from the published CSVs alone.
 

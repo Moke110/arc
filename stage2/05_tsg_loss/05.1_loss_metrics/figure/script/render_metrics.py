@@ -10,18 +10,17 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 
-REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-sys.path.insert(0, str(REPO / "stage2/util/output/api"))
+LOSS = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script")]
 
-from stage2_util.palette import color
-from stage2_util.plotting import read_rows, save_figure
+from loss_plot_style import metric_direction
+from stage2_util import plotting
 
 LOSSES = {"mse": "MSE", "cos": "Cos", "pcc": "PCC", "l1": "L1"}
 ALPHAS = ("0.75", "1", "1.25")
-COLORS = ("blue", "orange", "green")
+ALPHA_HUES = (220, 20, 140)
 LABELS = {
     "JAC_top200": "JAC top200",
     "JAC_pos100": "JAC pos100",
@@ -33,14 +32,13 @@ LABELS = {
     "Δ MMD": "Δ MMD",
     "Δ R²": "Δ R²",
 }
-LOWER_IS_BETTER = {"Δ RMSE", "Δ E-distance", "Δ MMD"}
 FIGURES = {"value": "delta-metrics.png",
            "score_difference": "delta-metrics-improvement.png"}
 
 
 def read_scores(path):
     scores = {}
-    for row in read_rows(path):
+    for row in plotting.read_rows(path):
         key = row["loss"], row["alpha"], row["metric"]
         if key in scores:
             raise ValueError(f"duplicate score in complete loss grid: {key}")
@@ -66,37 +64,30 @@ def render_panels(scores, field, output):
     fig, plots = plt.subplots(3, 3, figsize=(13, 9), layout="constrained")
     x = np.arange(len(LOSSES))
     for (metric, label), plot in zip(LABELS.items(), plots.flat, strict=True):
-        for index, (alpha, hue) in enumerate(zip(ALPHAS, COLORS, strict=True)):
-            positions = x + (index - 1) * .24
-            values = [scores[form, alpha, metric][field] for form in LOSSES]
-            plot.bar(positions, values, color=color(hue, 5), width=.22,
-                     edgecolor=color(hue, 2), linewidth=.45, label=alpha, zorder=3)
-            for position, value in zip(positions, values, strict=True):
-                if math.isnan(value):
-                    plot.text(position, .025, "NA", ha="center", fontsize=7,
+        metric_direction(plot, metric, label)
+        groups = [([scores[form, alpha, metric][field] for form in LOSSES], hue, 2, alpha)
+                  for alpha, hue in zip(ALPHAS, ALPHA_HUES, strict=True)]
+        bars = plotting.grouped_bar(plot, x, groups, width=.72, linewidth=.55, zorder=3)
+        for group_bars in bars:
+            for bar in group_bars:
+                if math.isnan(bar.get_height()):
+                    plot.text(bar.get_center()[0], .025, "NA", ha="center", fontsize=7,
                               transform=plot.get_xaxis_transform(), zorder=4)
         if difference:
             limit = max(map(abs, plot.get_ylim()))
             plot.set_ylim(-limit, limit)
-        limits = plot.get_xlim(), plot.get_ylim()
-        tint = "#efc5c5" if metric in LOWER_IS_BETTER else "#c1d0e5"
-        gradient = LinearSegmentedColormap.from_list("direction", ["#fdfdfd", tint])
-        plot.imshow([[0.], [1.]], cmap=gradient, origin="lower", aspect="auto",
-                    extent=(0, 1, 0, 1), transform=plot.transAxes,
-                    interpolation="bicubic", zorder=0)
-        plot.set(xlim=limits[0], ylim=limits[1], xticks=x, xticklabels=LOSSES.values(), title=label)
-        plot.title.set_fontweight("bold")
+        plot.set(ylim=plot.get_ylim(), xticks=x, xticklabels=LOSSES.values())
         plot.axhline(0, color="#666666", linewidth=.8, zorder=2)
         plot.grid(axis="y", color="#777777", alpha=.25, zorder=1)
         plot.spines[["top", "right"]].set_visible(False)
 
     handles, labels = plots[0, 0].get_legend_handles_labels()
     fig.legend(handles, labels,
-               title="Delta coefficient α   ·   Blue panels favor higher scores   ·   Red panels favor lower scores",
+               title="Delta coefficient α   ·   ↑ Higher is better   ·   ↓ Lower is better",
                ncols=3, loc="outside upper center", frameon=False)
     fig.supxlabel("Delta loss metric")
     fig.supylabel("Score difference vs. MSE × 1" if difference else "Equal-fold score")
-    save_figure(fig, output / FIGURES[field], dpi=180)
+    plotting.save_figure(fig, output / FIGURES[field], dpi=180)
     plt.close(fig)
 
 
