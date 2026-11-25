@@ -46,7 +46,7 @@ class PlotTests(unittest.TestCase):
         import matplotlib
         matplotlib.use("Agg")
         from matplotlib import pyplot as plt
-        from stage2_util import palette, plotting
+        from stage2_util import plotting
 
         with TemporaryDirectory() as temporary:
             directory = Path(temporary)
@@ -54,14 +54,15 @@ class PlotTests(unittest.TestCase):
             values.write_text("epoch,loss\n0,2.5\n1,1.5\n")
             fig, axis = plt.subplots()
             rows = plotting.read_rows(values)
-            line, = axis.plot([int(row["epoch"]) for row in rows],
-                              [float(row["loss"]) for row in rows],
-                              color=palette.color("blue", palette.LINE_SHADE))
+            line, = plotting.line(axis, [int(row["epoch"]) for row in rows],
+                                  [float(row["loss"]) for row in rows], hue=220, depth=0)
             self.assertEqual(list(line.get_ydata()), [2.5, 1.5])
-            self.assertEqual(line.get_color(), "#1452a3")
+            self.assertEqual(tuple(round(channel, 3) for channel in line.get_color()),
+                             (.048, .176, .432, .90))
             png = directory / "plot.png"
             plotting.save_figure(fig, png)
             self.assertTrue(png.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+            plt.close(fig)
 
 
 class IdentityTests(unittest.TestCase):
