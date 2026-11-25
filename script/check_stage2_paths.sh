@@ -118,7 +118,7 @@ main() {
     echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
     return 1
   done
-  for root in "${active_roots[@]}" 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1}; do
+  for root in "${active_roots[@]}" 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x}; do
     for entry in "$stage2_root/$root/AGENTS.md" "$stage2_root/$root/README.md"; do
       if [ ! -f "$entry" ]; then
         echo "RESULT: FAIL — missing step routing: $entry" >&2

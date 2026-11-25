@@ -755,6 +755,12 @@ The Stage 2 study of the effect of adding an L1 penalty on predicted Delta to th
 **Delta L1 weight** (`alpha` in `05.2_mse_l1`):
 The coefficient of the additional Delta L1 penalty. The native Delta MSE keeps coefficient one.
 
+**TranSiGen reconstruction MSE sweep** (`05.3_mse-l1_mse-x`):
+The Stage 2 study of the shared expression reconstruction weight with the Delta MSE and Delta L1 weights fixed.
+
+**Shared reconstruction MSE weight** (`alpha` in `05.3_mse-l1_mse-x`):
+The common coefficient of the control and treated expression reconstruction MSE terms.
+
 **Historical single-dose tenv comparison** (`04_model_view`):
 The archived Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result.
 _Avoid_: benchmark step (when meaning this comparison)

@@ -23,6 +23,11 @@ weight while retaining the native objective and the same held-out protocol.
 [ADR 0090](../docs/adr/0090-transigen-mse-l1-sweep.md) defines the sweep and
 its freshly fitted zero-weight anchor.
 
+[Step 05.3](05_tsg_loss/05.3_mse-l1_mse-x/README.md) sweeps the shared
+expression reconstruction MSE weight at Delta L1 weight 1.75.
+[ADR 0091](../docs/adr/0091-transigen-reconstruction-mse-sweep.md) defines
+the grid and the freshly fitted unit-weight reference.
+
 ## Local history
 
 [ADR 0087](../docs/adr/0087-stage2-active-steps-and-history.md) defines the archive

@@ -18,10 +18,10 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 - [03_data_train](03_data_train/AGENTS.md) publishes six plate-pooled tenv axes
   and the Tahoe well-level HVG-DEG 5k release.
 - [04_tsg_axis](04_tsg_axis/AGENTS.md) compares fixed tenv prediction axes with TranSiGen.
-- [05_tsg_loss](05_tsg_loss/AGENTS.md) compares TranSiGen Delta losses and weights on the fixed denoise-5k axis.
+- [05_tsg_loss](05_tsg_loss/AGENTS.md) compares TranSiGen Delta losses and reconstruction weights on the fixed denoise-5k axis.
 
 Use Step 04's `execution/matrix.py` and `execution/evaluate.py` for the axis comparison.
-Steps 05.1 and 05.2 reuse the matched-control runtime and metric primitives with their own run and report commands.
+Steps 05.1–05.3 reuse the matched-control runtime and metric primitives with their own run and report commands.
 
 ## Local history
 
