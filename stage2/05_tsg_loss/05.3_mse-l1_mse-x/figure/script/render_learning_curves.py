@@ -12,14 +12,13 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 
 LOSS = Path(__file__).resolve().parents[3]
 sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script"),
                str(Path(__file__).resolve().parents[2] / "execution")]
 
-from loss_plot_style import FOLD_HUES
-from stage2_util import palette, plotting
+from loss_plot_style import FOLD_HUES, curve_legend_handles
+from stage2_util import plotting
 
 from sweep_protocol import ALPHAS, SMOKE_ALPHAS
 
@@ -82,9 +81,7 @@ def render(data, output, *, smoke=False):
         plot.grid(axis="y", color="#dedede", linewidth=.55)
         plot.spines[["top", "right"]].set_visible(False)
 
-    handles = [Line2D([], [], color=palette.color_pair(FOLD_HUES[fold]).main, label=f"Fold {fold}") for fold in folds]
-    handles.extend((Line2D([], [], color="#333333", linestyle="--", label="Train"),
-                    Line2D([], [], color="#333333", label="Validation")))
+    handles = curve_legend_handles(folds)
     fig.legend(handles=handles, ncols=len(handles), loc="outside upper center", frameon=False)
     fig.supxlabel("Epoch")
     fig.supylabel("Objective per condition (log scale)")

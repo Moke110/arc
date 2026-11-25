@@ -36,17 +36,17 @@
   },
   "pre_refresh_revision": "7f48f6a881bea57598b40b0da2becd62917569c8",
   "renderer_files_sha256": {
-    "05.1_loss_metrics/figure/script/render_learning_curves.py": "4e3472526e2ea1cd2361b9edc028b6892c54425627f9c88e6b4293c7af8881a2",
+    "05.1_loss_metrics/figure/script/render_learning_curves.py": "2ba6ef7a72a24904a11c73565992054a0d682199fccb79a70afa9e866a4b5439",
     "05.1_loss_metrics/figure/script/render_metrics.py": "252ebca4598dfa9003dc395c21d416a249d74c6234ad3f62413480ab6ca05640",
-    "05.2_mse_l1/figure/script/render_learning_curves.py": "8803682294ca86ff5416ca78ed9e38575a47cdfdcfc1b2af527e0f5c50593088",
+    "05.2_mse_l1/figure/script/render_learning_curves.py": "e11937ad065b0d4189da29013d809f2871d4ca0c58b26797076d6e239bfa74cc",
     "05.2_mse_l1/figure/script/render_metrics.py": "730ae86cdaf0570e4c99961203b0360e913e9077af834a25ab0afb45967f879d",
     "05.3_mse-l1_mse-x/execution/sweep_protocol.py": "f89a4ca93549d436154d3adb4348194a3350f4cadbe503a092f2993c94e1f5eb",
-    "05.3_mse-l1_mse-x/figure/script/render_learning_curves.py": "1d60d335bc3305be038810b34ebc1d1a4ddfbea1587583328c930defd52483ee",
+    "05.3_mse-l1_mse-x/figure/script/render_learning_curves.py": "3d97c0c4e0f513e6845112a93a9ee36433bee4bb68eb4d54de32caf54f2706d0",
     "05.3_mse-l1_mse-x/figure/script/render_metrics.py": "67cd8fc5a9c1acfd6fa2253a395a1e1f0b20dc0df8baf369cf25cf04cd47dd29",
     "05.4_mse-l1_pcc/figure/script/render.py": "3674ba38c5fcbc1b7aadca0b069044905a96c0266af6e3c4e0daf647f050711f",
     "05.5_mse-l1_cos/figure/script/render.py": "cddc613546de4eb594b325fde339f44724b224e2e4af237b9de0037e85d665a7",
-    "figure/script/loss_plot_style.py": "2d983701685bc03234482e6f4ea1ecfb007355204bb5eff0a072782a6251eff0",
-    "similarity/render_similarity.py": "cc2f52c4e82ddda33e22e877093de6471818cda7b9c66513b9b536e74c8f94cd"
+    "figure/script/loss_plot_style.py": "0568ea381689ce7278a6fa71a8882e3f945ee2b2e716707e4865a4c76615cc52",
+    "similarity/render_similarity.py": "73460cf92fece5ff4f382f0f6e4baaf5977011d70eaf863f5041d50852bfd706"
   },
   "schema": "stage2-figure-render-v1",
   "ticket": 343

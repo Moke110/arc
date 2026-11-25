@@ -80,7 +80,7 @@ class PlottingTests(unittest.TestCase):
 
         bubbles = plotting.bubble(self.axis, [1, 2], [3, 4], [30, 60], hue=300, depth=2)
         self.assertEqual(bubbles.get_sizes().tolist(), [30, 60])
-        self.assertEqual(tuple(bubbles.get_facecolors()[0]), colors.secondary)
+        self.assertEqual(tuple(bubbles.get_facecolors()[0]), colors.main)
         self.assertEqual(tuple(bubbles.get_edgecolors()[0]), colors.main)
 
     def test_heatmap_draws_an_ordered_color_scale_with_numeric_ticks(self):
