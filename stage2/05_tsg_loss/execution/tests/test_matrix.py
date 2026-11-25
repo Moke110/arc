@@ -37,3 +37,61 @@ class FormalRegistrationTests(TestCase):
             axis_run.write_json(record, registration)
             with self.assertRaisesRegex(ValueError, "registration"):
                 check_registrations(paths, expected)
+
+
+class MatrixPublicationTests(TestCase):
+    def test_interrupted_seal_and_registration_leave_no_partial_final_record(self):
+        from unittest.mock import patch
+
+        from matrix import enforce_record, register_coordinate
+
+        with TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            seal = root / "preflight.json"
+
+            def interrupted_write(path, _record):
+                path.write_text("{")
+                raise RuntimeError("interrupted")
+
+            with patch.object(axis_run, "write_json", interrupted_write):
+                with self.assertRaisesRegex(RuntimeError, "interrupted"):
+                    enforce_record(seal, {"axis": "denoise-5k"})
+            self.assertFalse(seal.exists())
+            enforce_record(seal, {"axis": "denoise-5k"})
+            self.assertEqual(axis_run.read_json(seal), {"axis": "denoise-5k"})
+
+            run = run_paths(root)["mse", "1/3", 0]
+
+            def interrupted_register(path):
+                path.mkdir()
+                interrupted_write(path / "registration.json", {})
+
+            with self.assertRaisesRegex(RuntimeError, "interrupted"):
+                register_coordinate(run, root, interrupted_register)
+            self.assertFalse(run.exists())
+
+            def register(path):
+                path.mkdir()
+                axis_run.write_json(path / "registration.json", {"loss": "mse"})
+
+            register_coordinate(run, root, register)
+            self.assertEqual(axis_run.read_json(run / "registration.json"), {"loss": "mse"})
+
+
+class MatrixMonitorTests(TestCase):
+    def test_sampling_continues_between_child_commands(self):
+        from threading import Event
+        from unittest.mock import patch
+
+        from matrix import ResourceMonitor
+
+        observed = Event()
+
+        def sample(_logs, _scope, phase):
+            if phase == "verify":
+                observed.set()
+
+        with patch("matrix.monitor", sample), patch("matrix.SAMPLE_SECONDS", 0.01):
+            with ResourceMonitor(Path("."), Path(".")) as monitoring:
+                monitoring.phase = "verify"
+                self.assertTrue(observed.wait(timeout=1))

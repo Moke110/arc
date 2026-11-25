@@ -59,15 +59,17 @@ and ordered conditions must still match the registered runs.
 The [smoke receipt](log/325-smoke.json) records four two-epoch fits with
 64 training, 24 validation and 24 test conditions each. It verifies the
 native anchor, alternate objective calculations, exact model replay and
-the nine Step 04 scores on the common held-out rows.
+the nine Step 04 scores on the common held-out rows. Its original report
+manifest is pinned to evaluator revision `3e4cbe32`.
 
 ## Run the formal matrix
 
 The formal grid registers all 36 fits before the first training run. It
 compares the full ordered train, validation and test populations of each arm
 to the released folds. Runs use one CUDA fit at a time in a 10 GiB memory
-and 8 GiB swap scope, with two CPU threads. The driver samples WSL RAM, GPU
-memory and disk headroom every 10 seconds and records each phase's peak RSS.
+and 8 GiB swap scope, with two CPU threads. The driver schedules WSL RAM,
+GPU memory and disk samples on a monotonic 10-second cadence across phase
+transitions. It records each phase's peak RSS.
 An interrupted matrix can be resumed with the same command and candidate
 paths. A completed phase keeps its registration and hashes.
 
@@ -104,7 +106,9 @@ The [actual fold bandwidths](log/bandwidths.csv) match the Step 04 values.
 The [formal receipt](log/326-formal.json) records the resource
 [samples](log/326-resources.jsonl) and pins the local products under
 `output/formal/matrix`, `output/formal/matrix-audit` and
-`output/formal/report`. The MSE × 1/3 checkpoint predictions and objective
+`output/formal/report`. During the original fit, 35 intervals between
+in-scope samples exceeded 12 seconds and the longest lasted 20.003 seconds.
+All recorded samples met the resource limits. The MSE × 1/3 checkpoint predictions and objective
 traces replay the three accepted Step 04 results exactly in the recorded
 environment. Run `report_formal.py verify` with those local paths, a new
 activity and scratch directory, and `--publication "$STEP"` to repeat

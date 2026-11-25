@@ -174,6 +174,12 @@ def build_report(candidate, paths, training_path, bandwidth_path, smoke):
     })
 
 
+def report_scratch(command, output, scratch):
+    if scratch is not None:
+        return scratch
+    return output.parent if command == "score" else axis_run.REPO / "tmp"
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("score", "verify"))
@@ -182,11 +188,14 @@ def main():
     parser.add_argument("--bandwidth-training", type=Path, default=TENV_DEFAULT)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--smoke", action="store_true")
+    parser.add_argument("--scratch", type=Path, help="temporary report workspace")
     args = parser.parse_args()
     with axis_run.publication_lock(args.output) as output:
         if args.command == "score" and output.exists():
             raise ValueError("score requires an unused output directory")
-        with TemporaryDirectory(prefix=f".{output.name}-", dir=output.parent) as scratch:
+        staging = report_scratch(args.command, output, args.scratch)
+        staging.mkdir(parents=True, exist_ok=True)
+        with TemporaryDirectory(prefix=f".{output.name}-", dir=staging) as scratch:
             candidate = Path(scratch) / "candidate"
             build_report(candidate, args.run, args.training, args.bandwidth_training, args.smoke)
             if args.command == "score":

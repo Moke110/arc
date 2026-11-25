@@ -18,3 +18,15 @@ class TraceTests(TestCase):
         self.assertEqual(check_trace(trace, trained, config), 2)
         with self.assertRaisesRegex(ValueError, "selected checkpoint"):
             check_trace(trace, {**trained, "best_epoch": 1}, config)
+
+
+class ScratchTests(TestCase):
+    def test_verify_uses_requested_scratch_and_score_preserves_placement(self):
+        from evaluate_loss import axis_run, report_scratch
+
+        checkout = axis_run.REPO
+        output = checkout / "stage2/05_tsg_loss/output/formal/report"
+        scratch = checkout / "tmp/session"
+        self.assertEqual(report_scratch("verify", output, scratch), scratch)
+        self.assertEqual(report_scratch("verify", output, None), checkout / "tmp")
+        self.assertEqual(report_scratch("score", output, None), output.parent)
