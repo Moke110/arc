@@ -96,6 +96,15 @@ class PlottingTests(unittest.TestCase):
         self.assertIn(0., color_axis.get_yticks())
         self.assertIn(1., color_axis.get_yticks())
 
+    def test_replicate_dots_use_one_group_coordinate_and_each_defined_value(self):
+        dots = plotting.replicate_dots(self.axis, 2, [4, -1, float("nan"), -1],
+                                      hue=180, depth=3, spread=.25)
+        self.assertEqual(dots.get_offsets().tolist(), [[1.75, -1], [2, -1], [2.25, 4]])
+        self.assertEqual([tuple(color) for color in dots.get_facecolors()],
+                         [palette.color_pair(180, 3).main])
+        single = plotting.replicate_dots(self.axis, 6, [0], hue=180, depth=3)
+        self.assertEqual(single.get_offsets().tolist(), [[6., 0.]])
+
     def test_histogram_retains_bin_edges_and_counts(self):
         counts, edges, bars = plotting.histogram(self.axis, [0, .3, .75, 1],
                                                  bins=[0, .5, .7, 1], hue=60)

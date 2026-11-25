@@ -1,8 +1,10 @@
 """Verify the sealed Step 06.1 matrix and build a CSV-reproducible publication."""
 
 import argparse
+import csv
 from itertools import product
 import json
+import math
 from pathlib import Path
 import shutil
 from tempfile import TemporaryDirectory
@@ -21,10 +23,15 @@ from shape_model import CONTROL, LOSS, SHAPES, STEP, axis_run
 from training_data import TENV_DEFAULT
 
 RECEIPT = "log/347-formal.json"
+FIGURE_RECEIPT = "log/figure-render.json"
 REFERENCE_RECEIPT = "log/333-formal.json"
 REFERENCE_SHA256 = "bdc65b62eafb834cbe1cc498a8d63c7ab00bbe6fc1d9bd545f5f0ad2a606bcf8"
 RENDERER = STEP / "figure/script/render_shape.py"
-FIGURES = ("delta-metrics.png", "delta-metrics-paired-difference.png")
+FIGURES = ("delta-metrics.png", "delta-metrics-paired-difference.png", "learning-curves.png")
+EPOCH_OBJECTIVES = "figure/data/epoch-objectives.csv"
+FIGURE_SOURCES = ("figure/data/delta-metrics.csv", "figure/data/fold-scores.csv", EPOCH_OBJECTIVES)
+SCIENTIFIC_CODE = ("execution/matrix_shape.py", "execution/run_shape.py",
+                   "execution/shape_model.py", "execution/evaluate_shape.py")
 PROJECTIONS = {
     "runs.csv": "log/runs.csv",
     "bandwidths.csv": "log/bandwidths.csv",
@@ -221,6 +228,75 @@ def audit_resources(audit, coordinator):
                                                                if isinstance(row["gpu_total_used_mib_and_utilization_percent"], str))}}
 
 
+def write_epoch_objectives(destination, paths, fits):
+    """Aggregate observed objectives over the full cohort at every plotted epoch."""
+    hashes = {}
+    with destination.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.writer(stream, lineterminator="\n")
+        writer.writerow(("shape", "epoch", "mean_train_loss", "mean_validation_loss"))
+        for shape in SHAPES:
+            traces = []
+            for fold in range(3):
+                fit = fits[shape, fold]
+                run = paths[shape, fold]
+                trace_path = run / "learning_curve.csv"
+                digest = axis_run.digest(trace_path)
+                if digest != axis_run.read_json(run / "manifest.json")["outputs"][trace_path.name]:
+                    raise ValueError(f"sealed learning curve differs: {fit['path']}")
+                hashes[f"{fit['path']}/{trace_path.name}"] = digest
+                with trace_path.open(newline="", encoding="utf-8") as trace:
+                    rows = [(int(row["epoch"]), float(row["train_loss"]), float(row["validation_loss"]))
+                            for row in csv.DictReader(trace)]
+                if ([epoch for epoch, _, _ in rows] != list(range(1, fit["stopping_epoch"] + 1))
+                        or any(not (math.isfinite(train) and math.isfinite(validation)
+                                    and train > 0 and validation > 0) for _, train, validation in rows)):
+                    raise ValueError(f"invalid observed objective trace: {fit['path']}")
+                traces.append(rows)
+            for aligned in zip(*traces):
+                epoch = aligned[0][0]
+                mean_train = math.fsum(row[1] for row in aligned) / len(aligned)
+                mean_validation = math.fsum(row[2] for row in aligned) / len(aligned)
+                writer.writerow((shape, epoch, mean_train, mean_validation))
+    return hashes
+
+
+def figure_evidence(candidate, trace_hashes):
+    stage = STEP.parents[1]
+    dependencies = (stage / "05_tsg_loss/figure/script/loss_plot_style.py",
+                    stage / "util/output/api/stage2_util/palette.py",
+                    stage / "util/output/api/stage2_util/plotting.py")
+    return {
+        "schema": "stage2-figure-render-v1", "status": "PASS", "step": STEP.name,
+        "environment": {"python": axis_run.platform.python_version(),
+                        "numpy": np.__version__, "matplotlib": matplotlib.__version__},
+        "independent_renders": 2,
+        "scientific_receipt_sha256": axis_run.digest(candidate / RECEIPT),
+        "learning_curve_source_sha256": trace_hashes,
+        "csv_files_sha256": axis_run.file_hashes(candidate, FIGURE_SOURCES),
+        "png_files_sha256": axis_run.file_hashes(candidate, [f"figure/{name}" for name in FIGURES]),
+        "renderer_files_sha256": axis_run.file_hashes(stage, [
+            path.relative_to(stage).as_posix() for path in (RENDERER, *dependencies)]),
+        "publication_builder_sha256": axis_run.digest(Path(__file__)),
+    }
+
+
+def verify_scientific_receipt(candidate, evidence):
+    """Compare the scientific fields of the original or current publication receipt."""
+    recorded = axis_run.read_json(candidate / RECEIPT)
+    if "rendering_environment" in recorded:
+        # The original combined receipt seals now-historical PNGs and replay code.
+        recorded.pop("rendering_environment")
+        recorded.pop("independent_csv_render")
+        recorded["outputs"] = {name: digest for name, digest in recorded["outputs"].items()
+                               if not (name.startswith("figure/") and name.endswith(".png"))}
+        recorded["publication_code_sha256"] = {
+            name: digest for name, digest in recorded["publication_code_sha256"].items()
+            if name not in ("execution/report_shape.py", "figure/script/render_shape.py")}
+    if recorded != evidence:
+        raise ValueError("formal scientific receipt differs from the verified replay")
+    axis_run.check_outputs(candidate, recorded)
+
+
 def publish(args):
     args.activity.mkdir(parents=True, exist_ok=True)
     paths, fits = verify_matrix(args.matrix)
@@ -254,10 +330,10 @@ def publish(args):
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, target)
         resources = audit_resources(args.matrix_audit, candidate / COORDINATOR_LOG)
+        trace_hashes = write_epoch_objectives(candidate / EPOCH_OBJECTIVES, paths, fits)
         for directory in (candidate / "figure", Path(scratch) / "repeat-render"):
             command(RENDERER, ["--data", str(candidate / "figure/data"), "--output", str(directory)],
                     args.activity, directory.name)
-        figures = [f"figure/{name}" for name in FIGURES]
         for name in FIGURES:
             if axis_run.digest(candidate / "figure" / name) != axis_run.digest(Path(scratch) / "repeat-render" / name):
                 raise ValueError(f"CSV-only figure replay differs: {name}")
@@ -268,26 +344,28 @@ def publish(args):
             "report_manifest_sha256": axis_run.digest(args.report / "manifest.json"),
             "report_outputs_sha256": report_receipt["outputs"],
             "fits": len(fits), "independent_exact_replays": len(fits), "fold_scores": len(scores),
-            "equal_fold_aggregates": len(SHAPES) * len(METRICS), "independent_csv_render": True,
+            "equal_fold_aggregates": len(SHAPES) * len(METRICS),
             "reference_parity": parity, "resources": resources,
-            "rendering_environment": {"python": axis_run.platform.python_version(),
-                                      "numpy": np.__version__, "matplotlib": matplotlib.__version__},
-            "publication_code_sha256": axis_run.file_hashes(STEP, [
-                "execution/matrix_shape.py", "execution/report_shape.py", "execution/run_shape.py",
-                "execution/shape_model.py", "execution/evaluate_shape.py", "figure/script/render_shape.py"]),
-            "outputs": axis_run.file_hashes(candidate, [*projections, *figures]),
+            "publication_code_sha256": axis_run.file_hashes(STEP, SCIENTIFIC_CODE),
+            "outputs": axis_run.file_hashes(candidate, projections),
         }
         if args.command == "build":
             axis_run.write_json(candidate / RECEIPT, evidence)
+            axis_run.write_json(candidate / FIGURE_RECEIPT, figure_evidence(candidate, trace_hashes))
             if publication.exists():
                 raise ValueError("publication destination appeared during acceptance")
             candidate.rename(publication)
         else:
-            if evidence != axis_run.read_json(publication / RECEIPT):
-                raise ValueError("formal publication receipt differs from the verified replay")
-            axis_run.check_outputs(publication, evidence)
+            verify_scientific_receipt(publication, evidence)
+            shutil.copyfile(publication / RECEIPT, candidate / RECEIPT)
+            renders = figure_evidence(candidate, trace_hashes)
+            if renders != axis_run.read_json(publication / FIGURE_RECEIPT):
+                raise ValueError("figure receipt differs from the verified replay")
+            for field in ("csv_files_sha256", "png_files_sha256"):
+                axis_run.check_outputs(publication, {"outputs": renders[field]})
     return {"status": "PASS", "fits": len(fits), "fold_scores": len(scores),
-            "receipt_sha256": axis_run.digest(args.publication / RECEIPT)}
+            "receipt_sha256": axis_run.digest(args.publication / RECEIPT),
+            "figure_receipt_sha256": axis_run.digest(args.publication / FIGURE_RECEIPT)}
 
 
 def main():
