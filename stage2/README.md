@@ -24,3 +24,18 @@ to verify the Step 01–03 readers, projections, and fold population.
 
 The [cutover smoke receipt](04_tsg_axis/log/323-archive-isolated-smoke.json)
 records the archive-isolated acceptance.
+
+### Deploy the ADR 0087 cutover
+
+From the clean materialized `main` checkout, use the reviewed `dev` helper
+from its worktree. Preparation checks the target Git ignore rules and detects
+occupied destinations before the merge. Keep external inputs and other
+Stage 2 jobs idle while installing and verifying.
+
+```bash
+STATE="$PWD/tmp/stage2-history-cutover"
+python "$DEV_WORKTREE/script/stage2_history.py" prepare --root "$PWD" --state "$STATE" --target dev &&
+git merge --no-overwrite-ignore --no-ff --no-edit dev &&
+python script/stage2_history.py install --root "$PWD" --state "$STATE" &&
+python script/stage2_history.py verify --root "$PWD" --state "$STATE"
+```

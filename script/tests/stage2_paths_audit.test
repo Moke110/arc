@@ -133,6 +133,17 @@ if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
   fail "the old combined view under the active training step must fail"
 fi
 rmdir "$fixture_root/03_data_train/03.1_hvg-deg-5k"
+for retired in \
+  03_data_train/03.1_tenv_hvg-deg-5k 03_data_train/03.2_tahoe_hvg-deg-5k \
+  03_data_train/03.3_tenv_hvg-deg-3k 03_data_train/03.4_tenv_hvg-deg-4k \
+  03_data_train/03.5_tenv_denoise-deg-3k 03_data_train/03.6_tenv_denoise-deg-4k \
+  03_data_train/03.7_tenv_denoise-deg-5k 04_tsg_axis/log/316-runs; do
+  mkdir -p "$fixture_root/$retired"
+  if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
+    fail "active-tree residue $retired must fail"
+  fi
+  rmdir "$fixture_root/$retired"
+done
 mkdir -p "$fixture_root/04_tsg_axis/historical"
 if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
   fail "step-local history must fail"
@@ -143,6 +154,14 @@ printf '%s\n' "$tmp/relative.py" >"$tmp/list_relative"
 if run_root "$fixture_root" "$tmp/list_relative" >/dev/null 2>&1; then
   fail "a relative retired runtime reference must fail"
 fi
+for old in \
+  "stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output" \
+  "03.7_tenv_denoise-deg-5k/output" "stage2/04_tsg_axis/log/316-runs"; do
+  printf 'p = base / "%s"\n' "$old" >"$tmp/relative.py"
+  if run_root "$fixture_root" "$tmp/list_relative" >/dev/null 2>&1; then
+    fail "retired release reference $old must fail"
+  fi
+done
 printf 'notes\n' >"$fixture_root/notes.md"
 if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
   fail "a stray regular file at the Stage 2 root must fail the layout guard"

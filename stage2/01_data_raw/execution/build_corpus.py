@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import argparse
-import errno
 import fcntl
-import os
 import shutil
 import sys
 from pathlib import Path
@@ -198,37 +196,33 @@ def _select_predecessor(output, explicit):
     return explicit
 
 
-def _archive_file(source, destination):
-    try:
-        os.link(source, destination)
-    except OSError as error:
-        if error.errno != errno.EXDEV:
-            raise
-        shutil.copyfile(source, destination)
-
-
-def preserve_predecessor(output, predecessor, staging):
-    """Retain the verified original corpus separately from the replaced product."""
-    if predecessor is None:
-        return
-    active = output / "native"
-    if (active / "manifest.json").is_file() and sha256(active / "manifest.json") != predecessor.manifest_sha256:
-        raise CorpusError("selected predecessor differs from the installed legacy corpus")
-    archive = HISTORY / "stage2" / STEP.name / "historical" / "native-v1"
-    if not archive.exists():
-        archive.parent.mkdir(parents=True, exist_ok=True)
-        staged = release.candidate(archive, staging)
-        try:
-            origin = active if (active / "manifest.json").is_file() else predecessor.root
-            shutil.copytree(origin, staged, dirs_exist_ok=True, copy_function=_archive_file)
-            release.check_manifest(staged, predecessor.manifest)
-            staged.rename(archive)
-        finally:
-            shutil.rmtree(staged, ignore_errors=True)
-    with open_corpus(archive) as archived:
-        if archived.manifest_sha256 != predecessor.manifest_sha256:
-            raise CorpusError("historical corpus differs from predecessor")
-        release.check_manifest(archive, archived.manifest)
+def verify_archived_legacy(legacy):
+    """Require a verified local archive handoff before replacing a legacy directory."""
+    inventory = HISTORY / "archive-manifest.json"
+    error = "replacing the installed legacy corpus requires a verified archive handoff"
+    if not legacy.is_relative_to(REPO) or not inventory.is_file() or inventory.is_symlink():
+        raise CorpusError(error)
+    original = legacy.relative_to(REPO)
+    handoff = release.read_json(inventory)
+    destination = Path(handoff.get("path_map", {}).get(original.as_posix(), "."))
+    archive = REPO / destination
+    if (handoff.get("schema") != "stage2-local-history-v1" or not archive.is_relative_to(HISTORY)
+            or not archive.resolve().is_relative_to(HISTORY.resolve())
+            or not (archive / "manifest.json").is_file() or not (legacy / "manifest.json").is_file()
+            or sha256(archive / "manifest.json") != sha256(legacy / "manifest.json")):
+        raise CorpusError(error)
+    record = release.read_json(legacy / "manifest.json")
+    declared = set(release.output_digests(record)) | {"manifest.json"}
+    if {path.relative_to(legacy).as_posix() for path in legacy.rglob("*")
+            if path.is_file() or path.is_symlink()} != declared:
+        raise CorpusError(f"{error}: unexpected legacy files")
+    entries = handoff.get("entries", {})
+    for name in declared:
+        entry = entries.get((original / name).as_posix(), {})
+        if (entry.get("destination") != (destination / name).as_posix()
+                or (archive / name).is_symlink()):
+            raise CorpusError(f"{error}: missing archived entry {name}")
+    release.check_manifest(archive, record)
 
 
 def verify_downstream(candidate, output):
@@ -343,19 +337,32 @@ def main():
         _seal(candidate, columns, {"size": len(axis), "sha256": gene_mapping.AXIS_SHA256},
               inputs, EXCLUSIONS, predecessor)
 
-    args.staging.mkdir(parents=True, exist_ok=True)
-    with publication_lock(args.output) as output, (args.staging / "native-corpus.lock").open("a") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        previous = args.predecessor
-        if output == DEFAULT.resolve():
-            previous = _select_predecessor(output, previous)
+    with publication_lock(args.output) as output:
+        stable = output == DEFAULT.resolve()
+        if stable and (output / "manifest.json").is_file() and args.action != "verify":
+            if (args.action != "publish" or args.predecessor is not None or args.tahoe_built is not None
+                    or args.materialized_root.resolve() != REPO):
+                raise CorpusError("the installed corpus generation is pinned; build with a scratch output")
+            installed = verify_product(output)
+            verify_downstream(output, output)
+            print(installed)
+            return
+
+        previous = _select_predecessor(output, args.predecessor)
+        legacy = output / "native"
+        if args.action != "verify" and legacy.exists():
+            verify_archived_legacy(legacy)
         if args.action == "migrate" and previous is None:
             parser.error("migration requires a sealed v1 release")
-        if previous is None:
-            verified = _run(args, output, None, build)
-        else:
-            with open_corpus(previous) as predecessor:
-                verified = _run(args, output, predecessor, build)
+
+        args.staging.mkdir(parents=True, exist_ok=True)
+        with (args.staging / "native-corpus.lock").open("a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            if previous is None:
+                verified = _run(args, output, None, build)
+            else:
+                with open_corpus(previous) as predecessor:
+                    verified = _run(args, output, predecessor, build)
         print(verified)
 
 
@@ -387,7 +394,6 @@ def _run(args, output, predecessor, build):
         verify(candidate)
         if output == DEFAULT.resolve():
             verify_downstream(candidate, output)
-            preserve_predecessor(output, predecessor, args.staging)
 
     installed = publish_candidate(release, output, prepare, verify_before_install, staging=args.staging)
     return sha256(installed / "manifest.json")

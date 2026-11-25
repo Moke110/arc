@@ -99,6 +99,10 @@ def file_record(path, *, force_digest=False):
     return result
 
 
+def raise_walk_error(error):
+    raise error
+
+
 def paths_under(root, source):
     path = root / source
     if not exists(path):
@@ -106,7 +110,7 @@ def paths_under(root, source):
     if path.is_symlink() or not path.is_dir():
         return {source}, set()
     files, dirs = set(), {source}
-    for directory, subdirs, leaves in os.walk(path):
+    for directory, subdirs, leaves in os.walk(path, onerror=raise_walk_error):
         current = Path(directory)
         for name in subdirs.copy():
             child = current / name
@@ -123,6 +127,54 @@ def write_json(path, record):
     path.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
 
 
+def require_unoccupied(root, destination):
+    check_parents(root, destination)
+    for path in destination.parents:
+        if (root / path).is_file():
+            raise ValueError(f"destination parent is occupied: {path}")
+    if exists(root / destination):
+        raise ValueError(f"destination is occupied: {destination}")
+
+
+def ignored_destinations(entries):
+    return {HISTORY / "archive-manifest.json"} | {
+        Path(record["destination"]) for record in entries.values()
+        if record["kind"] != "release-tracked"
+    }
+
+
+def check_ignored(root, expected, label):
+    request = b"".join(os.fsencode(path) + b"\0" for path in sorted(expected))
+    result = subprocess.run(
+        ("git", "check-ignore", "--no-index", "-z", "--stdin"), cwd=root,
+        input=request, capture_output=True,
+    )
+    if result.returncode not in {0, 1}:
+        raise ValueError(f"{label} Git ignore check failed: {os.fsdecode(result.stderr).strip()}")
+    missing = expected - names(result.stdout)
+    if missing:
+        raise ValueError(f"{label} Git ignore does not cover {min(missing)}")
+
+
+def check_target_ignores(root, projection, target, tracked, successor, entries):
+    """Evaluate the target tree's effective Git ignore rules for planned payload paths."""
+    projection.mkdir()
+    git(projection, "init", "-q")
+    expected = ignored_destinations(entries)
+    rules = {parent / ".gitignore" for path in expected for parent in path.parents}
+    for rule in sorted(rules):
+        if rule in successor:
+            content = git(root, "show", f"{target}:{rule}")
+        elif rule not in tracked and (root / rule).is_file():
+            content = (root / rule).read_bytes()
+        else:
+            continue
+        destination = projection / rule
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(content)
+    check_ignored(projection, expected, "target")
+
+
 def prepare(root, state, revision):
     if exists(state) or exists(root / HISTORY):
         raise ValueError("prepare requires an unused state and absent Stage 2 history")
@@ -136,6 +188,8 @@ def prepare(root, state, revision):
         raise ValueError("the successor's Git tree contains Stage 2 history")
     if b"/stage2/history/" not in git(root, "show", f"{target}:.gitignore").splitlines():
         raise ValueError("the successor must ignore the Stage 2 history directory")
+    for path in successor - tracked:
+        require_unoccupied(root, path)
     state.parent.mkdir(parents=True, exist_ok=True)
     if root.stat().st_dev != state.parent.stat().st_dev:
         raise ValueError("cutover state must use the checkout filesystem")
@@ -173,6 +227,9 @@ def prepare(root, state, revision):
                                 raise ValueError(f"release manifest changes in the successor: {path}")
                         kind = "release-tracked"
                     else:
+                        require_unoccupied(root, new_path)
+                        if new_path in successor or any(parent in successor for parent in new_path.parents):
+                            raise ValueError(f"the successor tracks a payload destination: {new_path}")
                         kind = "release-payload"
                 elif path in tracked:
                     kind = "retained-snapshot" if path == source and path in successor else "snapshot"
@@ -188,6 +245,7 @@ def prepare(root, state, revision):
                 entries[path.as_posix()] = {"kind": kind, "destination": new_path.as_posix(), **record}
         if not entries:
             raise ValueError("there are no materialized archive or release paths")
+        check_target_ignores(root, Path(temporary) / "ignore-projection", target, tracked, successor, entries)
         for directory in directories:
             (archive / directory).mkdir(parents=True, exist_ok=True)
         record = {
@@ -218,12 +276,10 @@ def check_payload(path, record):
             raise ValueError(f"payload identity or bytes differ: {path}")
 
 
-def check_archive_boundary(root, tracked):
+def check_archive_boundary(root, tracked, entries):
     if any(path.is_relative_to(HISTORY) for path in tracked):
         raise ValueError("the archive or one of its entries is tracked")
-    ignore = subprocess.run(("git", "check-ignore", "-q", "--", str(HISTORY / "archive-manifest.json")), cwd=root)
-    if ignore.returncode:
-        raise ValueError(f"Git ignore does not cover {root / HISTORY}")
+    check_ignored(root, ignored_destinations(entries), "installed")
 
 
 def checked_locations(root, state, plan, tracked):
@@ -310,7 +366,7 @@ def apply(root, state, action):
     if git(root, "status", "--porcelain", "--untracked-files=no", "--", "stage2", ".gitignore"):
         raise ValueError("archive install requires a clean tracked Stage 2 checkout")
     tracked = names(git(root, "ls-files", "-z"))
-    check_archive_boundary(root, tracked)
+    check_archive_boundary(root, tracked, plan["entries"])
     archive, locations = checked_locations(root, state, plan, tracked)
     live = root / HISTORY
     if action == "undo":

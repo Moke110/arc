@@ -26,6 +26,12 @@
       "fold-disease-f1.csv": "e224f4d81c5b8595953369d4ca93aaa3044e7aadb3cb50175847d0f9c457a093",
       "fold-metrics.csv": "51c4317077ff02a8ebe55cff6e740bd173e1bbbe00a37aa08a2193fc909d40c5"
     },
+    "published_files_sha256": {
+      "figure/canonical-axis/data/delta-metrics.csv": "1b2e7af6df8a1495588e5b228d49a94d14c1b51e63025c5177cd4eb25d341c0d",
+      "figure/canonical-axis/data/disease-f1.csv": "9a6f3d51eba3a1195e57314c66985843c189d84557f26e1b8d6d8f6705c27dee",
+      "figure/canonical-axis/delta-metrics.png": "ad7828e7f31b02407c1e1c08786baa27ddf3a34c42f39fb47614df126dc3bcaf",
+      "figure/canonical-axis/disease-f1.png": "6a1edfdb280d0650eccf2f04c2b00bb09f1b9fad108df33c4d7e3722fae3bf68"
+    },
     "result": "Canonical summary CSVs and rendered PNGs match the tracked release byte for byte.",
     "sealed_report_manifest_sha256": "9627a97200a7276298063a6e8b698372287fc63592bcceb2d4dc622209135a26",
     "sealed_table_sha256": {
