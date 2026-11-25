@@ -1,6 +1,6 @@
 # Compare TranSiGen Delta losses and weights on tenv
 
-**Status:** accepted (2026-11-25).
+**Status:** superseded by [ADR 0089](0089-transigen-delta-metric-weight.md) (2026-11-25).
 
 Reopen Step 05 (`05_tsg_loss`) as an active study. Preserve the archived
 history. Use the Step 04 matched-plate protocol with the selected `denoise-5k`

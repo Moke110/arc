@@ -65,9 +65,12 @@ for old in 01_bases 01_corpus 03_tsg_dose 04_tsg_transfer 02_models_tenv 02_data
   printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
   if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
 done
-printf 'p = "stage2/01_data_raw/output/x"\nq = "stage2/04_tsg_axis/output/x"\nr = "stage2/03_data_train/03.7_tenv_denoise-5k/output/x"\ns = "stage2/05_tsg_loss/output/x"\n' >"$tmp/current.py"
+printf 'p = "stage2/01_data_raw/output/x"\nq = "stage2/04_tsg_axis/output/x"\nr = "stage2/03_data_train/03.7_tenv_denoise-5k/output/x"\ns = "stage2/05_tsg_loss/05.1_loss_metrics/output/x"\n' >"$tmp/current.py"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "active roots/external source must pass"
+printf 'p = "stage2/05_tsg_loss/output/x"\n' >"$tmp/old-loss.py"
+printf '%s\n' "$tmp/old-loss.py" >"$tmp/list_old_loss"
+if run "$tmp/list_old_loss" >/dev/null; then fail "old loss study paths must fail"; fi
 # An active-root prefix must not exempt a longer retired-looking sibling name.
 for sibling in 02_models_tenv_extra 02_models_tenv-5k_extra 04_tsg_dose_extra 06_tsg_transfer_extra 05_tsg_width_dose_extra 05_tsg_transfer; do
   printf 'p = "stage2/%s/output/x"\n' "$sibling" >"$tmp/prefix.py"
@@ -85,7 +88,7 @@ run_root() {
   STAGE2_PATH_AUDIT_ROOT="$1" STAGE2_PATH_AUDIT_FILES="$2" bash "$audit"
 }
 fixture_root="$tmp/layout/stage2"
-for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss; do
+for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/05.1_loss_metrics; do
   mkdir -p "$fixture_root/$step"
   printf '%s\n' "$step" >"$fixture_root/$step/AGENTS.md"
   printf '%s\n' "$step" >"$fixture_root/$step/README.md"
@@ -120,6 +123,13 @@ fi
 printf '%s\n' "$out" | grep -q 'missing step routing: .*05_tsg_loss/README.md' \
   || fail "the missing successor routing file must be named in the failure"
 mv "$tmp/successor-README.off" "$fixture_root/05_tsg_loss/README.md"
+mv "$fixture_root/05_tsg_loss/05.1_loss_metrics/README.md" "$tmp/substep-README.off"
+if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
+  fail "the loss substep without README.md must fail the layout guard"
+fi
+printf '%s\n' "$out" | grep -q 'missing step routing: .*05[.]1_loss_metrics/README.md' \
+  || fail "the missing loss substep routing file must be named in the failure"
+mv "$tmp/substep-README.off" "$fixture_root/05_tsg_loss/05.1_loss_metrics/README.md"
 mkdir -p "$fixture_root/history/stage2/07_tsg_dose"
 run_root "$fixture_root" "$tmp/list_clean" >/dev/null || fail "the local archive must pass"
 mv "$fixture_root/history" "$tmp/archive"

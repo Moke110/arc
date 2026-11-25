@@ -13,9 +13,9 @@ and its [Step 03.7 tenv training release](03_data_train/03.7_tenv_denoise-5k/REA
 
 ## TranSiGen Delta loss comparison
 
-[Step 05](05_tsg_loss/README.md) studies the Delta loss form and weight on the
+[Step 05.1](05_tsg_loss/05.1_loss_metrics/README.md) studies the Delta loss form and weight on the
 selected axis with the same matched plate controls and frozen cold-drug folds.
-[ADR 0088](../docs/adr/0088-transigen-delta-loss-comparison.md) defines the
+[ADR 0089](../docs/adr/0089-transigen-delta-metric-weight.md) defines the
 objective grid and its native anchor.
 
 ## Local history
