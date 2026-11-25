@@ -35,15 +35,26 @@ training and validation traces, selected checkpoint tensors, validation and
 test predictions, Delta arrays, and all 27 fold scores and eligibility
 counts. The selected epochs were 129, 116, and 85 for folds 0, 1, and 2.
 
-[Mean held-out scores](figure/aggregate/delta-metrics.png) ·
-[Mean paired differences](figure/aggregate/delta-metrics-paired-difference.png) ·
+[Mean held-out scores](figure/delta-metrics.png) ·
+[Mean paired differences](figure/delta-metrics-paired-difference.png) ·
+[Learning curves](figure/learning-curves.png) ·
 [216 fold scores](figure/data/fold-scores.csv) ·
-[72 equal-fold aggregates](figure/data/delta-metrics.csv)
+[72 equal-fold aggregates](figure/data/delta-metrics.csv) ·
+[Epoch objectives](figure/data/epoch-objectives.csv)
 
-Each point in the score figure and each row in the table reports the
-equal-fold mean. Each point in the paired figure averages the signed
-differences from the fresh control across eligible fold pairs. The arrow
-on each panel marks the preferred direction for that metric.
+Each bar in the score figure and each row in the table reports the
+equal-fold mean. Bar color identifies the original architecture, wider
+latent space, wider encoder, or deeper network. Dots show the individual
+replicate scores in the same architecture-change color. In the paired
+figure, dots are signed differences from the fresh control and diamonds
+are their means across eligible pairs. Panel arrows mark the preferred
+metric direction.
+
+Each learning-curve panel shows the equal-fold mean train and validation
+objectives per condition on log y-scales. The wider encoder has its own
+y-scale to show its full objective range. Each architecture runs
+through the last epoch observed in all three fits, so every plotted epoch
+has the same replicate cohort.
 
 | Coordinate | JAC_top200 | JAC_pos100 | JAC_neg100 | Δ PCC | Δ Spearman | Δ RMSE | Δ E-distance | Δ MMD | Δ R² |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -110,7 +121,7 @@ for phase in score verify; do
     --smoke "${RUNS[@]}" --output "$WORK/report" --scratch "$WORK/tmp"
 done
 for target in figures figures-replay; do
-  python "$STEP/figure/script/render_shape.py" --data "$WORK/report" --output "$WORK/$target"
+  python "$STEP/figure/script/render_shape.py" --smoke --data "$WORK/report" --output "$WORK/$target"
 done
 diff -r "$WORK/figures" "$WORK/figures-replay"
 ```
@@ -177,9 +188,14 @@ alternate verified training, bandwidth-training and Step 05.2 paths.
 
 ## Replay the published figures
 
-The active figures use the accepted aggregate CSV. Use the rendering
-versions in the [aggregate figure receipt](log/aggregate-figure-render.json).
-The formal receipt still verifies the original figure release.
+The three canonical figures use the replicate, aggregate and epoch CSVs. Use
+the versions and digests in the [figure receipt](log/figure-render.json).
+The original formal receipt retains the original publication evidence.
+Current verification compares its scientific fields and verifies the
+canonical figures against the figure receipt. For exact replay of the
+original figures and combined receipt, use the
+[deployment revision](https://github.com/Moke110/arc/tree/9dee5fd9/stage2/06_tsg_shape/06.1_round1)
+with the same materialized formal inputs.
 
 ```bash
 STEP="$PWD/stage2/06_tsg_shape/06.1_round1"
@@ -187,9 +203,9 @@ mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/tsg-shape-figures.XXXXXX")
 mkdir -p "$WORK/scratch" "$WORK/matplotlib"
 export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
-python "$STEP/figure/script/render_aggregates.py" \
-  --data "$STEP/figure/data/delta-metrics.csv" --output "$WORK/figures"
-for figure in delta-metrics.png delta-metrics-paired-difference.png; do
-  cmp "$STEP/figure/aggregate/$figure" "$WORK/figures/$figure"
+python "$STEP/figure/script/render_shape.py" \
+  --data "$STEP/figure/data" --output "$WORK/figures"
+for figure in delta-metrics.png delta-metrics-paired-difference.png learning-curves.png; do
+  cmp "$STEP/figure/$figure" "$WORK/figures/$figure"
 done
 ```

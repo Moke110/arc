@@ -1,0 +1,55 @@
+{
+  "csv_files_sha256": {
+    "figure/data/delta-metrics.csv": "f43a55ca8ed795ba0e524b3903557fb7445b7556f3fb8a33a24e70dfa0bad697",
+    "figure/data/epoch-objectives.csv": "d76c11e787f731d9db65b1ef3b32fb9bc18a52ebffc9dafcfde9784bb39afaa3",
+    "figure/data/fold-scores.csv": "11be2e4063d7fc80a0885ebf37db6bab1744d45a36bd9e6f77cbb273be2475b0"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "python": "3.13.13"
+  },
+  "independent_renders": 2,
+  "learning_curve_source_sha256": {
+    "runs/deepen-both/fold-0/learning_curve.csv": "7642100f0996abb91d03366af78a4b1f2862c13c94b56c9e55ec057c3819e919",
+    "runs/deepen-both/fold-1/learning_curve.csv": "7352625e18caf29766b38e395fdcc0c8f2368f08d4b9cb999c00e2129ee200cb",
+    "runs/deepen-both/fold-2/learning_curve.csv": "d67d77f51ea4b3e2891a83d4de218b71df34478e20ace77236ecc8178bf7b001",
+    "runs/deepen_dec/fold-0/learning_curve.csv": "e2fa7e2c2ac70633241860484463d5468f7a91f02c9ec44f09a6d970d1d7514c",
+    "runs/deepen_dec/fold-1/learning_curve.csv": "c8ae6597f3a7c0cb064b7aa5d76c99a90faaf3cedfd6479c45e31ffa53c823f8",
+    "runs/deepen_dec/fold-2/learning_curve.csv": "19780ab360333d30a4ec7171cdc3d81ed2b2cd23bf3103492a3549e68dcf57e9",
+    "runs/deepen_enc/fold-0/learning_curve.csv": "4aee6d8cab78b118dbbd4d302b4939df1970a42c78058861d96fa4fa2276b1ee",
+    "runs/deepen_enc/fold-1/learning_curve.csv": "f769f1c6892ca487913d793197b1ebeb2bc6c334ad957e4e0b1011fe115daad9",
+    "runs/deepen_enc/fold-2/learning_curve.csv": "05c3d3be2aabcd830ddccbfb82e5e72c79605b29d40cef31b7461e3897ef3e96",
+    "runs/widen_enc/fold-0/learning_curve.csv": "d09bbc847ba965d08b78c68dcbbe9e8e51b93794e79e4a1836e658657c822d34",
+    "runs/widen_enc/fold-1/learning_curve.csv": "e564124e1436f28c1ab602362fde52e1a195c7f07eb0b473c9b1e0315b3b8ab9",
+    "runs/widen_enc/fold-2/learning_curve.csv": "7dfad1dab1f02fcfac3e5136c19538e07d51da48a000c7e85f194e9c039512d2",
+    "runs/widen_z-100/fold-0/learning_curve.csv": "faea750831ec621ae41f6224a2706fc072977971e35fa3c44a2448802fb60d49",
+    "runs/widen_z-100/fold-1/learning_curve.csv": "a98d022f5961d820c96b3bf449cc5db1478abfb311bdecd8574bc6748135dd36",
+    "runs/widen_z-100/fold-2/learning_curve.csv": "aedd71bbce8ba58df50d493ac2be6a9f5cf529f4372cc4799b6e9908e4a4ea65",
+    "runs/widen_z-110/fold-0/learning_curve.csv": "b2351d03b6c77d52e8f27d7356bd4154238122e0e82eee4b90bafb062bd34ab9",
+    "runs/widen_z-110/fold-1/learning_curve.csv": "ee15559f952a19745cc3483d0b8522adf7f51f655dc7ca7e15799801413c3f7f",
+    "runs/widen_z-110/fold-2/learning_curve.csv": "e7aacd5b54c073cc88ecaea873998adcd81d9802a3dce79c4833529e38ccf68b",
+    "runs/widen_z-120/fold-0/learning_curve.csv": "707e74709dc95d2ec2b2adca6458ef2128d1dbe8677d8f34dbac272042525785",
+    "runs/widen_z-120/fold-1/learning_curve.csv": "c124f7d7034b2c410c218b064575c08efea59798596aa57ce08ee7d14375cc39",
+    "runs/widen_z-120/fold-2/learning_curve.csv": "ec358ddea5d3e95dcc353f2e8e094e9107da9ffdabfa52bb2059220aacc1a2e0",
+    "runs/widen_z-130/fold-0/learning_curve.csv": "0fc4426f33de11715ec8978ed012a020520e877c24497b2bf27bb883831c949c",
+    "runs/widen_z-130/fold-1/learning_curve.csv": "5c218504114865bc2c0885a47d264a64ee1b2905c5cda83b35649b89788f9bf9",
+    "runs/widen_z-130/fold-2/learning_curve.csv": "388d2c2a1ba41960767f2e2bb8765de3d59e8b8d7c3e8ebcd3bfc43a6ab32e28"
+  },
+  "png_files_sha256": {
+    "figure/delta-metrics-paired-difference.png": "9f8744880544d734d7a75484f7583986a072e7cbe721fdfb8e1bf7ded4be459f",
+    "figure/delta-metrics.png": "5a95abe9af46026cc58eb0227f14f471556167c9a026511350b57d67490720f5",
+    "figure/learning-curves.png": "8271c5bcd373d828d6b54c5e32c757d897115eec6e48b7ad790a7f5f7168753e"
+  },
+  "publication_builder_sha256": "7e165724c11009c6890c1e6fe6f928d1c1195d1719f0f529a937e5ceee22e32a",
+  "renderer_files_sha256": {
+    "05_tsg_loss/figure/script/loss_plot_style.py": "0568ea381689ce7278a6fa71a8882e3f945ee2b2e716707e4865a4c76615cc52",
+    "06_tsg_shape/06.1_round1/figure/script/render_shape.py": "05f9097549173c670f8b704356a9f23ebbc8b32bc330cb12c99d8dc460ca1c2b",
+    "util/output/api/stage2_util/palette.py": "ebc018c2f187bfc1e0ccfb2e921d70b40c71d7fa65f57d26b0e73b42605ee481",
+    "util/output/api/stage2_util/plotting.py": "beda54c5f621b5fab86142471d6e41ca9846d002bc83edc50a4c6226d9eefb6a"
+  },
+  "schema": "stage2-figure-render-v1",
+  "scientific_receipt_sha256": "1b4e65c6a764fb984201d8270b3d8b7fefcc6b510552fecdcd61c26c3098031f",
+  "status": "PASS",
+  "step": "06.1_round1"
+}

@@ -12,9 +12,12 @@ and `(0.62, 0.60)`. Both colors at a coordinate share the same RGB,
 with opacity `0.90` for edges, dots, error bars and lines and `0.40`
 for bar fills and range bands.
 
-Use consistent hue assignments across panels in the same study. Depth may
-encode a second grouping variable, or the ordered levels of a single-hue
-heatmap with a numeric color scale. Opacity represents mark roles.
+Use consistent hue–depth assignments across panels in the same study.
+The [current Stage 2 plotting contract](../../stage2/AGENTS.md#step-contract)
+supersedes the original two-variable convention for categorical marks.
+Each hue–depth pair identifies one level of a single grouping variable.
+Single-hue numeric heatmaps use depth for ordered values. Opacity
+represents mark roles.
 
 For the presentation-only refresh of the 22 active report figures, replace
 the PNGs and renderers at their existing paths. This amends the successor

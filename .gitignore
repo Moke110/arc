@@ -207,6 +207,7 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 
 # Step 06.1 publishes the plotted scores and compact fit diagnostics.
 !/stage2/06_tsg_shape/06.1_round1/figure/data/delta-metrics.csv
+!/stage2/06_tsg_shape/06.1_round1/figure/data/epoch-objectives.csv
 !/stage2/06_tsg_shape/06.1_round1/figure/data/fold-scores.csv
 !/stage2/06_tsg_shape/06.1_round1/log/bandwidths.csv
 !/stage2/06_tsg_shape/06.1_round1/log/kl-diagnostics.csv

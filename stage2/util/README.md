@@ -33,12 +33,17 @@ root to reproduce it. Use `--output PATH` to render to a different file.
 - `line`, `scatter`, `errorbar`, `range_band`, `bubble`, and `histogram`
   take one coordinate per series. Pass measurement errors as `yerr` or
   `xerr` to `errorbar` and the existing bin edges as `bins` to `histogram`.
+- `plotting.replicate_dots(axis, x, values, hue=..., depth=..., spread=...)`
+  draws one dot per defined replicate at the group center. Its symmetric
+  spread separates dots without using fold or seed as a position variable.
 - `heatmap(axis, values, hue=..., vmin=..., vmax=..., colorbar_label=...)`
   uses the five ordered depths of one hue and adds a numeric color scale.
 
-Study renderers select hue and depth from their CSV categories, and own the
-report layout, axis labels and legend wording. The drawing functions return
-Matplotlib artists for use in those report layouts.
+For categorical marks, assign one hue–depth pair per level of a single
+grouping variable. Replicates in the same group share that pair. Fold and
+seed label replicates in the data. Use individual dots for their samples
+in score comparisons and keep those identifiers out of axes and legends. Study renderers
+own the layout and labels. Drawing functions return Matplotlib artists.
 
 The default readers open the accepted gene and feature products under util.
 For a separate materialized checkout, pass the directory explicitly to `load_gene_table` or `RepresentationTable`. The

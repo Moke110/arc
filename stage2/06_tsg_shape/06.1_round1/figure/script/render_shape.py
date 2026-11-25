@@ -1,4 +1,4 @@
-"""Render fold scores and mean paired differences from the Step 06.1 CSVs."""
+"""Render the Step 06.1 figures from the published score and epoch CSVs."""
 
 import argparse
 from itertools import product
@@ -11,11 +11,12 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 
 STAGE = Path(__file__).resolve().parents[4]
 sys.path[:0] = [str(STAGE / "util/output/api"), str(STAGE / "05_tsg_loss/figure/script")]
 
-from loss_plot_style import FOLD_HUES, metric_direction
+from loss_plot_style import LOWER_IS_BETTER
 from stage2_util import palette, plotting
 
 LABELS = {
@@ -29,93 +30,137 @@ LABELS = {
     "Δ MMD": "Δ MMD",
     "Δ R²": "Δ R²",
 }
-FIELDS = ("value", "score_difference")
-MEAN_HUE = 300
-FIGURES = {"value": "delta-metrics.png", "score_difference": "delta-metrics-paired-difference.png"}
+MODIFICATIONS = {
+    "Original": (220, ("widen_z-100",)),
+    "Wider latent space": (140, ("widen_z-110", "widen_z-120", "widen_z-130")),
+    "Wider encoder": (20, ("widen_enc",)),
+    "Deeper network": (300, ("deepen_enc", "deepen_dec", "deepen-both")),
+}
+SHAPE_HUES = {shape: hue for hue, shapes in MODIFICATIONS.values() for shape in shapes}
+FIELDS = {"value": "delta-metrics.png", "score_difference": "delta-metrics-paired-difference.png"}
+CURVE_NAME = "learning-curves.png"
 
 
-def read_table(path, keys):
-    rows = {}
+def score_table(path, replicate=False):
+    summary = {}
     for row in plotting.read_rows(path):
-        key = tuple(int(row[name]) if name == "fold" else row[name] for name in keys)
-        if key in rows:
-            raise ValueError(f"duplicate plotted score in {path.name}: {key}")
+        key = row["shape"], row["metric"]
+        if replicate:
+            key = (*key, int(row["fold"]))
         values = {field: float(row[field]) if row[field] else math.nan for field in FIELDS}
-        if any(math.isinf(value) for value in values.values()):
-            raise ValueError(f"infinite plotted score in {path.name}: {key}")
-        rows[key] = values
-    return rows
+        if key in summary or any(math.isinf(value) for value in values.values()):
+            raise ValueError(f"invalid or duplicate score in {path.name}: {key}")
+        summary[key] = values
+    return summary
 
 
-def read_scores(data):
-    summary = read_table(data / "delta-metrics.csv", ("shape", "metric"))
-    scores = read_table(data / "fold-scores.csv", ("shape", "fold", "metric"))
-    shapes = tuple(dict.fromkeys(shape for shape, _ in summary))
-    folds = tuple(sorted({fold for _, fold, _ in scores}))
-    if (not shapes or shapes[0] != "widen_z-100" or folds not in ((0,), (0, 1, 2))
-            or set(summary) != set(product(shapes, LABELS)) or set(scores) != set(product(shapes, folds, LABELS))):
-        raise ValueError("shape plotting CSVs require a complete paired score grid")
-    for (shape, fold, metric), score in scores.items():
-        baseline = scores["widen_z-100", fold, metric]["value"]
-        expected = score["value"] - baseline
-        if not equal_score(score["score_difference"], expected):
-            raise ValueError(f"paired difference disagrees with the control for {shape}, fold {fold}, {metric}")
-    for (shape, metric), aggregate in summary.items():
-        for field in FIELDS:
-            values = [scores[shape, fold, metric][field] for fold in folds
-                      if math.isfinite(scores[shape, fold, metric][field])]
-            expected = math.fsum(values) / len(values) if values else math.nan
-            if not equal_score(aggregate[field], expected):
-                raise ValueError(f"mean disagrees with the plotted folds for {shape}, {metric}")
-    return shapes, folds, scores, summary
+def read_scores(data, smoke):
+    summary = score_table(data / "delta-metrics.csv")
+    replicates = score_table(data / "fold-scores.csv", replicate=True)
+    shapes = tuple(shape for shape in SHAPE_HUES if not smoke or shape not in ("widen_z-110", "widen_z-120"))
+    folds = (0,) if smoke else range(3)
+    if set(summary) != set(product(shapes, LABELS)) or set(replicates) != set(product(shapes, LABELS, folds)):
+        raise ValueError("aggregate plotting CSV requires the complete architecture-by-metric grid")
+    return shapes, folds, summary, replicates
 
 
-def equal_score(left, right):
-    return (math.isnan(left) and math.isnan(right)) or math.isclose(left, right, rel_tol=1e-13, abs_tol=1e-15)
-
-
-def render(data, output):
-    shapes, folds, scores, summary = read_scores(data)
-    x = list(range(len(shapes)))
-    offsets = {fold: (index - (len(folds) - 1) / 2) * 0.14 - 0.12 for index, fold in enumerate(folds)}
-    for field, filename in FIGURES.items():
+def render_metrics(data, output, smoke):
+    shapes, folds, summary, replicates = read_scores(data, smoke)
+    positions = range(len(shapes))
+    for field, filename in FIELDS.items():
         difference = field == "score_difference"
         figure, plots = plt.subplots(3, 3, figsize=(15, 10), layout="constrained")
         for (metric, label), plot in zip(LABELS.items(), plots.flat, strict=True):
-            metric_direction(plot, metric, label)
-            for fold in folds:
-                values = [scores[shape, fold, metric][field] for shape in shapes]
-                plotting.scatter(plot, [position + offsets[fold] for position in x], values,
-                                 hue=FOLD_HUES[fold], s=18, zorder=3)
+            plot.set_title(f"{label} {'↓' if metric in LOWER_IS_BETTER else '↑'}", fontweight="bold")
             means = [summary[shape, metric][field] for shape in shapes]
-            plotting.scatter(plot, [position + 0.21 for position in x], means,
-                             hue=MEAN_HUE, marker="D", s=22, zorder=4)
-            for position, mean in zip(x, means, strict=True):
+            if difference:
+                plot.axhline(0, color="#666666", linewidth=.8, zorder=2)
+            else:
+                plotting.bar(plot, positions, means, hue=[SHAPE_HUES[shape] for shape in shapes],
+                             width=.68, zorder=3)
+            for position, shape, mean in zip(positions, shapes, means, strict=True):
+                hue = SHAPE_HUES[shape]
+                values = [replicates[shape, metric, fold][field] for fold in folds]
+                center = position - .10 if difference else position
+                plotting.replicate_dots(plot, center, values, hue=hue, s=26, zorder=4,
+                                        edgecolors="white", linewidths=.55)
+                if difference:
+                    plotting.scatter(plot, [position + .25], [mean], hue=hue, marker="D", s=42,
+                                     zorder=5, edgecolors="#222222", linewidths=.75)
                 if math.isnan(mean):
                     plot.text(position, .02, "NA", ha="center", fontsize=7, transform=plot.get_xaxis_transform())
-            if difference:
-                plot.axhline(0, color="#666666", linewidth=0.8, zorder=2)
-            plot.set_xticks(x, shapes, rotation=30, ha="right", fontsize=8)
-            plot.set_xlim(-0.5, len(x) - 0.5)
-            plot.grid(axis="y", color="#777777", alpha=0.25, zorder=1)
+            plot.set_xticks(positions, shapes, rotation=30, ha="right", fontsize=8)
+            plot.set_xlim(-.5, len(shapes) - .5)
+            plot.grid(axis="y", color="#777777", alpha=.25, zorder=1)
             plot.spines[["top", "right"]].set_visible(False)
-        handles = [Line2D([], [], marker="o", linestyle="none", markersize=5,
-                          color=palette.color_pair(FOLD_HUES[fold], 2).main, label=f"Fold {fold}") for fold in folds]
-        handles.append(Line2D([], [], marker="D", linestyle="none", markersize=5,
-                              color=palette.color_pair(MEAN_HUE, 2).main,
-                              label="Equal-fold mean"))
-        figure.legend(handles=handles, ncol=len(handles), loc="outside lower center", frameon=False)
-        figure.supylabel("Score difference from the original architecture" if difference else "Held-out fold score")
+        handles = []
+        for label, (hue, _) in MODIFICATIONS.items():
+            color = palette.color_pair(hue, 2)
+            handles.append(Patch(facecolor=color.secondary, edgecolor=color.main, label=label))
+        handles.append(Line2D([], [], linestyle="none", marker="o", color="#666666",
+                              markersize=5, label="Replicate"))
+        handles.append(Line2D([], [], linestyle="none", marker="D", color="#666666",
+                              markersize=5, label="Mean") if difference
+                       else Patch(facecolor="#bbbbbb", edgecolor="#666666", label="Mean"))
+        figure.legend(handles=handles, loc="outside upper center", ncols=len(handles), frameon=False)
+        figure.supylabel("Paired difference from the original architecture" if difference
+                         else "Held-out score")
         plotting.save_figure(figure, output / filename, dpi=180)
         plt.close(figure)
+
+
+def read_curves(path):
+    curves = {shape: [] for shape in SHAPE_HUES}
+    for row in plotting.read_rows(path):
+        shape = row["shape"]
+        points = curves[shape]
+        epoch = int(row["epoch"])
+        values = tuple(float(row[field]) for field in ("mean_train_loss", "mean_validation_loss"))
+        if epoch != len(points) + 1 or not all(math.isfinite(value) and value > 0 for value in values):
+            raise ValueError(f"invalid aggregate objective in {shape} epoch {epoch}")
+        points.append((epoch, *values))
+    if any(not points for points in curves.values()):
+        raise ValueError("epoch CSV requires a curve for every architecture")
+    return curves
+
+
+def render_curves(data, output):
+    curves = read_curves(data / "epoch-objectives.csv")
+    figure, plots = plt.subplots(3, 3, figsize=(13, 9), sharex=True, layout="constrained")
+    for index, (shape, plot) in enumerate(zip(curves, plots.flat)):
+        separate_scale = shape == "widen_enc"
+        if index and not separate_scale:
+            plot.sharey(plots.flat[0])
+        if index % 3 and not separate_scale:
+            plot.tick_params(labelleft=False)
+        epochs, train, valid = zip(*curves[shape], strict=True)
+        plotting.line(plot, epochs, train, hue=220, linestyle="--", linewidth=1.0)
+        plotting.line(plot, epochs, valid, hue=220, linewidth=1.2)
+        plot.set_title(f"{shape} (separate y-scale)" if separate_scale else shape, fontsize=10)
+        plot.set_yscale("log")
+        plot.grid(axis="y", color="#dedede", linewidth=.55)
+        plot.spines[["top", "right"]].set_visible(False)
+    plots.flat[-1].set_axis_off()
+    plots.flat[5].tick_params(labelbottom=True)
+    color = palette.color_pair(220).main
+    handles = [Line2D([], [], color=color, linestyle=style, label=label)
+               for label, style in (("Train", "--"), ("Validation", "-"))]
+    figure.legend(handles=handles, ncols=len(handles), loc="outside upper center", frameon=False)
+    figure.supxlabel("Epoch")
+    figure.supylabel("Mean objective per condition (log scale)")
+    plotting.save_figure(figure, output / CURVE_NAME, dpi=180)
+    plt.close(figure)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--smoke", action="store_true", help="Render both metrics for the bounded smoke roster")
     args = parser.parse_args()
-    render(args.data, args.output)
+    render_metrics(args.data, args.output, args.smoke)
+    if not args.smoke:
+        render_curves(args.data, args.output)
 
 
 if __name__ == "__main__":
