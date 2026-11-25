@@ -13,6 +13,7 @@ from tempfile import TemporaryDirectory
 HISTORY = Path("stage2/history")
 TRAINING = Path("stage2/03_data_train")
 STUDY = Path("stage2/04_tsg_axis")
+LOSS_STUDY = Path("stage2/05_tsg_loss")
 ARCHIVE_ROOTS = tuple(Path(name) for name in (
     "stage2/01_data_raw/historical",
     "stage2/05_tsg_loss", "stage2/06_tsg_drug_emb", "stage2/07_tsg_dose",
@@ -282,7 +283,7 @@ def check_archive_boundary(root, tracked, entries):
     check_ignored(root, ignored_destinations(entries), "installed")
 
 
-def checked_locations(root, state, plan, tracked):
+def checked_locations(root, state, plan, tracked, *, reopened=None):
     live = root / HISTORY
     staged = state / "archive"
     check_parents(root, HISTORY)
@@ -309,7 +310,8 @@ def checked_locations(root, state, plan, tracked):
             replacement = root / destination
         if kind in {"snapshot", "retained-snapshot"}:
             check_snapshot(replacement, record)
-            if (kind == "retained-snapshot") != (source in tracked):
+            reused = kind == "snapshot" and reopened is not None and source.is_relative_to(reopened)
+            if (kind == "retained-snapshot") != (source in tracked) and not reused:
                 raise ValueError(f"unexpected tracked snapshot state: {source}")
         elif kind == "release-tracked":
             if destination not in tracked or not replacement.is_file():
@@ -328,7 +330,10 @@ def checked_locations(root, state, plan, tracked):
     if {path.as_posix() for path in archive_files} != expected_files:
         raise ValueError("unexpected file in the local archive")
     for name in plan["path_map"]:
-        current, _ = paths_under(root, Path(name))
+        source = Path(name)
+        if source == reopened:
+            continue
+        current, _ = paths_under(root, source)
         for path in current:
             record = plan["entries"].get(path.as_posix())
             if not record or record["kind"] not in {
@@ -367,7 +372,12 @@ def apply(root, state, action):
         raise ValueError("archive install requires a clean tracked Stage 2 checkout")
     tracked = names(git(root, "ls-files", "-z"))
     check_archive_boundary(root, tracked, plan["entries"])
-    archive, locations = checked_locations(root, state, plan, tracked)
+    # The later loss study reuses the retired namespace. Verification still
+    # checks the archived bytes against the original cutover inventory.
+    reopened = None
+    if action == "verify" and {LOSS_STUDY / "AGENTS.md", LOSS_STUDY / "README.md"} <= tracked:
+        reopened = LOSS_STUDY
+    archive, locations = checked_locations(root, state, plan, tracked, reopened=reopened)
     live = root / HISTORY
     if action == "undo":
         for original, replacement in reversed(locations):
@@ -382,7 +392,7 @@ def apply(root, state, action):
         if archive != live:
             write_json(archive / "archive-manifest.json", plan)
             archive.rename(live)
-    archive, locations = checked_locations(root, state, plan, tracked)
+    archive, locations = checked_locations(root, state, plan, tracked, reopened=reopened)
     if archive != live or any(exists(original) or not exists(replacement) for original, replacement in locations):
         raise ValueError("Stage 2 archive installation is incomplete")
     if json.loads((archive / "archive-manifest.json").read_text()) != plan:

@@ -60,12 +60,12 @@ printf '%s\n' "$tmp/frozen.py" >"$tmp/list_frozen"
 if run "$tmp/list_frozen" >/dev/null; then fail "deleted frozen runtime must fail"; fi
 
 # Newly retired runtime roots fail; current owners pass.
-for old in 01_bases 01_corpus 03_tsg_dose 04_tsg_transfer 02_models_tenv 02_dataset_corpus evaluation 09_xpert_optimize _frozen 05_tsg_loss 06_tsg_drug_emb 07_tsg_dose 08_tsg_width_dose 09_tsg_transfer; do
+for old in 01_bases 01_corpus 03_tsg_dose 04_tsg_transfer 02_models_tenv 02_dataset_corpus evaluation 09_xpert_optimize _frozen 06_tsg_drug_emb 07_tsg_dose 08_tsg_width_dose 09_tsg_transfer; do
   printf 'p = "stage2/%s/output/x"\n' "$old" >"$tmp/new_stale.py"
   printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
   if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
 done
-printf 'p = "stage2/01_data_raw/output/x"\nq = "stage2/04_tsg_axis/output/x"\nr = "stage2/03_data_train/03.7_tenv_denoise-5k/output/x"\n' >"$tmp/current.py"
+printf 'p = "stage2/01_data_raw/output/x"\nq = "stage2/04_tsg_axis/output/x"\nr = "stage2/03_data_train/03.7_tenv_denoise-5k/output/x"\ns = "stage2/05_tsg_loss/output/x"\n' >"$tmp/current.py"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "active roots/external source must pass"
 # An active-root prefix must not exempt a longer retired-looking sibling name.
@@ -85,7 +85,7 @@ run_root() {
   STAGE2_PATH_AUDIT_ROOT="$1" STAGE2_PATH_AUDIT_FILES="$2" bash "$audit"
 }
 fixture_root="$tmp/layout/stage2"
-for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis; do
+for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss; do
   mkdir -p "$fixture_root/$step"
   printf '%s\n' "$step" >"$fixture_root/$step/AGENTS.md"
   printf '%s\n' "$step" >"$fixture_root/$step/README.md"
@@ -113,13 +113,13 @@ printf '%s\n' "$out" | grep -q 'unexpected Stage 2 entry: .*01_bases' \
   || fail "the retired root must be named in the failure"
 rmdir "$fixture_root/01_bases"
 # An active root without its routing skeleton is rejected.
-mv "$fixture_root/04_tsg_axis/README.md" "$tmp/successor-README.off"
+mv "$fixture_root/05_tsg_loss/README.md" "$tmp/successor-README.off"
 if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
   fail "the active comparison without README.md must fail the layout guard"
 fi
-printf '%s\n' "$out" | grep -q 'missing step routing: .*04_tsg_axis/README.md' \
+printf '%s\n' "$out" | grep -q 'missing step routing: .*05_tsg_loss/README.md' \
   || fail "the missing successor routing file must be named in the failure"
-mv "$tmp/successor-README.off" "$fixture_root/04_tsg_axis/README.md"
+mv "$tmp/successor-README.off" "$fixture_root/05_tsg_loss/README.md"
 mkdir -p "$fixture_root/history/stage2/07_tsg_dose"
 run_root "$fixture_root" "$tmp/list_clean" >/dev/null || fail "the local archive must pass"
 mv "$fixture_root/history" "$tmp/archive"
@@ -144,11 +144,11 @@ for retired in \
   fi
   rmdir "$fixture_root/$retired"
 done
-mkdir -p "$fixture_root/04_tsg_axis/historical"
+mkdir -p "$fixture_root/05_tsg_loss/historical"
 if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
   fail "step-local history must fail"
 fi
-rmdir "$fixture_root/04_tsg_axis/historical"
+rmdir "$fixture_root/05_tsg_loss/historical"
 printf 'p = base / "07_tsg_dose/output/api"\n' >"$tmp/relative.py"
 printf '%s\n' "$tmp/relative.py" >"$tmp/list_relative"
 if run_root "$fixture_root" "$tmp/list_relative" >/dev/null 2>&1; then
