@@ -96,8 +96,9 @@ fits, 243 [fold scores](log/fold-scores.csv), 81
 All three zero-weight controls match Step 05.1 native MSE at alpha 1
 exactly on the native objective trace, selected and stopping epochs,
 validation predictions, test predictions, Delta arrays, fold scores and
-eligibility counts. The [resource samples](log/333-resources.jsonl) record
-the monitored execution.
+eligibility counts. The [resource log](log/333-resources.jsonl) contains 137
+samples on a ten-second schedule. Twenty observed gaps exceeded 12 seconds,
+with a maximum gap of 19.951 seconds.
 
 The [raw scores](figure/delta-metrics.png) and
 [signed score differences](figure/delta-metrics-improvement.png) show one
