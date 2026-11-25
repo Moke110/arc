@@ -35,14 +35,15 @@ training and validation traces, selected checkpoint tensors, validation and
 test predictions, Delta arrays, and all 27 fold scores and eligibility
 counts. The selected epochs were 129, 116, and 85 for folds 0, 1, and 2.
 
-[Held-out fold scores](figure/delta-metrics.png) ·
-[Within-fold paired differences](figure/delta-metrics-paired-difference.png) ·
+[Mean held-out scores](figure/aggregate/delta-metrics.png) ·
+[Mean paired differences](figure/aggregate/delta-metrics-paired-difference.png) ·
 [216 fold scores](figure/data/fold-scores.csv) ·
 [72 equal-fold aggregates](figure/data/delta-metrics.csv)
 
-Each row reports the equal-fold mean. The paired figure subtracts the fresh
-control's score within each fold and marks the preferred direction for that
-metric.
+Each point in the score figure and each row in the table reports the
+equal-fold mean. Each point in the paired figure averages the signed
+differences from the fresh control across eligible fold pairs. The arrow
+on each panel marks the preferred direction for that metric.
 
 | Coordinate | JAC_top200 | JAC_pos100 | JAC_neg100 | Δ PCC | Δ Spearman | Δ RMSE | Δ E-distance | Δ MMD | Δ R² |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -176,8 +177,9 @@ alternate verified training, bandwidth-training and Step 05.2 paths.
 
 ## Replay the published figures
 
-Use the rendering versions recorded in the formal receipt. Both figure
-commands read only the plotted fold and aggregate CSVs.
+The active figures use the accepted aggregate CSV. Use the rendering
+versions in the [aggregate figure receipt](log/aggregate-figure-render.json).
+The formal receipt still verifies the original figure release.
 
 ```bash
 STEP="$PWD/stage2/06_tsg_shape/06.1_round1"
@@ -185,8 +187,9 @@ mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/tsg-shape-figures.XXXXXX")
 mkdir -p "$WORK/scratch" "$WORK/matplotlib"
 export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
-python "$STEP/figure/script/render_shape.py" --data "$STEP/figure/data" --output "$WORK/figures"
+python "$STEP/figure/script/render_aggregates.py" \
+  --data "$STEP/figure/data/delta-metrics.csv" --output "$WORK/figures"
 for figure in delta-metrics.png delta-metrics-paired-difference.png; do
-  cmp "$STEP/figure/$figure" "$WORK/figures/$figure"
+  cmp "$STEP/figure/aggregate/$figure" "$WORK/figures/$figure"
 done
 ```

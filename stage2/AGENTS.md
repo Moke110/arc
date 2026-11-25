@@ -53,6 +53,8 @@ points with history unavailable before completing a cutover.
 - `figure/script/`: reproduce PNGs from those CSVs alone, without matrices, checkpoints
   or recomputing scientific metrics. Record provenance when a CSV derives from output.
   Draw marks with the [shared util plotting API](util/README.md#plotting).
+  Aggregate fold and seed replicates within each experimental setting. Never use
+  fold or seed for plot axes, facets, legend entries, or visual groupings.
   Use a named `figure/<successor>/` subtree when a receipt seals the predecessor's
   paths. Bind the successor inventory to its own acceptance receipt.
   [ADR 0093](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
