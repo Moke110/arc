@@ -1,8 +1,10 @@
 # TranSiGen expression shape round one
 
 Read [README.md](README.md), the [Stage 2 routing](../../AGENTS.md),
-[ADR 0094](../../../docs/adr/0094-transigen-shape-round1.md), and the
+[ADR 0094](../../../docs/adr/0094-transigen-shape-round1.md) and the
 [execution environment](../../../docs/agents/execution-environment.md).
+Before editing encoder-width coordinates or reusing prior fits, read
+[ADR 0095](../../../docs/adr/0095-transigen-shape-encoder-width-extension.md).
 
 Keep the Step 05.2 weight-1.75 training configuration, including the
 objective, input pairing, initialization policy, optimizer, and selection
@@ -14,9 +16,9 @@ in separate processes. Use one memory-capped CUDA fit at a time, record WSL
 RAM and GPU usage at ten-second intervals, and preserve candidates until
 acceptance checks finish. Provide the verified figure CSVs to the renderer.
 
-The formal driver in `execution/matrix_shape.py` verifies the complete
-preregistration before fitting. Use the verified receipt and stable local
-`output/formal/` paths for follow-up reads. Recompute scores, verify
-Step 05.2 parity, and verify the canonical figures with
-`execution/report_shape.py verify`. Use the README replay command to
-regenerate the figures from CSV alone.
+- Verify or replay the [sealed #347 source](README.md#verify-the-accepted-347-source)
+  with its original registrations and receipts.
+- Fit and verify the [combined release](README.md#reproduce-the-formal-matrix)
+  before replacing its stable paths.
+- Regenerate only the [published figures](README.md#replay-the-published-figures)
+  with the published CSVs.

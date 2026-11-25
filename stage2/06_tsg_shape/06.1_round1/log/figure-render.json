@@ -1,8 +1,8 @@
 {
   "csv_files_sha256": {
-    "figure/data/delta-metrics.csv": "f43a55ca8ed795ba0e524b3903557fb7445b7556f3fb8a33a24e70dfa0bad697",
-    "figure/data/epoch-objectives.csv": "4837129d5208c1786c0784f52d3e53c18cfd91b41e600927be429ac730ce967c",
-    "figure/data/fold-scores.csv": "11be2e4063d7fc80a0885ebf37db6bab1744d45a36bd9e6f77cbb273be2475b0"
+    "figure/data/delta-metrics.csv": "edc0c86d24a0181354c5478306f1b6346e8cfd3978e7f979f6cbd1672dbfb49f",
+    "figure/data/epoch-objectives.csv": "e517c7097f036143acdad5e5393386f976dbb93996a878dde65b7a6414bb64da",
+    "figure/data/fold-scores.csv": "094251f347a4000029df9596a3c9409bd7db56f1308ac3af6d598f8c545c2e99"
   },
   "environment": {
     "matplotlib": "3.10.9",
@@ -20,6 +20,12 @@
     "runs/deepen_enc/fold-0/learning_curve.csv": "4aee6d8cab78b118dbbd4d302b4939df1970a42c78058861d96fa4fa2276b1ee",
     "runs/deepen_enc/fold-1/learning_curve.csv": "f769f1c6892ca487913d793197b1ebeb2bc6c334ad957e4e0b1011fe115daad9",
     "runs/deepen_enc/fold-2/learning_curve.csv": "05c3d3be2aabcd830ddccbfb82e5e72c79605b29d40cef31b7461e3897ef3e96",
+    "runs/widen_enc-2k/fold-0/learning_curve.csv": "49a9d0cea3dc0dfcc491df23f71a33db39e25982db1c8b02b07b6db77a47136c",
+    "runs/widen_enc-2k/fold-1/learning_curve.csv": "138b41201899f427b84078650742ad0bdede9889fb9afa71226fb10d2ee8a688",
+    "runs/widen_enc-2k/fold-2/learning_curve.csv": "25c49d64f1ebbd7723d39e767f69d78eb7bcee70915a7a3411902955b4f26c1c",
+    "runs/widen_enc-4k/fold-0/learning_curve.csv": "9b580ac4ea93ac5441777b0a61aafa75047a40dd94a9eebe72dd34fd04dcedc0",
+    "runs/widen_enc-4k/fold-1/learning_curve.csv": "930308ba3c8182150bedafa0b899de085ae4845b1d827b2d837e86a123d099b5",
+    "runs/widen_enc-4k/fold-2/learning_curve.csv": "6f5b8fcde5b0033ff477234468f699e7bf38aee7c928f87d0cece3426b09f8db",
     "runs/widen_enc/fold-0/learning_curve.csv": "d09bbc847ba965d08b78c68dcbbe9e8e51b93794e79e4a1836e658657c822d34",
     "runs/widen_enc/fold-1/learning_curve.csv": "e564124e1436f28c1ab602362fde52e1a195c7f07eb0b473c9b1e0315b3b8ab9",
     "runs/widen_enc/fold-2/learning_curve.csv": "7dfad1dab1f02fcfac3e5136c19538e07d51da48a000c7e85f194e9c039512d2",
@@ -37,18 +43,19 @@
     "runs/widen_z-130/fold-2/learning_curve.csv": "388d2c2a1ba41960767f2e2bb8765de3d59e8b8d7c3e8ebcd3bfc43a6ab32e28"
   },
   "png_files_sha256": {
-    "figure/delta-metrics-paired-difference.png": "e91a8436a91c83fe72e6113ae05b6f531741df6d93ee2c22807196858f06650f",
-    "figure/delta-metrics.png": "a5cc309f7603162a8bc633ee8ee6d91af1f0000c74dcdb7a4a3d72ee286f3759",
-    "figure/learning-curves.png": "b94d18105410fa91b176b1bc270c225466b07d815f609d32c23484f532b9f3f0"
+    "figure/delta-metrics-paired-difference.png": "bb5bc1661237a28829c7a2a2c3a613e9f4c8ad455e3aa7eb6b55971eb541030c",
+    "figure/delta-metrics.png": "01ff460f7adbfd498f4ac1c2630952ad50a98fe6555d27e875d155f4b8bc6e46",
+    "figure/learning-curves.png": "888546dfbce8ee31824e51ca634278027e9fc533390b2988bb4ded212ab3f58d"
   },
-  "publication_builder_sha256": "d1f71d37ad272c3f3fcf3f7211a0e952dfba35d79f581609651f1db2d38a4440",
+  "publication_builder_sha256": "88c9c8b014f308d6e64d839cca7d3982c1711f73ca3b71f96a82b9d50363eb9c",
   "renderer_files_sha256": {
-    "06_tsg_shape/06.1_round1/figure/script/render_shape.py": "d22431567a724ab769b9535928f4ef03f9526e42415d73752a362f61c906beb8",
+    "06_tsg_shape/06.1_round1/execution/shape_roster.py": "e2e6e5e8da2e60eba04439980c24d9c896ae1cec9d62f835e3243cb79358ebcb",
+    "06_tsg_shape/06.1_round1/figure/script/render_shape.py": "f9a22373ed5ac835b7d187b92a48d1fb4a4e32e7a421deecec484b419879b80a",
     "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },
   "schema": "stage2-figure-render-v1",
-  "scientific_receipt_sha256": "1b4e65c6a764fb984201d8270b3d8b7fefcc6b510552fecdcd61c26c3098031f",
+  "scientific_receipt_sha256": "4460ba43286621843438a1ddfe98f461e58ae6a1bd7a40d6435d2b1f49653b78",
   "status": "PASS",
   "step": "06.1_round1"
 }

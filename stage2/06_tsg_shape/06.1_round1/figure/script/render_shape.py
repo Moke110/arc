@@ -16,7 +16,7 @@ STEP = Path(__file__).resolve().parents[2]
 STAGE = STEP.parents[1]
 sys.path[:0] = [str(STAGE / "util/output/api"), str(STEP / "execution")]
 
-from shape_roster import SHAPES, SMOKE_SHAPES
+from shape_roster import CONTROL, SHAPES, SMOKE_SHAPES
 from stage2_util import palette, plotting
 
 LOWER_IS_BETTER = {"Δ RMSE", "Δ E-distance", "Δ MMD"}
@@ -136,12 +136,17 @@ def render_curves(data, output):
     curves = read_curves(data / "epoch-objectives.csv")
     columns = 5
     figure, plots = plt.subplots(2, columns, figsize=(16, 7), sharex=True, layout="constrained")
+    reference_width = SHAPES[CONTROL][0][0]
+    labeled_shared_rows = set()
     for index, ((shape, runs), plot) in enumerate(zip(curves.items(), plots.flat, strict=True)):
-        separate_scale = shape == "widen_enc-6k"
-        if index and not separate_scale:
-            plot.sharey(plots.flat[0])
-        if index % columns and not separate_scale:
-            plot.tick_params(labelleft=False)
+        separate_scale = SHAPES[shape][0][0] > reference_width
+        if not separate_scale:
+            if index:
+                plot.sharey(plots.flat[0])
+            row = index // columns
+            if row in labeled_shared_rows:
+                plot.tick_params(labelleft=False)
+            labeled_shared_rows.add(row)
         plotting.learning_curve(plot, [tuple(zip(*runs[run], strict=True)) for run in sorted(runs)])
         plot.set_title(f"{shape} (separate y-scale)" if separate_scale else shape, fontsize=10)
         plot.set_yscale("log")

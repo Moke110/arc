@@ -35,7 +35,7 @@ fell to 0.249215, compared with 0.406610 and 0.259575 at weight zero.
 | [05.3 Reconstruction MSE](05_tsg_loss/05.3_mse-l1_mse-x/README.md) | Varies the shared reconstruction MSE weight at fixed Δ L1 weight 1.75. Unit reconstruction weights led Δ PCC and Δ RMSE. Zero reconstruction weight gave lower Δ E-distance (0.020303) and Δ MMD (0.143878). |
 | [05.4 Delta PCC](05_tsg_loss/05.4_mse-l1_pcc/README.md) | Adds a bounded Δ PCC loss to the selected objective. Weight zero led Δ PCC and Δ RMSE. |
 | [05.5 Delta cosine](05_tsg_loss/05.5_mse-l1_cos/README.md) | Adds a bounded Δ cosine loss to the selected objective. Weight 0.3 increased JAC_neg100 from 0.183801 to 0.185508. Weight zero led Δ PCC and Δ RMSE. |
-| [06.1 Expression shape](06_tsg_shape/06.1_round1/README.md#formal-results) | Compares eight encoder, decoder and latent architectures over three frozen cold-drug folds. The original architecture was refitted on each fold as the paired reference for nine held-out metrics. |
+| [06.1 Expression shape](06_tsg_shape/06.1_round1/README.md#formal-results) | Compares ten encoder, decoder and latent architectures over three frozen cold-drug folds. Six new fits extend the encoder-width series, and the accepted original fit on each fold remains the paired reference for nine held-out metrics. |
 
 ## Verify the current figures
 
