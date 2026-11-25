@@ -7,6 +7,7 @@
 The [figure rendering receipt](log/342-figure-render.json) binds the five
 current PNGs to their plotted data and renderer files. The two methods use
 a consistent hue for each size and a consistent depth for each disease.
+Both coverage figures show the complete 0–100% range for comparison.
 
 Use the same prediction axis ID for selection, tenv training and Step 04.
 HVG-DEG publishes `hvg-2k` through `hvg-5k`. Denoise-DEG publishes

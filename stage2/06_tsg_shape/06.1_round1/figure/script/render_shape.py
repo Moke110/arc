@@ -81,17 +81,25 @@ def render_metrics(data, output, smoke):
         for (metric, label), plot in zip(LABELS.items(), plots.flat, strict=True):
             plot.set_title(f"{label} {'↓' if metric in LOWER_IS_BETTER else '↑'}", fontweight="bold")
             means = [summary[shape, metric][field] for shape in shapes]
-            plot.axhline(0, color="#666666", linewidth=.8, zorder=2)
-            for position, shape, mean in zip(positions, shapes, means, strict=True):
-                values = [replicates[shape, metric, fold][field] for fold in folds]
+            if difference:
+                plot.axhline(0, color="#666666", linewidth=.8, zorder=2)
+            groups = [[replicates[shape, metric, fold][field] for fold in folds] for shape in shapes]
+            for position, shape, mean, values in zip(positions, shapes, means, groups, strict=True):
                 plotting.replicate_bar(plot, position, values, hue=SHAPE_HUES[shape], width=.68)
                 if math.isnan(mean):
                     plot.text(position, .02, "NA", ha="center", fontsize=7, transform=plot.get_xaxis_transform())
+            if not difference:
+                lower, upper = plotting.focus_y(plot, groups, reference=0 if metric == "Δ R²" else None)
+                if lower <= 0 <= upper:
+                    plot.axhline(0, color="#666666", linewidth=.8, zorder=1.5)
             plot.set_xticks(positions, shapes, rotation=30, ha="right", fontsize=8)
             plot.set_xlim(-.5, len(shapes) - .5)
             plot.grid(axis="y", color="#777777", alpha=.25, zorder=1)
             plot.spines[["top", "right"]].set_visible(False)
-        figure.suptitle("Bars are means · Dots are replicates · Error bars are sample SD")
+        title = "Bars are means · Dots are replicates · Error bars are sample SD"
+        if not difference:
+            title += "\nY-axis ranges follow the data and may omit zero."
+        figure.suptitle(title)
         figure.supylabel("Paired difference from the original architecture" if difference
                          else "Held-out score")
         plotting.save_figure(figure, output / filename, dpi=180)

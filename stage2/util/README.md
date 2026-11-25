@@ -46,6 +46,10 @@ root to reproduce it. Use `--output PATH` to render to a different file.
 - `plotting.learning_curve(axis, runs)` draws one training and one
   validation line per run. Pass its observed `(epochs, train, validation)`
   values and call once per model subplot.
+- `plotting.focus_y(axis, groups, reference=...)` sets a padded y range
+  covering finite observations and sample SD. Pass one iterable per group
+  and provide a reference value when the panel needs it in view. Use the
+  same collection of groups for panels that share a scale.
 
 Use one color axis per grouping variable. Map the first variable to hue
 and the second to depth when present. Replicates inherit the color of

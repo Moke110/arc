@@ -13,10 +13,11 @@ import pandas as pd
 FIGURE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(FIGURE.parents[1] / "util/output/api"))
 
-from stage2_util.plotting import replicate_bar, save_figure
+from stage2_util.plotting import focus_y, replicate_bar, save_figure
 
 LOWER_IS_BETTER = {"Δ RMSE", "Δ E-distance", "Δ MMD"}
 AXIS_HUES = {"hvg": 220, "denoise": 20}
+RANGE_NOTE = "The y-axis range may omit zero"
 
 
 def panels(summary_csv, fold_csv, category):
@@ -43,10 +44,9 @@ def panels(summary_csv, fold_csv, category):
     return axes, categories, replicates
 
 
-def render_panel(plot, axes, replicates, category):
-    for x, axis in enumerate(axes):
+def render_panel(plot, axes, groups):
+    for x, (axis, values) in enumerate(zip(axes, groups, strict=True)):
         method, *_, size = axis.split("-")
-        values = replicates.get_group((axis, category))
         if np.isfinite(values).any():
             replicate_bar(plot, x, values, hue=AXIS_HUES[method],
                           depth=5 - int(size.removesuffix("k")), width=.66)
@@ -66,10 +66,13 @@ def render_metrics(csv, fold_csv, output):
         raise ValueError("metric summary must have nine scores for every reported axis")
     fig, plots = plt.subplots(3, 3, figsize=(13.2, 10.8), layout="constrained")
     for plot, metric in zip(plots.flat, metrics, strict=True):
-        render_panel(plot, axes, replicates, metric)
+        groups = [replicates.get_group((axis, metric)) for axis in axes]
+        render_panel(plot, axes, groups)
+        focus_y(plot, groups, reference=0 if metric == "Δ R²" else None)
         direction = "↓" if metric in LOWER_IS_BETTER else "↑"
         plot.set_title(f"{metric} {direction}")
     fig.suptitle("TranSiGen Delta scores on fixed tenv axes · mean ± SD")
+    fig.supxlabel(RANGE_NOTE, fontsize=9)
     save_figure(fig, output / "delta-metrics.png", dpi=180)
     plt.close(fig)
 
@@ -79,12 +82,15 @@ def render_disease(csv, fold_csv, output):
     fig, plots = plt.subplots((len(diseases) + 1) // 2, 2, figsize=(11, 7),
                               sharey=True, squeeze=False, layout="constrained")
     for plot, disease in zip(plots.flat, diseases):
-        render_panel(plot, axes, replicates, disease)
+        groups = [replicates.get_group((axis, disease)) for axis in axes]
+        render_panel(plot, axes, groups)
         plot.set_title(disease.replace("_", " "))
         plot.set_ylabel("F1")
     for plot in list(plots.flat)[len(diseases):]:
         plot.remove()
+    focus_y(plots.flat[0], (values for _, values in replicates))
     fig.suptitle("Signed disease DEG F1 · mean ± SD")
+    fig.supxlabel(RANGE_NOTE, fontsize=9)
     save_figure(fig, output / "disease-f1.png", dpi=180)
     plt.close(fig)
 

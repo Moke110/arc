@@ -38,14 +38,14 @@
   },
   "png_files_sha256": {
     "figure/delta-metrics-paired-difference.png": "e91a8436a91c83fe72e6113ae05b6f531741df6d93ee2c22807196858f06650f",
-    "figure/delta-metrics.png": "c42190880e9cc0317a58796830b3ba98657db841e1a0a235447816f04bec41ee",
+    "figure/delta-metrics.png": "a5cc309f7603162a8bc633ee8ee6d91af1f0000c74dcdb7a4a3d72ee286f3759",
     "figure/learning-curves.png": "b94d18105410fa91b176b1bc270c225466b07d815f609d32c23484f532b9f3f0"
   },
   "publication_builder_sha256": "d1f71d37ad272c3f3fcf3f7211a0e952dfba35d79f581609651f1db2d38a4440",
   "renderer_files_sha256": {
-    "06_tsg_shape/06.1_round1/figure/script/render_shape.py": "20c6778d16f12cce09c79c261ea31f30dae23ef72b7555fa9254e339213d574d",
+    "06_tsg_shape/06.1_round1/figure/script/render_shape.py": "d22431567a724ab769b9535928f4ef03f9526e42415d73752a362f61c906beb8",
     "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
-    "util/output/api/stage2_util/plotting.py": "1de4281124e7d6bbfd00bbbf071b1cdff5d34a8cbf71c6477a8101ffd72743aa"
+    "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },
   "schema": "stage2-figure-render-v1",
   "scientific_receipt_sha256": "1b4e65c6a764fb984201d8270b3d8b7fefcc6b510552fecdcd61c26c3098031f",

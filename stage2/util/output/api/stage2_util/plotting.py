@@ -158,6 +158,33 @@ def replicate_bar(axis, x, values, *, hue=220, depth=2, width=.8, spread=None,
     return bars, dots, errors
 
 
+def focus_y(axis, groups, *, reference=None, pad=.10):
+    """Set and return linear y limits around finite observations and sample SD intervals.
+
+    Each group supplies one vector of observed scores. The margin on each side
+    is a fraction of the plotted span. Include a reference when the chart
+    calls for one. Without finite observations or a reference, keep the limits.
+    """
+    if not np.isfinite(pad) or pad <= 0:
+        raise ValueError("y-axis padding must be finite and positive")
+    if reference is not None and not np.isfinite(reference):
+        raise ValueError("the y-axis reference must be finite")
+    extents = [] if reference is None else [reference]
+    for group in groups:
+        values = _finite_replicates(group)
+        if not len(values):
+            continue
+        extents.extend((values.min(), values.max()))
+        if len(values) > 1:
+            average, deviation = values.mean(), values.std(ddof=1)
+            extents.extend((average - deviation, average + deviation))
+    if not extents:
+        return axis.get_ylim()
+    lower, upper = min(extents), max(extents)
+    margin = pad * (upper - lower or abs(lower) or 1)
+    return axis.set_ylim(lower - margin, upper + margin)
+
+
 def bubble(axis, x, y, sizes, *, hue=220, depth=2, **kwargs):
     """Draw size-encoded points with the main color for both faces and edges."""
     color = palette.color_pair(hue, depth).main

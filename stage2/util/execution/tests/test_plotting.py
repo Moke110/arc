@@ -148,6 +148,19 @@ class PlottingTests(unittest.TestCase):
         self.assertEqual((len(self.axis.patches), len(self.axis.collections), len(self.axis.containers)),
                          (0, 0, 0))
 
+    def test_focus_y_contains_replicates_uncertainty_and_padding(self):
+        lower, upper = plotting.focus_y(self.axis, [[10, 14], [float("nan"), 15]])
+        self.assertAlmostEqual(lower, 8.58873, places=5)
+        self.assertAlmostEqual(upper, 15.58284, places=5)
+        self.assertEqual(self.axis.get_ylim(), (lower, upper))
+
+    def test_focus_y_preserves_reference_and_expands_constant_values(self):
+        lower, upper = plotting.focus_y(self.axis, [[-3, -3]], reference=0)
+        self.assertLess(lower, -3)
+        self.assertGreater(upper, 0)
+        self.assertEqual(plotting.focus_y(self.axis, [[5, 5]]), (4.5, 5.5))
+        self.assertEqual(plotting.focus_y(self.axis, [[], [float("nan")]]), (4.5, 5.5))
+
     def test_histogram_retains_bin_edges_and_counts(self):
         counts, edges, bars = plotting.histogram(self.axis, [0, .3, .75, 1],
                                                  bins=[0, .5, .7, 1], hue=60)
