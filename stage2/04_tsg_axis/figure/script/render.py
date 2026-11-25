@@ -21,11 +21,6 @@ from stage2_util.plotting import save_figure
 LOWER_IS_BETTER = {"Δ RMSE", "Δ E-distance", "Δ MMD"}
 
 
-def _axis_label(axis):
-    family, size = axis.rsplit("-", 1)
-    return f"{family.replace('hvg-deg', 'HVG-DEG').replace('denoise-deg', 'Denoise-DEG')}\n{size}"
-
-
 def _add_metric_background(plot, metric):
     tint = "#c62828" if metric in LOWER_IS_BETTER else color("blue", 2)
     gradient = np.empty((256, 1, 4))
@@ -44,7 +39,6 @@ def render_metrics(csv, output):
         raise ValueError("metric summary must have nine scores for every reported axis")
     fig, plots = plt.subplots(3, 3, figsize=(13.2, 10.8), layout="constrained")
     palette = [color("blue" if axis.startswith("hvg-") else "orange", 2) for axis in axes]
-    labels = [axis.replace("-deg-", "-").replace("hvg-", "HVG-") for axis in axes]
     for plot, metric in zip(plots.flat, metrics, strict=True):
         values = data.loc[data.metric.eq(metric)].set_index("axis").reindex(axes).value
         x = np.arange(len(axes))
@@ -54,7 +48,7 @@ def render_metrics(csv, output):
             plot.text(index, .04, "NA", ha="center", transform=plot.get_xaxis_transform())
         plot.axhline(0, color="#777777", lw=.6)
         plot.set_title(metric)
-        plot.set_xticks(x, labels, fontsize=8, rotation=30, ha="right", rotation_mode="anchor")
+        plot.set_xticks(x, axes, fontsize=8, rotation=30, ha="right", rotation_mode="anchor")
         plot.spines[["top", "right"]].set_visible(False)
     fig.suptitle("TranSiGen Delta scores on fixed tenv axes")
     save_figure(fig, output / "delta-metrics.png", dpi=180)
@@ -72,7 +66,7 @@ def render_disease(csv, output):
     high = float(np.max(finite)) if finite.size and np.max(finite) > 0 else 1.0
     fig, plot = plt.subplots(figsize=(max(5.5, 1.2 * len(axes) + 2.3), 4.4), layout="constrained")
     image = plot.imshow(values, cmap="Blues", vmin=0, vmax=high, aspect="auto")
-    plot.set_xticks(np.arange(len(axes)), [_axis_label(axis) for axis in axes], fontsize=9)
+    plot.set_xticks(np.arange(len(axes)), axes, fontsize=9)
     plot.set_yticks(np.arange(len(diseases)), [name.replace("_", " ") for name in diseases])
     for (row, column), value in np.ndenumerate(values):
         plot.text(column, row, f"{value:.3f}" if np.isfinite(value) else "NA",

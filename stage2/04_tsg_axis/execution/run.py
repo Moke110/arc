@@ -19,26 +19,22 @@ import torch
 STEP = Path(__file__).resolve().parents[1]
 REPO = next(parent for parent in STEP.parents if (parent / ".git").exists())
 STAGE = REPO / "stage2"
-DOSE = STAGE / "07_tsg_dose/output/api"
-sys.path[:0] = [str(STEP / "output/api"), str(DOSE)]
+AXIS_API = STAGE / "02_gene_axis/02.1_hvg-deg/output/api"
+sys.path[:0] = [str(STEP / "output/api"), str(AXIS_API)]
 
+from prediction_axis import axis_coordinates, open_axes
 from tsg_axis.inputs import open_inputs, score_fixed_prediction
 from tsg_axis.protocol import MAX_EPOCHS, PATIENCE, PROTOCOL, RUN_SCHEMA
-from tsg_dose import shared
-from tsg_dose.model import DoseView
-from tsg_kpgt import model as kpgt
-from tenv5k.learning import EarlyStopping, fixed_rng
+from tsg_axis import model as kpgt
+from tsg_axis.model import DoseView
+from tsg_axis.learning import EarlyStopping, fixed_rng
 from stage2_util.derivation.release import check_outputs, read_json, sha256 as digest, write_json
 from stage2_util.publication import publication_lock
+from training_data import TENV_AXIS_STEPS
 
-METHOD = "latent-numeric"
 SEED = 42
 VALIDATION_SEED = 22617
 TEST_SEED = 100042
-WIDTHS = (3000, 4000, 5000)
-AXES = {f"{family}-{width // 1000}k": (owner, width)
-        for family, owner in (("hvg-deg", "02.1_hvg-deg"), ("denoise-deg", "02.2_denoise-deg"))
-        for width in WIDTHS}
 PARTITIONS = ("train", "valid", "test")
 SMOKE_LIMITS = dict(zip(PARTITIONS, (64, 24, 24), strict=True))
 TRAINING_FILES = ("checkpoint.pt", "validation_prediction.npy", "learning_curve.csv")
@@ -51,24 +47,22 @@ def file_hashes(root, names):
 
 
 def code_hashes():
+    api = STEP / "output/api/tsg_axis"
     paths = [
-        Path(__file__), *(STEP / "output/api/tsg_axis" / name for name in ("inputs.py", "protocol.py")),
+        Path(__file__),
+        AXIS_API / "prediction_axis.py",
+        *(api / name for name in ("inputs.py", "protocol.py", "model.py", "native_import.py", "learning.py")),
         STAGE / "03_data_train/output/api/training_data.py",
         STAGE / "util/output/api/stage2_util/representations.py",
-        DOSE / "tsg_kpgt/model.py", DOSE / "tsg_round1/model.py",
-        DOSE / "tsg_dose/model.py", DOSE / "tsg_dose/shared.py",
-        *(shared.SHARED / "tenv5k" / name for name in ("model_transigen.py", "native_import.py", "learning.py")),
     ]
     return {path.relative_to(REPO).as_posix(): digest(path) for path in paths}
 
 
 def bind(args, data, vectors):
-    owner, width = AXES[args["axis"]]
-    axis_root = STAGE / "02_gene_axis" / owner / "output/release"
-    axis_file = axis_root / f"gene_axis_{width}.csv"
-    axis_sha = digest(axis_file)
-    axis_pin = read_json(axis_root / "manifest.json")["axes"][str(width)]
-    if (axis_sha != axis_pin or axis_sha != data.release.manifest["inputs"]["axis_sha256"]
+    family, width = axis_coordinates(args["axis"])
+    axes = open_axes(family=family)
+    axis_sha = axes.axis(width).sha256
+    if (axis_sha != data.release.manifest["inputs"]["axis_sha256"]
             or axis_sha != data.release.manifest["outputs"]["genes.csv"] or len(data.genes) != width):
         raise ValueError("training release lacks the registered ordered prediction axis")
     rows = {name: data.rows(args["fold"], name) for name in PARTITIONS}
@@ -78,8 +72,8 @@ def bind(args, data, vectors):
         raise ValueError("cold-drug partitions require disjoint nonempty parent populations")
     if args["smoke"]:
         rows = {name: part[:SMOKE_LIMITS[name]] for name, part in rows.items()}
-    transform = kpgt.fit_transform(METHOD, data.doses[rows["train"]])
-    model = kpgt.configuration(METHOD, transform)
+    transform = kpgt.fit_transform(data.doses[rows["train"]])
+    model = kpgt.configuration(transform)
     model.update(n_genes=width, method_identity="tenv-axis-transigen-kpgt-latent-numeric-v2",
                  control_input="matched plate DMSO for every partition",
                  validation_objective="native TranSiGen MSE + beta-weighted KLD, batch sums per condition",
@@ -93,7 +87,8 @@ def bind(args, data, vectors):
             or native["src/train_TranSiGen.py"] != model["config_script_sha256"]):
         raise ValueError("registered native TranSiGen source differs from the pinned author release")
     hardware = (torch.cuda.get_device_name() if args["device"] == "cuda" else platform.machine())
-    return {"schema": RUN_SCHEMA, "protocol": PROTOCOL, "axis_sha256": axis_sha, "axis_family_manifest_sha256": digest(axis_root / "manifest.json"),
+    return {"schema": RUN_SCHEMA, "protocol": PROTOCOL, "axis_sha256": axis_sha,
+            "axis_family_manifest_sha256": axes.manifest_sha256,
             "training_sha256": data.release.manifest_sha256,
             "raw_sha256": data.release.manifest["inputs"]["raw_sha256"],
             "folds": data.release.manifest["inputs"]["folds"],
@@ -254,7 +249,7 @@ def execute(output, phase, paths):
             os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
             torch.use_deterministic_algorithms(True)
             kpgt.configure_backend(args["device"])
-            native = kpgt.adapter(args["source"], METHOD, config["model"]["transform"])
+            native = kpgt.adapter(args["source"], config["model"]["transform"])
             model = native.build(SEED, args["device"], n_genes=len(data.genes))
             with TemporaryDirectory(prefix=".phase-", dir=root) as scratch:
                 scratch = Path(scratch)
@@ -289,7 +284,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="phase", required=True)
     registration = commands.add_parser("register")
-    registration.add_argument("--axis", choices=AXES, required=True)
+    registration.add_argument("--axis", choices=TENV_AXIS_STEPS, required=True)
     registration.add_argument("--fold", choices=range(3), type=int, required=True)
     registration.add_argument("--training", type=Path, required=True)
     registration.add_argument("--representations", type=Path, default=STAGE / "util/output/representations")

@@ -13,11 +13,8 @@ objective with 30-epoch patience.
 
 Use `execution/evaluate.py` for released predictions and run its `verify`
 command to replay the report. Render with `figure/script/render.py` using the
-report summary CSVs. Publish the accepted matched-control figures under
-`figure/`. Keep smoke evaluations outside the formal comparison.
+report summary CSVs. Publish the canonical matched-control figures under
+`figure/canonical-axis/`. Keep smoke evaluations outside the formal comparison.
 
-Replay Spec 5 scores and figures using the pinned checkout in the README.
-
-The [single-dose archive](historical/04_model_view/README.md) preserves the
-earlier comparison. Keep its sealed files and original provenance available
-for historical replay and the shared learner imports in downstream studies.
+The active TranSiGen adapter and training utilities live in `output/api/tsg_axis/`.
+Replay the sealed matched-control report using the pinned checkout in the README.

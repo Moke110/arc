@@ -1,4 +1,0 @@
-scenario,fold,method,n_samples,constant_truth_count,constant_prediction_count,nonfinite_count,pcc,undefined_pcc_count,spearman,undefined_spearman_count,rmse,undefined_rmse_count,r2,undefined_r2_count
-cold-drug,0,latent-numeric,1407,0,0,0,0.3018460560567171,0,0.31627624811431826,0,0.40718521503163896,0,-0.02906934238666054,0
-cold-drug,1,scaling,1404,0,0,0,0.2917419752667782,0,0.2976052609984282,0,0.420839153851306,0,-0.07292775108429872,0
-cold-drug,2,no-dose,1395,0,0,0,0.29557850011694914,0,0.3035596854768852,0,0.4142041732933183,0,-0.0026914945364248074,0

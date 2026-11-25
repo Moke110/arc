@@ -12,8 +12,18 @@ from prediction_axis import open_axes
 
 
 class PredictionAxisTest(unittest.TestCase):
+    def test_canonical_axis_id_selects_the_published_gene_order(self):
+        from prediction_axis import open_axis
+
+        selected = open_axis("denoise-3k")
+        self.assertEqual(selected.sha256, "fccdb1e8290cc93e7e7af97f3b2076626fc678f59e38c4ff56aacf48efa9a94b")
+        self.assertEqual(selected.gene_indices, tuple(sorted(set(selected.gene_indices))))
+        self.assertEqual(len(selected.gene_indices), 3000)
+        with self.assertRaisesRegex(ValueError, "prediction axis"):
+            open_axis("denoise-deg-3k")
+
     def test_denoise_deg_release_has_distinct_frozen_prediction_axes(self):
-        release = open_axes(family="denoise-deg")
+        release = open_axes(family="denoise")
         self.assertEqual(release.sizes, (1000, 2000, 3000, 4000, 5000))
         axis = release.axis(3000)
         self.assertEqual(axis.sha256, "fccdb1e8290cc93e7e7af97f3b2076626fc678f59e38c4ff56aacf48efa9a94b")

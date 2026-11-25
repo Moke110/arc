@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import argparse
-import errno
 import fcntl
-import os
 import shutil
 import sys
 from pathlib import Path
@@ -130,9 +128,10 @@ SUPPLEMENTS = {
     "dtoxs_primary": (PRIMARY_MEMBERSHIP,),
 }
 DEFAULT = STEP / "output"
-HISTORICAL = Path("historical/native-v1")
+HISTORY = STEP.parent / "history"
 AXES = Path("02_gene_axis/02.1_hvg-deg")
-VIEW = Path("03_data_train/03.1_hvg-deg-5k")
+TRAINING = Path("03_data_train")
+TAHOE_VIEW = TRAINING / "03.2_tahoe_hvg-5k"
 
 
 def _seal(candidate, columns, common_axis, inputs, exclusions, predecessor):
@@ -190,90 +189,76 @@ def verify_product(root):
 
 def _select_predecessor(output, explicit):
     active = output / "native"
-    archived = output.parent / HISTORICAL
     if (active / "manifest.json").is_file():
         if explicit is not None and sha256(explicit / "manifest.json") != sha256(active / "manifest.json"):
             raise CorpusError("selected predecessor differs from the installed legacy corpus")
         return active
-    if (archived / "manifest.json").is_file():
-        if explicit is not None and sha256(explicit / "manifest.json") != sha256(archived / "manifest.json"):
-            raise CorpusError("selected predecessor differs from the archived legacy corpus")
-        return archived
     return explicit
 
 
-def _archive_file(source, destination):
-    try:
-        os.link(source, destination)
-    except OSError as error:
-        if error.errno != errno.EXDEV:
-            raise
-        shutil.copyfile(source, destination)
+def verify_archived_legacy(legacy):
+    """Require a verified local archive handoff before replacing a legacy directory."""
+    inventory = HISTORY / "archive-manifest.json"
+    error = "replacing the installed legacy corpus requires a verified archive handoff"
+    if not legacy.is_relative_to(REPO) or not inventory.is_file() or inventory.is_symlink():
+        raise CorpusError(error)
+    original = legacy.relative_to(REPO)
+    handoff = release.read_json(inventory)
+    destination = Path(handoff.get("path_map", {}).get(original.as_posix(), "."))
+    archive = REPO / destination
+    if (handoff.get("schema") != "stage2-local-history-v1" or not archive.is_relative_to(HISTORY)
+            or not archive.resolve().is_relative_to(HISTORY.resolve())
+            or not (archive / "manifest.json").is_file() or not (legacy / "manifest.json").is_file()
+            or sha256(archive / "manifest.json") != sha256(legacy / "manifest.json")):
+        raise CorpusError(error)
+    record = release.read_json(legacy / "manifest.json")
+    declared = set(release.output_digests(record)) | {"manifest.json"}
+    if {path.relative_to(legacy).as_posix() for path in legacy.rglob("*")
+            if path.is_file() or path.is_symlink()} != declared:
+        raise CorpusError(f"{error}: unexpected legacy files")
+    entries = handoff.get("entries", {})
+    for name in declared:
+        entry = entries.get((original / name).as_posix(), {})
+        if (entry.get("destination") != (destination / name).as_posix()
+                or (archive / name).is_symlink()):
+            raise CorpusError(f"{error}: missing archived entry {name}")
+    release.check_manifest(archive, record)
 
 
-def preserve_predecessor(output, predecessor, staging):
-    """Retain the verified original corpus separately from the replaced product."""
-    if predecessor is None:
+def verify_downstream(candidate, output):
+    """Check the active training releases before replacing the accepted corpus."""
+    if not ((output / "manifest.json").is_file() or (output / "native/manifest.json").is_file()):
         return
-    active = output / "native"
-    if (active / "manifest.json").is_file() and sha256(active / "manifest.json") != predecessor.manifest_sha256:
-        raise CorpusError("selected predecessor differs from the installed legacy corpus")
-    archive = output.parent / HISTORICAL
-    if not archive.exists():
-        archive.parent.mkdir(parents=True, exist_ok=True)
-        staged = release.candidate(archive, staging)
-        try:
-            origin = active if (active / "manifest.json").is_file() else predecessor.root
-            shutil.copytree(origin, staged, dirs_exist_ok=True, copy_function=_archive_file)
-            release.check_manifest(staged, predecessor.manifest)
-            staged.rename(archive)
-        finally:
-            shutil.rmtree(staged, ignore_errors=True)
-    with open_corpus(archive) as archived:
-        if archived.manifest_sha256 != predecessor.manifest_sha256:
-            raise CorpusError("historical corpus differs from predecessor")
-        release.check_manifest(archive, archived.manifest)
-
-
-def verify_downstream(candidate, output, predecessor):
-    """Exercise the accepted axis and published full views before replacing the corpus."""
     stage2 = output.parent.parent
-    source_code = STEP.parent
-    sys.path[:0] = [str(source_code / directory) for directory in (
-        AXES / "output/api", VIEW / "output/api", VIEW / "execution",
-    )]
-    from expression_view import LAYERS, SOURCES, View
-    from normalization import library_totals, log1p_cp10k
+    sys.path[:0] = [str(STEP.parent / directory / "output/api")
+                    for directory in (AXES, TRAINING, TAHOE_VIEW)]
     from prediction_axis import open_axes
-
-    view_root = stage2 / VIEW / "output/release"
-    view_manifest = view_root / "manifest.json"
-    replacing = (output / "manifest.json").is_file() or (output / "native/manifest.json").is_file()
-    if not replacing:
-        return
+    from tahoe_expression import open_tahoe
+    from training_data import TENV_AXIS_STEPS, open_tenv_axis_training
 
     with open_corpus(candidate) as corpus:
+        for axis_id in TENV_AXIS_STEPS:
+            with open_tenv_axis_training(axis_id, stage2 / TRAINING) as training:
+                if training.manifest["inputs"]["raw_sha256"] != corpus.manifest_sha256:
+                    raise CorpusError(f"{axis_id}: accepted tenv training pins a different native corpus")
         axis = open_axes(stage2 / AXES / "output/release").axis(5000)
-        if not view_manifest.is_file():
-            raise CorpusError("accepted full view manifest is missing")
-        selected = release.read_json(view_manifest)["corpus_sha256"]
-        historical = predecessor.root / "manifest.json" if predecessor is not None else None
-        pin = corpus.resolve_generation(selected, SOURCES, historical_manifest=historical)
-        for name in SOURCES:
-            projection = axis.project(corpus, name)
-            with View(view_root, name, "full", pin, axis.sha256) as view:
-                if tuple(view.var.gene_index) != axis.gene_indices or not view.shape[0]:
-                    raise CorpusError(f"{name}: accepted view axis or population differs")
-                for index in {0, view.shape[0] - 1}:
-                    identity = view.obs.index[index]
-                    native_row = projection.source.obs.index.get_loc(identity)
-                    counts = projection.counts(native_row, native_row + 1)
-                    expected = log1p_cp10k(counts, library_totals(counts)).astype(np.float32)
-                    expression, control, delta = (view.read(index, index + 1, layer)
-                                                   for layer in LAYERS)
-                    if (not np.array_equal(expression, expected) or not np.isfinite(control).all()
-                            or not np.array_equal(delta, expression - control)):
-                        raise CorpusError(f"{name}: accepted view differs from candidate at {identity}")
+        projection = axis.project(corpus, "tahoe_bulk")
+        with open_tahoe(stage2 / TAHOE_VIEW / "output/release") as view:
+            if tuple(view.var.gene_index) != axis.gene_indices or not view.shape[0]:
+                raise CorpusError("Tahoe: accepted well-level axis or population differs")
+            for index in (0, view.shape[0] - 1):
+                identity = view.obs.index[index]
+                native_row = projection.source.obs.index.get_loc(identity)
+                counts = projection.counts(native_row, native_row + 1)
+                totals = counts.sum(axis=1, dtype=np.int64)
+                if (totals <= 0).any():
+                    raise CorpusError(f"Tahoe: empty selected-axis library for {identity}")
+                expected = np.log1p(counts.astype(np.float64) * (10000.0 / totals[:, None])).astype(np.float32)
+                expression, control, delta = (view.read(index, index + 1, layer)
+                                               for layer in ("X", "control", "delta"))
+                if (not np.array_equal(expression, expected) or not np.isfinite(control).all()
+                        or not np.array_equal(delta, expression - control)):
+                    raise CorpusError(f"Tahoe: accepted well-level view differs from candidate at {identity}")
 
 
 def main():
@@ -352,20 +337,33 @@ def main():
         _seal(candidate, columns, {"size": len(axis), "sha256": gene_mapping.AXIS_SHA256},
               inputs, EXCLUSIONS, predecessor)
 
-    args.staging.mkdir(parents=True, exist_ok=True)
-    with publication_lock(args.output) as output, (args.staging / "native-corpus.lock").open("a") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        previous = args.predecessor
-        if output == DEFAULT.resolve():
-            previous = _select_predecessor(output, previous)
+    with publication_lock(args.output) as output:
+        stable = output == DEFAULT.resolve()
+        if stable and (output / "manifest.json").is_file() and args.action != "verify":
+            if (args.action != "publish" or args.predecessor is not None or args.tahoe_built is not None
+                    or args.materialized_root.resolve() != REPO):
+                raise CorpusError("the installed corpus generation is pinned; build with a scratch output")
+            installed = verify_product(output)
+            verify_downstream(output, output)
+            print(installed)
+            return
+
+        previous = _select_predecessor(output, args.predecessor)
+        legacy = output / "native"
+        if args.action != "verify" and legacy.exists():
+            verify_archived_legacy(legacy)
         if args.action == "migrate" and previous is None:
             parser.error("migration requires a sealed v1 release")
-        if previous is None:
-            _run(args, output, None, build)
-        else:
-            with open_corpus(previous) as predecessor:
-                _run(args, output, predecessor, build)
-        print(verify_product(output))
+
+        args.staging.mkdir(parents=True, exist_ok=True)
+        with (args.staging / "native-corpus.lock").open("a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            if previous is None:
+                verified = _run(args, output, None, build)
+            else:
+                with open_corpus(previous) as predecessor:
+                    verified = _run(args, output, predecessor, build)
+        print(verified)
 
 
 def _run(args, output, predecessor, build):
@@ -375,7 +373,7 @@ def _run(args, output, predecessor, build):
         migrated = ("predecessor" in accepted
                     and accepted["inputs"].get("publication_method") != "external-source-replay")
         if migrated and predecessor is None:
-            raise CorpusError("verification of a migrated release requires its sealed predecessor")
+            return verify_product(output)
 
     def prepare(candidate):
         if migrated:
@@ -390,16 +388,15 @@ def _run(args, output, predecessor, build):
             verify_equivalence(predecessor, candidate)
 
     if args.action == "verify":
-        release.replay(output, prepare, verify, root=args.staging)
-        return
+        return release.replay(output, prepare, verify, root=args.staging)["manifest_sha256"]
 
     def verify_before_install(candidate):
         verify(candidate)
         if output == DEFAULT.resolve():
-            verify_downstream(candidate, output, predecessor)
-            preserve_predecessor(output, predecessor, args.staging)
+            verify_downstream(candidate, output)
 
-    publish_candidate(release, output, prepare, verify_before_install, staging=args.staging)
+    installed = publish_candidate(release, output, prepare, verify_before_install, staging=args.staging)
+    return sha256(installed / "manifest.json")
 
 
 if __name__ == "__main__":

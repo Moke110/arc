@@ -55,12 +55,18 @@ python stage2/01_data_raw/execution/build_corpus.py verify
 
 The publisher replays tenv and native Tahoe counts against pinned external inputs.
 Tahoe aggregation checkpoints can resume after source pins are checked again.
-Verification rebuilds a separate candidate, compares every sealed digest, and
-retains the accepted release. A release installed with `migrate` replays its
-layout from the sealed v1 generation in `historical/native-v1`. Migration
-compares native matrices, observations and gene mappings for the six unchanged
-datasets before installation. Existing full 5k views keep the manifest digest
-of their original derivation. New view builds pin the current corpus digest. A separately staged native Tahoe
-build can be read with `--tahoe-built` and goes through the same independent
-source replay before it can supply the release. For linked Git worktrees,
-`--materialized-root` can select the checkout holding the immutable inputs.
+Default `publish` on an installed release verifies its inventory, digests,
+native coverage and compatibility with active training. It returns the
+installed digest. Stage 2 training pins the whole corpus manifest. Use an
+unused `--output <scratch>` to build a different candidate and validate its
+consumer releases together before any generation cutover.
+
+Default `verify` checks the installed migrated release without its archive. Pass `--predecessor <sealed-v1>` to replay a migrated
+generation from an explicit archived input. To migrate over a legacy directory,
+first preserve it in a verified archive handoff with an inventory. Migration compares native matrices,
+observations and gene mappings for the six equivalent datasets. Active tenv
+training pins the current corpus digest. The source replay verifies newly
+published native builds. A separately staged native Tahoe build can be read
+with `--tahoe-built` and goes through the same independent source replay before
+publication. For linked worktrees, `--materialized-root` selects the checkout
+holding the immutable inputs.

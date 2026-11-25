@@ -60,12 +60,12 @@ printf '%s\n' "$tmp/frozen.py" >"$tmp/list_frozen"
 if run "$tmp/list_frozen" >/dev/null; then fail "deleted frozen runtime must fail"; fi
 
 # Newly retired runtime roots fail; current owners pass.
-for old in 01_bases 01_corpus 03_tsg_dose 04_tsg_transfer 02_models_tenv 02_dataset_corpus evaluation 09_xpert_optimize _frozen; do
+for old in 01_bases 01_corpus 03_tsg_dose 04_tsg_transfer 02_models_tenv 02_dataset_corpus evaluation 09_xpert_optimize _frozen 05_tsg_loss 06_tsg_drug_emb 07_tsg_dose 08_tsg_width_dose 09_tsg_transfer; do
   printf 'p = "stage2/%s/output/x"\n' "$old" >"$tmp/new_stale.py"
   printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
   if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
 done
-printf 'p = "stage2/01_data_raw/output/x"\nq = "stage2/04_tsg_axis/output/x"\nr = "stage2/07_tsg_dose/output/x"\ns = "stage2/09_tsg_transfer/output/x"\nt = "stage2/06_tsg_drug_emb/output/x"\n' >"$tmp/current.py"
+printf 'p = "stage2/01_data_raw/output/x"\nq = "stage2/04_tsg_axis/output/x"\nr = "stage2/03_data_train/03.7_tenv_denoise-5k/output/x"\n' >"$tmp/current.py"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "active roots/external source must pass"
 # An active-root prefix must not exempt a longer retired-looking sibling name.
@@ -85,12 +85,13 @@ run_root() {
   STAGE2_PATH_AUDIT_ROOT="$1" STAGE2_PATH_AUDIT_FILES="$2" bash "$audit"
 }
 fixture_root="$tmp/layout/stage2"
-for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 06_tsg_drug_emb 07_tsg_dose 08_tsg_width_dose 09_tsg_transfer; do
+for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis; do
   mkdir -p "$fixture_root/$step"
   printf '%s\n' "$step" >"$fixture_root/$step/AGENTS.md"
   printf '%s\n' "$step" >"$fixture_root/$step/README.md"
 done
 printf 'Stage 2\n' >"$fixture_root/AGENTS.md"
+printf 'Stage 2\n' >"$fixture_root/README.md"
 run_root "$fixture_root" "$tmp/list_clean" >/dev/null \
   || fail "the accepted active roots must coexist with routing"
 for routing in AGENTS.md README.md; do
@@ -119,15 +120,47 @@ fi
 printf '%s\n' "$out" | grep -q 'missing step routing: .*04_tsg_axis/README.md' \
   || fail "the missing successor routing file must be named in the failure"
 mv "$tmp/successor-README.off" "$fixture_root/04_tsg_axis/README.md"
-# The registered dose comparison requires both owning routing files too.
-for routing in AGENTS.md README.md; do
-  mv "$fixture_root/07_tsg_dose/$routing" "$tmp/dose-routing.off"
-  if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
-    fail "the active dose comparison without $routing must fail the layout guard"
+mkdir -p "$fixture_root/history/stage2/07_tsg_dose"
+run_root "$fixture_root" "$tmp/list_clean" >/dev/null || fail "the local archive must pass"
+mv "$fixture_root/history" "$tmp/archive"
+ln -s "$tmp/archive" "$fixture_root/history"
+if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
+  fail "an archive symlink must fail"
+fi
+rm "$fixture_root/history"
+mkdir -p "$fixture_root/03_data_train/03.1_hvg-deg-5k"
+if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
+  fail "the old combined view under the active training step must fail"
+fi
+rmdir "$fixture_root/03_data_train/03.1_hvg-deg-5k"
+for retired in \
+  03_data_train/03.1_tenv_hvg-deg-5k 03_data_train/03.2_tahoe_hvg-deg-5k \
+  03_data_train/03.3_tenv_hvg-deg-3k 03_data_train/03.4_tenv_hvg-deg-4k \
+  03_data_train/03.5_tenv_denoise-deg-3k 03_data_train/03.6_tenv_denoise-deg-4k \
+  03_data_train/03.7_tenv_denoise-deg-5k 04_tsg_axis/log/316-runs; do
+  mkdir -p "$fixture_root/$retired"
+  if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
+    fail "active-tree residue $retired must fail"
   fi
-  printf '%s\n' "$out" | grep -q "missing step routing: .*07_tsg_dose/$routing" \
-    || fail "the missing dose routing file must be named in the failure"
-  mv "$tmp/dose-routing.off" "$fixture_root/07_tsg_dose/$routing"
+  rmdir "$fixture_root/$retired"
+done
+mkdir -p "$fixture_root/04_tsg_axis/historical"
+if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
+  fail "step-local history must fail"
+fi
+rmdir "$fixture_root/04_tsg_axis/historical"
+printf 'p = base / "07_tsg_dose/output/api"\n' >"$tmp/relative.py"
+printf '%s\n' "$tmp/relative.py" >"$tmp/list_relative"
+if run_root "$fixture_root" "$tmp/list_relative" >/dev/null 2>&1; then
+  fail "a relative retired runtime reference must fail"
+fi
+for old in \
+  "stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output" \
+  "03.7_tenv_denoise-deg-5k/output" "stage2/04_tsg_axis/log/316-runs"; do
+  printf 'p = base / "%s"\n' "$old" >"$tmp/relative.py"
+  if run_root "$fixture_root" "$tmp/list_relative" >/dev/null 2>&1; then
+    fail "retired release reference $old must fail"
+  fi
 done
 printf 'notes\n' >"$fixture_root/notes.md"
 if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then

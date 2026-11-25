@@ -1,9 +1,0 @@
-caps: systemd-run user scope MemoryMax=10G MemorySwapMax=8G threads=2
-Running as unit: run-r8690df914ab64a40ac8065b081d2cfd8.scope; invocation ID: de74ada4a9c14ba3bba639b67bbbd97a
-test_exact_replay_mismatch_becomes_terminal_failure_and_blocks_resume (test_failure_lifecycle.FailureLifecycle.test_exact_replay_mismatch_becomes_terminal_failure_and_blocks_resume) ... ok
-test_nonfinite_evaluation_becomes_terminal_failure_and_blocks_resume (test_failure_lifecycle.FailureLifecycle.test_nonfinite_evaluation_becomes_terminal_failure_and_blocks_resume) ... ok
-
-----------------------------------------------------------------------
-Ran 2 tests in 12.657s
-
-OK

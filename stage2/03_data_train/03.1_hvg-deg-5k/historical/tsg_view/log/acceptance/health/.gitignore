@@ -1,3 +1,0 @@
-# Sealed acceptance evidence: the checked-in health transcripts are evidence, not scratch
-# output, so re-include them past the repository-wide `*.log` rule.
-!*.log

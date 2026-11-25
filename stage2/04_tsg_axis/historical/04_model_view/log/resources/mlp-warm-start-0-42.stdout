@@ -1,1 +1,0 @@
-{"status": "complete", "smoke": false, "best_epoch": 258, "epochs": 308, "validation_mse": 0.05806303024291992, "elapsed_seconds": 13.157875600038096, "peak_rss_kib": 1481960, "weights_updated": true, "replay": "exact native sampled prediction"}

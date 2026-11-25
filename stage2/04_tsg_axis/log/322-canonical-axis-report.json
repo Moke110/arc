@@ -1,0 +1,60 @@
+{
+  "axis_ids": {
+    "denoise-deg-3k": "denoise-3k",
+    "denoise-deg-4k": "denoise-4k",
+    "denoise-deg-5k": "denoise-5k",
+    "hvg-deg-3k": "hvg-3k",
+    "hvg-deg-4k": "hvg-4k",
+    "hvg-deg-5k": "hvg-5k"
+  },
+  "canonical_rows": {
+    "condition-disease-f1.csv": 33192,
+    "condition-metrics.csv": 8298,
+    "figure/data/delta-metrics.csv": 54,
+    "figure/data/disease-f1.csv": 24,
+    "fold-disease-f1.csv": 72,
+    "fold-metrics.csv": 162
+  },
+  "csv_only_replay": "Two independent renders byte-identical",
+  "figure_sha256": {
+    "figure/canonical-axis/delta-metrics.png": "ad7828e7f31b02407c1e1c08786baa27ddf3a34c42f39fb47614df126dc3bcaf",
+    "figure/canonical-axis/disease-f1.png": "6a1edfdb280d0650eccf2f04c2b00bb09f1b9fad108df33c4d7e3722fae3bf68",
+    "figure/script/render.py": "9bab15b870186fe84a091c1c839d1f8f6c9af1dad6abcf14a6becda5761339a2"
+  },
+  "outputs": {
+    "condition-disease-f1.csv": "07901f83b00ae893f6f4b14f857cba539a951ece6887d3e71c680336c4246710",
+    "condition-metrics.csv": "429d5e7498d49cb5dbf313c89a33ef7567d020f50ee519cc652ded9b55c68d0b",
+    "figure/data/delta-metrics.csv": "1b2e7af6df8a1495588e5b228d49a94d14c1b51e63025c5177cd4eb25d341c0d",
+    "figure/data/disease-f1.csv": "9a6f3d51eba3a1195e57314c66985843c189d84557f26e1b8d6d8f6705c27dee",
+    "fold-disease-f1.csv": "e224f4d81c5b8595953369d4ca93aaa3044e7aadb3cb50175847d0f9c457a093",
+    "fold-metrics.csv": "51c4317077ff02a8ebe55cff6e740bd173e1bbbe00a37aa08a2193fc909d40c5"
+  },
+  "predecessor_style_revision": "0067ce54004c8b9379a81ff0b4eb3966851eb245",
+  "published_files_sha256": {
+    "figure/canonical-axis/data/delta-metrics.csv": "1b2e7af6df8a1495588e5b228d49a94d14c1b51e63025c5177cd4eb25d341c0d",
+    "figure/canonical-axis/data/disease-f1.csv": "9a6f3d51eba3a1195e57314c66985843c189d84557f26e1b8d6d8f6705c27dee",
+    "figure/canonical-axis/delta-metrics.png": "ad7828e7f31b02407c1e1c08786baa27ddf3a34c42f39fb47614df126dc3bcaf",
+    "figure/canonical-axis/disease-f1.png": "6a1edfdb280d0650eccf2f04c2b00bb09f1b9fad108df33c4d7e3722fae3bf68"
+  },
+  "sealed_figure_revision": "3f4cbb6569b739c6c3761efb1f9c0dde254f9be3",
+  "sealed_receipt": "log/319-formal.json",
+  "sealed_replay": {
+    "csv_only_figure_sha256": {
+      "delta-metrics.png": "4174d334b445b77474a457ff08cb3a87ea8b9f142a10646a64034f0e056c3c13",
+      "disease-f1.png": "63f456d7124a9c1d55dadc64f9f14ba1acb7725c1f64efb39126eabb08390039"
+    },
+    "fits": 18,
+    "matrix_manifest_sha256": "9e2c01145387794e36336734efd261aa7c80132208d5a51f8eb4074f55830b5e",
+    "report_manifest_sha256": "9627a97200a7276298063a6e8b698372287fc63592bcceb2d4dc622209135a26",
+    "result": "PASS"
+  },
+  "sealed_report_manifest_sha256": "9627a97200a7276298063a6e8b698372287fc63592bcceb2d4dc622209135a26",
+  "sealed_table_sha256": {
+    "condition-disease-f1.csv": "c70acd86bb1413e8778c09bdba548d1da8c71274cf37748b069917ece2ae3225",
+    "condition-metrics.csv": "7953d4f11badbd1e91466d5a624f177dc7230ca24ea4c3b99e57b24aea0977f2",
+    "figure/data/delta-metrics.csv": "073b3becfb49de54fb9f6d86ef46ec2903aa4a354840e64ac9a58ee7548eadad",
+    "figure/data/disease-f1.csv": "eea5470fa7871726614402ab60294cbcf31d59194b53c7936dba1153b3d509b2",
+    "fold-disease-f1.csv": "ee06b918eae34fd896685592de3c4d21c3692f5dca38ea85ed5a95de8ab8d538",
+    "fold-metrics.csv": "0a6ee1baff59129f117fce7eb3034adf9b21aaf2c5cd0b38a12c63501ccc64ba"
+  }
+}

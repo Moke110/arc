@@ -817,6 +817,10 @@ subset of the frozen 18,164 gene indices without renumbering. ADR 0073 specifies
 2,000, 3,000, 4,000 and 5,000, all present in the measured release.
 _Avoid_: narrowed corpus axis, new identity axis
 
+**Prediction axis ID** (`hvg-{N}k`, `denoise-{N}k`):
+The name of a Stage 2 gene axis identified by its selection family and size in
+thousands of genes. `hvg` denotes HVG-DEG and `denoise` denotes Denoise-DEG.
+
 **Gene-axis candidate**:
 A frozen-axis gene under consideration for the axis — the rows of
 `output/gene-axis/candidate_rank_sum.csv`, one per frozen gene. tenv-HVG ranks all 18,164
@@ -917,7 +921,7 @@ substitute: it flatters any dataset whose measurable genes happen to be large-ef
 _Avoid_: random-gene null, permutation p (unqualified)
 
 **Source dataset table**:
-The category subtables at the start of the [archived gene-axis rule document](stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/gene_axis_fill_rule.docx): one row per released dataset record with its
+The category subtables at the start of the [archived gene-axis rule document](https://github.com/Moke110/arc/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/gene_axis_fill_rule.docx): one row per released dataset record with its
 category, accession, sample type, groups, sample sizes, sequencing technology and the published
 v2 DEG count (`catalog.json` `n_deg`, never the padj-only `n_significant`), plus a separately labelled tenv-HVG non-disease row. Shared studies/controls and sample units remain explicit.
 _Avoid_: dataset summary, metadata table

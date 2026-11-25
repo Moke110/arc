@@ -10,7 +10,7 @@ Delta and training exclusions. The prediction-axis step owns gene selection.
 - `execution/build_corpus.py` publishes and independently replays candidates.
   Use `migrate --predecessor <sealed-v1> --output <candidate>` to rehearse
   migration away from the accepted output.
-- `historical/native-v1` retains the sealed predecessor used by existing views.
+- Pass `--predecessor` to replay an archived migration explicitly.
 - `execution/checkpoints/` holds disposable build state.
 - `log/` records build and replay acceptance evidence.
 

@@ -33,7 +33,7 @@ def sha256(path):
         return file_digest(handle, "sha256").hexdigest()
 
 
-def resolve_generation(manifest, current, requested, sources, historical_manifest):
+def resolve_generation(manifest, current, requested, sources, historical_manifest=None):
     """Resolve the requested digest against the current or equivalent sealed corpus."""
     if manifest.get("schema") not in {SCHEMA, LEGACY_SCHEMA}:
         raise CorpusError("canonical native corpus provenance is missing")
@@ -43,8 +43,8 @@ def resolve_generation(manifest, current, requested, sources, historical_manifes
     unchanged = predecessor.get("unchanged_sources", {})
     if (manifest["schema"] == SCHEMA and predecessor.get("manifest_sha256") == requested
             and all(unchanged.get(source) == source for source in sources)
-            and historical_manifest.is_file()):
-        payload = historical_manifest.read_bytes()
+            and historical_manifest is not None and Path(historical_manifest).is_file()):
+        payload = Path(historical_manifest).read_bytes()
         if (hash_bytes(payload).hexdigest() == requested
                 and json.loads(payload).get("schema") == LEGACY_SCHEMA):
             return requested
@@ -201,10 +201,8 @@ class Corpus:
         self._sources = {}
 
     def resolve_generation(self, requested, sources, *, historical_manifest=None):
-        if historical_manifest is None:
-            historical_manifest = self.root.resolve().parent / "historical/native-v1/manifest.json"
         return resolve_generation(self.manifest, self.manifest_sha256, requested, sources,
-                                  Path(historical_manifest))
+                                  historical_manifest)
 
     def source(self, name):
         if name not in self._sources:

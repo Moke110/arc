@@ -1,0 +1,325 @@
+{
+  "date": "2026-11-25",
+  "fixture_tests": {
+    "archive": 3,
+    "axis": 7,
+    "axis_comparison": 10,
+    "path_boundary": "PASS",
+    "raw": 10,
+    "tracking_boundary": "PASS",
+    "training": 6
+  },
+  "formal_export": {
+    "axis_ids": {
+      "denoise-deg-3k": "denoise-3k",
+      "denoise-deg-4k": "denoise-4k",
+      "denoise-deg-5k": "denoise-5k",
+      "hvg-deg-3k": "hvg-3k",
+      "hvg-deg-4k": "hvg-4k",
+      "hvg-deg-5k": "hvg-5k"
+    },
+    "outputs": {
+      "condition-disease-f1.csv": "07901f83b00ae893f6f4b14f857cba539a951ece6887d3e71c680336c4246710",
+      "condition-metrics.csv": "429d5e7498d49cb5dbf313c89a33ef7567d020f50ee519cc652ded9b55c68d0b",
+      "figure/data/delta-metrics.csv": "1b2e7af6df8a1495588e5b228d49a94d14c1b51e63025c5177cd4eb25d341c0d",
+      "figure/data/disease-f1.csv": "9a6f3d51eba3a1195e57314c66985843c189d84557f26e1b8d6d8f6705c27dee",
+      "fold-disease-f1.csv": "e224f4d81c5b8595953369d4ca93aaa3044e7aadb3cb50175847d0f9c457a093",
+      "fold-metrics.csv": "51c4317077ff02a8ebe55cff6e740bd173e1bbbe00a37aa08a2193fc909d40c5"
+    },
+    "published_files_sha256": {
+      "figure/canonical-axis/data/delta-metrics.csv": "1b2e7af6df8a1495588e5b228d49a94d14c1b51e63025c5177cd4eb25d341c0d",
+      "figure/canonical-axis/data/disease-f1.csv": "9a6f3d51eba3a1195e57314c66985843c189d84557f26e1b8d6d8f6705c27dee",
+      "figure/canonical-axis/delta-metrics.png": "ad7828e7f31b02407c1e1c08786baa27ddf3a34c42f39fb47614df126dc3bcaf",
+      "figure/canonical-axis/disease-f1.png": "6a1edfdb280d0650eccf2f04c2b00bb09f1b9fad108df33c4d7e3722fae3bf68"
+    },
+    "result": "Canonical summary CSVs and rendered PNGs match the tracked release byte for byte.",
+    "sealed_report_manifest_sha256": "9627a97200a7276298063a6e8b698372287fc63592bcceb2d4dc622209135a26",
+    "sealed_table_sha256": {
+      "condition-disease-f1.csv": "c70acd86bb1413e8778c09bdba548d1da8c71274cf37748b069917ece2ae3225",
+      "condition-metrics.csv": "7953d4f11badbd1e91466d5a624f177dc7230ca24ea4c3b99e57b24aea0977f2",
+      "figure/data/delta-metrics.csv": "073b3becfb49de54fb9f6d86ef46ec2903aa4a354840e64ac9a58ee7548eadad",
+      "figure/data/disease-f1.csv": "eea5470fa7871726614402ab60294cbcf31d59194b53c7936dba1153b3d509b2",
+      "fold-disease-f1.csv": "ee06b918eae34fd896685592de3c4d21c3692f5dca38ea85ed5a95de8ab8d538",
+      "fold-metrics.csv": "0a6ee1baff59129f117fce7eb3034adf9b21aaf2c5cd0b38a12c63501ccc64ba"
+    }
+  },
+  "isolation": "Linked implementation checkout without Stage 2 history or retired step trees. Current training and native corpus payloads were read through same-filesystem hardlinks. The frozen representations and immutable model source were supplied explicitly.",
+  "issue": 323,
+  "measurements": {
+    "inputs": {
+      "exit_status": 0,
+      "peak_rss_kib": 326024,
+      "wall": "0:04.98"
+    },
+    "predict": {
+      "exit_status": 0,
+      "peak_rss_kib": 1457400,
+      "wall": "0:03.48"
+    },
+    "raw-downstream": {
+      "exit_status": 0,
+      "peak_rss_kib": 442068,
+      "wall": "0:04.88"
+    },
+    "raw-verify": {
+      "exit_status": 0,
+      "peak_rss_kib": 449912,
+      "wall": "0:21.61"
+    },
+    "register": {
+      "exit_status": 0,
+      "peak_rss_kib": 749108,
+      "wall": "0:01.27"
+    },
+    "render-A": {
+      "exit_status": 0,
+      "peak_rss_kib": 187476,
+      "wall": "0:01.13"
+    },
+    "render-B": {
+      "exit_status": 0,
+      "peak_rss_kib": 187424,
+      "wall": "0:01.20"
+    },
+    "replay": {
+      "exit_status": 0,
+      "peak_rss_kib": 1475200,
+      "wall": "0:03.37"
+    },
+    "score": {
+      "exit_status": 0,
+      "peak_rss_kib": 514188,
+      "wall": "0:05.68"
+    },
+    "tenv-replay": {
+      "exit_status": 0,
+      "peak_rss_kib": 317836,
+      "wall": "0:03.47"
+    },
+    "train": {
+      "exit_status": 0,
+      "peak_rss_kib": 1785208,
+      "wall": "0:04.21"
+    },
+    "verify": {
+      "exit_status": 0,
+      "peak_rss_kib": 514268,
+      "wall": "0:05.20"
+    }
+  },
+  "resources": {
+    "cpu_threads": 2,
+    "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "gpu_before_run_mib": 2176,
+    "gpu_total_mib": 16376,
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "step_04_scope": "systemd-run user scope",
+    "steps_01_to_03_scope": "virtual-memory cap",
+    "wsl_available_before_gpu_gib": 20
+  },
+  "result": "PASS",
+  "schema": "stage2-active-history-archive-isolated-smoke-v1",
+  "step_04": {
+    "axis": "hvg-5k",
+    "best_epoch": 2,
+    "conditions": {
+      "test": 24,
+      "train": 64,
+      "valid": 24
+    },
+    "csv_only_figure_replay": {
+      "outputs": {
+        "delta-metrics.png": "751c77678fc1dedc6aed509b4d42c02a0a7ca8f5ddf040a43b422f63b089b2ba",
+        "disease-f1.png": "9c1cef3c13d3d42cc36752926341f374b4e6de2da3370c49d61a076799d3f47a"
+      },
+      "result": "byte-identical across two renders"
+    },
+    "device": "cuda",
+    "environment": {
+      "cuda": "13.0",
+      "hardware": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "numpy": "2.4.6",
+      "python": "3.13.13",
+      "torch": "2.12.0+cu130",
+      "torch_threads": 2
+    },
+    "epochs": 2,
+    "fold": 0,
+    "registration_sha256": "38b6185beb566fa75ad4dea7dac27e17b88c5546d228d211b9ece8eebfb41e02",
+    "run_manifest_sha256": "e1dcfbf51bfb72f997866c17011ea7f8ff71127d06f8b9bda305ca90b8e9d8a8",
+    "score_verification": {
+      "manifest_sha256": "487c589665d6a9c99f0afd0bda75c51ea915852785148928775ac5631c779f14",
+      "result": "PASS"
+    },
+    "seed": 42,
+    "test_prediction_replay": "exact",
+    "training_parameters": 21691800,
+    "validation_loss": 7889.370442708333,
+    "validation_mse": 0.5333980143229167,
+    "validation_objective_replay": "exact",
+    "validation_prediction_replay": "exact"
+  },
+  "steps_01_to_03": {
+    "axes": {
+      "denoise-1k": "2df0b9b8abbb10a7518d6a973d2e0208b08695a8c0a650ea5d540d700006eb42",
+      "denoise-2k": "485d1d32779b8525e1a7566b426fcf383e6112c0dbec4630642ff856a12e4011",
+      "denoise-3k": "fccdb1e8290cc93e7e7af97f3b2076626fc678f59e38c4ff56aacf48efa9a94b",
+      "denoise-4k": "c6c1585ff8c619bc6f083e355ab28d81bcaf28c4320634ce70b000338cc9744a",
+      "denoise-5k": "1c23ae7db2df90bb6d82d2f64a77c7e83b39933ceaf55d33ceffcaed3d51279d",
+      "hvg-2k": "cdbac4a64dfd2d4faa1fd353a479a54775a51bfbb8dd312ed41d8b22233dce57",
+      "hvg-3k": "105b7c40b8d19a7f361bfef4d36745fd3c9122c8a62af0a240d8ff8efadc7245",
+      "hvg-4k": "26c5bd988e87ed7d516133df91eebd0ee285a038be89ec006f876efdf3d23680",
+      "hvg-5k": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e"
+    },
+    "axis_family_manifest_sha256": {
+      "denoise": "e3c9a88ac4f8f787ab6a13c8f2b667b29cf6f55e2f554c8d5a148f3475c35b33",
+      "hvg": "ca14d9ff0dbdd83ec5ba6acf0fcd345dfc1aedb7445bbc362329754105989494"
+    },
+    "history_available": false,
+    "raw": {
+      "active_downstream_compatibility": "PASS",
+      "dataset_count": 7,
+      "manifest_sha256": "91a54af534bb34df97619814c38ea676a074e1ec826753095c6f55b068165a90",
+      "native_count_dtype": "int32",
+      "native_width": 19613,
+      "release_verify_sha256": "91a54af534bb34df97619814c38ea676a074e1ec826753095c6f55b068165a90",
+      "tenv_matched_vehicle_rows": [
+        0,
+        1,
+        3,
+        4,
+        6,
+        7,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "tenv_treatment_row": 19
+    },
+    "result": "PASS",
+    "training": {
+      "frozen_fold_evidence": {
+        "axis_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+        "held_dose_um": [
+          0.2,
+          1.0,
+          10.0
+        ],
+        "pair_sha256": "eab35931bfc4dd56837647eaf932a0d6c07bf5ebf8bd97f168ad296a2027e2bc",
+        "receipt_sha256": "a50625709c9b96f836bc56bbeab791b30863eba15a39e754394df5ddc207e999",
+        "schema": "tsg-dose-round1-axis-local-pair-v1",
+        "source_manifest_sha256": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e",
+        "split_seed": 226,
+        "splits_sha256": "0fa5ea4b4edd36a6a00b229afb3ffd5257d5f088bf0dd964ff521a14016dd17b"
+      },
+      "hvg_5k_replay": {
+        "counts": {
+          "candidate_controls": 16,
+          "candidate_treatments": 1383,
+          "controls": 16,
+          "excluded_raw_rows": 112,
+          "raw_rows": 4510,
+          "treatments": 1383
+        },
+        "manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+        "result": "PASS"
+      },
+      "tahoe": {
+        "manifest_sha256": "653f5845f81205e3ce95351b1464493b393ada8eff981c883184f15470f58df8",
+        "outputs": {
+          "tahoe_bulk.exclusions.csv": "9c9e61ede74b0b8b0bff5b074f3c1499cd1e165ec8a792597b0f5750fc538d86",
+          "tahoe_bulk.h5ad": "79e06aeaf3135a8564d5889508e375e77a05c61325e497efc0d6d19365085e7c",
+          "tahoe_bulk.members.csv": "b9db6704d52d9597052a11ca83409b11f2bd4bc4e5e7cba0fef14b42ae7fa353"
+        },
+        "result": "PASS",
+        "shape": [
+          66718,
+          5000
+        ]
+      },
+      "tenv": {
+        "denoise-3k": {
+          "counts": {
+            "candidate_controls": 16,
+            "candidate_treatments": 1383,
+            "controls": 16,
+            "excluded_raw_rows": 112,
+            "raw_rows": 4510,
+            "treatments": 1383
+          },
+          "manifest_sha256": "f2b695c91827bb11fd588e3ee30d746b035a473e69c1b27912dface4843f1422",
+          "reference_manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+          "result": "PASS"
+        },
+        "denoise-4k": {
+          "counts": {
+            "candidate_controls": 16,
+            "candidate_treatments": 1383,
+            "controls": 16,
+            "excluded_raw_rows": 112,
+            "raw_rows": 4510,
+            "treatments": 1383
+          },
+          "manifest_sha256": "73b43419a5e5f99ade186bb47eb8716485109fa34e04407fe6c061a3cbef3e79",
+          "reference_manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+          "result": "PASS"
+        },
+        "denoise-5k": {
+          "counts": {
+            "candidate_controls": 16,
+            "candidate_treatments": 1383,
+            "controls": 16,
+            "excluded_raw_rows": 112,
+            "raw_rows": 4510,
+            "treatments": 1383
+          },
+          "manifest_sha256": "97bb9f1b792efd81eeeca65a0318324680f509ecac74bb04acd22ba4523c109e",
+          "reference_manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+          "result": "PASS"
+        },
+        "hvg-3k": {
+          "counts": {
+            "candidate_controls": 16,
+            "candidate_treatments": 1383,
+            "controls": 16,
+            "excluded_raw_rows": 112,
+            "raw_rows": 4510,
+            "treatments": 1383
+          },
+          "manifest_sha256": "fb565ef2fc79a07fba924162b3f08dcf74c0904d24d9455aeb23cc41eab48a64",
+          "reference_manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+          "result": "PASS"
+        },
+        "hvg-4k": {
+          "counts": {
+            "candidate_controls": 16,
+            "candidate_treatments": 1383,
+            "controls": 16,
+            "excluded_raw_rows": 112,
+            "raw_rows": 4510,
+            "treatments": 1383
+          },
+          "manifest_sha256": "b397f926606fc824e329d174642b0c1e1ce8856c4a45decb950e1f79778707ed",
+          "reference_manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+          "result": "PASS"
+        },
+        "hvg-5k": {
+          "counts": {
+            "candidate_controls": 16,
+            "candidate_treatments": 1383,
+            "controls": 16,
+            "excluded_raw_rows": 112,
+            "raw_rows": 4510,
+            "treatments": 1383
+          },
+          "manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+          "result": "PASS"
+        }
+      }
+    }
+  }
+}

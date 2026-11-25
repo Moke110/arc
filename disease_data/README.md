@@ -98,7 +98,7 @@ Three items added for the Stage 2 gene axis are **cardiomyocyte-derived**, not
 whole tissue: two GEO single-cell deposits and one cellxgene object. Each follows
 the same five-member ADR 0030 contract, adds a CM-gate + per-donor pseudobulk
 derivation under `local/`, and publishes one compact DEG table per dataset into
-the historical [disease DEG release](../stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/output/disease-deg/):
+the historical [disease DEG release](https://github.com/Moke110/arc/tree/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/output/disease-deg):
 
 | item | deposit | CM gate | donors | feeds |
 |---|---|---|---|---|
@@ -290,7 +290,7 @@ acute-MI bulk case–control series exists.
 ## Unified TOX source admission (ADR 0072)
 
 The independent pre-DEG ledger and its evidence are retained in the
-[historical Bases records](../stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/README.md). These additions have immutable GEO matrices and sample
+[historical Bases records](https://github.com/Moke110/arc/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/README.md). These additions have immutable GEO matrices and sample
 metadata, fetch recipes, offline manifests and per-item design records:
 
 | items | deposited measurements | eligible comparison |
