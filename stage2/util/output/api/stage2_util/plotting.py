@@ -79,6 +79,20 @@ def scatter(axis, x, y, *, hue=220, depth=2, **kwargs):
     return axis.scatter(x, y, color=palette.color_pair(hue, depth).main, **kwargs)
 
 
+def replicate_dots(axis, x, values, *, hue=220, depth=2, spread=.18, **kwargs):
+    """Draw each finite replicate at one group center with one hue-depth pair.
+
+    The symmetric spread is measured in x-axis units. Sorting by value keeps
+    the offsets independent of replicate identifiers and input order.
+    """
+    y = np.asarray(values, dtype=float)
+    if y.ndim != 1 or not np.isfinite(spread) or spread < 0:
+        raise ValueError("replicate dots need a value vector and a finite nonnegative spread")
+    y = np.sort(y[np.isfinite(y)])
+    offsets = np.linspace(-spread, spread, size) if (size := len(y)) > 1 else np.zeros(size)
+    return scatter(axis, x + offsets, y, hue=hue, depth=depth, **kwargs)
+
+
 def bubble(axis, x, y, sizes, *, hue=220, depth=2, **kwargs):
     """Draw size-encoded points with the main color for both faces and edges."""
     color = palette.color_pair(hue, depth).main
