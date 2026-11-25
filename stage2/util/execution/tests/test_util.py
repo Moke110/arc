@@ -58,7 +58,7 @@ class PlotTests(unittest.TestCase):
                                   [float(row["loss"]) for row in rows], hue=220, depth=0)
             self.assertEqual(list(line.get_ydata()), [2.5, 1.5])
             self.assertEqual(tuple(round(channel, 3) for channel in line.get_color()),
-                             (.048, .176, .432, .90))
+                             (.079, .246, .581, .90))
             png = directory / "plot.png"
             plotting.save_figure(fig, png)
             self.assertTrue(png.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))

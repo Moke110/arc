@@ -61,6 +61,26 @@ def line(axis, x, y, *, hue=220, depth=2, **kwargs):
     return axis.plot(x, y, color=palette.color_pair(hue, depth).main, **kwargs)
 
 
+def learning_curve(axis, runs, *, train_hue=220, validation_hue=140):
+    """Draw one train/validation pair per run for a single model's panel.
+
+    Each run supplies (epochs, train_values, validation_values). Hue
+    identifies the curve role, and both lines in a run share a stroke
+    pattern. Return the (training, validation) artists in input order.
+    """
+    styles = ("-", "--", "-.", ":")
+    pairs = []
+    for index, (epochs, training, validation) in enumerate(runs):
+        style = styles[index % len(styles)]
+        train_line, = line(axis, epochs, training, hue=train_hue, linestyle=style,
+                           linewidth=1, label="Training" if index == 0 else None)
+        validation_line, = line(axis, epochs, validation, hue=validation_hue,
+                                linestyle=style, linewidth=1.2,
+                                label="Validation" if index == 0 else None)
+        pairs.append((train_line, validation_line))
+    return pairs
+
+
 def errorbar(axis, x, y, *, hue=220, depth=2, **kwargs):
     """Draw errors and optional markers with the same main color."""
     color = palette.color_pair(hue, depth).main
@@ -85,12 +105,57 @@ def replicate_dots(axis, x, values, *, hue=220, depth=2, spread=.18, **kwargs):
     The symmetric spread is measured in x-axis units. Sorting by value keeps
     the offsets independent of replicate identifiers and input order.
     """
-    y = np.asarray(values, dtype=float)
-    if y.ndim != 1 or not np.isfinite(spread) or spread < 0:
-        raise ValueError("replicate dots need a value vector and a finite nonnegative spread")
-    y = np.sort(y[np.isfinite(y)])
+    if not np.isfinite(spread) or spread < 0:
+        raise ValueError("replicate dots need a finite nonnegative spread")
+    y = np.sort(_finite_replicates(values))
     offsets = np.linspace(-spread, spread, size) if (size := len(y)) > 1 else np.zeros(size)
     return scatter(axis, x + offsets, y, hue=hue, depth=depth, **kwargs)
+
+
+def _finite_replicates(values):
+    values = np.asarray(values, dtype=float)
+    if values.ndim != 1:
+        raise ValueError("replicates need a value vector")
+    return values[np.isfinite(values)]
+
+
+def replicate_errorbar(axis, x, values, *, hue=220, depth=2, spread=.18, **kwargs):
+    """Draw finite replicate dots and sample SD about their mean.
+
+    Keyword arguments style the dots. An empty group draws no marks and
+    a singleton draws only its dot. Return the dots and error bar artists.
+    """
+    y = _finite_replicates(values)
+    if not len(y):
+        return None, None
+    kwargs.setdefault("s", 15)
+    kwargs.setdefault("zorder", 4)
+    errors = None
+    if len(y) > 1:
+        errors = errorbar(axis, [x], [y.mean()], yerr=[y.std(ddof=1)], fmt="none",
+                          hue=hue, depth=depth, capsize=3, linewidth=1,
+                          zorder=kwargs["zorder"] - 1)
+    dots = replicate_dots(axis, x, y, hue=hue, depth=depth, spread=spread, **kwargs)
+    return dots, errors
+
+
+def replicate_bar(axis, x, values, *, hue=220, depth=2, width=.8, spread=None,
+                  label=None, dot_size=15, **kwargs):
+    """Draw the replicate mean, individual dots and sample SD for one bar.
+
+    Undefined replicates produce no marks. Return the bar, dots and error
+    bar artists, with None for marks that were not drawn.
+    """
+    y = _finite_replicates(values)
+    if not len(y):
+        return None, None, None
+    kwargs.setdefault("zorder", 2)
+    dots, errors = replicate_errorbar(
+        axis, x, y, hue=hue, depth=depth, spread=width * .23 if spread is None else spread,
+        s=dot_size, zorder=kwargs["zorder"] + 2,
+    )
+    bars = bar(axis, [x], [y.mean()], hue=hue, depth=depth, width=width, label=label, **kwargs)
+    return bars, dots, errors
 
 
 def bubble(axis, x, y, sizes, *, hue=220, depth=2, **kwargs):
@@ -101,7 +166,7 @@ def bubble(axis, x, y, sizes, *, hue=220, depth=2, **kwargs):
 
 
 def heatmap(axis, values, *, hue=220, vmin=None, vmax=None, colorbar_label=None, **kwargs):
-    """Draw a scalar heatmap and its numeric color scale in five depths of one hue."""
+    """Draw a scalar heatmap and its numeric color scale in the ordered depths of one hue."""
     from matplotlib.colors import ListedColormap
 
     colormap = ListedColormap(palette.sequential_colors(hue))

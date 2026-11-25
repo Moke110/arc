@@ -13,19 +13,19 @@ from stage2_util import palette, plotting
 class PlottingTests(unittest.TestCase):
     def test_palette_coordinates_preserve_rgb_between_roles(self):
         self.assertEqual(palette.HUES, tuple(range(20, 341, 40)))
-        self.assertEqual(palette.DEPTHS, tuple(range(5)))
+        self.assertEqual(palette.DEPTHS, tuple(range(4)))
         for hue in palette.HUES:
             colors = [palette.color_pair(hue, depth) for depth in palette.DEPTHS]
-            self.assertEqual(len({pair.main for pair in colors}), 5)
+            self.assertEqual(len({pair.main for pair in colors}), 4)
             for pair in colors:
                 self.assertEqual(pair.main[:3], pair.secondary[:3])
                 self.assertEqual((pair.main[3], pair.secondary[3]), (.90, .40))
-        for channel, expected in zip(palette.color_pair(20, 0).main[:3], (.432, .176, .048)):
+        for channel, expected in zip(palette.color_pair(20, 0).main[:3], (.5808, .2464, .0792)):
             self.assertAlmostEqual(channel, expected)
         with self.assertRaises(ValueError):
             palette.color_pair(0)
         with self.assertRaises(ValueError):
-            palette.color_pair(20, 5)
+            palette.color_pair(20, 4)
 
     def setUp(self):
         self.figure, self.axis = plt.subplots()
@@ -72,6 +72,23 @@ class PlottingTests(unittest.TestCase):
         self.assertEqual(tuple(collection.get_colors()[0]), colors.main)
         self.assertEqual(collection.get_segments()[0].tolist(), [[1, 1.5], [1, 2.5]])
 
+    def test_learning_curve_draws_both_series_for_every_run(self):
+        pairs = plotting.learning_curve(self.axis, [
+            ([1, 2, 3], [3, 2, 1], [5, 3, 2]),
+            ([1, 2], [4, 1], [4, 3]),
+        ])
+        self.assertEqual(len(self.axis.lines), 4)
+        self.assertEqual([list(training.get_ydata()) for training, _ in pairs],
+                         [[3, 2, 1], [4, 1]])
+        self.assertEqual([list(validation.get_xdata()) for _, validation in pairs],
+                         [[1, 2, 3], [1, 2]])
+        for training, validation in pairs:
+            self.assertEqual(training.get_color(), palette.color_pair(220).main)
+            self.assertEqual(validation.get_color(), palette.color_pair(140).main)
+            self.assertEqual(training.get_linestyle(), validation.get_linestyle())
+        self.assertNotEqual(pairs[0][0].get_linestyle(), pairs[1][0].get_linestyle())
+        self.assertEqual(self.axis.get_legend_handles_labels()[1], ["Training", "Validation"])
+
     def test_scatter_and_bubbles_keep_positions_sizes_and_color(self):
         colors = palette.color_pair(300, 2)
         dots = plotting.scatter(self.axis, [1, 2], [3, 4], hue=300, depth=2, s=8)
@@ -88,8 +105,8 @@ class PlottingTests(unittest.TestCase):
                                  hue=220, vmin=0, vmax=1, colorbar_label="F1")
         self.assertEqual(image.get_array().tolist(), [[0, .5], [.8, 1]])
         self.assertEqual(image.get_clim(), (0, 1))
-        self.assertEqual(image.get_cmap().N, 5)
-        self.assertEqual(image.get_cmap()(0.), palette.color_pair(220, 4).main)
+        self.assertEqual(image.get_cmap().N, 4)
+        self.assertEqual(image.get_cmap()(0.), palette.color_pair(220, 3).main)
         self.assertEqual(image.get_cmap()(1.), palette.color_pair(220, 0).main)
         color_axis = self.figure.axes[1]
         self.assertEqual(color_axis.get_ylabel(), "F1")
@@ -104,6 +121,26 @@ class PlottingTests(unittest.TestCase):
                          [palette.color_pair(180, 3).main])
         single = plotting.replicate_dots(self.axis, 6, [0], hue=180, depth=3)
         self.assertEqual(single.get_offsets().tolist(), [[6., 0.]])
+
+    def test_replicate_bar_plots_sample_mean_individual_values_and_sample_sd(self):
+        bars, dots, errors = plotting.replicate_bar(
+            self.axis, 2, [4, float("nan"), -2, 1, float("inf")],
+            hue=180, depth=3, width=.5, spread=.1, label="A",
+        )
+        bar, = bars
+        self.assertEqual((bar.get_height(), bars.get_label()), (1, "A"))
+        self.assertEqual(dots.get_offsets().tolist(), [[1.9, -2], [2, 1], [2.1, 4]])
+        self.assertEqual(bar.get_edgecolor(), palette.color_pair(180, 3).main)
+        collection, = errors.lines[2]
+        self.assertEqual(collection.get_segments()[0].tolist(), [[2, -2], [2, 4]])
+        self.assertEqual(tuple(collection.get_colors()[0]), bar.get_edgecolor())
+
+        single, single_dot, single_error = plotting.replicate_bar(self.axis, 4, [0])
+        self.assertEqual(single[0].get_height(), 0)
+        self.assertEqual(single_dot.get_offsets().tolist(), [[4, 0]])
+        self.assertIsNone(single_error)
+        self.assertEqual(plotting.replicate_bar(self.axis, 6, [float("nan")]),
+                         (None, None, None))
 
     def test_histogram_retains_bin_edges_and_counts(self):
         counts, edges, bars = plotting.histogram(self.axis, [0, .3, .75, 1],
