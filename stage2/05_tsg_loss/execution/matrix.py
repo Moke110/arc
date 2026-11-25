@@ -10,6 +10,8 @@ import shutil
 import signal
 import subprocess
 import sys
+from tempfile import TemporaryDirectory
+from threading import Event, Thread
 import time
 
 from evaluate_loss import coordinates, read_run
@@ -77,7 +79,20 @@ def enforce_record(path, record):
         if axis_run.read_json(path) != record:
             raise ValueError(f"sealed matrix record differs: {path.name}")
     else:
-        axis_run.write_json(path, record)
+        with TemporaryDirectory(prefix=f".{path.name}-", dir=path.parent) as scratch:
+            staged = Path(scratch) / path.name
+            axis_run.write_json(staged, record)
+            staged.rename(path)
+
+
+def register_coordinate(run, scratch_parent, register):
+    """Make a completed preregistration visible only after its writer exits."""
+    with TemporaryDirectory(prefix=".register-", dir=scratch_parent) as scratch:
+        staged = Path(scratch) / "coordinate"
+        register(staged)
+        axis_run.read_json(staged / "registration.json")
+        run.parent.mkdir(parents=True, exist_ok=True)
+        staged.rename(run)
 
 
 def scope_directory():
@@ -106,25 +121,63 @@ def monitor(logs, scope, phase):
         raise RuntimeError(f"resource headroom exhausted during {phase}: {sample}")
 
 
-def invoke(logs, scope, coordinate, phase, args, next_sample):
+class ResourceMonitor:
+    """Sample on a monotonic schedule across both child phases and file checks."""
+
+    def __init__(self, logs, scope):
+        self.logs = logs
+        self.scope = scope
+        self.phase = "preflight"
+        self.error = None
+        self.stop = Event()
+        self.thread = Thread(target=self.sample_periodically)
+
+    def sample_periodically(self):
+        deadline = self.started + SAMPLE_SECONDS
+        while not self.stop.wait(max(0, deadline - time.monotonic())):
+            try:
+                monitor(self.logs, self.scope, self.phase)
+            except Exception as error:
+                self.error = error
+                self.stop.set()
+                return
+            deadline += SAMPLE_SECONDS
+
+    def check(self):
+        if self.error is not None:
+            raise self.error
+
+    def __enter__(self):
+        self.started = time.monotonic()
+        monitor(self.logs, self.scope, self.phase)
+        self.thread.start()
+        return self
+
+    def __exit__(self, exc_type, *_):
+        self.stop.set()
+        self.thread.join()
+        if exc_type is None:
+            self.check()
+
+
+def invoke(logs, resources, coordinate, phase, args):
+    resources.phase = phase
+    resources.check()
     log_dir = logs / coordinate
     log_dir.mkdir(parents=True, exist_ok=True)
     base = log_dir / f"{phase}-{time.time_ns()}"
     command = ["/usr/bin/time", "-v", "-o", str(base.with_suffix(".resources")),
                sys.executable, str(STEP / "execution/run_loss.py"), phase, *args]
-    if time.monotonic() >= next_sample:
-        monitor(logs, scope, phase)
-        next_sample = time.monotonic() + SAMPLE_SECONDS
     with base.with_suffix(".log").open("xb") as output:
         with subprocess.Popen(command, stdout=output, stderr=subprocess.STDOUT, start_new_session=True) as process:
             try:
                 while True:
                     try:
-                        code = process.wait(timeout=max(0, next_sample - time.monotonic()))
+                        code = process.wait(timeout=SAMPLE_SECONDS)
+                        resources.check()
                         break
                     except subprocess.TimeoutExpired:
-                        monitor(logs, scope, phase)
-                        next_sample += SAMPLE_SECONDS
+                        resources.check()
             except BaseException:
                 if process.poll() is None:
                     os.killpg(process.pid, signal.SIGTERM)
@@ -136,7 +189,7 @@ def invoke(logs, scope, coordinate, phase, args, next_sample):
                 raise
     if code:
         raise RuntimeError(f"{coordinate} {phase} failed, see {base.with_suffix('.log')}")
-    return next_sample
+
 
 
 def execute(root, logs, training, representations, source):
@@ -144,10 +197,8 @@ def execute(root, logs, training, representations, source):
         raise ValueError("matrix and audit logs require separate directories")
     logs.mkdir(parents=True, exist_ok=True)
     scope = scope_directory()
-    monitor(logs, scope, "preflight")
-    next_sample = time.monotonic() + SAMPLE_SECONDS
-
-    with axis_run.publication_lock(root) as output:
+    with (ResourceMonitor(logs, scope) as resources,
+          axis_run.publication_lock(root) as output):
         output.mkdir(exist_ok=True)
         paths = run_paths(output)
         expected, evidence = preflight(training, representations, source)
@@ -158,9 +209,12 @@ def execute(root, logs, training, representations, source):
             if not (path / "registration.json").exists():
                 if path.is_dir() and not any(path.iterdir()):
                     path.rmdir()
-                next_sample = invoke(logs, scope, path.relative_to(output), "register",
-                                     ["--loss", loss, "--alpha", alpha, "--fold", str(fold),
-                                      "--output", str(path), *inputs], next_sample)
+                def register(staged):
+                    invoke(logs, resources, path.relative_to(output), "register",
+                           ["--loss", loss, "--alpha", alpha, "--fold", str(fold),
+                            "--output", str(staged), *inputs])
+
+                register_coordinate(path, output, register)
         registrations = check_registrations(paths, expected)
         print(json.dumps({"phase": "registered", "coordinates": len(registrations)}), flush=True)
         fits = []
@@ -168,7 +222,9 @@ def execute(root, logs, training, representations, source):
             relative = path.relative_to(output)
             for phase, receipt in PHASES.items():
                 if not (path / receipt).is_file():
-                    next_sample = invoke(logs, scope, relative, phase, ["--output", str(path), *inputs], next_sample)
+                    invoke(logs, resources, relative, phase, ["--output", str(path), *inputs])
+            resources.phase = "verify"
+            resources.check()
             verified_key, (_, _, manifest, training_record, _) = read_run(path, False)
             if verified_key != key or manifest["registration_sha256"] != registrations[key]:
                 raise ValueError(f"sealed run differs from the formal registration: {relative}")
@@ -179,9 +235,10 @@ def execute(root, logs, training, representations, source):
                          "train_wall_seconds": training_record["wall_seconds"],
                          "train_peak_rss_kib": training_record["peak_rss_kib"]})
             print(json.dumps({"phase": "complete", "completed": len(fits), **fits[-1]}), flush=True)
-        monitor(logs, scope, "matrix-complete")
+        resources.check()
+        resources.phase = "matrix-complete"
         scope_peak = int((scope / "memory.peak").read_text())
-        (logs / f"scope-{time.time_ns()}.json").write_text(json.dumps({"memory_peak_bytes": scope_peak}) + "\n")
+        enforce_record(logs / f"scope-{time.time_ns()}.json", {"memory_peak_bytes": scope_peak})
         manifest_path = output / "manifest.json"
         enforce_record(manifest_path, {"schema": SCHEMA, "preflight_sha256": axis_run.digest(preflight_path),
                                        "fits": fits})

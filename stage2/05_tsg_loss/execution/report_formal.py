@@ -61,6 +61,8 @@ def verify_native_control(candidate, previous):
 def resources(audit):
     sample_file = audit / "resource-samples.jsonl"
     samples = [json.loads(line) for line in sample_file.read_text().splitlines()]
+    times = [sample["unix_seconds"] for sample in samples]
+    gaps = [later - earlier for earlier, later in zip(times, times[1:])]
     min_ram = min(sample["wsl_available_kib"] for sample in samples)
     min_disk = min(sample["disk_free_bytes"] for sample in samples)
     min_gpu = min(sample["gpu_total_mib"] - sample["gpu_used_mib"] for sample in samples)
@@ -77,6 +79,8 @@ def resources(audit):
                 for record in (measurement, measurement.with_suffix(".log")):
                     phase_logs[record.relative_to(audit).as_posix()] = axis_run.digest(record)
     return {"sample_interval_seconds": SAMPLE_SECONDS, "samples": len(samples),
+            "maximum_observed_sample_gap_seconds": round(max(gaps, default=0), 3),
+            "sample_gaps_over_12_seconds": sum(gap > 12 for gap in gaps),
             "minimum_wsl_available_kib": min_ram, "minimum_disk_free_bytes": min_disk,
             "maximum_gpu_used_mib": max(sample["gpu_used_mib"] for sample in samples),
             "minimum_gpu_available_mib": min_gpu, "scope_memory_peak_bytes": scope_peak,
@@ -113,7 +117,7 @@ def publish(args):
     args.activity.mkdir(parents=True, exist_ok=True)
     evaluate, render = STEP / "execution/evaluate_loss.py", STEP / "figure/script/render_metrics.py"
     options = ["--training", str(args.training), "--bandwidth-training", str(args.bandwidth_training),
-               "--output", str(args.report)]
+               "--output", str(args.report), "--scratch", str(args.scratch)]
     for path in paths.values():
         options.extend(("--run", str(path)))
 

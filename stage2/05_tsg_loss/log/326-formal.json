@@ -4,8 +4,8 @@
   "matrix_code_revision": "3a9368e884d64f0f5321bf9f29decebf43e32fc2",
   "matrix_manifest_sha256": "43e8435075e702025ee5b1adce52aa4af0085a009d503422cf9ab59bc200e8ba",
   "publication_code_sha256": {
-    "execution/evaluate_loss.py": "1d10e431f1534015baef4b11800e5752cbacb8f3620ce66c435c2dd7609fa562",
-    "execution/report_formal.py": "2cc36067185f55e3dbd912e3a40e73326ba05d6a1e0aa1859dd087d84229d98b",
+    "execution/evaluate_loss.py": "1c6657a45bdc0be9fe5b11ba7c73af8c6403092b0d491f8bcb7bc71995b8d8dd",
+    "execution/report_formal.py": "9c838e8d76478f63d0e9dcb30fee92f33515a57911a93a27957f6bc8550d682f",
     "figure/script/render_metrics.py": "6ed4c6ba47e9f281fd93eff656d2cc4aeaaf93b660a2b92264f09c6e1261d394"
   },
   "published_files_sha256": {
@@ -16,7 +16,7 @@
     "log/fold-scores.csv": "b47e8781138b030b50acae7ec5d993580aa2230e88b8167ddbe54d91d6e91ff9",
     "log/runs.csv": "33e017d83adae8e59f5bf357b4819fe15dae9706281c8f83ddfe0787fc851482"
   },
-  "report_manifest_sha256": "82483bf1a20e8d23d3da2859018243b692afc11b18cd2c143ab75733957a9a11",
+  "report_manifest_sha256": "1664c7b2716072cb6d3ef2ebd5dfb84ffd145b56a61641d3792c88d22dff2d5e",
   "report_outputs_sha256": {
     "bandwidths.csv": "4651e0fc856041a4e5b7853110904c0c947c09e2fe2e3e7bc0b9c89fd3d607c2",
     "condition-scores.csv": "fc7ea33b937f1dc5242cfed8499bb3c7b88b6ede7be08842c53d9e851fe35059",
@@ -27,6 +27,7 @@
   },
   "resources": {
     "maximum_gpu_used_mib": 3205,
+    "maximum_observed_sample_gap_seconds": 20.003,
     "minimum_disk_free_bytes": 3438993408,
     "minimum_gpu_available_mib": 13171,
     "minimum_wsl_available_kib": 18917868,
@@ -320,6 +321,7 @@
       "runs/pcc/alpha-1-4/fold-2/train-1795580963675372266.log": "ea32d412a9caa901c4f6e7b3053657879f3cbddea4f474845a96908b9396461f",
       "runs/pcc/alpha-1-4/fold-2/train-1795580963675372266.resources": "78541fb056459b989d10ddfa1420ab4861c1423ba84f4ac178818ce9128275b3"
     },
+    "sample_gaps_over_12_seconds": 35,
     "sample_interval_seconds": 10,
     "samples": 129,
     "scope_memory_peak_bytes": 4797972480
