@@ -1,0 +1,143 @@
+{
+  "axis": "denoise-5k",
+  "coordinator_resource_samples": 10,
+  "coordinator_sample_interval_seconds": 10,
+  "device": "cuda",
+  "fit_code_sha256": {
+    "objective.py": "8d912e83a4d30501eff3ba98bef51f7fa0a544f8a6c3a6f1545f6d7628499e69",
+    "run_loss.py": "e486b7263588bcc6d6bc3fd6036befaac0caa264af9c01ee0a135fbf3a4fb127"
+  },
+  "fold": 0,
+  "runs": [
+    {
+      "best_epoch": 2,
+      "manifest_sha256": "74b23f48231f87a51e92764c3b0d5b542db08523ab58f6c189414d319dfdeb3d",
+      "objective": {
+        "alpha": "1",
+        "delta_weight": 1.0,
+        "form": "mse",
+        "kl_weight": 0.1,
+        "reconstruction_weight": 1.0,
+        "similarity_epsilon": 1e-08
+      },
+      "partition_counts": {
+        "test": 24,
+        "train": 64,
+        "valid": 24
+      },
+      "registration_sha256": "cc2dec56889161f8bfcbf3f829846f12d15934fe70015a4bffe214e343ce6121",
+      "replay": {
+        "test_replay": "exact",
+        "validation_objective_replay": "exact",
+        "validation_replay": "exact"
+      },
+      "stopping_epoch": 2,
+      "train_peak_rss_kib": 1684252
+    },
+    {
+      "best_epoch": 2,
+      "manifest_sha256": "6ad6044d105ac256ff8fd589b99e8247d221aa360b31c86e5ea40c92b235e042",
+      "objective": {
+        "alpha": "1",
+        "delta_weight": 1.0,
+        "form": "cos",
+        "kl_weight": 0.1,
+        "reconstruction_weight": 1.0,
+        "similarity_epsilon": 1e-08
+      },
+      "partition_counts": {
+        "test": 24,
+        "train": 64,
+        "valid": 24
+      },
+      "registration_sha256": "49a07a3b86d1d942244a83cb377ff9f567a690001a3ebeb49c90c583384a8263",
+      "replay": {
+        "test_replay": "exact",
+        "validation_objective_replay": "exact",
+        "validation_replay": "exact"
+      },
+      "stopping_epoch": 2,
+      "train_peak_rss_kib": 1849340
+    },
+    {
+      "best_epoch": 2,
+      "manifest_sha256": "7b0d8d902ed15f31a324d06243ce872f20f03e6091e55bfc1ffa91918c3bffe9",
+      "objective": {
+        "alpha": "1",
+        "delta_weight": 1.0,
+        "form": "pcc",
+        "kl_weight": 0.1,
+        "reconstruction_weight": 1.0,
+        "similarity_epsilon": 1e-08
+      },
+      "partition_counts": {
+        "test": 24,
+        "train": 64,
+        "valid": 24
+      },
+      "registration_sha256": "90b31d9eaeedc9b00acf33919d2e5a20e46cff7caeb4eee01f4b649226f6fb9b",
+      "replay": {
+        "test_replay": "exact",
+        "validation_objective_replay": "exact",
+        "validation_replay": "exact"
+      },
+      "stopping_epoch": 2,
+      "train_peak_rss_kib": 1862784
+    },
+    {
+      "best_epoch": 2,
+      "manifest_sha256": "7ef96b45d5af3f0d3c5f2af96a79fb1a9df66928bb9ae8f9bb20b1f3a8ea9e00",
+      "objective": {
+        "alpha": "1",
+        "delta_weight": 1.0,
+        "form": "l1",
+        "kl_weight": 0.1,
+        "reconstruction_weight": 1.0,
+        "similarity_epsilon": 1e-08
+      },
+      "partition_counts": {
+        "test": 24,
+        "train": 64,
+        "valid": 24
+      },
+      "registration_sha256": "4d0114f437bfb1d86ebef31ec69bd3628ff19261f44c2895d2b98f6de7b15f75",
+      "replay": {
+        "test_replay": "exact",
+        "validation_objective_replay": "exact",
+        "validation_replay": "exact"
+      },
+      "stopping_epoch": 2,
+      "train_peak_rss_kib": 1684204
+    }
+  ],
+  "scope_memory_limit_bytes": 10737418240,
+  "scope_swap_limit_bytes": 8589934592,
+  "scoring_code_sha256": {
+    "Step 04 evaluate.py": "c5b5a20c22ce966e94a4b750483e46209ac0c81671d1f2c0eaf905bf13246718",
+    "Step 04 metrics.py": "5629cb0e3499305b6a0114d5f91c3a5699b972aa1528a6ad707a5bdc30a8e567",
+    "evaluate_loss.py": "5b57e66df3712d67c51021a98fc2769b0faa233e1d138dd5d269545d969f62c4"
+  },
+  "scoring_manifest_sha256": "36569fef3a8b93a5499364abbfa8681a05c8d39d31679a52735de52ff3ab37e3",
+  "scoring_metrics": [
+    "JAC_top200",
+    "JAC_pos100",
+    "JAC_neg100",
+    "\u0394 PCC",
+    "\u0394 Spearman",
+    "\u0394 RMSE",
+    "\u0394 E-distance",
+    "\u0394 MMD",
+    "\u0394 R\u00b2"
+  ],
+  "scoring_outputs_sha256": {
+    "bandwidths.csv": "38947a2f5b76487d54b7536a6769dae370526607e8ba49ef282e80e184abae70",
+    "condition-scores.csv": "c62cc8e1b29e489a9ba0695a0ceb89f8275a0fcce195060e87ac1e2887b67152",
+    "delta-metrics.csv": "86856d2d38bc03da99c59941df6bee1d9dc24230eee1e2427e4558b3911f1838",
+    "epoch-objectives.csv": "024c59e1551f353298be36095f75c9b1306a98d8a0d10ca442451e87e67ca584",
+    "fold-scores.csv": "4050a4ffed7c639f484e624cd12fed0f97aac33509896839eca942926c58e479",
+    "runs.csv": "fc8444fcad3cbad5ad1f11b59a2096bae41cbea2037bbc2a21f73daae5ccb521"
+  },
+  "seed": 42,
+  "status": "PASS",
+  "ticket": 329
+}

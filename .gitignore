@@ -172,12 +172,12 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2/04_tsg_axis/figure/canonical-axis/data/disease-f1.csv
 /stage2/04_tsg_axis/log/319-runs/
 
-# Step 05 publishes compact score evidence. Checkpoints stay under ignored output/.
-!/stage2/05_tsg_loss/figure/data/delta-metrics.csv
-!/stage2/05_tsg_loss/figure/data/epoch-objectives.csv
-!/stage2/05_tsg_loss/log/bandwidths.csv
-!/stage2/05_tsg_loss/log/fold-scores.csv
-!/stage2/05_tsg_loss/log/runs.csv
+# Step 05.1 publishes compact score evidence. Checkpoints stay under ignored output/.
+!/stage2/05_tsg_loss/05.1_loss_metrics/figure/data/delta-metrics.csv
+!/stage2/05_tsg_loss/05.1_loss_metrics/figure/data/epoch-objectives.csv
+!/stage2/05_tsg_loss/05.1_loss_metrics/log/bandwidths.csv
+!/stage2/05_tsg_loss/05.1_loss_metrics/log/fold-scores.csv
+!/stage2/05_tsg_loss/05.1_loss_metrics/log/runs.csv
 
 # HVG-DEG axes and compact selection evidence. Keep candidates local.
 !/stage2/02_gene_axis/02.1_hvg-deg/output/

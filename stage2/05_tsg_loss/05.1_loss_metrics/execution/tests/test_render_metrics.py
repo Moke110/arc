@@ -19,13 +19,13 @@ class MetricsFigureTests(TestCase):
             root = Path(scratch)
             data = root / "data"
             data.mkdir()
-            rows = [(loss, alpha, metric, score / 108)
+            rows = [(loss, alpha, metric, score - 20, 9 + METRICS.index(metric) - 20, score - 9 - METRICS.index(metric))
                     for score, (loss, alpha, metric) in enumerate(product(
-                        ("mse", "cos", "pcc", "l1"), ("1/4", "1/3", "1/2"), METRICS))]
+                        ("mse", "cos", "pcc", "l1"), ("0.75", "1", "1.25"), METRICS))]
             command = [sys.executable, str(RENDER), "--data", str(data), "--output", str(root / "figures")]
             with (data / "delta-metrics.csv").open("w", newline="") as stream:
                 writer = csv.writer(stream)
-                writer.writerow(("loss", "alpha", "metric", "value"))
+                writer.writerow(("loss", "alpha", "metric", "value", "native_mse_score", "score_difference"))
                 writer.writerows(rows[:-1])
             rejected = subprocess.run(command, capture_output=True, text=True)
             self.assertNotEqual(rejected.returncode, 0)
@@ -34,4 +34,8 @@ class MetricsFigureTests(TestCase):
             with (data / "delta-metrics.csv").open("a", newline="") as stream:
                 csv.writer(stream).writerow(rows[-1])
             subprocess.run(command, capture_output=True, text=True, check=True)
-            self.assertEqual((root / "figures/delta-metrics.png").read_bytes()[:8], b"\x89PNG\r\n\x1a\n")
+            scores = root / "figures/delta-metrics.png"
+            differences = root / "figures/delta-metrics-improvement.png"
+            for path in (scores, differences):
+                self.assertEqual(path.read_bytes()[:8], b"\x89PNG\r\n\x1a\n")
+            self.assertNotEqual(scores.read_bytes(), differences.read_bytes())
