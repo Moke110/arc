@@ -58,3 +58,31 @@ done
 Use `--training`, `--representations` and `--source` to locate the
 pinned runner inputs in another checkout. The evaluator accepts
 `--training` and `--bandwidth-training`.
+
+## Run the formal sweep
+
+Use the capped runtime for a single CUDA fit at a time. The matrix registers
+all 27 coordinates before fitting and checks sealed phase files before
+resuming on the same paths. Its audit samples WSL RAM and GPU usage on a
+ten-second schedule and records peak RSS for each process.
+
+```bash
+set -e
+STEP="$PWD/stage2/05_tsg_loss/05.3_mse-l1_mse-x"
+WORK=$(mktemp -d "$PWD/tmp/tsg-reconstruction-formal.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+REVISION=$(git rev-parse HEAD)
+capped_step04 python -u "$STEP/execution/matrix_reconstruction.py" \
+  --output "$WORK/matrix" --logs "$WORK/matrix-audit"
+capped_step04 python "$STEP/execution/report_reconstruction.py" build \
+  --matrix "$WORK/matrix" --matrix-audit "$WORK/matrix-audit" \
+  --report "$WORK/report" --publication "$WORK/publication" \
+  --activity "$WORK/report-audit" --scratch "$WORK/scratch" \
+  --code-revision "$REVISION"
+```
+
+The report can use `--previous-step` to locate the sealed Step 05.2 release
+in another checkout. It also accepts the runner input options and
+`--bandwidth-training`. Use the same report command with `verify` and omit
+`--code-revision` to repeat the report acceptance checks.
