@@ -18,6 +18,11 @@ selected axis with the same matched plate controls and frozen cold-drug folds.
 [ADR 0089](../docs/adr/0089-transigen-delta-metric-weight.md) defines the
 objective grid and its native anchor.
 
+[Step 05.2](05_tsg_loss/05.2_mse_l1/README.md) sweeps the additive Delta L1
+weight while retaining the native objective and the same held-out protocol.
+[ADR 0090](../docs/adr/0090-transigen-mse-l1-sweep.md) defines the sweep and
+its freshly fitted zero-weight anchor.
+
 ## Local history
 
 [ADR 0087](../docs/adr/0087-stage2-active-steps-and-history.md) defines the archive
