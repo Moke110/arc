@@ -8,3 +8,8 @@ L1 term while retaining the native TranSiGen objective.
 
 [Step 05.3](05.3_mse-l1_mse-x/README.md) varies the shared expression
 reconstruction MSE weight at fixed Delta L1 weight 1.75.
+
+[Step 05.4](05.4_mse-l1_pcc/README.md) and
+[Step 05.5](05.5_mse-l1_cos/README.md) vary the weights of bounded
+Delta PCC and cosine similarity losses, respectively, using the unit
+reconstruction weight and fixed Delta L1 weight from Step 05.3.
