@@ -95,18 +95,24 @@ their signed difference. Blue backgrounds indicate metrics where higher
 scores are better. Red backgrounds indicate metrics where lower scores are
 better. [Fold scores](log/fold-scores.csv) preserve eligibility counts and
 [bandwidths](log/bandwidths.csv) record the frozen Step 04 values.
+The accepted matrix contains 36 fits and 324 fold scores. All three MSE at
+alpha 1 fits match Step 04 exactly on the selected and stopping epochs,
+native objective trace columns, validation and test predictions, and Delta
+arrays. All 27 native fold scores and eligibility counts match Step 04.
 
 [Learning curves](figure/learning-curves.png) show the training objective
 (dashed) and validation objective (solid) through the stopping epoch, with
 one panel per loss and coefficient and one color per fold.
-The [epoch CSV](figure/data/epoch-objectives.csv) holds the observed training
-and validation values, the [run ledger](log/runs.csv) records the selected
+The [epoch CSV](figure/data/epoch-objectives.csv) holds 4,920 rows of observed
+training and validation values. The [run ledger](log/runs.csv) records the selected
 checkpoint for each fit, and the [curve receipt](log/330-curves.json) binds
 them to the published figure.
 
 The [formal receipt](log/330-formal.json) binds all three native Step 04
 anchors, the [resource samples](log/330-resources.jsonl), three PNGs and the
 local products under `output/formal/{matrix,matrix-audit,report}`.
+The scoped monitor recorded 166 samples on a ten-second schedule. It logged
+33 intervals longer than 12 seconds and a maximum sample gap of 14.373 seconds.
 To verify the active result from the checkout root, run the formal report
 command above with `verify`, those local matrix, audit and report paths,
 and `--publication "$STEP"`. Use fresh scratch and activity paths and omit
