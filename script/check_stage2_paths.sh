@@ -2,7 +2,7 @@
 # check_stage2_paths.sh — assert stage2/ executable code has no retired step paths.
 #
 # Scan tracked Stage 2 executable code for retired or archived paths.
-# The layout guard allows Steps 01–04, util, routing docs, and the ignored local
+# The layout guard allows Steps 01–05, util, routing docs, and the ignored local
 # history directory. STAGE2_PATH_AUDIT_ROOT supplies a fixture layout.
 # No network or dataset access. Exit 0 clean, 1 stale/layout failure, 2 usage error.
 
@@ -87,8 +87,8 @@ main() {
   local files_scanned=0 occurrences=0 whitelisted=0 stale=0
 
   local old_alias='03[.][1-7]_(tenv|tahoe)_(hvg|denoise)-deg-[345]k'
-  local step_pattern="stage2/[[:alnum:]_./+@-]+|(05_tsg_loss|06_tsg_drug_emb|07_tsg_dose|08_tsg_width_dose|09_tsg_transfer|03[.]1_hvg-deg-5k|$old_alias|log/316-runs)(/[[:alnum:]_./+@-]*)?"
-  local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis)
+  local step_pattern="stage2/[[:alnum:]_./+@-]+|(06_tsg_drug_emb|07_tsg_dose|08_tsg_width_dose|09_tsg_transfer|03[.]1_hvg-deg-5k|$old_alias|log/316-runs)(/[[:alnum:]_./+@-]*)?"
+  local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss)
   local stage2_root="${STAGE2_PATH_AUDIT_ROOT:-stage2}"
   if [ -z "${STAGE2_PATH_AUDIT_ROOT:-}" ]; then
     local archived_files

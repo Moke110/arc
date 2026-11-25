@@ -84,6 +84,30 @@ class ArchiveInstallTest(unittest.TestCase):
         self.assertFalse(self.state.exists())
         self.assertTrue(self.retired.exists())
 
+    def test_verify_preserves_archived_step05_after_its_path_is_reopened(self):
+        self.execute("prepare", "--target", "dev")
+        self.git("merge", "--no-overwrite-ignore", "--no-ff", "--no-edit", "dev")
+        self.execute("install")
+        archive = self.root / "stage2/history" / RETIRED
+        active = self.write(RETIRED / "README.md", b"active loss study")
+        self.write(RETIRED / "AGENTS.md", b"active routing")
+        self.write(RETIRED / "execution/run.py", b"print('new study')\n")
+        self.git("add", str(RETIRED))
+        self.git("commit", "-qm", "Reopen the loss study")
+        self.write(RETIRED / "output/active.h5", b"new loss study evidence")
+
+        self.execute("verify")
+        self.assertEqual((archive / "README.md").read_bytes(), b"original evidence\n")
+        self.assertEqual((archive / "output/frozen.h5").read_bytes(), b"sealed data")
+        for action in ("install", "undo"):
+            self.assertNotEqual(self.execute(action, check=False).returncode, 0)
+        self.assertEqual(active.read_bytes(), b"active loss study")
+        self.assertEqual((archive / "README.md").read_bytes(), b"original evidence\n")
+        (archive / "README.md").write_bytes(b"altered historical evidence")
+        failed = self.execute("verify", check=False)
+        self.assertEqual(failed.returncode, 1)
+        self.assertIn("archived tracked snapshot differs", failed.stderr)
+
     def test_prepare_refuses_ignored_payload_collision_before_merge(self):
         collision = self.write(NEW_RELEASE / "output/active.h5", b"other data")
         failed = self.execute("prepare", "--target", "dev", check=False)
