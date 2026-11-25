@@ -19,6 +19,9 @@ curves use one panel per model, with a train and validation line spanning
 the observed epochs of every fold and seed. Each score group shows the
 mean, the defined measurements and sample standard deviation. A singleton
 has one dot and its mean bar.
+Focus score y-axes near the plotted data when it helps compare groups.
+Keep all finite scores, complete SD intervals and meaningful reference
+values in range. Label bar figures whose y-axes omit zero.
 
 Each publication keeps one current set of PNGs, plotting data and renderers
 under `figure/`. Re-render from the complete plotted data and refresh the

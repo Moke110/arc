@@ -230,7 +230,9 @@ python "$STEP/figure/script/render.py" --data "$STEP/figure/data" \
 ```
 
 The [current rendering receipt](log/342-figure-render.json) records the CSV
-and PNG hashes. Metric panel arrows show the preferred direction. The
+and PNG hashes. Metric panel arrows show the preferred direction. Each metric
+y-axis covers its fold scores and SD bars. The disease panels share one range
+across all four diseases, and the Δ R² panel includes the zero reference. The
 [canonical export receipt](log/322-canonical-axis-report.json) records the
 six ID mappings and sealed table hashes.
 

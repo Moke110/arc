@@ -11,6 +11,7 @@ from stage2_util import palette, plotting
 
 LOWER_IS_BETTER = frozenset(("Δ RMSE", "Δ E-distance", "Δ MMD"))
 FOLD_SCORES = "fold-scores.csv"
+FOCUSED_Y_NOTE = "Y-axis ranges follow the data and may omit zero."
 
 
 def metric_direction(axis, metric, label):
@@ -62,15 +63,19 @@ def score_bar(axis, position, values, *, hue, width, depth=2):
                   transform=axis.get_xaxis_transform(), zorder=4)
 
 
-def setup_score_axis(axis, x, labels, *, difference):
+def setup_score_axis(axis, x, labels, groups, *, difference, metric):
     axis.set(xticks=x, xticklabels=labels, xlim=(x[0] - .5, x[-1] + .5))
-    axis.axhline(0, color="#666666", linewidth=.8, zorder=1.5)
     axis.set_axisbelow(True)
     axis.grid(axis="y", color="#777777", alpha=.25)
     axis.spines[["top", "right"]].set_visible(False)
     if difference:
+        axis.axhline(0, color="#666666", linewidth=.8, zorder=1.5)
         limit = max(map(abs, axis.get_ylim()))
         axis.set_ylim(-limit, limit)
+        return
+    lower, upper = plotting.focus_y(axis, groups, reference=0 if metric == "Δ R²" else None)
+    if lower <= 0 <= upper:
+        axis.axhline(0, color="#666666", linewidth=.8, zorder=1.5)
 
 
 def render_weight_panels(replicates, field, output, alphas, labels,
@@ -81,15 +86,15 @@ def render_weight_panels(replicates, field, output, alphas, labels,
     x = np.arange(len(alphas))
     for (metric, label), axis in zip(labels.items(), axes.flat, strict=True):
         metric_direction(axis, metric, label)
-        for position, alpha in enumerate(alphas):
-            score_bar(axis, position, replicates[alpha, metric][field],
-                      hue=palette.HUES[position], width=.68)
-        setup_score_axis(axis, x, alphas, difference=difference)
+        groups = [replicates[alpha, metric][field] for alpha in alphas]
+        for position, values in enumerate(groups):
+            score_bar(axis, position, values, hue=palette.HUES[position], width=.68)
+        setup_score_axis(axis, x, alphas, groups, difference=difference, metric=metric)
         if rotate:
             for tick in axis.get_xticklabels():
                 tick.set(rotation=45, ha="right", fontsize=9)
 
-    fig.supxlabel(xlabel)
+    fig.supxlabel(xlabel if difference else f"{xlabel}\n{FOCUSED_Y_NOTE}")
     fig.supylabel(f"Paired score difference vs. α = {reference}" if difference else "Equal-fold score")
     plotting.save_figure(fig, output, dpi=180)
     plt.close(fig)

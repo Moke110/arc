@@ -16,7 +16,8 @@ import numpy as np
 LOSS = Path(__file__).resolve().parents[3]
 sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script")]
 
-from loss_plot_style import FOLD_SCORES, metric_direction, read_replicates, score_bar, setup_score_axis
+from loss_plot_style import (FOCUSED_Y_NOTE, FOLD_SCORES, metric_direction, read_replicates,
+                             score_bar, setup_score_axis)
 from stage2_util import palette, plotting
 
 LOSSES = {"mse": "MSE", "cos": "Cos", "pcc": "PCC", "l1": "L1"}
@@ -68,11 +69,13 @@ def render_panels(replicates, field, output):
     width = .24
     for (metric, label), plot in zip(LABELS.items(), plots.flat, strict=True):
         metric_direction(plot, metric, label)
+        groups = []
         for position, (form, hue) in enumerate(zip(LOSSES, LOSS_HUES, strict=True)):
             for index, (alpha, depth) in enumerate(zip(ALPHAS, ALPHA_DEPTHS, strict=True)):
-                score_bar(plot, position + (index - 1) * width,
-                          replicates[form, alpha, metric][field], hue=hue, depth=depth, width=width)
-        setup_score_axis(plot, x, LOSSES.values(), difference=difference)
+                values = replicates[form, alpha, metric][field]
+                score_bar(plot, position + (index - 1) * width, values, hue=hue, depth=depth, width=width)
+                groups.append(values)
+        setup_score_axis(plot, x, LOSSES.values(), groups, difference=difference, metric=metric)
 
     handles = []
     for alpha, depth in zip(ALPHAS, ALPHA_DEPTHS, strict=True):
@@ -80,7 +83,8 @@ def render_panels(replicates, field, output):
         handles.append(Patch(facecolor=secondary, edgecolor=main, label=alpha))
     fig.legend(handles=handles, title="Delta coefficient α", ncols=3,
                loc="outside upper center", frameon=False)
-    fig.supxlabel("Delta loss metric")
+    xlabel = "Delta loss metric"
+    fig.supxlabel(xlabel if difference else f"{xlabel}\n{FOCUSED_Y_NOTE}")
     fig.supylabel("Paired score difference vs. MSE × 1" if difference else "Equal-fold score")
     plotting.save_figure(fig, output / FIGURES[field], dpi=180)
     plt.close(fig)

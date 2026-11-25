@@ -13,11 +13,11 @@
   },
   "independent_renders": 2,
   "png_files_sha256": {
-    "figure/delta-metrics.png": "d3941724d6cb6d2611d6fa247ddaa85d60e6950d47bac432c3bb7929872e523b",
-    "figure/disease-f1.png": "6f2169a5f4e165f7f317e68c57e78e0caf4bee2f6f07b04e099d408921c45a02"
+    "figure/delta-metrics.png": "e88bfe3cff2f2cb8006939373a65278c0f9b2d6e59e8f304b02e8e20976c2080",
+    "figure/disease-f1.png": "678e68c2902ca68d6b85c7dcee944157f7e6bbd5b92fe8a7a0db0f3ea1e7fec4"
   },
   "renderer_files_sha256": {
-    "figure/script/render.py": "46fad37850a01853709df4dc34fe32024d141fa0611381e4f7d0ed748ef8e77e"
+    "figure/script/render.py": "79fadd31b317fc82775e7b97d22e329e9d24c6c49bff550eaa5249124bd1da5c"
   },
   "schema": "stage2-figure-render-v1",
   "status": "PASS",
