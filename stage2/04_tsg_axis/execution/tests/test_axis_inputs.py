@@ -77,15 +77,13 @@ class AxisInputsTest(unittest.TestCase):
         import os
         import torch
 
-        dose_api = STEP.parent / "07_tsg_dose/output/api"
-        sys.path.insert(0, str(dose_api))
-        from tsg_kpgt.model import adapter, fit_transform
+        from tsg_axis.model import adapter, fit_transform
 
         source = Path(os.environ.get("TRANSIGEN_TEST_SOURCE", STEP.parents[1] / "pert_model/TranSiGen/source"))
         if not (source / "src/model.py").is_file():
             self.skipTest("TranSiGen native source is not materialized")
-        transform = fit_transform("latent-numeric", [0.2, 1., 10.])
-        native = adapter(source, "latent-numeric", transform)
+        transform = fit_transform([0.2, 1., 10.])
+        native = adapter(source, transform)
         model = native.build(42, "cpu", n_genes=3000).eval()
         with torch.no_grad():
             outputs = model(torch.zeros((2, 3000)), torch.zeros((2, 2305)))

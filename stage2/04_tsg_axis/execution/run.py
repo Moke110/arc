@@ -19,19 +19,16 @@ import torch
 STEP = Path(__file__).resolve().parents[1]
 REPO = next(parent for parent in STEP.parents if (parent / ".git").exists())
 STAGE = REPO / "stage2"
-DOSE = STAGE / "07_tsg_dose/output/api"
-sys.path[:0] = [str(STEP / "output/api"), str(DOSE)]
+sys.path.insert(0, str(STEP / "output/api"))
 
 from tsg_axis.inputs import open_inputs, score_fixed_prediction
 from tsg_axis.protocol import MAX_EPOCHS, PATIENCE, PROTOCOL, RUN_SCHEMA
-from tsg_dose import shared
-from tsg_dose.model import DoseView
-from tsg_kpgt import model as kpgt
-from tenv5k.learning import EarlyStopping, fixed_rng
+from tsg_axis import model as kpgt
+from tsg_axis.model import DoseView
+from tsg_axis.learning import EarlyStopping, fixed_rng
 from stage2_util.derivation.release import check_outputs, read_json, sha256 as digest, write_json
 from stage2_util.publication import publication_lock
 
-METHOD = "latent-numeric"
 SEED = 42
 VALIDATION_SEED = 22617
 TEST_SEED = 100042
@@ -51,13 +48,12 @@ def file_hashes(root, names):
 
 
 def code_hashes():
+    api = STEP / "output/api/tsg_axis"
     paths = [
-        Path(__file__), *(STEP / "output/api/tsg_axis" / name for name in ("inputs.py", "protocol.py")),
+        Path(__file__),
+        *(api / name for name in ("inputs.py", "protocol.py", "model.py", "native_import.py", "learning.py")),
         STAGE / "03_data_train/output/api/training_data.py",
         STAGE / "util/output/api/stage2_util/representations.py",
-        DOSE / "tsg_kpgt/model.py", DOSE / "tsg_round1/model.py",
-        DOSE / "tsg_dose/model.py", DOSE / "tsg_dose/shared.py",
-        *(shared.SHARED / "tenv5k" / name for name in ("model_transigen.py", "native_import.py", "learning.py")),
     ]
     return {path.relative_to(REPO).as_posix(): digest(path) for path in paths}
 
@@ -78,8 +74,8 @@ def bind(args, data, vectors):
         raise ValueError("cold-drug partitions require disjoint nonempty parent populations")
     if args["smoke"]:
         rows = {name: part[:SMOKE_LIMITS[name]] for name, part in rows.items()}
-    transform = kpgt.fit_transform(METHOD, data.doses[rows["train"]])
-    model = kpgt.configuration(METHOD, transform)
+    transform = kpgt.fit_transform(data.doses[rows["train"]])
+    model = kpgt.configuration(transform)
     model.update(n_genes=width, method_identity="tenv-axis-transigen-kpgt-latent-numeric-v2",
                  control_input="matched plate DMSO for every partition",
                  validation_objective="native TranSiGen MSE + beta-weighted KLD, batch sums per condition",
@@ -254,7 +250,7 @@ def execute(output, phase, paths):
             os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
             torch.use_deterministic_algorithms(True)
             kpgt.configure_backend(args["device"])
-            native = kpgt.adapter(args["source"], METHOD, config["model"]["transform"])
+            native = kpgt.adapter(args["source"], config["model"]["transform"])
             model = native.build(SEED, args["device"], n_genes=len(data.genes))
             with TemporaryDirectory(prefix=".phase-", dir=root) as scratch:
                 scratch = Path(scratch)

@@ -10,7 +10,7 @@ real tenv replay, Tahoe asset equality and sealed combined-view replay.
 ## Six tenv training axes
 
 Each release follows the [03.1 contract](03.1_tenv_hvg-deg-5k/README.md) and
-uses the same native tenv counts and frozen Step 07 folds. Each pools integer
+uses the same native tenv counts and [frozen folds](output/frozen-folds/). Each pools integer
 counts on its selected axis before normalizing on that axis. The
 [six-axis acceptance receipt](log/313-six-tenv-axes.json) records exact replay
 and equality of the plate–parent–dose keys, raw membership and exclusions,
@@ -91,9 +91,9 @@ with open_training(source="tenv") as training:
 Use `publish --output <scratch-directory>` to build a paired candidate from
 the accepted raw, axis and frozen fold inputs. Use `--source tenv` or
 `--source tahoe-bulk` for an isolated candidate. The default fold input is
-the [Step 07 frozen fold archive](../07_tsg_dose/README.md#frozen-folds-for-stage-2-training).
-To use the original materialized Step 07 checkpoint, pass
-`--fold-root stage2/07_tsg_dose/execution/checkpoints/round1-axis-local-inputs`.
+the [active frozen fold release](output/frozen-folds/), which preserves the
+original Step 07 member ledgers and acceptance receipt. Pass `--fold-root`
+and `--fold-receipt` for an explicit replay input.
 
 ```bash
 D=stage2/03_data_train

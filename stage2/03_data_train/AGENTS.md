@@ -1,8 +1,9 @@
 # Stage 2 plate-matched training data
 
 Read [README.md](README.md), ADR 0085 and the repository execution-environment
-rules. This step owns the pooled training schema and bounded reader. Source
-counts, the prediction axis and Step 07 study splits keep their own owners.
+rules. This step owns the pooled training schema, bounded readers and the frozen
+fold inputs under `output/frozen-folds/`. Source counts and the prediction
+axis keep their own owners.
 
 For [Spec 5](https://github.com/Moke110/arc/issues/310), use the
 [six named tenv releases](README.md#six-tenv-training-axes) for plate-pooled

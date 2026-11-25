@@ -19,7 +19,7 @@ STEP = Path(__file__).resolve().parents[1]
 STAGE = STEP.parent
 sys.path[:0] = [str(path) for path in (
     STEP / "output/api", STAGE / "util/output/api", STAGE / "01_data_raw/output/api",
-    STAGE / "02_gene_axis/02.1_hvg-deg/output/api", STAGE / "07_tsg_dose/output/api",
+    STAGE / "02_gene_axis/02.1_hvg-deg/output/api",
 )]
 
 from native_corpus import open_corpus
@@ -31,7 +31,7 @@ from training_data import (DEFAULT, DATASET_SCHEMA, FILES, FOLD_COLUMNS, SCHEMA,
                            TENV_STRIP_COLUMNS,
                            open_training, sha256)
 
-from tsg_round1.fold_ledger import FOLD_RECEIPT, FOLD_ROOT, load_folds
+from fold_ledger import FOLD_RECEIPT, FOLD_ROOT, load_folds
 
 from frozen_folds import group_labels
 
