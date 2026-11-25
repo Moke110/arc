@@ -7,3 +7,6 @@ Delta loss metrics and coefficients on the fixed denoise-5k axis.
 
 [Step 05.2](05.2_mse_l1/AGENTS.md) owns the additive Delta L1 weight sweep
 on the same axis and protocol.
+
+[Step 05.3](05.3_mse-l1_mse-x/AGENTS.md) owns the shared reconstruction MSE
+weight sweep at fixed Delta L1 weight 1.75.
