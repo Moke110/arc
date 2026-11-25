@@ -258,8 +258,7 @@ def write_epoch_objectives(destination, paths, fits):
 
 def figure_evidence(candidate, trace_hashes):
     stage = STEP.parents[1]
-    dependencies = (stage / "05_tsg_loss/figure/script/loss_plot_style.py",
-                    stage / "util/output/api/stage2_util/palette.py",
+    dependencies = (stage / "util/output/api/stage2_util/palette.py",
                     stage / "util/output/api/stage2_util/plotting.py")
     return {
         "schema": "stage2-figure-render-v1", "status": "PASS", "step": STEP.name,

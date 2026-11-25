@@ -13,11 +13,11 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 STAGE = Path(__file__).resolve().parents[4]
-sys.path[:0] = [str(STAGE / "util/output/api"), str(STAGE / "05_tsg_loss/figure/script")]
+sys.path.insert(0, str(STAGE / "util/output/api"))
 
-from loss_plot_style import LOWER_IS_BETTER
 from stage2_util import palette, plotting
 
+LOWER_IS_BETTER = {"Δ RMSE", "Δ E-distance", "Δ MMD"}
 LABELS = {
     "JAC_top200": "JAC top200",
     "JAC_pos100": "JAC pos100",
@@ -59,6 +59,16 @@ def read_scores(data, smoke):
     folds = (0,) if smoke else range(3)
     if set(summary) != set(product(shapes, LABELS)) or set(replicates) != set(product(shapes, LABELS, folds)):
         raise ValueError("aggregate plotting CSV requires the complete architecture-by-metric grid")
+    for (shape, metric), fields in summary.items():
+        for field, mean in fields.items():
+            values = [replicates[shape, metric, fold][field] for fold in folds]
+            defined = [value for value in values if math.isfinite(value)]
+            if defined:
+                matches = math.isclose(mean, math.fsum(defined) / len(defined), rel_tol=0, abs_tol=1e-12)
+            else:
+                matches = math.isnan(mean)
+            if not matches:
+                raise ValueError(f"fold scores disagree with aggregate for {shape}, {metric}, {field}")
     return shapes, folds, summary, replicates
 
 

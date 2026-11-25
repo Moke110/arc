@@ -60,7 +60,8 @@ points with history unavailable before completing a cutover.
   Draw defined replicate values as dots, bar heights as means and error
   bars as sample SD when at least two values are defined.
   Encode each grouping variable on its own hue or depth axis, up to two
-  grouping variables. Replace figures at their canonical paths.
+  grouping variables. Replace figures at their canonical paths and discard
+  superseded render bundles.
   Keep a single current set of figures, plotted data and renderers under
   each `figure/`, using only `data/` and `script/` as subdirectories.
   [Plotting decision](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
@@ -78,5 +79,5 @@ Build candidates outside formal output, verify structure/data constraints, scien
 criteria, downstream reads and CSV-only figure reproduction, then replace stable paths.
 Record metric tolerances for stochastic results and hashes for file integrity. A failed
 candidate leaves the accepted products available. Keep accepted final products active and
-archive superseded payloads after acceptance and reference migration.
+archive superseded scientific payloads after acceptance and reference migration.
 Treat external `source/` trees as read-only.

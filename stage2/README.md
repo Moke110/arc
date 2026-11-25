@@ -63,7 +63,10 @@ python stage2/util/figure/script/verify_report_figures.py --work "$WORK/replay"
 cutover. The materialized checkout keeps superseded raw and training releases,
 prior comparisons, the archived Step 05–09 studies and rollback materials in
 `stage2/history`. The local `archive-manifest.json` records original
-paths, archived paths and replay revisions. Normal readers, builds and
+paths, archived paths and replay revisions. The duplicate render bundle
+for the current Step 04 report was removed from the installed archive.
+The original cutover recorded the inventory at its deployment revision.
+Normal readers, builds and
 comparisons use the active releases. In an archive-isolated checkout with the
 active inputs materialized, run `python stage2/04_tsg_axis/execution/verify_active_inputs.py`
 to verify the Step 01–03 readers, projections, and fold population.

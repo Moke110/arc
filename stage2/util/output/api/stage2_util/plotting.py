@@ -130,12 +130,12 @@ def replicate_errorbar(axis, x, values, *, hue=220, depth=2, spread=.18, **kwarg
         return None, None
     kwargs.setdefault("s", 15)
     kwargs.setdefault("zorder", 4)
+    dots = replicate_dots(axis, x, y, hue=hue, depth=depth, spread=spread, **kwargs)
     errors = None
     if len(y) > 1:
         errors = errorbar(axis, [x], [y.mean()], yerr=[y.std(ddof=1)], fmt="none",
                           hue=hue, depth=depth, capsize=3, linewidth=1,
                           zorder=kwargs["zorder"] - 1)
-    dots = replicate_dots(axis, x, y, hue=hue, depth=depth, spread=spread, **kwargs)
     return dots, errors
 
 

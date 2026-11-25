@@ -41,12 +41,11 @@
     "figure/delta-metrics.png": "c42190880e9cc0317a58796830b3ba98657db841e1a0a235447816f04bec41ee",
     "figure/learning-curves.png": "b94d18105410fa91b176b1bc270c225466b07d815f609d32c23484f532b9f3f0"
   },
-  "publication_builder_sha256": "a812cc3e4afa49b86cb0391696cf9323d67f04f337f0acb51334b3debbce9d65",
+  "publication_builder_sha256": "d1f71d37ad272c3f3fcf3f7211a0e952dfba35d79f581609651f1db2d38a4440",
   "renderer_files_sha256": {
-    "05_tsg_loss/figure/script/loss_plot_style.py": "0568ea381689ce7278a6fa71a8882e3f945ee2b2e716707e4865a4c76615cc52",
-    "06_tsg_shape/06.1_round1/figure/script/render_shape.py": "dd0890bd9eeb98f20bfefdd44f86ac71d1ca8f8e7bf31f27537d7c4c446ddadc",
+    "06_tsg_shape/06.1_round1/figure/script/render_shape.py": "20c6778d16f12cce09c79c261ea31f30dae23ef72b7555fa9254e339213d574d",
     "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
-    "util/output/api/stage2_util/plotting.py": "664b318f17b778970ca1273656918f1c8fd0ac4ff4b5830e401f4e10b7f77fdd"
+    "util/output/api/stage2_util/plotting.py": "1de4281124e7d6bbfd00bbbf071b1cdff5d34a8cbf71c6477a8101ffd72743aa"
   },
   "schema": "stage2-figure-render-v1",
   "scientific_receipt_sha256": "1b4e65c6a764fb984201d8270b3d8b7fefcc6b510552fecdcd61c26c3098031f",

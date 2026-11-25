@@ -142,6 +142,12 @@ class PlottingTests(unittest.TestCase):
         self.assertEqual(plotting.replicate_bar(self.axis, 6, [float("nan")]),
                          (None, None, None))
 
+    def test_invalid_replicate_spread_leaves_no_partial_marks(self):
+        with self.assertRaises(ValueError):
+            plotting.replicate_bar(self.axis, 2, [1, 3], spread=-1)
+        self.assertEqual((len(self.axis.patches), len(self.axis.collections), len(self.axis.containers)),
+                         (0, 0, 0))
+
     def test_histogram_retains_bin_edges_and_counts(self):
         counts, edges, bars = plotting.histogram(self.axis, [0, .3, .75, 1],
                                                  bins=[0, .5, .7, 1], hue=60)
