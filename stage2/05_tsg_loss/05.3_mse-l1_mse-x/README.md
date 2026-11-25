@@ -22,6 +22,7 @@ two-epoch comparison on fold 0.
 ```bash
 set -e
 STEP="$PWD/stage2/05_tsg_loss/05.3_mse-l1_mse-x"
+mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/tsg-reconstruction-smoke.XXXXXX")
 mkdir -p "$WORK/scratch" "$WORK/matplotlib"
 export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
@@ -66,10 +67,19 @@ all 27 coordinates before fitting and checks sealed phase files before
 resuming on the same paths. Its audit samples WSL RAM and GPU usage on a
 ten-second schedule and records peak RSS for each process.
 
+Allow at least 4 GiB free on the volume used for formal work. The matrix
+takes about 3 GiB and the runner requires 1 GiB of free space during fitting.
+To use a different volume, set `TSG_RECONSTRUCTION_WORK_ROOT` to an existing
+directory or symbolic link under this checkout's `tmp/` backed by that volume.
+Keep the scratch, report and publication directories on the same filesystem.
+The report builder promotes staged directories with filesystem renames.
+
 ```bash
 set -e
 STEP="$PWD/stage2/05_tsg_loss/05.3_mse-l1_mse-x"
-WORK=$(mktemp -d "$PWD/tmp/tsg-reconstruction-formal.XXXXXX")
+mkdir -p "$PWD/tmp"
+WORK_ROOT="${TSG_RECONSTRUCTION_WORK_ROOT:-$PWD/tmp}"
+WORK=$(mktemp -d "$WORK_ROOT/tsg-reconstruction-formal.XXXXXX")
 mkdir -p "$WORK/scratch" "$WORK/matplotlib"
 export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
 REVISION=$(git rev-parse HEAD)
