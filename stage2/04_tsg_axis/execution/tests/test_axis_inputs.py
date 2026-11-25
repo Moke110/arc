@@ -17,12 +17,12 @@ class TrainingReleaseFixture:
         self.genes = pd.DataFrame({"gene_index": [7, 12], "symbol": ["A", "B"]})
         self.controls = pd.DataFrame({"plate": ["p1", "p2"]})
         self.treatments = pd.DataFrame({
-            "plate": ["p1", "p2", "p1"], "drug_parent": ["a", "b", "c"],
-            "dose_um": [1., 2., 3.], "control_row": [0, 1, 0],
-            "cold_drug_0": ["train", "valid", "test"],
+            "plate": ["p1", "p2", "p1", "p2"], "drug_parent": ["a", "b", "c", "d"],
+            "dose_um": [1., 2., 3., 4.], "control_row": [0, 1, 0, 1],
+            "cold_drug_0": ["train", "valid", "test", "test"],
         })
         self.plate = np.asarray([[2, 4], [4, 8]], dtype=np.float32)
-        self.expression = np.asarray([[4, 8], [6, 7], [8, 11]], dtype=np.float32)
+        self.expression = np.asarray([[4, 8], [6, 7], [8, 11], [10, 7]], dtype=np.float32)
 
     def control(self):
         return np.asarray([3, 6], dtype=np.float32)
@@ -43,14 +43,18 @@ class AxisInputsTest(unittest.TestCase):
         train, valid, test = (data.rows(0, phase) for phase in ("train", "valid", "test"))
         np.testing.assert_array_equal(data.model_input("train").control[train], [[2, 4]])
         np.testing.assert_array_equal(data.model_input("valid").control[valid], [[4, 8]])
-        np.testing.assert_array_equal(data.model_input("test").control[test], [[2, 4]])
+        np.testing.assert_array_equal(data.model_input("test").control[test], [[2, 4], [4, 8]])
         ids = data.condition_ids(test)
-        result = score_fixed_prediction(data, 0, np.asarray([[7, 11]], dtype=np.float32), ids)
-        np.testing.assert_array_equal(result.predicted_delta, [[5, 7]])
-        np.testing.assert_array_equal(result.measured_delta, [[6, 7]])
+        prediction = np.asarray([[7, 11], [9, 7]], dtype=np.float32)
+        result = score_fixed_prediction(data, 0, prediction, ids)
+        np.testing.assert_array_equal(result.predicted_delta, [[5, 7], [5, -1]])
+        np.testing.assert_array_equal(result.measured_delta, [[6, 7], [6, -1]])
         with self.assertRaisesRegex(ValueError, "condition identities"):
-            score_fixed_prediction(data, 0, np.asarray([[7, 11]], dtype=np.float32),
-                                   data.condition_ids(train))
+            score_fixed_prediction(data, 0, prediction, ids[::-1])
+        with self.assertRaisesRegex(ValueError, "ordered members"):
+            score_fixed_prediction(data, 0, prediction, ids, rows=test[::-1])
+        with self.assertRaisesRegex(ValueError, "ordered members"):
+            score_fixed_prediction(data, 0, prediction[:1], data.condition_ids(train), rows=train)
 
     def test_selected_gene_width_keeps_native_latent_and_kpgt_dimensions(self):
         import os
