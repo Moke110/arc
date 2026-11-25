@@ -69,3 +69,64 @@ for target in figures figures-replay; do
 done
 diff -r "$WORK/figures" "$WORK/figures-replay"
 ```
+
+## Reproduce the formal matrix
+
+Use the materialized checkout and the same capped runtime as the smoke.
+Reserve at least 8 GiB of scratch space. When necessary, use a backed
+volume reachable under the checkout’s `tmp/` directory. Keep the candidate
+publication and report scratch on that volume so the publication rename
+stays on one filesystem. Keep a coordinator GPU and RAM sample stream on
+the same monotonic clock at ten-second intervals throughout the matrix.
+
+```bash
+set -e
+STEP="$PWD/stage2/06_tsg_shape/06.1_round1"
+mkdir -p "$PWD/tmp"
+WORK_ROOT="${TSG_SHAPE_WORK_ROOT:-$PWD/tmp}"
+WORK=$(mktemp -d "$WORK_ROOT/tsg-shape-formal.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+REVISION=$(git rev-parse HEAD)
+
+capped_step04 python "$STEP/execution/matrix_shape.py" \
+  --output "$WORK/matrix" --logs "$WORK/matrix-audit"
+capped_step04 python "$STEP/execution/report_shape.py" build \
+  --matrix "$WORK/matrix" --matrix-audit "$WORK/matrix-audit" \
+  --report "$WORK/report" --publication "$WORK/publication" \
+  --activity "$WORK/report-audit" --scratch "$WORK/scratch" \
+  --coordinator-samples "$COORDINATOR_SAMPLES" --code-revision "$REVISION"
+```
+
+Set `COORDINATOR_SAMPLES` to the ten-second coordinator JSONL stream.
+The accepted [sample log](log/347-coordinator-resources.jsonl) shows the
+required timestamp, WSL RAM and GPU fields. The matrix logs its resource
+samples separately and retains per-phase peak RSS. The driver can resume
+from the same paths after checking completed phases. To independently
+replay a completed coordinate again, invoke `run_shape.py replay --output`
+on the coordinate directory.
+
+`report_shape.py verify` repeats formal scoring, control parity and CSV
+render verification. Use the same arguments as `build`, with the sealed
+`output/formal/{matrix,matrix-audit,report}` and the step directory as
+`--publication`. Omit `--coordinator-samples` and `--code-revision`.
+The matrix accepts alternate locations for the verified training,
+representations and upstream source. The publication command accepts
+alternate verified training, bandwidth-training and Step 05.2 paths.
+
+## Replay the published figures
+
+Use the rendering versions recorded in the formal receipt. Both figure
+commands read only the plotted fold and aggregate CSVs.
+
+```bash
+STEP="$PWD/stage2/06_tsg_shape/06.1_round1"
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/tsg-shape-figures.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+python "$STEP/figure/script/render_shape.py" --data "$STEP/figure/data" --output "$WORK/figures"
+for figure in delta-metrics.png delta-metrics-paired-difference.png; do
+  cmp "$STEP/figure/$figure" "$WORK/figures/$figure"
+done
+```
