@@ -19,7 +19,5 @@ Keep study evidence under the numbered study's `log/` directory. The two
 smoke receipts pin the [shared coordinator capture](05.4_mse-l1_pcc/log/338-coordinator-resources.jsonl)
 under Step 05.4 because one monitor covered both studies.
 
-Use the [current figure verifier](README.md#verify-the-current-figures)
-for CSV-only replay of the published PNGs. Use the
-[pre-refresh revision](README.md#replay-the-original-formal-publications)
-to replay the PNG hashes in the original formal receipts.
+Verify the canonical score and learning-curve figures from `figure/data/`
+with the [CSV-only verifier](README.md#verify-the-current-figures).

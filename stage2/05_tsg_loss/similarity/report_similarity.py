@@ -14,7 +14,7 @@ from evaluate_reconstruction import read_run as read_reconstruction_run
 from matrix import GIB, SAMPLE_SECONDS
 from matrix_similarity import SCHEMA, check_registrations, preflight, run_paths
 from report_formal import ANCHOR_ARRAYS, command
-from report_reconstruction import FIGURES, PROJECTIONS, SCORE_FIELDS
+from report_reconstruction import FIGURES, PLOT_FOLD_SCORES, PROJECTIONS, SCORE_FIELDS
 from report_sweep import coordinator_resource_summary, read_fold_scores
 from run_reconstruction import STEP as RECONSTRUCTION_STEP
 from run_similarity import (DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING,
@@ -220,6 +220,7 @@ def publish_study(args, metric, paths, fits, candidate, replay, resources):
         projected = candidate / destination
         projected.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(report / name, projected)
+    shutil.copyfile(report / "fold-scores.csv", candidate / PLOT_FOLD_SCORES)
     shutil.copyfile(args.matrix_audit / "resource-samples.jsonl", candidate / SAMPLES)
     sample_paths = [SAMPLES]
     if "coordinator" in resources:
@@ -232,7 +233,7 @@ def publish_study(args, metric, paths, fits, candidate, replay, resources):
     if axis_run.file_hashes(figures, FIGURES) != axis_run.file_hashes(replay, FIGURES):
         raise ValueError(f"independent CSV-only renders differ: {metric}")
     published = axis_run.file_hashes(
-        candidate, (*PROJECTIONS.values(), *(f"figure/{name}" for name in FIGURES), *sample_paths)
+        candidate, (*PROJECTIONS.values(), PLOT_FOLD_SCORES, *(f"figure/{name}" for name in FIGURES), *sample_paths)
     )
     step = STEPS[metric]
     revision = (args.code_revision if args.command == "build" else

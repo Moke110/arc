@@ -175,6 +175,7 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # Step 05.1 publishes compact score evidence. Checkpoints stay under ignored output/.
 !/stage2/05_tsg_loss/05.1_loss_metrics/figure/data/delta-metrics.csv
 !/stage2/05_tsg_loss/05.1_loss_metrics/figure/data/epoch-objectives.csv
+!/stage2/05_tsg_loss/05.1_loss_metrics/figure/data/fold-scores.csv
 !/stage2/05_tsg_loss/05.1_loss_metrics/log/bandwidths.csv
 !/stage2/05_tsg_loss/05.1_loss_metrics/log/fold-scores.csv
 !/stage2/05_tsg_loss/05.1_loss_metrics/log/runs.csv
@@ -182,6 +183,7 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # Step 05.2 publishes the same compact report tables for the additive sweep.
 !/stage2/05_tsg_loss/05.2_mse_l1/figure/data/delta-metrics.csv
 !/stage2/05_tsg_loss/05.2_mse_l1/figure/data/epoch-objectives.csv
+!/stage2/05_tsg_loss/05.2_mse_l1/figure/data/fold-scores.csv
 !/stage2/05_tsg_loss/05.2_mse_l1/log/bandwidths.csv
 !/stage2/05_tsg_loss/05.2_mse_l1/log/fold-scores.csv
 !/stage2/05_tsg_loss/05.2_mse_l1/log/runs.csv
@@ -189,6 +191,7 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # Step 05.3 publishes compact report tables for the reconstruction sweep.
 !/stage2/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/delta-metrics.csv
 !/stage2/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/epoch-objectives.csv
+!/stage2/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/fold-scores.csv
 !/stage2/05_tsg_loss/05.3_mse-l1_mse-x/log/bandwidths.csv
 !/stage2/05_tsg_loss/05.3_mse-l1_mse-x/log/fold-scores.csv
 !/stage2/05_tsg_loss/05.3_mse-l1_mse-x/log/runs.csv
@@ -196,11 +199,13 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # Steps 05.4 and 05.5 publish compact tables for both bounded similarity sweeps.
 !/stage2/05_tsg_loss/05.4_mse-l1_pcc/figure/data/delta-metrics.csv
 !/stage2/05_tsg_loss/05.4_mse-l1_pcc/figure/data/epoch-objectives.csv
+!/stage2/05_tsg_loss/05.4_mse-l1_pcc/figure/data/fold-scores.csv
 !/stage2/05_tsg_loss/05.4_mse-l1_pcc/log/bandwidths.csv
 !/stage2/05_tsg_loss/05.4_mse-l1_pcc/log/fold-scores.csv
 !/stage2/05_tsg_loss/05.4_mse-l1_pcc/log/runs.csv
 !/stage2/05_tsg_loss/05.5_mse-l1_cos/figure/data/delta-metrics.csv
 !/stage2/05_tsg_loss/05.5_mse-l1_cos/figure/data/epoch-objectives.csv
+!/stage2/05_tsg_loss/05.5_mse-l1_cos/figure/data/fold-scores.csv
 !/stage2/05_tsg_loss/05.5_mse-l1_cos/log/bandwidths.csv
 !/stage2/05_tsg_loss/05.5_mse-l1_cos/log/fold-scores.csv
 !/stage2/05_tsg_loss/05.5_mse-l1_cos/log/runs.csv

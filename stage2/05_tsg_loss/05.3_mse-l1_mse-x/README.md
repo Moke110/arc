@@ -119,20 +119,15 @@ arrays, fold scores and eligibility counts. The nine alpha-one signed
 differences are zero.
 
 The score and signed-difference plots show the same nine held-out metrics.
-Signed differences are the plotted weight's score minus the alpha-one
-score. In the learning curves, each panel shows a reconstruction weight
-and each color shows a fold. Two renders from only the plot CSVs produced
-identical PNGs. [Score figure](figure/delta-metrics.png) ·
+Bars show means, dots show the individual [fold scores](figure/data/fold-scores.csv),
+and error bars show sample SD. Differences subtract the matching alpha-one
+score within each run. Learning-curve panels show one model per reconstruction
+weight and one training and validation line per fold/seed run.
+[Score figure](figure/delta-metrics.png) ·
 [Signed differences](figure/delta-metrics-improvement.png) ·
 [Learning curves](figure/learning-curves.png) ·
 [Metric CSV](figure/data/delta-metrics.csv) ·
 [Learning-curve CSV](figure/data/epoch-objectives.csv)
-
-Use the [pre-refresh revision](../README.md#replay-the-original-formal-publications)
-for exact verification of the old formal receipt. Pass the directory paths under
-the materialized `output/formal/{matrix,matrix-audit,report}` as the matrix, audit
-and report arguments, and the pinned step directory as `--publication`.
-Use fresh activity and scratch paths.
 
 The [current figure verification](../README.md#verify-the-current-figures)
 compares the refreshed PNGs with two independent CSV-only renders.
