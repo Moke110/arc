@@ -17,7 +17,7 @@ sys.path[:0] = [str(STEP / "output/api"), str(STAGE / "01_data_raw/output/api"),
                 str(STAGE / "02_gene_axis/02.1_hvg-deg/output/api")]
 
 from native_corpus import open_corpus
-from prediction_axis import COMMON_SHA256, COMMON_SIZE, open_axes
+from prediction_axis import COMMON_SHA256, COMMON_SIZE, axis_coordinates, open_axes
 from tsg_axis.disease_reference import disease_gene_sets, write_cm_directions
 from tsg_axis.inputs import AxisInputs, score_fixed_prediction
 from tsg_axis.metrics import (CONDITION, DISTRIBUTION, METRICS, condition_scores, distribution_scores,
@@ -68,16 +68,16 @@ def _run_inputs(paths, smoke):
         runs[axis, fold] = (path, config, manifest)
     if smoke:
         if len(runs) != 1 or any(axis != TENV_BASELINE_AXIS for axis, _ in runs):
-            raise ValueError("bounded reporting requires one HVG-DEG 5k smoke run")
+            raise ValueError(f"bounded reporting requires one {TENV_BASELINE_AXIS} smoke run")
     elif set(runs) != {(axis, fold) for axis in TENV_AXIS_STEPS for fold in range(3)}:
         raise ValueError("formal reporting requires 18 sealed fits on the six axes and three folds")
     return runs
 
 
 def _verify_inputs(path, config, data, base, axis, fold, smoke):
-    family, width = axis.rsplit("-", 1)
+    family, width = axis_coordinates(axis)
     axes = open_axes(family=family)
-    released_axis = axes.axis(int(width.removesuffix("k")) * 1000)
+    released_axis = axes.axis(width)
     stage03 = data.release.manifest["inputs"]
     baseline = base.release.manifest["inputs"]
     if (config["axis_sha256"] != stage03["axis_sha256"]

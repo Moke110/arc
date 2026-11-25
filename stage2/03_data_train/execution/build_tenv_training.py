@@ -7,8 +7,9 @@ from pathlib import Path
 import shutil
 
 from build_training import (FOLD_RECEIPT, FOLD_ROOT, STAGE, TENV_RECIPE, _build_dataset,
-                            _verify_dataset, load_folds, open_axes, open_corpus,
+                            _verify_dataset, load_folds, open_corpus,
                             publication_lock, publish_candidate, release)
+from prediction_axis import open_axis
 from training_data import (TENV_AXIS_STEPS, TENV_BASELINE_AXIS, TENV_DEFAULT,
                            open_tenv_training, sha256, tenv_axis_output)
 
@@ -69,8 +70,7 @@ def publish_tenv(destination, corpus, axis, fold_axis, fold_root=FOLD_ROOT,
             raise ValueError("stable publication requires a verified candidate manifest digest")
         if sha256(Path(fold_receipt)) != sha256(FOLD_RECEIPT):
             raise ValueError("stable publication requires the original Step 07 fold receipt")
-        family, width = axis_name.rsplit("-", 1)
-        if axis != open_axes(family=family).axis(1000 * int(width.removesuffix("k"))):
+        if axis != open_axis(axis_name):
             raise ValueError(f"stable tenv publication requires the accepted {axis_name} axis")
         if axis_name != TENV_BASELINE_AXIS:
             reference = TENV_DEFAULT if reference is None else Path(reference)
@@ -123,9 +123,8 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--staging", type=Path, default=STAGING)
     parser.add_argument("--raw", type=Path, default=STAGE / "01_data_raw/output")
-    parser.add_argument("--family", choices=("hvg-deg", "denoise-deg"), default="hvg-deg")
-    parser.add_argument("--axis", type=Path, help="override the published directory for the selected family")
-    parser.add_argument("--size", type=int, default=5000)
+    parser.add_argument("--axis", choices=TENV_AXIS_STEPS, default=TENV_BASELINE_AXIS)
+    parser.add_argument("--axis-root", type=Path, help="override the published directory for the selected axis")
     parser.add_argument("--fold-root", type=Path, default=FOLD_ROOT)
     parser.add_argument("--fold-receipt", type=Path, default=FOLD_RECEIPT)
     parser.add_argument("--reference", type=Path, help="HVG-DEG 5k release used for population equality")
@@ -133,11 +132,10 @@ def main():
     args = parser.parse_args()
     if args.command == "verify" and args.expected_sha256 is not None:
         parser.error("--expected-sha256 applies to publication only")
-    axis = open_axes(args.axis, family=args.family).axis(args.size)
-    fold_axis = open_axes().axis(5000)
+    axis = open_axis(args.axis, args.axis_root)
+    fold_axis = open_axis(TENV_BASELINE_AXIS)
     reference = args.reference
-    axis_name = f"{args.family}-{args.size // 1000}k"
-    if reference is None and axis_name in TENV_AXIS_STEPS and axis_name != TENV_BASELINE_AXIS:
+    if reference is None and args.axis != TENV_BASELINE_AXIS:
         reference = TENV_DEFAULT
     with open_corpus(args.raw) as corpus:
         arguments = (args.output, corpus, axis, fold_axis, args.fold_root, args.fold_receipt)

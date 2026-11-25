@@ -23,7 +23,15 @@ from native_corpus import open_corpus, seal_corpus
 from prediction_axis import COMMON_SHA256, PredictionAxis
 
 from build_training import promote_training, publish_training, replay_training
-from training_data import open_training
+from training_data import open_training, tenv_axis_output
+
+
+class TrainingAxisTest(unittest.TestCase):
+    def test_named_tenv_release_uses_the_canonical_axis_id(self):
+        step = Path("custom-training-root")
+        self.assertEqual(tenv_axis_output("denoise-5k", step), step / "03.7_tenv_denoise-5k/output")
+        with self.assertRaisesRegex(ValueError, "unknown tenv training axis"):
+            tenv_axis_output("denoise-deg-5k", step)
 
 
 def digest(path):

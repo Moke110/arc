@@ -817,6 +817,10 @@ subset of the frozen 18,164 gene indices without renumbering. ADR 0073 specifies
 2,000, 3,000, 4,000 and 5,000, all present in the measured release.
 _Avoid_: narrowed corpus axis, new identity axis
 
+**Prediction axis ID** (`hvg-{N}k`, `denoise-{N}k`):
+The name of a Stage 2 gene axis identified by its selection family and size in
+thousands of genes. `hvg` denotes HVG-DEG and `denoise` denotes Denoise-DEG.
+
 **Gene-axis candidate**:
 A frozen-axis gene under consideration for the axis — the rows of
 `output/gene-axis/candidate_rank_sum.csv`, one per frozen gene. tenv-HVG ranks all 18,164
