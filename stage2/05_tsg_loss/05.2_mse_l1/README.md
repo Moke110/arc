@@ -58,3 +58,70 @@ done
 Use `--training`, `--representations` and `--source` for the same
 materialized runner inputs in another checkout. The evaluator accepts
 `--training` and `--bandwidth-training`.
+
+## Run the formal sweep
+
+Use the same capped runtime. The matrix registers all 27 coordinates before
+fitting, verifies the ordered conditions against the frozen folds and fits
+one coordinate at a time. It records each phase's peak RSS and samples WSL
+RAM, GPU and disk on a ten-second schedule. Resume with the same paths.
+The matrix validates any sealed phase before proceeding.
+
+```bash
+set -e
+STEP="$PWD/stage2/05_tsg_loss/05.2_mse_l1"
+WORK=$(mktemp -d "$PWD/tmp/tsg-mse-l1-formal.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+capped_step04 python -u "$STEP/execution/matrix_sweep.py" \
+  --output "$WORK/matrix" --logs "$WORK/matrix-audit"
+capped_step04 python "$STEP/execution/report_sweep.py" build \
+  --matrix "$WORK/matrix" --matrix-audit "$WORK/matrix-audit" \
+  --report "$WORK/report" --publication "$WORK/publication" \
+  --activity "$WORK/report-audit" --scratch "$WORK/scratch" \
+  --code-revision "$(git rev-parse HEAD)"
+```
+
+Use `--training`, `--representations` and `--source` in both commands
+when the same frozen inputs are materialized in another checkout. The
+report command also accepts `--bandwidth-training` and `--previous-step`
+to locate the frozen HVG-DEG 5k release and accepted Step 05.1 study.
+
+## Verify the published study
+
+The [formal receipt](log/333-formal.json) binds 27 independently replayed
+fits, 243 [fold scores](log/fold-scores.csv), 81
+[equal-fold scores](figure/data/delta-metrics.csv), the
+[run ledger](log/runs.csv), and the [frozen bandwidths](log/bandwidths.csv).
+All three zero-weight controls match Step 05.1 native MSE at alpha 1
+exactly on the native objective trace, selected and stopping epochs,
+validation predictions, test predictions, Delta arrays, fold scores and
+eligibility counts. The [resource samples](log/333-resources.jsonl) record
+the monitored execution.
+
+The [raw scores](figure/delta-metrics.png) and
+[signed score differences](figure/delta-metrics-improvement.png) show one
+panel per metric. The difference is the score at the plotted alpha minus
+the zero-weight score. Blue backgrounds identify metrics where higher
+values are better. Red backgrounds identify metrics where lower values
+are better. The [learning curves](figure/learning-curves.png) show the
+training and validation objectives through the stopping epoch, with one
+panel per alpha and one color per fold. The
+[epoch CSV](figure/data/epoch-objectives.csv) retains the raw objective
+components.
+
+To verify the active result, run the formal report command above with
+`verify`, the `matrix`, `matrix-audit` and `report` directories under
+`$STEP/output/formal`, and `--publication "$STEP"`. Use fresh scratch and
+activity directories and omit `--code-revision`.
+
+Render all three PNGs from the published CSVs alone.
+
+```bash
+STEP="$PWD/stage2/05_tsg_loss/05.2_mse_l1"
+WORK=$(mktemp -d "$PWD/tmp/tsg-mse-l1-figures.XXXXXX")
+export TMPDIR="$WORK" MPLCONFIGDIR="$WORK"
+for renderer in render_metrics render_learning_curves; do
+  python "$STEP/figure/script/$renderer.py" --data "$STEP/figure/data" --output "$WORK"
+done
+```
