@@ -7,6 +7,8 @@ import sys
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.colors import to_rgb
+from matplotlib.image import BboxImage
 import numpy as np
 import pandas as pd
 
@@ -16,10 +18,22 @@ sys.path.insert(0, str(STEP.parent / "util/output/api"))
 from stage2_util.palette import color
 from stage2_util.plotting import save_figure
 
+LOWER_IS_BETTER = {"Δ RMSE", "Δ E-distance", "Δ MMD"}
+
 
 def _axis_label(axis):
     family, size = axis.rsplit("-", 1)
     return f"{family.replace('hvg-deg', 'HVG-DEG').replace('denoise-deg', 'Denoise-DEG')}\n{size}"
+
+
+def _add_metric_background(plot, metric):
+    tint = "#c62828" if metric in LOWER_IS_BETTER else color("blue", 2)
+    gradient = np.empty((256, 1, 4))
+    gradient[:, :, :3] = to_rgb(tint)
+    gradient[:, 0, 3] = np.linspace(0, .25, len(gradient))
+    background = BboxImage(plot.bbox, origin="lower", interpolation="bilinear", zorder=0)
+    background.set_data(gradient)
+    plot.add_artist(background)
 
 
 def render_metrics(csv, output):
@@ -30,15 +44,17 @@ def render_metrics(csv, output):
         raise ValueError("metric summary must have nine scores for every reported axis")
     fig, plots = plt.subplots(3, 3, figsize=(13.2, 10.8), layout="constrained")
     palette = [color("blue" if axis.startswith("hvg-") else "orange", 2) for axis in axes]
+    labels = [axis.replace("-deg-", "-").replace("hvg-", "HVG-") for axis in axes]
     for plot, metric in zip(plots.flat, metrics, strict=True):
         values = data.loc[data.metric.eq(metric)].set_index("axis").reindex(axes).value
         x = np.arange(len(axes))
+        _add_metric_background(plot, metric)
         plot.bar(x, values, color=palette, width=.65)
         for index in np.flatnonzero(values.isna()):
             plot.text(index, .04, "NA", ha="center", transform=plot.get_xaxis_transform())
         plot.axhline(0, color="#777777", lw=.6)
         plot.set_title(metric)
-        plot.set_xticks(x, [_axis_label(axis) for axis in axes], fontsize=8)
+        plot.set_xticks(x, labels, fontsize=8, rotation=30, ha="right", rotation_mode="anchor")
         plot.spines[["top", "right"]].set_visible(False)
     fig.suptitle("TranSiGen Delta scores on fixed tenv axes")
     save_figure(fig, output / "delta-metrics.png", dpi=180)

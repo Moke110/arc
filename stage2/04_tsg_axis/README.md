@@ -83,9 +83,11 @@ bandwidths and the shared disease reference. The two summary CSVs are in
 ```bash
 STEP=stage2/04_tsg_axis
 VERIFY=$(mktemp -d "$PWD/tmp/tsg-axis-verify.XXXXXX")
-capped_step04 python "$STEP/execution/report_formal.py" verify \
+git worktree add --detach "$VERIFY/runtime" 3f4cbb65
+capped_step04 python "$VERIFY/runtime/$STEP/execution/report_formal.py" verify \
   --matrix "$STEP/output/formal-matched-control" --matrix-audit "$STEP/log/319-runs" \
-  --report "$STEP/output/report-matched-control" --figures "$STEP/figure" \
+  --report "$STEP/output/report-matched-control" --figures "$VERIFY/runtime/$STEP/figure" \
+  --step03 "$PWD/stage2/03_data_train" --raw "$PWD/stage2/01_data_raw/output" \
   --logs "$VERIFY"
 ```
 
@@ -191,6 +193,9 @@ See the [nine-metric figure](figure/delta-metrics.png) and the
 [disease CSV](figure/data/disease-f1.csv) retain the full numerical
 precision and eligibility counts. The materialized report retains the
 per-fold and per-condition values and the full CM direction reference.
+The [figure revision receipt](log/delta-metrics-style.json) binds the current
+nine-metric figure to the formal summary CSV. Revision `3f4cbb65` retains
+the figure and renderer pinned by the original formal receipt.
 
 ## Historical single-dose comparison
 
