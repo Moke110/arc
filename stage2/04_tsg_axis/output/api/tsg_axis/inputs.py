@@ -43,19 +43,18 @@ class _ExpressionRows:
         return result
 
 
-class _ControlRows:
-    def __init__(self, plate_values, match_rows, mean):
-        self.plate_values, self.match_rows, self.mean = plate_values, match_rows, mean
+@dataclass(frozen=True)
+class _MatchedControlRows:
+    plate_values: np.ndarray
+    match_rows: np.ndarray
 
     def __getitem__(self, rows):
-        if self.mean is not None:
-            return np.broadcast_to(self.mean, (len(rows), len(self.mean)))
         return self.plate_values[self.match_rows[rows]]
 
 
 @dataclass(frozen=True)
 class _ModelInput:
-    control: _ControlRows
+    control: _MatchedControlRows
     expression: _ExpressionRows
     _features: np.ndarray | None
     _doses: np.ndarray
@@ -76,16 +75,16 @@ class AxisInputs:
         self.release = release
         self.genes = release.genes
         self.treatments = release.treatments
-        self.reference = release.control()
         self.doses = self.treatments.dose_um.to_numpy(dtype=np.float64)
         self.parents = self.treatments.drug_parent.to_numpy(dtype=str)
-        self.match_rows = self.treatments.control_row.to_numpy()
+        match_rows = self.treatments.control_row.to_numpy()
         self._expression = _ExpressionRows(release, "treatment")
         self._measured_delta = _ExpressionRows(release, "delta")
-        self._plates = np.concatenate([
+        plates = np.concatenate([
             release.read_controls(start, min(start + 64, len(release.controls)))
             for start in range(0, len(release.controls), 64)
         ])
+        self._controls = _MatchedControlRows(plates, match_rows)
         self._features = None
         if representations is not None:
             parents, inverse = np.unique(self.parents, return_inverse=True)
@@ -102,9 +101,7 @@ class AxisInputs:
     def model_input(self, partition):
         if partition not in {"train", "valid", "test"}:
             raise ValueError("unknown model partition")
-        mean = None if partition == "train" else self.reference
-        control = _ControlRows(self._plates, self.match_rows, mean)
-        return _ModelInput(control, self._expression, self._features, self.doses)
+        return _ModelInput(self._controls, self._expression, self._features, self.doses)
 
     def condition_ids(self, rows):
         columns = self.treatments.iloc[rows][["plate", "drug_parent", "dose_um"]]
@@ -145,4 +142,4 @@ def score_fixed_prediction(data, fold, prediction, condition_ids, *, rows=None):
     if (values.shape != (len(rows), len(data.genes)) or values.dtype != np.float32
             or not np.isfinite(values).all()):
         raise ValueError("predicted expression must be finite float32 on the released gene axis")
-    return PredictionTargets(expected, values - data.reference, data._measured_delta[rows])
+    return PredictionTargets(expected, values - data.model_input("test").control[rows], data._measured_delta[rows])

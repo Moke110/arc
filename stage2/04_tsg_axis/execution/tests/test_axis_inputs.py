@@ -38,15 +38,15 @@ class TrainingReleaseFixture:
 
 
 class AxisInputsTest(unittest.TestCase):
-    def test_training_uses_plate_control_and_prediction_scores_use_distinct_baselines(self):
+    def test_model_partitions_and_delta_arrays_share_matched_plate_controls(self):
         data = AxisInputs(TrainingReleaseFixture())
         train, valid, test = (data.rows(0, phase) for phase in ("train", "valid", "test"))
         np.testing.assert_array_equal(data.model_input("train").control[train], [[2, 4]])
-        np.testing.assert_array_equal(data.model_input("valid").control[valid], [[3, 6]])
-        np.testing.assert_array_equal(data.model_input("test").control[test], [[3, 6]])
+        np.testing.assert_array_equal(data.model_input("valid").control[valid], [[4, 8]])
+        np.testing.assert_array_equal(data.model_input("test").control[test], [[2, 4]])
         ids = data.condition_ids(test)
         result = score_fixed_prediction(data, 0, np.asarray([[7, 11]], dtype=np.float32), ids)
-        np.testing.assert_array_equal(result.predicted_delta, [[4, 5]])
+        np.testing.assert_array_equal(result.predicted_delta, [[5, 7]])
         np.testing.assert_array_equal(result.measured_delta, [[6, 7]])
         with self.assertRaisesRegex(ValueError, "condition identities"):
             score_fixed_prediction(data, 0, np.asarray([[7, 11]], dtype=np.float32),
