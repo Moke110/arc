@@ -1,0 +1,32 @@
+{
+  "csv_files_sha256": {
+    "02.1_hvg-deg/figure/data/disease-DEG1000-coverage_bars.csv": "b014eaf49b73dbf25ea394ae5911d26b7c5cc0bf6703a0b55b8dc4713071ae28",
+    "02.2_denoise-deg/figure/data/diagnostics_gene_exclusions.csv": "3a0bc238521fc6802f4a5e19ff2a0c10733e558aadb1efe4ddac3628de6cf042",
+    "02.2_denoise-deg/figure/data/diagnostics_genes.csv.gz": "b0ceb95f8b700883aae39aba8c2bce9dae0f4bd2a0bb4fdca248067a10fe5846",
+    "02.2_denoise-deg/figure/data/diagnostics_scores.csv": "f3031fe80ce021843365b5a028f418324ea248a52255e2e6d90e9083459a7796",
+    "02.2_denoise-deg/figure/data/diagnostics_variance_boundaries.csv": "fa3c275a28b6c9411aa7b1172a0b5bbd7f59fdd5a87521b1bf6e88aaed40a1fa",
+    "02.2_denoise-deg/figure/data/disease-DEG1000-coverage.csv": "342de85547b43dc41b0a9950fa80c43e4d4c62664141cf7dc8b470af40e1ed87",
+    "02.2_denoise-deg/figure/data/score-in-axis.csv": "ac8dfcd2786c584bc900314a613a39a190027f59610f506d0ab6935cf974b29d"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13"
+  },
+  "independent_renders": 2,
+  "png_files_sha256": {
+    "02.1_hvg-deg/figure/disease-DEG1000-coverage.png": "30483bbaf8171c135084cba373f74b40203fa1732a90d4973a176841ed93dd8b",
+    "02.2_denoise-deg/figure/deg-scores.png": "a030068a6aa4485bcd1e9dd52351c961ea5eca2e9eecd6af3b26416eb9bf6c1f",
+    "02.2_denoise-deg/figure/denoise.png": "482604dd17c8dd613da11090a2e7a09ccb5b2a7dbed37c196cda1e15c23a1c58",
+    "02.2_denoise-deg/figure/disease-DEG1000-coverage.png": "ea0678d869d0bcebb5bf80fd0b1206d56a96de42216b35040120eb9699387082",
+    "02.2_denoise-deg/figure/score-in-axis.png": "0719245ffe16bbcc2ce5ffbb620c1770c45e3fadb1ee15c33fa9e851a7cf77cb"
+  },
+  "pre_refresh_revision": "7f48f6a881bea57598b40b0da2becd62917569c8",
+  "renderer_files_sha256": {
+    "02.1_hvg-deg/figure/script/render_coverage.py": "9a7508f68d81b99937ab67e70132710f44b0050ed21eda8bb100025d9bf74199",
+    "02.2_denoise-deg/figure/script/render.py": "254697b15a779a898b2ab024fb458cb12158e9ecf212cef5877fc31fc5073c04"
+  },
+  "schema": "stage2-figure-render-v1",
+  "ticket": 342
+}

@@ -1,0 +1,23 @@
+{
+  "csv_files_sha256": {
+    "figure/canonical-axis/data/delta-metrics.csv": "1b2e7af6df8a1495588e5b228d49a94d14c1b51e63025c5177cd4eb25d341c0d",
+    "figure/canonical-axis/data/disease-f1.csv": "9a6f3d51eba3a1195e57314c66985843c189d84557f26e1b8d6d8f6705c27dee"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13"
+  },
+  "independent_renders": 2,
+  "png_files_sha256": {
+    "figure/canonical-axis/delta-metrics.png": "4f537e36c50ab1e51b985aec9ce19cb5829f226322919dfc647b42ff1aedaf7c",
+    "figure/canonical-axis/disease-f1.png": "36f7c4bac77614c89693a6aa3ccca3dcd2aba1591fb726ad32058b2a4ac5e478"
+  },
+  "pre_refresh_revision": "7f48f6a881bea57598b40b0da2becd62917569c8",
+  "renderer_files_sha256": {
+    "figure/script/render.py": "cffd56e611c94f1a7c5a978ce4579b40589b0d4f93f1660fcb35e04c50f76ce1"
+  },
+  "schema": "stage2-figure-render-v1",
+  "ticket": 342
+}
