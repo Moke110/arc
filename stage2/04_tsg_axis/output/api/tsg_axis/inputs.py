@@ -3,6 +3,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import lru_cache
 import json
+from operator import index
 from pathlib import Path
 import sys
 
@@ -132,9 +133,23 @@ class PredictionTargets:
 def score_fixed_prediction(data, fold, prediction, condition_ids, *, rows=None):
     """Pair held-out predictions with plate-matched truth in registered row order."""
     test = data.rows(fold, "test")
-    rows = test if rows is None else np.asarray(rows, dtype=np.int64)
-    if rows.ndim != 1 or not len(rows) or np.any(np.diff(rows) <= 0) or not np.isin(rows, test).all():
-        raise ValueError("prediction rows must be ordered members of the cold-drug test partition")
+    rows = test if rows is None else rows
+    invalid_rows = "prediction rows must be ordered members of the cold-drug test partition"
+    positions = []
+    try:
+        if np.ndim(rows) != 1:
+            raise TypeError("expected a vector of row positions")
+        for row in rows:
+            if isinstance(row, (bool, np.bool_)):
+                raise TypeError("boolean row position")
+            positions.append(index(row))
+    except (TypeError, ValueError) as exc:
+        raise ValueError(invalid_rows) from exc
+    if not positions or min(positions) < 0 or max(positions) >= len(data.treatments):
+        raise ValueError(invalid_rows)
+    rows = np.asarray(positions, dtype=np.int64)
+    if np.any(rows[1:] <= rows[:-1]) or not np.isin(rows, test).all():
+        raise ValueError(invalid_rows)
     expected = data.condition_ids(rows)
     if tuple(condition_ids) != expected:
         raise ValueError("prediction condition identities differ from the registered held-out rows")
