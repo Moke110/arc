@@ -12,7 +12,8 @@ from matrix import SCHEMA, STAGE, STEP, file_sha256, read, run_paths, verify_run
 from tsg_axis.protocol import PROTOCOL, REPORT_SCHEMA
 
 FIGURES = ("delta-metrics.png", "disease-f1.png")
-FIGURE_CSVS = ("delta-metrics.csv", "disease-f1.csv")
+SUMMARY_CSVS = ("delta-metrics.csv", "disease-f1.csv")
+FOLD_CSVS = ("fold-metrics.csv", "fold-disease-f1.csv")
 
 
 def matrix_inputs(matrix, audit):
@@ -67,8 +68,10 @@ def report(args):
         figures = scratch / "figures"
         csvs = scratch / "csv"
         csvs.mkdir()
-        for name in FIGURE_CSVS:
+        for name in SUMMARY_CSVS:
             shutil.copyfile(args.report / "figure/data" / name, csvs / name)
+        for name in FOLD_CSVS:
+            shutil.copyfile(args.report / name, csvs / name)
         command(render, ["--data", str(csvs), "--output", str(figures)], args.logs, "csv-render")
         hashes = {name: file_sha256(figures / name) for name in FIGURES}
         if args.command == "build":
@@ -81,7 +84,7 @@ def report(args):
         else:
             if any(file_sha256(args.figures / name) != digest for name, digest in hashes.items()):
                 raise ValueError("CSV-only figure replay differs from the accepted PNG")
-            for name in FIGURE_CSVS:
+            for name in (*SUMMARY_CSVS, *FOLD_CSVS):
                 if file_sha256(args.figures / "data" / name) != file_sha256(csvs / name):
                     raise ValueError(f"published plot CSV differs from the accepted report: {name}")
     scoring_code = (STEP / "output/api/tsg_axis/metrics.py", STEP / "output/api/tsg_axis/disease_reference.py")

@@ -16,7 +16,8 @@ sys.path.insert(0, str(FIGURE.parents[2] / "util/output/api"))
 
 from stage2_util.plotting import grouped_bar, save_figure
 
-HVG_HUE = 220
+SIZE_HUES = {1000: 20, 2000: 100, 3000: 140, 4000: 220, 5000: 300}
+DISEASE_DEPTHS = {"nHF": 0, "ICM": 1, "Genetic cardiomyopathy": 2, "TOX": 3}
 
 
 def main():
@@ -34,10 +35,11 @@ def main():
 
     x = np.arange(len(groups))
     fig, ax = plt.subplots(figsize=(9, 4.8), layout="constrained")
-    bars = [(groups[size], HVG_HUE, 5 - size // 1000, f"{size // 1000}k")
+    depths = [DISEASE_DEPTHS[disease] for disease in groups.index]
+    bars = [(groups[size], SIZE_HUES[size], depths, f"{size // 1000}k")
             for size in groups.columns]
     grouped_bar(ax, x, bars, width=.60)
-    ax.set(title="Disease top-DEG1000 coverage", ylabel="Coverage", ylim=(0, 1.02))
+    ax.set(title="HVG-DEG · disease top-DEG1000 coverage", ylabel="Coverage", ylim=(0, 1.02))
     ax.set_xticks(x, groups.index)
     ax.yaxis.set_major_formatter(PercentFormatter(xmax=1))
     ax.legend(title="Axis size", frameon=False, ncol=len(groups.columns), loc="upper left")

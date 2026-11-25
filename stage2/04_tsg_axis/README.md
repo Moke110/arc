@@ -78,8 +78,7 @@ paths are `output/formal-matched-control` for checkpoints, registrations
 and predictions, `log/319-runs` for resource and process evidence, and
 `output/report-matched-control` for condition and fold metrics, eligibility,
 bandwidths and the shared disease reference. This sealed report keeps its
-original axis IDs and digests. The tracked summary CSVs in `figure/canonical-axis/data/`
-and current figures use the canonical IDs.
+original axis IDs and digests. The published summary and fold CSVs in `figure/data/` use canonical IDs.
 
 Export the six axis-bearing condition, fold and summary CSVs with canonical
 IDs. The export verifies the sealed report's manifest and output digests
@@ -89,11 +88,12 @@ against the formal receipt and copies each row's other fields byte for byte.
 STEP=stage2/04_tsg_axis
 WORK=$(mktemp -d "$PWD/tmp/tsg-axis-export.XXXXXX")
 python "$STEP/execution/export_canonical.py" --output "$WORK/report"
-python "$STEP/figure/script/render.py" --data "$WORK/report/figure/data" --output "$WORK/figures"
+python "$STEP/figure/script/render.py" --data "$WORK/report/figure/data" \
+  --fold-data "$WORK/report" --output "$WORK/figures"
 ```
 
-Replay the sealed report with the original evaluator, renderer and path
-names. The temporary Step 03 aliases point to the same unchanged releases.
+Verify the sealed scientific report with its pinned evaluator and axis IDs.
+The temporary Step 03 aliases point to the same releases.
 
 ```bash
 STEP=stage2/04_tsg_axis
@@ -104,11 +104,13 @@ for release in "$PWD"/stage2/03_data_train/03.*_tenv_*; do
   name=${release##*/}
   ln -s "$release" "$VERIFY/legacy-step03/${name%-*}-deg-${name##*-}"
 done
-capped_step04 python "$VERIFY/runtime/$STEP/execution/report_formal.py" verify \
-  --matrix "$STEP/output/formal-matched-control" --matrix-audit "$STEP/log/319-runs" \
-  --report "$STEP/output/report-matched-control" --figures "$VERIFY/runtime/$STEP/figure" \
-  --step03 "$VERIFY/legacy-step03" --raw "$PWD/stage2/01_data_raw/output" \
-  --logs "$VERIFY"
+runs=()
+for run in "$STEP"/output/formal-matched-control/runs/*/fold-*; do
+  runs+=(--run "$run")
+done
+capped_step04 python "$VERIFY/runtime/$STEP/execution/evaluate.py" verify "${runs[@]}" \
+  --output "$STEP/output/report-matched-control" \
+  --step03 "$VERIFY/legacy-step03" --raw "$PWD/stage2/01_data_raw/output"
 git worktree remove "$VERIFY/runtime"
 ```
 
@@ -154,7 +156,7 @@ REPORT=$PWD/tmp/tsg-axis/report
 python "$STEP/execution/evaluate.py" score --smoke --run "$RUN" --output "$REPORT"
 python "$STEP/execution/evaluate.py" verify --smoke --run "$RUN" --output "$REPORT"
 python "$STEP/figure/script/render.py" --data "$REPORT/figure/data" \
-  --output "$PWD/tmp/tsg-axis/figures"
+  --fold-data "$REPORT" --output "$PWD/tmp/tsg-axis/figures"
 ```
 
 The report orders the metrics as JAC_top200, JAC_pos100, JAC_neg100, Δ PCC,
@@ -174,8 +176,8 @@ Opposite signs count as one false positive and one false negative. An off-axis
 reference gene counts as a false negative. Two empty sets produce NA. The
 same `reference/` files supply all models' disease targets.
 
-The report retains per-condition and per-fold CSVs, eligibility counts and
-the two aggregate CSVs consumed by the figures. It weights defined conditions
+The report retains per-condition, per-fold and summary CSVs with eligibility counts.
+The figures use the published summary and fold CSVs. It weights defined conditions
 equally within a fold and defined folds equally within each axis. These are
 retrospective results on published fixed axes built with tenv evidence and
 measure prediction conditional on a measured matched control.
@@ -208,32 +210,29 @@ and every disease score was defined in all three folds.
 | genetic cardiomyopathy | 0.2136 | 0.2469 | 0.2193 | 0.1208 | 0.1057 | 0.0950 |
 | TOX | 0.3026 | 0.2587 | 0.2162 | 0.1302 | 0.1148 | 0.1036 |
 
-See the [nine-metric figure](figure/canonical-axis/delta-metrics.png) and the
-[disease F1 figure](figure/canonical-axis/disease-f1.png). The
-[metric CSV](figure/canonical-axis/data/delta-metrics.csv) and
-[disease CSV](figure/canonical-axis/data/disease-f1.csv) retain the full numerical
-precision and eligibility counts. The materialized report retains the
-per-fold and per-condition values and the full CM direction reference.
-Reproduce the current figures from both published canonical CSVs.
+See the [nine-metric figure](figure/delta-metrics.png) and the
+[disease F1 figure](figure/disease-f1.png). The
+[metric CSV](figure/data/delta-metrics.csv) and
+[disease CSV](figure/data/disease-f1.csv) retain the full numerical
+precision and eligibility counts. The published
+[metric fold CSV](figure/data/fold-metrics.csv) and [disease fold CSV](figure/data/fold-disease-f1.csv) supply the replicate dots
+and sample SD for each axis. The materialized report also retains the
+per-condition values and the full CM direction reference.
+Reproduce the current figures directly from the four published CSVs.
 
 ```bash
 STEP=stage2/04_tsg_axis
 mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/tsg-axis-figures.XXXXXX")
 export TMPDIR="$WORK" MPLCONFIGDIR="$WORK/mpl"
-python "$STEP/figure/script/render.py" --data "$STEP/figure/canonical-axis/data" \
+python "$STEP/figure/script/render.py" --data "$STEP/figure/data" \
   --output "$WORK/figures"
 ```
 
 The [current rendering receipt](log/342-figure-render.json) records the CSV
 and PNG hashes. Metric panel arrows show the preferred direction. The
 [canonical export receipt](log/322-canonical-axis-report.json) records the
-six ID mappings, sealed table hashes and pre-refresh figure hashes. Use
-revision `7f48f6a881bea57598b40b0da2becd62917569c8` to reproduce those
-canonical PNG bytes.
-Revision `3f4cbb65` retains the figures and renderer pinned by the formal
-receipt. Revision `0067ce54` retains the first revision of the Delta figure
-styling and its receipt.
+six ID mappings and sealed table hashes.
 
 ## Historical comparisons
 
