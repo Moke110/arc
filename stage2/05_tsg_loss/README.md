@@ -13,3 +13,49 @@ reconstruction MSE weight at fixed Delta L1 weight 1.75.
 [Step 05.5](05.5_mse-l1_cos/README.md) vary the weights of bounded
 Delta PCC and cosine similarity losses, respectively, using the unit
 reconstruction weight and fixed Delta L1 weight from Step 05.3.
+
+## Reproduce the formal Delta similarity sweeps
+
+Run from the materialized checkout with the `arc` environment and define
+the capped launcher. [Step 04 capped runtime](../04_tsg_axis/README.md#prepare-the-capped-runtime)
+
+The shared driver registers all 36 coordinates before training, runs one CUDA
+fit at a time, and resumes from validated phase receipts at the same paths.
+It samples WSL RAM and GPU usage every ten seconds and records peak RSS for
+registration, training, prediction and replay.
+
+Allow at least 6 GiB of free scratch space. Set `TSG_SIMILARITY_WORK_ROOT`
+to an existing directory under this checkout's `tmp/` when using a backed
+volume. Keep scratch, reports and the candidate publication on that volume
+so the atomic publication rename stays on the same filesystem.
+
+```bash
+set -e
+LOSS="$PWD/stage2/05_tsg_loss"
+SHARED="$LOSS/similarity"
+mkdir -p "$PWD/tmp"
+WORK_ROOT="${TSG_SIMILARITY_WORK_ROOT:-$PWD/tmp}"
+WORK=$(mktemp -d "$WORK_ROOT/tsg-similarity-formal.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+REVISION=$(git rev-parse HEAD)
+capped_step04 python -u "$SHARED/matrix_similarity.py" \
+  --output "$WORK/matrix" --logs "$WORK/matrix-audit"
+capped_step04 python "$SHARED/report_similarity.py" build \
+  --matrix "$WORK/matrix" --matrix-audit "$WORK/matrix-audit" \
+  --reports "$WORK/reports" --publication "$WORK/publication" \
+  --activity "$WORK/report-audit" --scratch "$WORK/scratch" \
+  --code-revision "$REVISION"
+```
+
+The driver accepts `--training`, `--representations` and `--source` to
+locate pinned inputs in another checkout. The report accepts those options
+plus `--bandwidth-training` and `--previous-step` for the sealed Step 05.3
+release. The report prepares both studies before moving the verified
+candidate into place. Repeat its command with `verify` in place of `build`
+and omit `--code-revision` to check the publication again.
+
+For the installed release, use `output/formal/{matrix,matrix-audit,reports}`
+under either similarity step for the three input arguments and
+`stage2/05_tsg_loss` for `--publication`. Create a fresh activity and scratch
+directory under the checkout's `tmp/`.

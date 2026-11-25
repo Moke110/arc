@@ -193,6 +193,18 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2/05_tsg_loss/05.3_mse-l1_mse-x/log/fold-scores.csv
 !/stage2/05_tsg_loss/05.3_mse-l1_mse-x/log/runs.csv
 
+# Steps 05.4 and 05.5 publish compact tables for both bounded similarity sweeps.
+!/stage2/05_tsg_loss/05.4_mse-l1_pcc/figure/data/delta-metrics.csv
+!/stage2/05_tsg_loss/05.4_mse-l1_pcc/figure/data/epoch-objectives.csv
+!/stage2/05_tsg_loss/05.4_mse-l1_pcc/log/bandwidths.csv
+!/stage2/05_tsg_loss/05.4_mse-l1_pcc/log/fold-scores.csv
+!/stage2/05_tsg_loss/05.4_mse-l1_pcc/log/runs.csv
+!/stage2/05_tsg_loss/05.5_mse-l1_cos/figure/data/delta-metrics.csv
+!/stage2/05_tsg_loss/05.5_mse-l1_cos/figure/data/epoch-objectives.csv
+!/stage2/05_tsg_loss/05.5_mse-l1_cos/log/bandwidths.csv
+!/stage2/05_tsg_loss/05.5_mse-l1_cos/log/fold-scores.csv
+!/stage2/05_tsg_loss/05.5_mse-l1_cos/log/runs.csv
+
 # HVG-DEG axes and compact selection evidence. Keep candidates local.
 !/stage2/02_gene_axis/02.1_hvg-deg/output/
 /stage2/02_gene_axis/02.1_hvg-deg/output/*
