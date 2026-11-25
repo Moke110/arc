@@ -1,14 +1,9 @@
 #!/usr/bin/env bash
 # check_stage2_paths.sh — assert stage2/ executable code has no retired step paths.
 #
-# Scan tracked Stage 2 executable code for references to retired roots.
-# Historical payload literals require exact file/literal whitelist entries.
-# Every invocation rejects any other immediate on-disk Stage 2 entry (directories
-# and regular files alike; the routing document stage2/AGENTS.md is the only
-# allowed root file) and checks each active root's owning AGENTS.md/README.md.
-# The layout check
-# runs in fixture mode too; `STAGE2_PATH_AUDIT_ROOT` overrides the scanned root
-# for script/tests/.
+# Scan tracked Stage 2 executable code for retired or archived paths.
+# The layout guard allows Steps 01–04, util, routing docs, and the ignored local
+# history directory. STAGE2_PATH_AUDIT_ROOT supplies a fixture layout.
 # No network or dataset access. Exit 0 clean, 1 stale/layout failure, 2 usage error.
 
 set -uo pipefail
@@ -91,18 +86,17 @@ main() {
   : >"$stale_rows"
   local files_scanned=0 occurrences=0 whitelisted=0 stale=0
 
-  # The retired step roots, then the retired bundle name handled per line.
-  local step_pattern='stage2/[[:alnum:]_./+@-]+'
-
-  local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 06_tsg_drug_emb 07_tsg_dose 08_tsg_width_dose 09_tsg_transfer)
-  # Layout guard: fail closed on retired step entries.  Only the active step
-  # directories and the Stage 2 routing document stage2/AGENTS.md (present at the
-  # review base a53c9ff) may sit at the Stage 2 root; any other regular file,
-  # symlink or directory is a retired-step entry.  The earlier form replaced the
-  # existence test with a bare `-d` test, which silently accepted any stray file
-  # (#157 review S2).  `STAGE2_PATH_AUDIT_ROOT` is a script/tests/ hook;
-  # production uses `stage2`.
+  local step_pattern='stage2/[[:alnum:]_./+@-]+|(05_tsg_loss|06_tsg_drug_emb|07_tsg_dose|08_tsg_width_dose|09_tsg_transfer|03[.]1_hvg-deg-5k)(/[[:alnum:]_./+@-]*)?'
+  local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis)
   local stage2_root="${STAGE2_PATH_AUDIT_ROOT:-stage2}"
+  if [ -z "${STAGE2_PATH_AUDIT_ROOT:-}" ]; then
+    local archived_files
+    archived_files="$(git ls-files -- stage2/history)" || return 2
+    if [ -n "$archived_files" ] || ! git check-ignore -q -- stage2/history/.archive-probe; then
+      echo "RESULT: FAIL — Stage 2 history must be ignored and untracked" >&2
+      return 1
+    fi
+  fi
   local entry root active
   for entry in "$stage2_root"/* "$stage2_root"/.[!.]* "$stage2_root"/..?*; do
     [ -e "$entry" ] || [ -L "$entry" ] || continue
@@ -114,9 +108,12 @@ main() {
       fi
     done
     [ "$active" -eq 1 ] && continue
-    if [ "$entry" = "$stage2_root/AGENTS.md" ] && [ -f "$entry" ] && [ ! -L "$entry" ]; then
-      continue
-    fi
+    case "$entry" in
+      "$stage2_root/AGENTS.md" | "$stage2_root/README.md")
+        [ -f "$entry" ] && [ ! -L "$entry" ] && continue ;;
+      "$stage2_root/history")
+        [ -d "$entry" ] && [ ! -L "$entry" ] && continue ;;
+    esac
     echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
     return 1
   done
@@ -128,6 +125,27 @@ main() {
       fi
     done
   done
+
+  for entry in "$stage2_root/AGENTS.md" "$stage2_root/README.md"; do
+    if [ ! -f "$entry" ]; then
+      echo "RESULT: FAIL — missing Stage 2 routing: $entry" >&2
+      return 1
+    fi
+  done
+  for entry in "$stage2_root"/03_data_train/{03.1_hvg-deg-5k,output/tenv,output/tahoe-bulk,output/manifest.json} \
+               "$stage2_root"/04_tsg_axis/output/{formal,report}; do
+    if [ -e "$entry" ] || [ -L "$entry" ]; then
+      echo "RESULT: FAIL — superseded Stage 2 release in active tree: $entry" >&2
+      return 1
+    fi
+  done
+  local history_outside_archive
+  history_outside_archive="$(find "${active_roots[@]/#/$stage2_root/}" \
+    \( -name historical -o -name history \) -print -quit)" || return 2
+  if [ -n "$history_outside_archive" ]; then
+    echo "RESULT: FAIL — step-local Stage 2 history: $history_outside_archive" >&2
+    return 1
+  fi
 
   # Production scans the tracked tree.  `STAGE2_PATH_AUDIT_FILES` is a
   # newline-separated file list used only by script/tests/ to exercise the
@@ -158,6 +176,10 @@ main() {
       for root in "${active_roots[@]}"; do
         case "$literal" in "stage2/$root" | "stage2/$root"/*) active_literal=1 ;; esac
       done
+      case "$literal" in
+        */historical | */historical/* | */03.1_hvg-deg-5k | */03.1_hvg-deg-5k/*)
+          active_literal=0 ;;
+      esac
       [ "$active_literal" -eq 1 ] && continue
       occurrences=$((occurrences + 1))
       if is_whitelisted "$f" "$literal"; then

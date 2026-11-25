@@ -183,25 +183,27 @@ Per-workflow rows are isolated `du -sb` values that each include their own hard-
 
 ## Stage 2 — published products and comparison payloads
 
-The [Stage 2 routing](../stage2/AGENTS.md) identifies the current study and
-product owners. [Historical evidence](../stage2/03_data_train/03.1_hvg-deg-5k/historical/README.md)
-keeps accepted figures, reports, and their original receipt paths.
+The [Stage 2 routing](../stage2/AGENTS.md) identifies the active product
+owners. The materialized [local archive](../stage2/README.md#local-history)
+keeps superseded releases and study payloads at their original relative paths
+under `stage2/history/`.
 
 | Owner | Accepted products |
 | --- | --- |
-| [Raw data](../stage2/01_data_raw/README.md) | Seven source-native datasets and their release manifest directly in `output/`; sealed v1 files in `historical/native-v1/`. |
-| [Prediction axes](../stage2/02_gene_axis/README.md) | Four ordered axes and compact selection evidence in `02.1_hvg-deg/output/release/`. |
-| [Training data](../stage2/03_data_train/README.md) | Plate-matched tenv and Tahoe bulk data under `output/tenv/` and `output/tahoe-bulk/`. The sealed well-level views remain under `03.1_hvg-deg-5k/output/release/` for replay. |
+| [Raw data](../stage2/01_data_raw/README.md) | Seven source-native datasets and their release manifest under `output/`. |
+| [Prediction axes](../stage2/02_gene_axis/README.md) | Ordered HVG-DEG and Denoise-DEG families with selection evidence. |
+| [Training data](../stage2/03_data_train/README.md) | Six tenv plate-pooled releases and the Tahoe well-level release. |
+| [Axis comparison](../stage2/04_tsg_axis/README.md) | Held-out matched-control TranSiGen evaluation, sealed formal results and canonical report exports. |
 | [Util](../stage2/util/README.md) | Accepted gene identity and representation products plus shared operations. |
 
-### `stage2/04_tsg_axis/historical/04_model_view/` — accepted three-fold comparison (#226/#231)
+### Archived single-dose three-fold comparison (#226/#231)
 
 Canonical ignored payloads preserve the accepted complete 54-run matrix and new
 18-slot Mean release. Sizes below are regular-file byte sums, excluding directory
 metadata. The complete candidate duplicates published runs to retain registrations,
 plan, resources and verification evidence from the accepted run.
 
-| path under `stage2/04_tsg_axis/historical/04_model_view/` | files | bytes | contents / reconstruction |
+| path under the archived `04_model_view/` | files | bytes | contents / reconstruction |
 |---|---:|---:|---|
 | `output/inputs/` | 12 | 98,265,302 | 1,402 treated wells, 459 parents, 192 unique controls, 5,000 genes, exact three-fold splits/Morgan/manifest; accepted historical input freeze |
 | `output/means/` | 62 | 142,776,780 | 18 baseline slots, 15 applicable and three cold-drug Mean_drug N/A |
@@ -222,8 +224,8 @@ The old tree at commit `cf27c49` is archived at
 214 regular files, 3,069,022,388 source bytes; archive SHA256
 `27175ec1d4dca1654500278b79fa3ceb439054f015f9c3b0488fe40b7cf68d08`.
 `manifest.json` beside it records every entry; `log/231-retirement.json` in the new
-step records renewed source/archive verification and the old→new mapping. This is
-same-machine retention, not an offsite backup. Historical source/figures/records
+step records renewed source/archive verification and the old→new mapping. The tar is
+kept on the same machine. Historical source/figures/records
 remain accessible through Git history; ignored fits remain recoverable from the
 verified archive. Earlier failed five-fold successor candidates retain their
 original worktrees and evidence and are not counted as this accepted matrix.

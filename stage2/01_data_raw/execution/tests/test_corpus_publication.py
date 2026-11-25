@@ -28,8 +28,22 @@ class CorpusPublicationTest(unittest.TestCase):
         argv = ["build_corpus.py", "migrate", "--predecessor", str(predecessor),
                 "--output", str(self.output), "--staging", str(self.root / "staging")]
         with (patch.object(sys, "argv", argv),
-              patch.object(build_corpus, "DEFAULT", self.output)):
+              patch.object(build_corpus, "DEFAULT", self.output),
+              patch.object(build_corpus, "HISTORY", self.root / "history")):
             build_corpus.main()
+
+    def test_verify_migrated_release_needs_no_archived_predecessor(self):
+        self.legacy.rename(self.root / "unavailable-predecessor")
+        (self.output / "manifest.json").write_text(json.dumps({
+            "inputs": {}, "predecessor": {"manifest_sha256": "past"},
+        }))
+        argv = ["build_corpus.py", "verify", "--output", str(self.output),
+                "--staging", str(self.root / "staging")]
+        with (patch.object(sys, "argv", argv),
+              patch.object(build_corpus, "DEFAULT", self.output),
+              patch.object(build_corpus, "verify_product", return_value="accepted") as verify):
+            build_corpus.main()
+        verify.assert_called_once_with(self.output)
 
     def test_different_predecessor_cannot_replace_the_accepted_legacy_release(self):
         with (patch.object(build_corpus, "migrate") as build,
@@ -76,7 +90,7 @@ class CorpusPublicationTest(unittest.TestCase):
             self.migrate(self.predecessor)
         downstream.assert_called_once()
         self.assertFalse(self.legacy.exists())
-        archived = self.root / "historical/native-v1"
+        archived = self.root / "history/stage2" / build_corpus.STEP.name / "historical/native-v1"
         self.assertEqual((archived / "manifest.json").read_text(), manifest)
         self.assertEqual((archived / "payload").read_text(), "accepted")
         self.assertEqual((api / "reader.py").read_text(), "# accepted reader\n")

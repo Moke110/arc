@@ -6,7 +6,6 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
-from unittest.mock import patch
 
 from anndata import AnnData
 import numpy as np
@@ -22,8 +21,8 @@ sys.path[:0] = [str(path) for path in (
 from native_corpus import open_corpus, seal_corpus
 from prediction_axis import COMMON_SHA256, PredictionAxis
 
-from build_training import promote_training, publish_training, replay_training
-from training_data import open_training, tenv_axis_output
+from build_tenv_training import publish_tenv, replay_tenv
+from training_data import open_tenv_training, tenv_axis_output
 
 
 class TrainingAxisTest(unittest.TestCase):
@@ -68,13 +67,9 @@ class TrainingTest(unittest.TestCase):
         counts[:, [5, 2]] = [[1, 0], [0, 9], [3, 0], [0, 1], [2, 2], [0, 8],
                              [4, 0], [1, 1], [0, 0], [1, 1], [99, 0], [0, 0],
                              [0, 0], [2, 2], [2, 2], [2, 2], [1, 3], [99, 1]]
-        tahoe_obs = obs.copy()
-        tahoe_obs["vehicle"] = np.where(
-            obs.role.eq("vehicle"), obs.vehicle.map({"DMSO": "DMSO_TF", "Media": "DMSO"}), ""
-        )
+        obs.loc[obs.cell_line.eq("other"), "plate"] = "C"
         self.counts = counts
-        self.source_observations = {"tenv": obs, "tahoe_bulk": tahoe_obs}
-        self.corpus = self.make_corpus("raw", self.source_observations)
+        self.obs = obs
         self.axis = PredictionAxis((5, 2), ("five", "two"), "a" * 64)
         self.output = self.root / "output"
         self.staging = self.root / "staging"
@@ -101,6 +96,7 @@ class TrainingTest(unittest.TestCase):
                         label = "train" if drug == "P" else "validation"
                     self.fold_rows.append([row, profile, drug, dose_um, scenario, fold, label])
         self.freeze()
+        self.corpus = self.make_corpus("raw", {"tenv": self.obs})
 
     def make_corpus(self, name, source_observations):
         raw = self.root / name
@@ -116,12 +112,7 @@ class TrainingTest(unittest.TestCase):
     def test_tenv_axis_release_has_three_keyed_products_and_replays_from_raw_counts(self):
         import h5py
 
-        from build_tenv_training import publish_tenv, replay_tenv
-        from training_data import open_tenv_training
-
-        tenv = self.source_observations["tenv"].copy()
-        tenv.loc[tenv.cell_line.eq("other"), "plate"] = "C"
-        corpus = self.make_corpus("tenv-raw", {"tenv": tenv})
+        corpus = self.make_corpus("tenv-raw", {"tenv": self.obs})
         args = (self.output, corpus, self.axis, self.axis, self.fold_root, self.receipt)
         publish_tenv(*args, staging=self.staging)
         with open_tenv_training(self.output) as data:
@@ -138,6 +129,15 @@ class TrainingTest(unittest.TestCase):
             self.assertEqual(data.treatments.cold_dose_drug_0.tolist(), ["test", "test", "valid", "", ""])
             self.assertEqual(data.treatments.cold_dose_drug_0_reason.tolist(),
                              ["", "", "", "held_parent", "held_dose"])
+            members = data.membership().set_index("profile_id")
+            self.assertEqual(members.loc["t2", "row"], 0)
+            self.assertEqual(members.loc["t4", "row"], 2)
+            self.assertEqual(data.exclusions().set_index("profile_id").reason.to_dict(), {
+                "blank": "technical_blank", "bad_t": "unresolved_drug",
+                "media": "incompatible_vehicle", "zero_t": "zero_treatment_counts",
+                "zero_v": "zero_control_counts", "missing_control": "no_matched_vehicle",
+                "blank_dose": "unresolved_dose", "zero_control_t": "zero_control_counts",
+            })
             with self.assertRaisesRegex(ValueError, "window"):
                 data.read_treatments(0, 257)
         with h5py.File(self.output / "plate-ref-mtx.h5", "r") as handle:
@@ -150,13 +150,8 @@ class TrainingTest(unittest.TestCase):
         self.assertEqual(replay_tenv(*args, staging=self.staging)["result"], "PASS")
 
     def test_tenv_axis_publication_requires_the_reference_population(self):
-        from build_tenv_training import publish_tenv, replay_tenv
-        from training_data import open_tenv_training
-
-        tenv = self.source_observations["tenv"].copy()
-        tenv.loc[tenv.cell_line.eq("other"), "plate"] = "C"
         self.counts[:2, 3] = [1, 2]
-        corpus = self.make_corpus("tenv-raw", {"tenv": tenv})
+        corpus = self.make_corpus("tenv-raw", {"tenv": self.obs})
         folds = (self.axis, self.fold_root, self.receipt)
         reference = self.root / "reference"
         publish_tenv(reference, corpus, self.axis, *folds, staging=self.staging)
@@ -178,7 +173,7 @@ class TrainingTest(unittest.TestCase):
             "row", "profile_id", "drug_parent", "dose_um", "scenario", "fold", "partition",
         ])
         source_digests = {}
-        for key in ("tenv", "tahoe_bulk"):
+        for key in ("tenv",):
             source = self.fold_root / key
             source.mkdir(parents=True, exist_ok=True)
             rows.to_csv(source / "splits.csv", index=False)
@@ -194,126 +189,12 @@ class TrainingTest(unittest.TestCase):
         }))
         self.receipt.write_text(json.dumps({
             "pair_sha256": digest(pair),
-            "input_source_evidence": {"tenv": {"split_seed": 226}, "tahoe_bulk": {"split_seed": 2026}},
+            "input_source_evidence": {"tenv": {"split_seed": 226}},
         }))
 
     def publish(self):
-        return publish_training(self.output, self.corpus, self.axis, self.fold_root, self.receipt,
-                                sources=("tenv",), staging=self.staging)
-
-    def test_plate_matched_integer_pooling_and_bounded_replay(self):
-        self.publish()
-        with open_training(self.output, source="tenv") as data:
-            self.assertEqual(list(data.genes.gene_index), [5, 2])
-            self.assertEqual(list(zip(data.controls.plate, data.controls.cell_line)),
-                             [("A", "CM"), ("B", "CM"), ("A", "other")])
-            self.assertEqual(list(data.treatments.plate), ["A", "B", "A", "A", "A"])
-            self.assertEqual(list(data.treatments.control_row), [0, 1, 2, 0, 2])
-            expected_controls = np.log1p([[7500, 2500], [0, 10000], [5000, 5000]])
-            expected_treated = np.log1p([[1000, 9000], [5000, 5000], [10000, 0]])
-            np.testing.assert_allclose(data.read_controls(0, 3), expected_controls)
-            np.testing.assert_allclose(data.read_treatments(0, 3), expected_treated)
-            np.testing.assert_allclose(data.read_treatments(0, 3, "delta"),
-                                       expected_treated - expected_controls, rtol=1e-6)
-            np.testing.assert_allclose(data.control(), expected_controls.mean(axis=0))
-            self.assertEqual(data.treatments.cold_drug_0.iloc[:3].tolist(), ["test", "test", "valid"])
-            self.assertEqual(data.treatments.cold_drug_dose_1.iloc[:3].tolist(), ["train", "train", "test"])
-            self.assertEqual(data.manifest["inputs"]["folds"]["held_dose_um"], [1, 2, 3])
-            memberships = data.membership().set_index("profile_id")
-            self.assertEqual(memberships.loc["v1", "row"], 0)
-            self.assertEqual(memberships.loc["t2", "row"], 0)
-            self.assertEqual(memberships.loc["t4", "row"], 2)
-            self.assertEqual(data.exclusions().set_index("profile_id").reason.to_dict(), {
-                "blank": "technical_blank", "bad_t": "unresolved_drug",
-                "media": "incompatible_vehicle", "zero_t": "zero_treatment_counts",
-                "zero_v": "zero_control_counts", "missing_control": "no_matched_vehicle",
-                "blank_dose": "unresolved_dose", "zero_control_t": "zero_control_counts",
-            })
-            with self.assertRaisesRegex(ValueError, "window"):
-                data.read_treatments(0, 257)
-        result = replay_training(self.output, self.corpus, self.axis, self.fold_root, self.receipt,
-                                 sources=("tenv",), staging=self.staging)
-        self.assertEqual(result["result"], "PASS")
-
-
-    def test_both_excluded_strips_remain_readable_in_cold_drug_dose(self):
-        self.publish()
-        with open_training(self.output, source="tenv") as data:
-            rows = data.treatments.iloc[-2:]
-            self.assertEqual(rows.cold_drug_dose_0.tolist(), ["excluded", "excluded"])
-            self.assertEqual(rows.cold_drug_dose_0_reason.tolist(), ["held_parent", "held_dose"])
-            np.testing.assert_allclose(data.read_treatments(3, 5),
-                                       np.log1p([[2500, 7500], [9900, 100]]))
-
-    def test_pair_adds_tahoe_using_its_compatible_vehicle_and_frozen_strips(self):
-        self.publish()
-        tenv_digest = digest(self.output / "tenv/manifest.json")
-        args = (self.output, self.corpus, self.axis, self.fold_root, self.receipt)
-        publish_training(*args, staging=self.staging)
-        self.assertEqual(digest(self.output / "tenv/manifest.json"), tenv_digest)
-        with open_training(self.output, source="tahoe-bulk") as data:
-            self.assertEqual(list(data.genes.gene_index), [5, 2])
-            self.assertEqual(data.manifest["inputs"]["raw_source"], "tahoe_bulk")
-            self.assertEqual(data.manifest["inputs"]["folds"]["split_seed"], 2026)
-            self.assertEqual(list(zip(data.controls.plate, data.controls.cell_line)),
-                             [("A", "CM"), ("B", "CM"), ("A", "other")])
-            self.assertEqual(data.treatments.control_row.tolist(), [0, 1, 2, 0, 2])
-            expected_controls = np.log1p([[7500, 2500], [0, 10000], [5000, 5000]]).astype(np.float32)
-            expected_treatment = np.log1p([[1000, 9000], [5000, 5000], [10000, 0]]).astype(np.float32)
-            np.testing.assert_array_equal(data.read_controls(0, 3), expected_controls)
-            np.testing.assert_array_equal(data.read_treatments(0, 3), expected_treatment)
-            np.testing.assert_array_equal(data.read_treatments(0, 3, "delta"),
-                                          expected_treatment - expected_controls)
-            np.testing.assert_allclose(data.control(), expected_controls.mean(axis=0))
-            excluded = data.exclusions().set_index("profile_id")
-            self.assertEqual(excluded.loc["media", "reason"], "incompatible_vehicle")
-            strips = data.treatments.iloc[-2:]
-            self.assertEqual(strips.cold_drug_dose_0.tolist(), ["excluded", "excluded"])
-            self.assertEqual(strips.cold_drug_dose_0_reason.tolist(), ["held_parent", "held_dose"])
-        result = replay_training(*args, staging=self.staging)
-        self.assertEqual(result["sources"], ["tenv", "tahoe-bulk"])
-
-    def test_verified_pair_can_be_promoted_with_the_public_api_intact(self):
-        self.publish()
-        api = self.output / "api"
-        api.mkdir()
-        reader = api / "reader.py"
-        reader.write_text("PUBLISHED = True\n")
-        candidate = self.root / "candidate"
-        publish_training(candidate, self.corpus, self.axis, self.fold_root, self.receipt,
-                         staging=self.staging)
-        expected = digest(candidate / "manifest.json")
-
-        promote_training(candidate, self.output, self.corpus, self.axis,
-                             self.fold_root, self.receipt,
-                         expected_sha256=expected, staging=self.staging)
-
-        self.assertEqual(digest(self.output / "manifest.json"), expected)
-        self.assertEqual(reader.read_text(), "PUBLISHED = True\n")
-        candidate_counts = candidate / "tahoe-bulk/training.h5"
-        accepted_counts = self.output / "tahoe-bulk/training.h5"
-        self.assertFalse(candidate_counts.samefile(accepted_counts))
-        self.assertEqual(digest(candidate_counts), digest(accepted_counts))
-        with open_training(self.output, source="tahoe-bulk") as data:
-            self.assertEqual(data.treatments.control_row.iloc[0], 0)
-
-    def test_promotion_rejects_corrupt_payload_under_the_accepted_manifest(self):
-        self.publish()
-        before = digest(self.output / "manifest.json")
-        candidate = self.root / "candidate"
-        publish_training(candidate, self.corpus, self.axis, self.fold_root, self.receipt,
-                         staging=self.staging)
-        expected = digest(candidate / "manifest.json")
-        with (candidate / "tahoe-bulk/training.h5").open("ab") as handle:
-            handle.write(b"changed after verification")
-
-        with self.assertRaisesRegex(ValueError, "training payload digest differs"):
-            promote_training(candidate, self.output, self.corpus, self.axis,
-                             self.fold_root, self.receipt,
-                             expected_sha256=expected, staging=self.staging)
-
-        self.assertEqual(digest(self.output / "manifest.json"), before)
-        self.assertFalse((self.output / "tahoe-bulk").exists())
+        return publish_tenv(self.output, self.corpus, self.axis, self.axis, self.fold_root, self.receipt,
+                            staging=self.staging)
 
     def test_failed_publication_keeps_previous_accepted_bytes(self):
         self.publish()
@@ -325,7 +206,7 @@ class TrainingTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "missing frozen fold assignment"):
             self.publish()
         self.assertEqual(digest(self.output / "manifest.json"), accepted)
-        with open_training(self.output, source="tenv") as data:
+        with open_tenv_training(self.output) as data:
             self.assertEqual(data.treatments.control_row.iloc[0], 0)
 
     def test_disagreeing_member_assignments_fail_publication(self):
@@ -336,37 +217,6 @@ class TrainingTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "assignments disagree"):
             self.publish()
         self.assertFalse(self.output.exists())
-
-    def test_canonical_destination_requires_promotion(self):
-        with patch("build_training.DEFAULT", self.output):
-            with self.assertRaisesRegex(ValueError, "scratch destination"):
-                self.publish()
-        self.assertFalse(self.output.exists())
-
-    def test_promotion_rejects_self_consistent_candidate_that_does_not_replay(self):
-        self.publish()
-        accepted = digest(self.output / "manifest.json")
-        candidate = self.root / "candidate"
-        publish_training(candidate, self.corpus, self.axis, self.fold_root, self.receipt,
-                         staging=self.staging)
-        source = candidate / "tenv"
-        treatments = source / "treatments.csv"
-        rows = pd.read_csv(treatments, keep_default_na=False)
-        rows.loc[0, "cold_drug_0"] = "train"
-        rows.to_csv(treatments, index=False)
-        dataset_manifest = source / "manifest.json"
-        record = json.loads(dataset_manifest.read_text())
-        record["outputs"]["treatments.csv"] = digest(treatments)
-        dataset_manifest.write_text(json.dumps(record))
-        pair_manifest = candidate / "manifest.json"
-        record = json.loads(pair_manifest.read_text())
-        record["sources"]["tenv"] = digest(dataset_manifest)
-        pair_manifest.write_text(json.dumps(record))
-        with self.assertRaisesRegex(ValueError, "replay"):
-            promote_training(candidate, self.output, self.corpus, self.axis,
-                             self.fold_root, self.receipt, expected_sha256=digest(pair_manifest),
-                             staging=self.staging)
-        self.assertEqual(digest(self.output / "manifest.json"), accepted)
 
     def test_compressed_fold_archive_uses_original_decompressed_bytes(self):
         self.publish()

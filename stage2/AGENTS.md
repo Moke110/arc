@@ -1,6 +1,6 @@
 # AGENTS.md — Stage 2
 
-Before working in a step, read its `AGENTS.md` and `README.md`, ADR 0062,
+Before working in a step, read its `AGENTS.md` and `README.md`, ADRs 0062 and 0087,
 and the scientific ADRs it names. Apply the repository execution-environment rules.
 
 ## Active steps
@@ -18,17 +18,16 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 - [03_data_train](03_data_train/AGENTS.md) publishes six plate-pooled tenv axes
   and the Tahoe well-level HVG-DEG 5k release.
 - [04_tsg_axis](04_tsg_axis/AGENTS.md) compares fixed tenv prediction axes with TranSiGen.
-- [05_tsg_loss](05_tsg_loss/AGENTS.md) reserves the loss comparison.
-- [06_tsg_drug_emb](06_tsg_drug_emb/AGENTS.md) compares drug representations.
-- [07_tsg_dose](07_tsg_dose/AGENTS.md) compares dose methods in Tahoe and tenv.
-- [08_tsg_width_dose](08_tsg_width_dose/AGENTS.md) compares width and dose encodings.
-- [09_tsg_transfer](09_tsg_transfer/AGENTS.md) compares Tahoe-to-tenv transfer.
 
-Use Step 04's `execution/matrix.py` for plate-pooled fits and `execution/evaluate.py`
-for prediction scoring. For well-level studies, follow each owner's raw-first and
-CSV-only rendering commands. The
-[historical evidence index](03_data_train/03.1_hvg-deg-5k/historical/README.md)
-locates sealed records and their original provenance.
+Use Step 04's `execution/matrix.py` for plate-pooled fits and
+`execution/evaluate.py` for prediction scoring.
+
+## Local history
+
+Put retired releases, study steps and rollback material in the Git-ignored
+`history/` archive. Preserve sealed bytes and record original paths and replay
+revisions in its `archive-manifest.json`. Verify the archive and active entry
+points with history unavailable before completing a cutover.
 
 ## Step contract
 - `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,
@@ -53,7 +52,6 @@ locates sealed records and their original provenance.
 Build candidates outside formal output, verify structure/data constraints, scientific
 criteria, downstream reads and CSV-only figure reproduction, then replace stable paths.
 Record metric tolerances for stochastic results and hashes for file integrity. A failed
-candidate leaves the accepted products available. Retain only accepted final products;
-remove obsolete payloads after acceptance and reference migration, preserving required
-provenance and audit evidence. Historical sealed records keep their original bytes and
-paths; log a migration mapping. External `source/` trees and Stage 1 remain untouched.
+candidate leaves the accepted products available. Keep accepted final products active and
+archive superseded payloads after acceptance and reference migration.
+Treat external `source/` trees as read-only.
