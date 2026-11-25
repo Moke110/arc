@@ -21,6 +21,16 @@ control. All three matrices follow `conditions.csv` and `genes.csv`. Test
 treated expression is used for scoring after prediction. The control and
 validation protocol is recorded in [ADR 0086](../../docs/adr/0086-tenv-axis-matched-plate-control.md).
 
+## Gene axis selection
+
+Select **Denoise-DEG 5k (`denoise-deg-5k`)** as the Stage 2 prediction axis.
+The decision prioritizes held-out perturbation Delta prediction with a measured
+same-plate control. Across the six axes and three frozen cold-drug folds,
+Denoise-DEG 5k gave the highest mean Δ PCC (0.4066) and the lowest mean
+Δ RMSE (0.2596) and Δ MMD (0.1793). HVG-DEG variants scored higher on signed
+DEG F1 for each of the four disease references. See the
+[formal results](#formal-results) for the full comparison.
+
 ## Prepare the capped runtime
 
 Activate the `arc` environment and run from the repository root. Use one CUDA
