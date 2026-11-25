@@ -16,6 +16,7 @@ acceptance checks finish. Provide the verified figure CSVs to the renderer.
 
 The formal driver in `execution/matrix_shape.py` verifies the complete
 preregistration before fitting. Use the verified receipt and stable local
-`output/formal/` paths for follow-up reads. Recompute scores and replay the
-two figures with `execution/report_shape.py verify` against the sealed
-Step 05.2 reference. Publish only the scope described in ADR 0094.
+`output/formal/` paths for follow-up reads. Recompute scores and verify
+the original formal publication with `execution/report_shape.py verify`
+against the sealed Step 05.2 reference. Use the README replay command to
+verify the active aggregate figures. Publish only the scope described in ADR 0094.
