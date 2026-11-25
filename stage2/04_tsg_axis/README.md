@@ -1,6 +1,6 @@
 # TranSiGen prediction-axis comparison
 
-[Spec 5](https://github.com/Moke110/arc/issues/310) compares three HVG-DEG
+[Spec 6](https://github.com/Moke110/arc/issues/317) compares three HVG-DEG
 and three Denoise-DEG axes on the same tenv plate–parent–dose conditions.
 Each fit starts with random weights at seed 42 and uses the original
 TranSiGen internal widths, frozen 2,304-dimensional KPGT and the registered
@@ -8,13 +8,18 @@ latent numeric dose transform. The selected prediction axis sets the gene
 interface width. Fold membership comes from the frozen cold-drug folds in
 the [Step 03 tenv training release](../03_data_train/README.md).
 
-Training uses the matched plate control and measured treated expression.
-Validation and test use the overall reference for their axis. The best
-checkpoint minimizes validation treated-expression MSE. At the fixed
-prediction seam, `prediction.npy` stores absolute treated expression,
-`predicted_delta.npy` is predicted expression minus the overall reference
-and `measured_delta.npy` is measured treatment minus its matched plate
-control. All three matrices follow `conditions.csv` and `genes.csv`.
+Training, validation and test each use the released same-plate DMSO expression
+matched to the condition. Training and validation use the author-published
+TranSiGen MSE + KLD objective with beta 0.1. Validation sums the objective
+over batches in evaluation mode with a fixed seed and divides by the number
+of validation conditions. The minimum selects the checkpoint. Training stops
+after 30 consecutive epochs without improvement or at 1,000 epochs.
+
+At the fixed prediction boundary, `prediction.npy` stores absolute treated
+expression. Predicted and measured Delta both subtract the same matched plate
+control. All three matrices follow `conditions.csv` and `genes.csv`. Test
+treated expression is used for scoring after prediction. The control and
+validation protocol is recorded in [ADR 0086](../../docs/adr/0086-tenv-axis-matched-plate-control.md).
 
 ## Run the formal matrix
 
@@ -25,7 +30,7 @@ For the formal dataset, use the full cold-drug folds and seed 42.
 
 ```bash
 STEP=stage2/04_tsg_axis
-WORK=$PWD/tmp/tsg-axis-formal
+WORK=$(mktemp -d "$PWD/tmp/tsg-axis-matched-control.XXXXXX")
 export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2
 python "$STEP/execution/matrix.py" --output "$WORK/matrix" --logs "$WORK/matrix-audit/logs"
 python "$STEP/execution/report_formal.py" build \
@@ -34,19 +39,22 @@ python "$STEP/execution/report_formal.py" build \
   --logs "$WORK/logs"
 ```
 
-Use a single capped CUDA job for fitting. Run report generation and replay
-after training completes. The accepted [formal receipt](log/316-formal.json)
-pins all 18 run manifests, the report and its two CSV-reproducible PNGs.
-The materialized paths are `output/formal` for the checkpoints, registrations,
-and predictions, `log/316-runs` for resource and process evidence, and
-`output/report` for per-condition metrics, fold and eligibility tables, bandwidths and shared
-disease reference. The two summary CSVs live next to the figure source.
+Use one capped CUDA job for fitting, then build and verify the report.
+The accepted [formal receipt](log/319-formal.json) pins all 18 run
+manifests, the report and its two CSV-reproducible PNGs. The materialized
+paths are `output/formal-matched-control` for checkpoints, registrations
+and predictions, `log/319-runs` for resource and process evidence, and
+`output/report-matched-control` for condition and fold metrics, eligibility,
+bandwidths and the shared disease reference. The two summary CSVs are in
+`figure/matched-control/data/`.
 
 ```bash
+STEP=stage2/04_tsg_axis
+VERIFY=$(mktemp -d "$PWD/tmp/tsg-axis-verify.XXXXXX")
 python "$STEP/execution/report_formal.py" verify \
-  --matrix "$STEP/output/formal" --matrix-audit "$STEP/log/316-runs" \
-  --report "$STEP/output/report" --figures "$STEP/figure" \
-  --logs "$WORK/verify"
+  --matrix "$STEP/output/formal-matched-control" --matrix-audit "$STEP/log/319-runs" \
+  --report "$STEP/output/report-matched-control" --figures "$STEP/figure/matched-control" \
+  --logs "$VERIFY"
 ```
 
 ## Register and replay one fit
@@ -65,7 +73,8 @@ Pass `--representations` and `--source` when frozen KPGT or immutable native
 TranSiGen is materialized in a different checkout. Keep the same CPU thread
 caps for each phase. Registration binds dataset and gene order, parent
 and condition partitions, feature and native code digests and the runtime.
-Prediction exactly replays validation before producing held-out predictions.
+Prediction exactly replays the validation loss and validation predictions
+before producing held-out predictions.
 A fresh replay verifies all scores' source arrays and row identities against
 the recorded values and publishes the run manifest. Repeating replay checks
 the sealed run again without changing it. Pass the corresponding path flags
@@ -73,8 +82,8 @@ when an input has moved. Its registered digests still apply.
 
 Pass `--smoke` only for a bounded two-epoch fit with 64 training, 24
 validation and 24 test conditions. Its manifest marks it as smoke and it is
-excluded from formal results. The [acceptance receipt](log/314-smoke-and-migration.json)
-records the verified 5k fit and archived prediction replay.
+excluded from formal results. The [smoke receipt](log/318-matched-control-smoke.json)
+records the matched-control 5k fit, scoring and figure replay.
 
 ## Score and replay an axis comparison
 
@@ -113,39 +122,41 @@ same `reference/` files supply all models' disease targets.
 The report retains per-condition and per-fold CSVs, eligibility counts and
 the two aggregate CSVs consumed by the figures. It weights defined conditions
 equally within a fold and defined folds equally within each axis. These are
-retrospective results on published fixed axes built with tenv evidence.
-The [evaluation acceptance receipt](log/315-metrics-smoke.json) records the
-bounded evaluation and figure replay.
+retrospective results on published fixed axes built with tenv evidence and
+measure prediction conditional on a measured matched control.
 
 ## Formal results
 
-All 18 fits passed exact validation and held-out prediction replay. All six
-axes evaluated the same 462, 459 and 462 conditions in folds 0, 1 and 2.
+All 18 fits passed exact replay of validation loss, validation predictions
+and held-out predictions. Training stopped after 127 to 243 epochs, with
+30 epochs without validation loss improvement in every fit. All six axes
+evaluated the same 462, 459 and 462 conditions in folds 0, 1 and 2.
 The fold RBF bandwidths were 0.430414, 0.425762 and 0.439392. Every metric
 and every disease score was defined in all three folds.
 
 | Delta metric | HVG-DEG 3k | HVG-DEG 4k | HVG-DEG 5k | Denoise-DEG 3k | Denoise-DEG 4k | Denoise-DEG 5k |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| JAC_top200 | 0.0602 | 0.0532 | 0.0526 | 0.0575 | 0.0555 | 0.0598 |
-| JAC_pos100 | 0.0622 | 0.0402 | 0.0425 | 0.0492 | 0.0486 | 0.0481 |
-| JAC_neg100 | 0.0631 | 0.0696 | 0.0664 | 0.0672 | 0.0646 | 0.0744 |
-| Δ PCC | 0.0464 | 0.0399 | 0.0496 | 0.0410 | 0.0561 | 0.0571 |
-| Δ Spearman | 0.0591 | 0.0627 | 0.0711 | 0.0453 | 0.0559 | 0.0577 |
-| Δ RMSE | 0.4238 | 0.3865 | 0.3518 | 0.3819 | 0.3498 | 0.3143 |
-| Δ E-distance | 0.0682 | 0.0915 | 0.0785 | 0.0575 | 0.0530 | 0.0500 |
-| Δ MMD | 0.2882 | 0.3152 | 0.2753 | 0.2491 | 0.2280 | 0.2009 |
-| Δ R² | -0.6011 | -0.7141 | -0.6488 | -0.7249 | -0.6680 | -0.6456 |
+| JAC_top200 | 0.1453 | 0.1428 | 0.1416 | 0.1454 | 0.1427 | 0.1409 |
+| JAC_pos100 | 0.1375 | 0.1319 | 0.1258 | 0.1283 | 0.1227 | 0.1134 |
+| JAC_neg100 | 0.1644 | 0.1650 | 0.1695 | 0.1683 | 0.1700 | 0.1766 |
+| Δ PCC | 0.3928 | 0.3967 | 0.4043 | 0.4023 | 0.4003 | 0.4066 |
+| Δ Spearman | 0.3896 | 0.3989 | 0.4045 | 0.3906 | 0.3888 | 0.3961 |
+| Δ RMSE | 0.3586 | 0.3240 | 0.2957 | 0.3107 | 0.2893 | 0.2596 |
+| Δ E-distance | 0.0370 | 0.0394 | 0.0350 | 0.0320 | 0.0315 | 0.0319 |
+| Δ MMD | 0.2253 | 0.2208 | 0.1994 | 0.1955 | 0.1873 | 0.1793 |
+| Δ R² | -0.1953 | -0.2407 | -0.1842 | -0.1993 | -0.2275 | -0.1587 |
 
 | Signed disease DEG F1 | HVG-DEG 3k | HVG-DEG 4k | HVG-DEG 5k | Denoise-DEG 3k | Denoise-DEG 4k | Denoise-DEG 5k |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| nHF | 0.1415 | 0.1472 | 0.1723 | 0.1056 | 0.0933 | 0.0859 |
-| ICM | 0.0946 | 0.1118 | 0.1542 | 0.1049 | 0.0917 | 0.0841 |
-| genetic cardiomyopathy | 0.1889 | 0.2210 | 0.1975 | 0.1063 | 0.0927 | 0.0841 |
-| TOX | 0.2637 | 0.2283 | 0.1913 | 0.1128 | 0.0994 | 0.0901 |
+| nHF | 0.1603 | 0.1639 | 0.1905 | 0.1197 | 0.1063 | 0.0969 |
+| ICM | 0.1083 | 0.1258 | 0.1734 | 0.1211 | 0.1057 | 0.0961 |
+| genetic cardiomyopathy | 0.2136 | 0.2469 | 0.2193 | 0.1208 | 0.1057 | 0.0950 |
+| TOX | 0.3026 | 0.2587 | 0.2162 | 0.1302 | 0.1148 | 0.1036 |
 
-See the [nine-metric figure](figure/delta-metrics.png) and the
-[disease F1 figure](figure/disease-f1.png). The [metric CSV](figure/data/delta-metrics.csv)
-and [disease CSV](figure/data/disease-f1.csv) retain the full numerical
+See the [nine-metric figure](figure/matched-control/delta-metrics.png) and the
+[disease F1 figure](figure/matched-control/disease-f1.png). The
+[metric CSV](figure/matched-control/data/delta-metrics.csv) and
+[disease CSV](figure/matched-control/data/disease-f1.csv) retain the full numerical
 precision and eligibility counts. The materialized report retains the
 per-fold and per-condition values and the full CM direction reference.
 
@@ -158,19 +169,26 @@ verify the sealed assets and replay all 54 fits' fixed predictions, the
 nine aggregate artifacts and the three CSV-only figures. Replay writes to
 scratch. The archive retains the original run plans, checkpoints and receipts.
 
-### Replay a sealed runtime
+## Replay the preceding axis-wide-control comparison
+
+[Spec 5](https://github.com/Moke110/arc/issues/310) used an axis-wide
+control for validation and test inputs and predicted Delta. It selected
+the checkpoint by treated-expression MSE with 50-epoch patience. The
+[original formal receipt](log/316-formal.json), [metric figure](figure/delta-metrics.png),
+[disease F1 figure](figure/disease-f1.png), and their CSVs retain that comparison.
+Its checkpoints, report and audit retain `output/formal`, `output/report`
+and `log/316-runs`.
 
 Use the Git checkout matching the registration when replaying archived
-checkpoints. Prepare the two runtime worktrees under the checkout's root `tmp/`.
+checkpoints. Prepare the axis runtime worktree under the checkout's root `tmp/`.
 
 ```bash
 git worktree add --detach "$PWD/tmp/axis-runtime" 986f8ea
-git worktree add --detach "$PWD/tmp/dose-width-runtime" e4587a8
 ```
 
 Use the same Python and CUDA environment as the recorded fit. The Step 04
-dispatcher verifies the exact Git revision. For the 18 formal fits, pass the
-materialized matrix, Step 03 folder, frozen KPGT folder and native model source.
+dispatcher verifies the exact Git revision. For the 18 preceding formal fits,
+pass the materialized matrix, Step 03 folder, frozen KPGT and native model source.
 
 ```bash
 export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2
@@ -178,6 +196,25 @@ python stage2/04_tsg_axis/execution/replay_pinned.py axes \
   --runtime "$PWD/tmp/axis-runtime" --matrix stage2/04_tsg_axis/output/formal \
   --step03 stage2/03_data_train --representations stage2/util/output/representations \
   --source pert_model/TranSiGen/source
+```
+
+Replay the predecessor's scores and CSV-only figures with the runtime that
+reads the separately materialized `log/316-runs` audit.
+
+```bash
+git worktree add --detach "$PWD/tmp/axis-report-runtime" 85bc014
+STEP=stage2/04_tsg_axis
+python "$PWD/tmp/axis-report-runtime/$STEP/execution/report_formal.py" verify \
+  --matrix "$STEP/output/formal" --matrix-audit "$STEP/log/316-runs" \
+  --report "$STEP/output/report" --figures "$STEP/figure" \
+  --step03 stage2/03_data_train --raw stage2/01_data_raw/output \
+  --logs "$PWD/tmp/axis-predecessor-report-verify"
+```
+
+## Replay downstream sealed runtimes
+
+```bash
+git worktree add --detach "$PWD/tmp/dose-width-runtime" e4587a8
 ```
 
 For a recorded Step 07 or 08 checkpoint, use the same dispatcher with
