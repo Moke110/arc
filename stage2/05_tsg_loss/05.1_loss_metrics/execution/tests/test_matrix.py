@@ -17,7 +17,7 @@ class FormalRegistrationTests(TestCase):
             paths = run_paths(Path(scratch))
             self.assertEqual(len(paths), 36)
             self.assertEqual({key[2] for key in paths}, {0, 1, 2})
-            self.assertEqual({key[1] for key in paths}, {"1/4", "1/3", "1/2"})
+            self.assertEqual({key[1] for key in paths}, {"0.75", "1", "1.25"})
             self.assertEqual({key[0] for key in paths}, {"mse", "cos", "pcc", "l1"})
 
             expected = {key: {"conditions": {"test": ["first", "second"]}, "seed": 42}
@@ -30,7 +30,7 @@ class FormalRegistrationTests(TestCase):
                                     {**expected[key], "arguments": args, "nonce": str(index)})
             self.assertEqual(len(check_registrations(paths, expected)), 36)
 
-            key = ("l1", "1/2", 2)
+            key = ("l1", "1.25", 2)
             record = paths[key] / "registration.json"
             registration = axis_run.read_json(record)
             registration["conditions"]["test"].reverse()
@@ -60,7 +60,7 @@ class MatrixPublicationTests(TestCase):
             enforce_record(seal, {"axis": "denoise-5k"})
             self.assertEqual(axis_run.read_json(seal), {"axis": "denoise-5k"})
 
-            run = run_paths(root)["mse", "1/3", 0]
+            run = run_paths(root)["mse", "1", 0]
 
             def interrupted_register(path):
                 path.mkdir()

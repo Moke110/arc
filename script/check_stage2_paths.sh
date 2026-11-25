@@ -118,7 +118,7 @@ main() {
     echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
     return 1
   done
-  for root in "${active_roots[@]}"; do
+  for root in "${active_roots[@]}" 05_tsg_loss/05.1_loss_metrics; do
     for entry in "$stage2_root/$root/AGENTS.md" "$stage2_root/$root/README.md"; do
       if [ ! -f "$entry" ]; then
         echo "RESULT: FAIL — missing step routing: $entry" >&2
@@ -179,6 +179,11 @@ main() {
         case "$literal" in "stage2/$root" | "stage2/$root"/*) active_literal=1 ;; esac
       done
       case "$literal" in
+        stage2/05_tsg_loss/execution | stage2/05_tsg_loss/execution/* | \
+        stage2/05_tsg_loss/output | stage2/05_tsg_loss/output/* | \
+        stage2/05_tsg_loss/log | stage2/05_tsg_loss/log/* | \
+        stage2/05_tsg_loss/figure | stage2/05_tsg_loss/figure/*)
+          active_literal=0 ;;
         */historical | */historical/* | */03.1_hvg-deg-5k | */03.1_hvg-deg-5k/*)
           active_literal=0 ;;
       esac

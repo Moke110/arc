@@ -1,4 +1,4 @@
-"""Preregister and replay the 36 formal Stage 2 Step 05 fits."""
+"""Preregister and replay the 36 formal Stage 2 Step 05.1 fits."""
 
 import argparse
 from fractions import Fraction
@@ -15,7 +15,7 @@ from threading import Event, Thread
 import time
 
 from evaluate_loss import coordinates, read_run
-from objective import Objective
+from objective import NATIVE_ALPHA, Objective
 from run_loss import AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING, PHASES, STEP, axis_run, bind
 
 SCHEMA = "stage2-tenv-transigen-loss-matrix-v1"
@@ -24,7 +24,7 @@ SAMPLE_SECONDS = 10
 
 
 def run_paths(root):
-    return {(loss, alpha, fold): root / "runs" / loss / f"alpha-{alpha.replace('/', '-')}" / f"fold-{fold}"
+    return {(loss, alpha, fold): root / "runs" / loss / f"alpha-{alpha}" / f"fold-{fold}"
             for loss, alpha, fold in coordinates()}
 
 
@@ -37,7 +37,7 @@ def preflight(training, representations, source):
     inputs = {"training": str(training), "representations": str(representations), "source": str(source)}
     with axis_run.open_inputs(training, representations) as (data, vectors):
         folds = {
-            fold: bind({"axis": AXIS, "fold": fold, "loss": "mse", "alpha": "1/3",
+            fold: bind({"axis": AXIS, "fold": fold, "loss": "mse", "alpha": NATIVE_ALPHA,
                         "smoke": False, "device": "cuda", **inputs}, data, vectors)
             for fold in range(3)
         }
@@ -111,7 +111,8 @@ def monitor(logs, scope, phase):
         ["nvidia-smi", "--id=0", "--query-gpu=memory.total,memory.used,utilization.gpu",
          "--format=csv,noheader,nounits"], text=True, timeout=5).strip().split(","))
     disk_free = shutil.disk_usage(logs).free
-    sample = {"unix_seconds": time.time(), "phase": phase, "wsl_available_kib": available,
+    sample = {"unix_seconds": time.time(), "monotonic_seconds": time.monotonic(),
+              "monitor_session": axis_run.PROCESS, "phase": phase, "wsl_available_kib": available,
               "wsl_total_kib": int(meminfo["MemTotal"].split()[0]), "gpu_total_mib": total,
               "gpu_used_mib": used, "gpu_utilization_pct": utilization, "disk_free_bytes": disk_free,
               "scope_memory_bytes": int((scope / "memory.current").read_text())}

@@ -7,7 +7,9 @@ import torch
 import torch.nn.functional as F
 
 FORMS = ("mse", "cos", "pcc", "l1")
-ALPHAS = (Fraction(1, 4), Fraction(1, 3), Fraction(1, 2))
+ALPHAS = ("0.75", "1", "1.25")
+ALPHA_LABELS = {Fraction(label): label for label in ALPHAS}
+NATIVE_ALPHA = "1"
 EPSILON = 1e-8
 COMPONENTS = ("control_mse", "treatment_mse", "delta", "control_kl", "treatment_kl", "prediction_kl")
 
@@ -33,16 +35,16 @@ class Objective:
     """Use native reconstructions and KL terms with the registered Delta term."""
 
     def __init__(self, form, alpha):
-        if form not in FORMS or alpha not in ALPHAS:
+        if form not in FORMS or alpha not in ALPHA_LABELS:
             raise ValueError(f"unsupported Delta loss coordinate: {form}, {alpha}")
         self.form = form
         self.alpha = alpha
 
     def identity(self):
         return {
-            "form": self.form, "alpha": str(self.alpha),
-            "delta_weight": float(3 * self.alpha),
-            "reconstruction_weight": float(Fraction(3, 2) * (1 - self.alpha)),
+            "form": self.form, "alpha": ALPHA_LABELS[self.alpha],
+            "delta_weight": float(self.alpha),
+            "reconstruction_weight": 1.0,
             "kl_weight": 0.1,
             "similarity_epsilon": EPSILON,
         }
@@ -51,15 +53,13 @@ class Objective:
                  measured, treatment_rec, mu2, logvar2, predicted, mu_pred, logvar_pred):
         native = native_loss(control, control_rec, mu1, logvar1, measured, treatment_rec,
                              mu2, logvar2, predicted, mu_pred, logvar_pred)
-        if self.form == "mse" and self.alpha == Fraction(1, 3):
+        if self.form == "mse" and self.alpha == 1:
             return native
         _, control_mse, treatment_mse, mse_delta, kl1, kl2, kl_prediction = native
         delta = (mse_delta if self.form == "mse"
                  else delta_loss(self.form, predicted - control, measured - control))
-        reconstruction_weight = float(Fraction(3, 2) * (1 - self.alpha))
-        delta_weight = float(3 * self.alpha)
         loss = (0.1 * (kl1 + kl2 + kl_prediction)
-                + delta_weight * delta + reconstruction_weight * (control_mse + treatment_mse))
+                + control_mse + treatment_mse + float(self.alpha) * delta)
         return loss, control_mse, treatment_mse, delta, kl1, kl2, kl_prediction
 
 

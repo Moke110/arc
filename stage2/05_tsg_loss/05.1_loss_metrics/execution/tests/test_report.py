@@ -25,8 +25,28 @@ class ScratchTests(TestCase):
         from evaluate_loss import axis_run, report_scratch
 
         checkout = axis_run.REPO
-        output = checkout / "stage2/05_tsg_loss/output/formal/report"
+        output = checkout / "stage2/05_tsg_loss/05.1_loss_metrics/output/formal/report"
         scratch = checkout / "tmp/session"
         self.assertEqual(report_scratch("verify", output, scratch), scratch)
         self.assertEqual(report_scratch("verify", output, None), checkout / "tmp")
         self.assertEqual(report_scratch("score", output, None), output.parent)
+
+
+class ScoreSummaryTests(TestCase):
+    def test_score_differences_are_signed_and_folds_have_equal_weight(self):
+        from evaluate_loss import summarize_loss_scores
+
+        scores = pd.DataFrame([
+            {"loss": loss, "alpha": alpha, "fold": fold, "metric": "Δ RMSE", "value": score,
+             "n_conditions": count, "n_eligible": count, "n_undefined": 0}
+            for loss, alpha, fold, score, count in (
+                ("mse", "1", 0, 0.5, 10), ("mse", "1", 1, 0.75, 200),
+                ("l1", "0.75", 0, 0.25, 10), ("l1", "0.75", 1, 0.5, 200),
+            )
+        ])
+        rows = summarize_loss_scores(scores).set_index("loss")
+        self.assertEqual(rows.loc["mse", "value"], 0.625)
+        self.assertEqual(rows.loc["l1", "value"], 0.375)
+        self.assertEqual(rows.loc["l1", "native_mse_score"], 0.625)
+        self.assertEqual(rows.loc["mse", "score_difference"], 0.0)
+        self.assertEqual(rows.loc["l1", "score_difference"], -0.25)

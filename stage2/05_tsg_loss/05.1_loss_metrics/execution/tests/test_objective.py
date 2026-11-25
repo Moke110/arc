@@ -54,7 +54,7 @@ class ObjectiveTests(TestCase):
         generator = torch.Generator().manual_seed(9)
         tensors = [torch.randn(3, 2, generator=generator, requires_grad=True) for _ in range(11)]
         native = model.loss(*tensors)
-        actual = Objective("mse", Fraction(1, 3))(model.loss, *tensors)
+        actual = Objective("mse", Fraction(1))(model.loss, *tensors)
         self.assertTrue(torch.equal(native[0], actual[0]))
         expected_gradients = torch.autograd.grad(native[0], tensors)
         actual_gradients = torch.autograd.grad(actual[0], tensors)
@@ -74,9 +74,9 @@ class ObjectiveTests(TestCase):
         mu_pred = torch.tensor([[2., 0.]])
         values = (x1, x1_reconstructed, mean, zero, x2, x2_reconstructed, mean, zero,
                   predicted, mu_pred, zero)
-        total, *parts = Objective("l1", Fraction(1, 4))(model.loss, *values)
+        total, *parts = Objective("l1", Fraction(3, 4))(model.loss, *values)
         self.assertEqual([part.item() for part in parts], [5., 4., 5., .5, .5, .5])
-        self.assertAlmostEqual(total.item(), 14.025, places=5)
+        self.assertAlmostEqual(total.item(), 12.9, places=5)
         gradients = torch.autograd.grad(total, (x1_reconstructed, x2_reconstructed, predicted))
-        for actual, expected in zip(gradients, ([[2.25, -4.5]], [[0., -4.5]], [[.75, -.75]]), strict=True):
+        for actual, expected in zip(gradients, ([[2., -4.]], [[0., -4.]], [[.75, -.75]]), strict=True):
             torch.testing.assert_close(actual, torch.tensor(expected), rtol=0, atol=0)

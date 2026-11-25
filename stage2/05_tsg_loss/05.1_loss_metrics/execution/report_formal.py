@@ -1,4 +1,4 @@
-"""Verify the loss matrix and prepare its accepted metric figure and evidence."""
+"""Verify the loss matrix and prepare its accepted figures and evidence."""
 
 import argparse
 import json
@@ -11,16 +11,21 @@ import time
 
 import pandas as pd
 
+from audit_learning_curves import audit as audit_curves
 from evaluate_loss import REPORT_SCHEMA
 from matrix import GIB, SAMPLE_SECONDS, SCHEMA, run_paths
-from run_loss import DEFAULT_TRAINING, STEP, axis_run
+from objective import NATIVE_ALPHA
+from run_loss import AXIS_STEP, DEFAULT_TRAINING, STEP, axis_run
 from training_data import TENV_DEFAULT
 
-STEP04 = STEP.parent / "04_tsg_axis"
 ANCHOR_ARRAYS = ("validation_prediction.npy", "prediction.npy", "predicted_delta.npy", "measured_delta.npy")
 TRACE_FIELDS = ("epoch", "train_loss", "validation_loss", "validation_mse")
-RECEIPT = Path("log/326-formal.json")
+RECEIPT = Path("log/330-formal.json")
+CURVE_RECEIPT = Path("log/330-curves.json")
+METRIC_PNGS = ("delta-metrics.png", "delta-metrics-improvement.png")
+CURVE_PNG = "learning-curves.png"
 PROJECTIONS = {"delta-metrics.csv": "figure/data/delta-metrics.csv",
+               "epoch-objectives.csv": "figure/data/epoch-objectives.csv",
                "fold-scores.csv": "log/fold-scores.csv", "runs.csv": "log/runs.csv",
                "bandwidths.csv": "log/bandwidths.csv"}
 
@@ -61,8 +66,11 @@ def verify_native_control(candidate, previous):
 def resources(audit):
     sample_file = audit / "resource-samples.jsonl"
     samples = [json.loads(line) for line in sample_file.read_text().splitlines()]
-    times = [sample["unix_seconds"] for sample in samples]
-    gaps = [later - earlier for earlier, later in zip(times, times[1:])]
+    gaps = [later["monotonic_seconds"] - earlier["monotonic_seconds"]
+            for earlier, later in zip(samples, samples[1:])
+            if later["monitor_session"] == earlier["monitor_session"]]
+    if any(gap <= 0 for gap in gaps):
+        raise ValueError("formal resource samples are out of order")
     min_ram = min(sample["wsl_available_kib"] for sample in samples)
     min_disk = min(sample["disk_free_bytes"] for sample in samples)
     min_gpu = min(sample["gpu_total_mib"] - sample["gpu_used_mib"] for sample in samples)
@@ -79,6 +87,7 @@ def resources(audit):
                 for record in (measurement, measurement.with_suffix(".log")):
                     phase_logs[record.relative_to(audit).as_posix()] = axis_run.digest(record)
     return {"sample_interval_seconds": SAMPLE_SECONDS, "samples": len(samples),
+            "monitor_sessions": len({sample["monitor_session"] for sample in samples}),
             "maximum_observed_sample_gap_seconds": round(max(gaps, default=0), 3),
             "sample_gaps_over_12_seconds": sum(gap > 12 for gap in gaps),
             "minimum_wsl_available_kib": min_ram, "minimum_disk_free_bytes": min_disk,
@@ -101,7 +110,7 @@ def verify_evaluation(report, fits):
     if (evidence["schema"], evidence["status"], evidence["runs"], evidence["smoke"]) != (
             REPORT_SCHEMA, "PASS", len(fits), False):
         raise ValueError("formal scoring manifest differs from the formal matrix")
-    runs = pd.read_csv(report / "runs.csv")
+    runs = pd.read_csv(report / "runs.csv", dtype={"alpha": str})
     if len(runs) != len(fits):
         raise ValueError("formal scoring report has the wrong fit count")
     for row in runs.itertuples(index=False):
@@ -115,7 +124,9 @@ def verify_evaluation(report, fits):
 def publish(args):
     paths, fits = matrix_inputs(args.matrix)
     args.activity.mkdir(parents=True, exist_ok=True)
-    evaluate, render = STEP / "execution/evaluate_loss.py", STEP / "figure/script/render_metrics.py"
+    evaluate = STEP / "execution/evaluate_loss.py"
+    render_metrics = STEP / "figure/script/render_metrics.py"
+    render_curves = STEP / "figure/script/render_learning_curves.py"
     options = ["--training", str(args.training), "--bandwidth-training", str(args.bandwidth_training),
                "--output", str(args.report), "--scratch", str(args.scratch)]
     for path in paths.values():
@@ -135,42 +146,50 @@ def publish(args):
     bandwidth = axis_run.digest(args.report / "bandwidths.csv")
     if bandwidth != axis_run.digest(args.previous_bandwidths):
         raise ValueError("formal scoring bandwidths differ from the frozen Step 04 bandwidths")
-    native = {str(fold): verify_native_control(paths["mse", "1/3", fold], args.previous_runs / f"fold-{fold}")
+    native = {str(fold): verify_native_control(paths["mse", NATIVE_ALPHA, fold], args.previous_runs / f"fold-{fold}")
               for fold in range(3)}
 
-    with TemporaryDirectory(prefix="step05-formal-", dir=args.scratch) as scratch:
+    with TemporaryDirectory(prefix="step05.1-formal-", dir=args.scratch) as scratch:
         scratch = Path(scratch)
         candidate = scratch / "publication"
         for name, destination in PROJECTIONS.items():
             projected = candidate / destination
             projected.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(args.report / name, projected)
-        samples = "log/326-resources.jsonl"
+        samples = "log/330-resources.jsonl"
         shutil.copyfile(args.matrix_audit / "resource-samples.jsonl", candidate / samples)
         data = candidate / "figure/data"
-        png = "figure/delta-metrics.png"
-        render_args = ["--data", str(data), "--output", str(candidate / "figure")]
-        command(render, render_args, args.activity, "csv-render")
+        figure = candidate / "figure"
+        render_args = ["--data", str(data), "--output", str(figure)]
+        command(render_metrics, render_args, args.activity, "metric-csv-render")
+        command(render_curves, render_args, args.activity, "curve-csv-render")
         replay = scratch / "replay"
-        command(render, ["--data", str(data), "--output", str(replay)], args.activity, "csv-replay")
-        if axis_run.digest(candidate / png) != axis_run.digest(replay / "delta-metrics.png"):
-            raise ValueError("independent CSV-only metric PNG renders differ")
-        published = axis_run.file_hashes(candidate, (*PROJECTIONS.values(), png, samples))
+        command(render_metrics, ["--data", str(data), "--output", str(replay)],
+                args.activity, "metric-csv-replay")
+        for png in METRIC_PNGS:
+            if axis_run.digest(figure / png) != axis_run.digest(replay / png):
+                raise ValueError(f"independent CSV-only renders differ: {png}")
+        published = axis_run.file_hashes(
+            candidate, (*PROJECTIONS.values(), *(f"figure/{name}" for name in (*METRIC_PNGS, CURVE_PNG)),
+                        samples))
+        code = (evaluate, render_metrics, render_curves, Path(__file__),
+                STEP / "execution/audit_learning_curves.py")
         axis_run.write_json(candidate / RECEIPT, {
-            "status": "PASS", "ticket": 326, "matrix_code_revision": revision, "fits": len(fits),
+            "status": "PASS", "ticket": 330, "matrix_code_revision": revision, "fits": len(fits),
             "matrix_manifest_sha256": axis_run.digest(args.matrix / "manifest.json"),
             "report_manifest_sha256": axis_run.digest(args.report / "manifest.json"),
             "report_outputs_sha256": report["outputs"], "frozen_step04_bandwidth_sha256": bandwidth,
-            "step04_mse_alpha_1_3": native, "resources": resources(args.matrix_audit),
+            "step04_mse_alpha_1": native, "resources": resources(args.matrix_audit),
             "scientific_replay_tolerances": {"rtol": 0.0, "atol": 0.0},
             "published_files_sha256": published,
             "publication_code_sha256": {path.relative_to(STEP).as_posix(): axis_run.digest(path)
-                                        for path in (evaluate, render, Path(__file__))},
+                                        for path in code},
         })
+        axis_run.write_json(candidate / CURVE_RECEIPT, audit_curves(candidate, scratch))
         if args.command == "build":
             candidate.rename(args.publication)
         else:
-            for path in (*published, RECEIPT):
+            for path in (*published, RECEIPT, CURVE_RECEIPT):
                 if axis_run.digest(candidate / path) != axis_run.digest(args.publication / path):
                     raise ValueError(f"formal publication replay differs: {path}")
     return {"status": "PASS", "fits": len(fits), "receipt_sha256": axis_run.digest(args.publication / RECEIPT)}
@@ -183,8 +202,8 @@ def main():
         parser.add_argument(f"--{name}", type=Path, required=True)
     parser.add_argument("--training", type=Path, default=DEFAULT_TRAINING)
     parser.add_argument("--bandwidth-training", type=Path, default=TENV_DEFAULT)
-    parser.add_argument("--previous-runs", type=Path, default=STEP04 / "output/formal-matched-control/runs/denoise-deg-5k")
-    parser.add_argument("--previous-bandwidths", type=Path, default=STEP04 / "output/report-matched-control/bandwidths.csv")
+    parser.add_argument("--previous-runs", type=Path, default=AXIS_STEP / "output/formal-matched-control/runs/denoise-deg-5k")
+    parser.add_argument("--previous-bandwidths", type=Path, default=AXIS_STEP / "output/report-matched-control/bandwidths.csv")
     parser.add_argument("--code-revision", help="pinned Git revision used by the matrix")
     args = parser.parse_args()
     if args.command == "build" and not args.code_revision:

@@ -1,4 +1,4 @@
-"""Register, fit and exactly replay one Step 05 TranSiGen loss coordinate."""
+"""Register, fit and exactly replay one Step 05.1 TranSiGen loss coordinate."""
 
 import argparse
 from fractions import Fraction
@@ -18,7 +18,9 @@ import torch
 from objective import ALPHAS, FORMS, ComponentTrace, Objective
 
 STEP = Path(__file__).resolve().parents[1]
-AXIS_STEP = STEP.parent / "04_tsg_axis"
+REPO = next(parent for parent in STEP.parents if (parent / ".git").exists())
+STAGE = REPO / "stage2"
+AXIS_STEP = STAGE / "04_tsg_axis"
 AXIS = "denoise-5k"
 SCHEMA = "stage2-tenv-transigen-loss-run-v1"
 PROTOCOL = "matched-plate-control-delta-loss-v1"
@@ -35,8 +37,8 @@ def load_step04(name):
 
 axis_run = load_step04("run")
 SEALED_FILES = (*axis_run.TRAINING_FILES, *axis_run.PREDICTION_FILES, PHASES["train"], PHASES["predict"])
-DEFAULT_TRAINING = STEP.parent / "03_data_train/03.7_tenv_denoise-5k/output"
-DEFAULT_REPRESENTATIONS = STEP.parent / "util/output/representations"
+DEFAULT_TRAINING = STAGE / "03_data_train/03.7_tenv_denoise-5k/output"
+DEFAULT_REPRESENTATIONS = STAGE / "util/output/representations"
 DEFAULT_SOURCE = axis_run.REPO / "pert_model/TranSiGen/source"
 
 
@@ -46,7 +48,7 @@ def bind(args, data, vectors):
     objective = Objective(args["loss"], Fraction(args["alpha"]))
     config = axis_run.bind(args, data, vectors)
     config.update(schema=SCHEMA, protocol=PROTOCOL, objective=objective.identity())
-    config["model"]["validation_objective"] = "registered Step 05 objective, batch sums per condition"
+    config["model"]["validation_objective"] = "registered Step 05.1 objective, batch sums per condition"
     config["model"]["adaptations"][-1] = "shared cold-drug splits and fixed validation using the registered objective"
     for path in (Path(__file__), STEP / "execution/objective.py"):
         config["code_sha256"][path.relative_to(axis_run.REPO).as_posix()] = axis_run.digest(path)
@@ -162,7 +164,7 @@ def main():
     commands = parser.add_subparsers(dest="phase", required=True)
     registration = commands.add_parser("register")
     registration.add_argument("--loss", choices=FORMS, required=True)
-    registration.add_argument("--alpha", choices=tuple(map(str, ALPHAS)), required=True)
+    registration.add_argument("--alpha", choices=ALPHAS, required=True)
     registration.add_argument("--fold", choices=range(3), type=int, required=True)
     registration.add_argument("--training", type=Path, default=DEFAULT_TRAINING)
     registration.add_argument("--representations", type=Path, default=DEFAULT_REPRESENTATIONS)

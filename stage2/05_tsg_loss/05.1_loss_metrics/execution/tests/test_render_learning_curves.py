@@ -20,7 +20,7 @@ class LearningCurveFigureTests(TestCase):
             source = root / "epoch-objectives.csv"
             output = root / "figures"
             command = [sys.executable, str(RENDER), "--data", str(root), "--output", str(output)]
-            coordinates = product(("mse", "cos", "pcc", "l1"), ("1/4", "1/3", "1/2"), range(3))
+            coordinates = product(("mse", "cos", "pcc", "l1"), ("0.75", "1", "1.25"), range(3))
             rows = [(loss, alpha, fold, 42, f"{index:064x}", 2, 32, epoch, 2 + (epoch - 2) ** 2,
                      1 + (epoch - 2) ** 2, .5)
                     for index, (loss, alpha, fold) in enumerate(coordinates, 1)

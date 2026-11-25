@@ -13,5 +13,5 @@ class RegistrationCommandTests(TestCase):
         result = subprocess.run([sys.executable, str(RUN), "register", "--help"],
                                 capture_output=True, text=True, check=True)
         self.assertIn("--loss {mse,cos,pcc,l1}", result.stdout)
-        self.assertIn("--alpha {1/4,1/3,1/2}", result.stdout)
+        self.assertIn("--alpha {0.75,1,1.25}", result.stdout)
         self.assertIn("--fold {0,1,2}", result.stdout)

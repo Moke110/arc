@@ -14,14 +14,14 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-STEP = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(STEP.parent / "util/output/api"))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str(REPO / "stage2/util/output/api"))
 
 from stage2_util.palette import color
 from stage2_util.plotting import read_rows, save_figure
 
 LOSSES = {"mse": "MSE", "cos": "Cos", "pcc": "PCC", "l1": "L1"}
-ALPHAS = ("1/4", "1/3", "1/2")
+ALPHAS = ("0.75", "1", "1.25")
 FOLDS = (0, 1, 2)
 COLORS = tuple(color(family, 3) for family in ("blue", "orange", "green"))
 EPOCH_SOURCE = "epoch-objectives.csv"

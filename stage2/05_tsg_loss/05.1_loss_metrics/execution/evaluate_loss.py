@@ -1,4 +1,4 @@
-"""Score or verify the Step 05 loss comparison at the fixed-prediction boundary."""
+"""Score or verify the Step 05.1 loss comparison at the fixed-prediction boundary."""
 
 import argparse
 from fractions import Fraction
@@ -10,7 +10,7 @@ from tempfile import TemporaryDirectory
 import numpy as np
 import pandas as pd
 
-from objective import ALPHAS, COMPONENTS, FORMS, Objective
+from objective import ALPHAS, COMPONENTS, FORMS, NATIVE_ALPHA, Objective
 from run_loss import AXIS, DEFAULT_TRAINING, PROTOCOL, SCHEMA, SEALED_FILES, axis_run, load_step04
 from tsg_axis.inputs import AxisInputs, score_fixed_prediction
 from tsg_axis.metrics import (CONDITION, DISTRIBUTION, METRICS, condition_scores,
@@ -24,7 +24,7 @@ TRACE_COLUMNS = ("epoch", "train_loss", "validation_loss", "validation_mse",
 
 
 def coordinates(smoke=False):
-    return tuple(product(FORMS, ("1/3",) if smoke else tuple(map(str, ALPHAS)),
+    return tuple(product(FORMS, (NATIVE_ALPHA,) if smoke else ALPHAS,
                          (0,) if smoke else range(3)))
 
 
@@ -104,6 +104,14 @@ def score_run(path, config, manifest, data, base, fold, smoke, bandwidth):
     return by_condition, by_fold
 
 
+def summarize_loss_scores(fold_scores):
+    summary = summarize_folds(fold_scores, ["loss", "alpha", "metric"])
+    native = summary.loc[(summary.loss == "mse") & (summary.alpha == NATIVE_ALPHA)]
+    summary["native_mse_score"] = summary.metric.map(native.set_index("metric").value)
+    summary["score_difference"] = summary.value - summary.native_mse_score
+    return summary
+
+
 def build_report(candidate, paths, training_path, bandwidth_path, smoke):
     runs = {}
     for path in paths:
@@ -157,7 +165,7 @@ def build_report(candidate, paths, training_path, bandwidth_path, smoke):
         "fold-scores.csv": fold_scores,
         "epoch-objectives.csv": pd.concat(epochs, ignore_index=True),
         "bandwidths.csv": pd.DataFrame(bandwidths.values()),
-        "delta-metrics.csv": summarize_folds(fold_scores, ["loss", "alpha", "metric"]),
+        "delta-metrics.csv": summarize_loss_scores(fold_scores),
     }
     for name, table in tables.items():
         table.to_csv(candidate / name, index=False)

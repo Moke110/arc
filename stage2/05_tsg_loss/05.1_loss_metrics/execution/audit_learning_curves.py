@@ -17,7 +17,7 @@ from stage2_util.plotting import read_rows
 
 
 def audit(publication, scratch):
-    formal = publication / "log/326-formal.json"
+    formal = publication / "log/330-formal.json"
     runs_path = publication / "log/runs.csv"
     source = publication / "figure/data" / EPOCH_SOURCE
     figure = publication / "figure" / FIGURE_NAME
@@ -52,7 +52,7 @@ def audit(publication, scratch):
 
     return {
         "status": "PASS",
-        "ticket": 327,
+        "ticket": 330,
         "accepted_formal_report_manifest_sha256": receipt["report_manifest_sha256"],
         "source_csv_sha256": source_hash,
         "accepted_runs_csv_sha256": runs_hash,
