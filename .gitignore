@@ -205,6 +205,14 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2/05_tsg_loss/05.5_mse-l1_cos/log/fold-scores.csv
 !/stage2/05_tsg_loss/05.5_mse-l1_cos/log/runs.csv
 
+# Step 06.1 publishes the plotted scores and compact fit diagnostics.
+!/stage2/06_tsg_shape/06.1_round1/figure/data/delta-metrics.csv
+!/stage2/06_tsg_shape/06.1_round1/figure/data/fold-scores.csv
+!/stage2/06_tsg_shape/06.1_round1/log/bandwidths.csv
+!/stage2/06_tsg_shape/06.1_round1/log/kl-diagnostics.csv
+!/stage2/06_tsg_shape/06.1_round1/log/runs.csv
+/stage2/06_tsg_shape/.06.1_round1.publication.lock
+
 # HVG-DEG axes and compact selection evidence. Keep candidates local.
 !/stage2/02_gene_axis/02.1_hvg-deg/output/
 /stage2/02_gene_axis/02.1_hvg-deg/output/*

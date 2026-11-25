@@ -126,3 +126,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0091](0091-transigen-reconstruction-mse-sweep.md) | Vary the shared reconstruction MSE weight in Step 05.3 |
 | [0092](0092-transigen-bounded-delta-similarity-sweeps.md) | Sweep bounded Delta similarity loss weights in Steps 05.4 and 05.5 |
 | [0093](0093-stage2-shared-plotting-and-in-place-figures.md) | Share Stage 2 plot primitives and replace presentation-only figures at their accepted paths |
+| [0094](0094-transigen-shape-round1.md) | Compare TranSiGen expression widths and depths in Stage 2 Step 06.1 |
