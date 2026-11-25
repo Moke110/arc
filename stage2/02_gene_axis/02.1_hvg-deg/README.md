@@ -59,5 +59,4 @@ python "$STEP/figure/script/render_coverage.py" --data "$STEP/figure/data" --out
 ```
 
 The [current rendering receipt](../log/342-figure-render.json) records the
-PNG and CSV hashes. For the original figure bytes, use the renderer and
-palette at revision `7f48f6a881bea57598b40b0da2becd62917569c8`.
+PNG and CSV hashes.

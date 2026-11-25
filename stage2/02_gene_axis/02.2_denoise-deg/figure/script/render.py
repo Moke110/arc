@@ -18,25 +18,33 @@ SCORE_COLUMNS = (
 )
 STEP = Path(__file__).resolve().parents[2]
 RETAINED_HUE, EXCLUDED_HUE = 220, 20
-DENOISE_HUE = 20
+SIZE_HUES = {1000: 20, 2000: 100, 3000: 140, 4000: 220, 5000: 300}
+DISEASE_DEPTHS = {"nHF": 0, "ICM": 1, "genetic_cardiomyopathy": 2, "TOX": 3}
 
 
-def plot_exclusions(ax, x, y, excluded, population_size, drawing):
+def plot_exclusions(ax, values, excluded, bins, cutoff, cutoff_label, drawing):
+    centers = (bins[:-1] + bins[1:]) / 2
+    width = np.diff(bins) * .44
+    counts, _ = np.histogram(values[~excluded], bins)
+    drawing.bar(ax, centers - width / 2, counts, width=width, hue=RETAINED_HUE,
+                label=f"Pass: {(~excluded).sum():,}")
+    counts, _ = np.histogram(values[excluded], bins)
     n = int(excluded.sum())
-    drawing.scatter(ax, x[~excluded], y[~excluded], s=1.6, hue=RETAINED_HUE, depth=4,
-                    linewidths=0)
-    drawing.scatter(ax, x[excluded], y[excluded], s=2.5, hue=EXCLUDED_HUE, depth=2,
-                    linewidths=0, label=f"Excluded: {n:,} ({n / population_size:.1%})")
+    drawing.bar(ax, centers + width / 2, counts, width=width, hue=EXCLUDED_HUE,
+                label=f"Excluded: {n:,} ({n / len(values):.1%})")
+    ax.axvline(cutoff, color="#666666", linestyle="--", linewidth=1, label=cutoff_label)
+    ax.set(ylabel="Genes", yscale="log", ylim=(0.8, None))
 
 
-def variance_boundary(ax, x, y, excluded, k, label, drawing):
-    plot_exclusions(ax, x, y, excluded, int((x > 0).sum()), drawing)
-    ymax = 1.05 * y.max()
-    xmax = min(x.max(), ymax / k)
-    drawing.line(ax, [0, xmax], [0, k * xmax], hue=EXCLUDED_HUE,
-                 label=f"SD = {k:.3f} × mean log₂(1 + CPM)")
-    ax.set(xlabel="Mean DMSO log₂(1 + CPM)", ylabel=label, ylim=(-0.05, ymax))
-    ax.legend(frameon=False, fontsize=9, loc="upper right", markerscale=2)
+def variance_boundary(ax, genes, metric, k, drawing):
+    measured = genes.dmso_mean_log2_cpm1.gt(0)
+    ratios = genes.loc[measured, metric] / genes.loc[measured, "dmso_mean_log2_cpm1"]
+    values = np.log2(1 + ratios)
+    excluded = genes.loc[measured, metric + "_above_boundary"]
+    bins = np.linspace(0, values.max(), 31)
+    plot_exclusions(ax, values, excluded, bins, np.log2(1 + k), f"SD / mean = {k:.3f}", drawing)
+    ax.set_xlabel("log₂(1 + SD / mean DMSO log₂(1 + CPM))")
+    ax.legend(frameon=False, fontsize=9, loc="upper right")
 
 
 def render_scores(data_path, output, exclusions, histogram, drawing):
@@ -66,15 +74,15 @@ def render_scores_in_axes(output, histogram, drawing):
                              sharex="col", sharey=True, layout="constrained")
     ymax = 1.3 * histogram.retained_genes.max()
     for size, row in zip(sizes, axes, strict=True):
-        for ax, (key, label, hue) in zip(row, SCORE_COLUMNS, strict=True):
+        for ax, (key, label, _) in zip(row, SCORE_COLUMNS, strict=True):
             bins = histogram.loc[histogram.axis_size.eq(size) & histogram.metric.eq(key)]
-            width = bins.bin_right - bins.bin_left
-            drawing.bar(ax, bins.bin_left, bins.retained_genes, width=width, align="edge",
-                        hue=hue, depth=4, label="Retained genes")
-            chosen = bins.axis_genes.gt(0)
-            drawing.bar(ax, bins.bin_left[chosen], bins.axis_genes[chosen], width=width[chosen],
-                        bottom=(bins.retained_genes - bins.axis_genes)[chosen],
-                        align="edge", hue=hue, depth=0, label="Selected in this axis")
+            centers = (bins.bin_left + bins.bin_right) / 2
+            width = (bins.bin_right - bins.bin_left) * .40
+            size_hue = SIZE_HUES[size]
+            drawing.bar(ax, centers - width / 2, bins.retained_genes - bins.axis_genes,
+                        width=width, hue=size_hue, depth=3, label="Outside this axis")
+            drawing.bar(ax, centers + width / 2, bins.axis_genes,
+                        width=width, hue=size_hue, depth=0, label="Selected in this axis")
             ax.set(yscale="log", ylim=(0.8, ymax))
             if key == "p_disease":
                 ax.set_xticks(np.arange(int(bins.bin_right.max() + 0.5)))
@@ -94,11 +102,12 @@ def render_coverage(data_path, output, drawing):
     groups = groups.reindex(coverage.disease.drop_duplicates())
     x = np.arange(len(groups))
     fig, ax = plt.subplots(figsize=(9, 4.8), layout="constrained")
-    bars = [(groups[size], DENOISE_HUE, 5 - size // 1000, f"{size // 1000}k")
+    depths = [DISEASE_DEPTHS[disease] for disease in groups.index]
+    bars = [(groups[size], SIZE_HUES[size], depths, f"{size // 1000}k")
             for size in groups.columns]
     drawing.grouped_bar(ax, x, bars, width=.75)
     names = [name.replace("genetic_cardiomyopathy", "Genetic cardiomyopathy") for name in groups.index]
-    ax.set(title="Disease top-DEG1000 coverage", ylabel="Coverage", ylim=(0, 1))
+    ax.set(title="Denoise-DEG · disease top-DEG1000 coverage", ylabel="Coverage", ylim=(0, 1))
     ax.set_xticks(x, names)
     ax.yaxis.set_major_formatter(PercentFormatter(xmax=1))
     ax.legend(title="Axis size", frameon=False, ncol=len(groups.columns), loc="upper left")
@@ -131,21 +140,16 @@ def main():
 
     fig, axes = plt.subplots(1, 3, figsize=(15.9, 4.7), layout="constrained")
     ax = axes[0]
-    plot_exclusions(ax, np.log10(1 + genes.mean_cpm), genes.detection_fraction,
-                    genes.low_detection, len(genes), plotting)
-    plotting.line(ax, [0, 1], [.10, .10], hue=EXCLUDED_HUE,
-                  transform=ax.get_yaxis_transform(), label="Nonzero fraction = 0.10")
-    ax.set(title="Abundance across nonblank wells", xlabel="log10(1 + mean CPM)",
-           ylabel="Fraction of wells with nonzero counts", ylim=(-0.02, 1.02))
-    ax.legend(facecolor="white", framealpha=.95, edgecolor="none", fontsize=9,
-              loc="upper left", markerscale=2)
-    for ax, (metric, title, ylabel) in zip(axes[1:], (
-        ("plate_sd", "Between-plate DMSO variation", "Between-plate SD"),
-        ("within_plate_sd", "Within-plate DMSO variation", "Within-plate residual SD"),
+    plot_exclusions(ax, genes.detection_fraction, genes.low_detection,
+                    np.linspace(0, 1, 41), .10, "Nonzero fraction = 0.10", plotting)
+    ax.set(title="Detection across nonblank wells", xlabel="Fraction of wells with nonzero counts")
+    ax.legend(frameon=False, fontsize=9, loc="upper left")
+    for ax, (metric, title) in zip(axes[1:], (
+        ("plate_sd", "Between-plate DMSO variation"),
+        ("within_plate_sd", "Within-plate DMSO variation"),
     ), strict=True):
         ax.set_title(title)
-        variance_boundary(ax, genes.dmso_mean_log2_cpm1, genes[metric],
-                          genes[metric + "_above_boundary"], slopes[metric], ylabel, plotting)
+        variance_boundary(ax, genes, metric, slopes[metric], plotting)
     plotting.save_figure(fig, output / "denoise.png", dpi=180)
     plt.close(fig)
 
