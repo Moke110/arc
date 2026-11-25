@@ -24,6 +24,7 @@ RECEIPT = Path("log/330-formal.json")
 CURVE_RECEIPT = Path("log/330-curves.json")
 METRIC_PNGS = ("delta-metrics.png", "delta-metrics-improvement.png")
 CURVE_PNG = "learning-curves.png"
+PLOT_FOLD_SCORES = "figure/data/fold-scores.csv"
 PROJECTIONS = {"delta-metrics.csv": "figure/data/delta-metrics.csv",
                "epoch-objectives.csv": "figure/data/epoch-objectives.csv",
                "fold-scores.csv": "log/fold-scores.csv", "runs.csv": "log/runs.csv",
@@ -156,6 +157,7 @@ def publish(args):
             projected = candidate / destination
             projected.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(args.report / name, projected)
+        shutil.copyfile(args.report / "fold-scores.csv", candidate / PLOT_FOLD_SCORES)
         samples = "log/330-resources.jsonl"
         shutil.copyfile(args.matrix_audit / "resource-samples.jsonl", candidate / samples)
         data = candidate / "figure/data"
@@ -170,7 +172,7 @@ def publish(args):
             if axis_run.digest(figure / png) != axis_run.digest(replay / png):
                 raise ValueError(f"independent CSV-only renders differ: {png}")
         published = axis_run.file_hashes(
-            candidate, (*PROJECTIONS.values(), *(f"figure/{name}" for name in (*METRIC_PNGS, CURVE_PNG)),
+            candidate, (*PROJECTIONS.values(), PLOT_FOLD_SCORES, *(f"figure/{name}" for name in (*METRIC_PNGS, CURVE_PNG)),
                         samples))
         code = (evaluate, render_metrics, render_curves, Path(__file__),
                 STEP / "execution/audit_learning_curves.py")

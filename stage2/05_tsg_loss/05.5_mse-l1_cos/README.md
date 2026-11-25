@@ -69,11 +69,12 @@ inputs, the exact reference comparisons, and the scoring and resource
 evidence. [Acceptance receipt](log/339-formal.json) · [Run ledger](log/runs.csv) ·
 [Fold scores](log/fold-scores.csv) · [Frozen bandwidths](log/bandwidths.csv)
 
-The signed-difference figure subtracts the score of the matching fresh
-zero-weight reference from each score. The learning curves show one panel
-per weight with one color per fold and mark the chosen checkpoint. All
-three figures were reproduced twice from only their CSVs with identical
-PNG bytes. [Scores](figure/delta-metrics.png) ·
+Score bars show means, dots show the individual
+[fold scores](figure/data/fold-scores.csv), and error bars show sample SD.
+Differences subtract the matching fresh zero-weight score within each run.
+The learning curves show one model per weight and one training and validation
+line per fold/seed run. Dots mark the selected checkpoints.
+[Scores](figure/delta-metrics.png) ·
 [Signed differences](figure/delta-metrics-improvement.png) ·
 [Learning curves](figure/learning-curves.png) ·
 [Score CSV](figure/data/delta-metrics.csv) ·
@@ -85,7 +86,5 @@ maximum gap of 14.421 seconds and peak RAM of 1.84 GiB.
 [Coordinator samples](log/339-coordinator-resources.jsonl) ·
 [Scope samples](log/339-resources.jsonl)
 
-Use the [pre-refresh revision](../README.md#replay-the-original-formal-publications)
-for exact verification of the original formal receipt. The
-[current figure verification](../README.md#verify-the-current-figures)
-compares the refreshed PNGs with two independent CSV-only renders.
+The [current figure verification](../README.md#verify-the-current-figures)
+compares the published PNGs with two independent CSV-only renders.

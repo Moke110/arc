@@ -24,6 +24,7 @@ SAMPLES = Path("log/333-resources.jsonl")
 COORDINATOR_AUDIT = "coordinator-resource-samples.jsonl"
 COORDINATOR_SAMPLES = Path("log/333-coordinator-resources.jsonl")
 FIGURES = ("delta-metrics.png", "delta-metrics-improvement.png", "learning-curves.png")
+PLOT_FOLD_SCORES = "figure/data/fold-scores.csv"
 PROJECTIONS = {
     "delta-metrics.csv": "figure/data/delta-metrics.csv",
     "epoch-objectives.csv": "figure/data/epoch-objectives.csv",
@@ -230,6 +231,7 @@ def publish(args):
             projected = candidate / destination
             projected.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(args.report / name, projected)
+        shutil.copyfile(args.report / "fold-scores.csv", candidate / PLOT_FOLD_SCORES)
         shutil.copyfile(args.matrix_audit / "resource-samples.jsonl", candidate / SAMPLES)
         sample_paths = [str(SAMPLES)]
         coordinator_audit = args.matrix_audit / COORDINATOR_AUDIT
@@ -245,7 +247,7 @@ def publish(args):
             if axis_run.digest(figures / name) != axis_run.digest(replay / name):
                 raise ValueError(f"independent CSV-only renders differ: {name}")
         published = axis_run.file_hashes(
-            candidate, (*PROJECTIONS.values(), *(f"figure/{name}" for name in FIGURES), *sample_paths)
+            candidate, (*PROJECTIONS.values(), PLOT_FOLD_SCORES, *(f"figure/{name}" for name in FIGURES), *sample_paths)
         )
         code = ("execution/additive_objective.py", "execution/evaluate_sweep.py", "execution/run_sweep.py",
                 "execution/matrix_sweep.py", "execution/report_sweep.py",

@@ -10,17 +10,19 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 import numpy as np
 
 LOSS = Path(__file__).resolve().parents[3]
 sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script")]
 
-from loss_plot_style import metric_direction
-from stage2_util import plotting
+from loss_plot_style import FOLD_SCORES, metric_direction, read_replicates, score_bar, setup_score_axis
+from stage2_util import palette, plotting
 
 LOSSES = {"mse": "MSE", "cos": "Cos", "pcc": "PCC", "l1": "L1"}
 ALPHAS = ("0.75", "1", "1.25")
-ALPHA_HUES = (220, 20, 140)
+LOSS_HUES = (220, 20, 140, 300)
+ALPHA_DEPTHS = (0, 1, 3)
 LABELS = {
     "JAC_top200": "JAC top200",
     "JAC_pos100": "JAC pos100",
@@ -59,42 +61,37 @@ def read_scores(path):
     return scores
 
 
-def render_panels(scores, field, output):
+def render_panels(replicates, field, output):
     difference = field == "score_difference"
     fig, plots = plt.subplots(3, 3, figsize=(13, 9), layout="constrained")
     x = np.arange(len(LOSSES))
+    width = .24
     for (metric, label), plot in zip(LABELS.items(), plots.flat, strict=True):
         metric_direction(plot, metric, label)
-        groups = [([scores[form, alpha, metric][field] for form in LOSSES], hue, 2, alpha)
-                  for alpha, hue in zip(ALPHAS, ALPHA_HUES, strict=True)]
-        bars = plotting.grouped_bar(plot, x, groups, width=.72, linewidth=.55, zorder=3)
-        for group_bars in bars:
-            for bar in group_bars:
-                if math.isnan(bar.get_height()):
-                    plot.text(bar.get_center()[0], .025, "NA", ha="center", fontsize=7,
-                              transform=plot.get_xaxis_transform(), zorder=4)
-        if difference:
-            limit = max(map(abs, plot.get_ylim()))
-            plot.set_ylim(-limit, limit)
-        plot.set(ylim=plot.get_ylim(), xticks=x, xticklabels=LOSSES.values())
-        plot.axhline(0, color="#666666", linewidth=.8, zorder=2)
-        plot.grid(axis="y", color="#777777", alpha=.25, zorder=1)
-        plot.spines[["top", "right"]].set_visible(False)
+        for position, (form, hue) in enumerate(zip(LOSSES, LOSS_HUES, strict=True)):
+            for index, (alpha, depth) in enumerate(zip(ALPHAS, ALPHA_DEPTHS, strict=True)):
+                score_bar(plot, position + (index - 1) * width,
+                          replicates[form, alpha, metric][field], hue=hue, depth=depth, width=width)
+        setup_score_axis(plot, x, LOSSES.values(), difference=difference)
 
-    handles, labels = plots[0, 0].get_legend_handles_labels()
-    fig.legend(handles, labels,
-               title="Delta coefficient α   ·   ↑ Higher is better   ·   ↓ Lower is better",
-               ncols=3, loc="outside upper center", frameon=False)
+    handles = []
+    for alpha, depth in zip(ALPHAS, ALPHA_DEPTHS, strict=True):
+        main, secondary = palette.color_pair(LOSS_HUES[0], depth)
+        handles.append(Patch(facecolor=secondary, edgecolor=main, label=alpha))
+    fig.legend(handles=handles, title="Delta coefficient α", ncols=3,
+               loc="outside upper center", frameon=False)
     fig.supxlabel("Delta loss metric")
-    fig.supylabel("Score difference vs. MSE × 1" if difference else "Equal-fold score")
+    fig.supylabel("Paired score difference vs. MSE × 1" if difference else "Equal-fold score")
     plotting.save_figure(fig, output / FIGURES[field], dpi=180)
     plt.close(fig)
 
 
 def render(data, output):
     scores = read_scores(data / "delta-metrics.csv")
+    replicates = read_replicates(data / FOLD_SCORES, scores, coordinates=("loss", "alpha"),
+                                 reference=("mse", "1"), folds=(0, 1, 2))
     for field in FIGURES:
-        render_panels(scores, field, output)
+        render_panels(replicates, field, output)
 
 
 def main():

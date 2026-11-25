@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 LOSS = Path(__file__).resolve().parents[3]
 sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script")]
 
-from loss_plot_style import FOLD_HUES, curve_legend_handles
 from stage2_util import plotting
 
 ALPHAS = ("0", "0.25", "0.5", "0.75", "1", "1.25", "1.5", "1.75", "2")
@@ -71,17 +70,18 @@ def render(data, output, *, smoke=False):
     fig, plots = plt.subplots(*shape, figsize=(9, 4) if smoke else (13, 9),
                               sharex=True, sharey=True, layout="constrained")
     for alpha, plot in zip(alphas, plots.flat, strict=True):
+        runs = []
         for fold in folds:
             _, epochs, train, valid, _ = zip(*curves[alpha, fold], strict=True)
-            plotting.line(plot, epochs, train, hue=FOLD_HUES[fold], linestyle="--", linewidth=1.0)
-            plotting.line(plot, epochs, valid, hue=FOLD_HUES[fold], linewidth=1.2)
+            runs.append((epochs, train, valid))
+        plotting.learning_curve(plot, runs)
         plot.set_title(f"α = {alpha}", fontsize=10)
         plot.set_yscale("log")
         plot.grid(axis="y", color="#dedede", linewidth=.55)
         plot.spines[["top", "right"]].set_visible(False)
 
-    handles = curve_legend_handles(folds)
-    fig.legend(handles=handles, ncols=len(handles), loc="outside upper center", frameon=False)
+    handles, labels = plots.flat[0].get_legend_handles_labels()
+    fig.legend(handles, labels, ncols=2, loc="outside upper center", frameon=False)
     fig.supxlabel("Epoch")
     fig.supylabel("Objective per condition (log scale)")
     plotting.save_figure(fig, output / FIGURE_NAME, dpi=180)
