@@ -761,6 +761,12 @@ The Stage 2 study of the shared expression reconstruction weight with the Delta 
 **Shared reconstruction MSE weight** (`alpha` in `05.3_mse-l1_mse-x`):
 The common coefficient of the control and treated expression reconstruction MSE terms.
 
+**TranSiGen Delta similarity loss sweeps** (`05.4_mse-l1_pcc`, `05.5_mse-l1_cos`):
+The Stage 2 studies of the effect of adding bounded Pearson correlation or cosine dissimilarity to the Step 05.3 unit-reconstruction-weight objective.
+
+**Delta similarity loss weight** (`alpha` in `05.4_mse-l1_pcc` and `05.5_mse-l1_cos`):
+The coefficient of the additional bounded dissimilarity between predicted and measured matched-control Delta vectors.
+
 **Historical single-dose tenv comparison** (`04_model_view`):
 The archived Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result.
 _Avoid_: benchmark step (when meaning this comparison)

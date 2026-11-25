@@ -124,3 +124,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0089](0089-transigen-delta-metric-weight.md) | Vary the TranSiGen Delta loss coefficient independently in Step 05.1 |
 | [0090](0090-transigen-mse-l1-sweep.md) | Add a Delta L1 penalty to the native TranSiGen objective in Step 05.2 |
 | [0091](0091-transigen-reconstruction-mse-sweep.md) | Vary the shared reconstruction MSE weight in Step 05.3 |
+| [0092](0092-transigen-bounded-delta-similarity-sweeps.md) | Sweep bounded Delta similarity loss weights in Steps 05.4 and 05.5 |
