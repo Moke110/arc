@@ -12,8 +12,13 @@ SIZES = (2000, 3000, 4000, 5000)
 COMMON_SIZE = 18164
 COMMON_SHA256 = "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
 AXIS_RELEASES = {
-    "hvg-deg": ("02.1_hvg-deg", SCHEMA, SIZES),
-    "denoise-deg": ("02.2_denoise-deg", "stage2-denoise-deg-axes-v2", (1000, 2000, 3000, 4000, 5000)),
+    "hvg": ("02.1_hvg-deg", SCHEMA, SIZES),
+    "denoise": ("02.2_denoise-deg", "stage2-denoise-deg-axes-v2", (1000, 2000, 3000, 4000, 5000)),
+}
+AXIS_IDS = {
+    f"{family}-{size // 1000}k": (family, size)
+    for family, (_, _, sizes) in AXIS_RELEASES.items()
+    for size in sizes
 }
 
 
@@ -54,7 +59,7 @@ class Projection:
 
 
 class Axes:
-    def __init__(self, root, *, family="hvg-deg"):
+    def __init__(self, root, *, family="hvg"):
         if family not in AXIS_RELEASES:
             raise ValueError(f"unknown prediction-axis family: {family}")
         step, schema, self.sizes = AXIS_RELEASES[family]
@@ -92,6 +97,20 @@ class Axes:
         return PredictionAxis(indices, symbols, digest)
 
 
-def open_axes(root=None, *, family="hvg-deg"):
+def open_axes(root=None, *, family="hvg"):
     """Open a published axis family, defaulting to the accepted HVG-DEG release."""
     return Axes(root, family=family)
+
+
+def axis_coordinates(axis_id):
+    """Resolve a canonical axis ID to its published family and gene count."""
+    try:
+        return AXIS_IDS[axis_id]
+    except KeyError:
+        raise ValueError(f"unknown prediction axis: {axis_id}") from None
+
+
+def open_axis(axis_id, root=None):
+    """Verify and read the ordered genes for a canonical prediction axis ID."""
+    family, size = axis_coordinates(axis_id)
+    return open_axes(root, family=family).axis(size)

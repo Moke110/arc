@@ -20,7 +20,7 @@ class FormalMatrixTest(unittest.TestCase):
             match_rosters({"axis-1": [fold], "axis-2": [changed]})
 
     def test_formal_registration_requires_matched_control_protocol_and_patience(self):
-        axis = "hvg-deg-5k"
+        axis = "hvg-5k"
         roster = {"train": ["a"], "valid": ["b"], "test": ["c"]}
         preflight = {"training_manifest_sha256": {axis: "training"}, "folds": "folds"}
         config = {

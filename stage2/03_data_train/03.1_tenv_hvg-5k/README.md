@@ -33,11 +33,11 @@ table aligns to the rows returned by `read_treatments`.
 ```bash
 ROOT=$PWD/stage2/03_data_train
 BUILDER=$ROOT/execution/build_tenv_training.py
-CANDIDATE=$PWD/tmp/tenv-hvg-deg-5k/candidate
-STAGING=$PWD/tmp/tenv-hvg-deg-5k/staging
+CANDIDATE=$PWD/tmp/tenv-hvg-5k/candidate
+STAGING=$PWD/tmp/tenv-hvg-5k/staging
 python "$BUILDER" publish --output "$CANDIDATE" --staging "$STAGING"
 python "$BUILDER" verify --output "$CANDIDATE" --staging "$STAGING"
-python "$BUILDER" publish --output "$ROOT/03.1_tenv_hvg-deg-5k/output" \
+python "$BUILDER" publish --output "$ROOT/03.1_tenv_hvg-5k/output" \
   --staging "$STAGING" --expected-sha256 "$VERIFIED_SHA256"
 ```
 

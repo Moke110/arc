@@ -23,7 +23,7 @@ validation protocol is recorded in [ADR 0086](../../docs/adr/0086-tenv-axis-matc
 
 ## Gene axis selection
 
-Select **Denoise-DEG 5k (`denoise-deg-5k`)** as the Stage 2 prediction axis.
+Select **Denoise-DEG 5k (`denoise-5k`)** as the Stage 2 prediction axis.
 The decision prioritizes held-out perturbation Delta prediction with a measured
 same-plate control. Across the six axes and three frozen cold-drug folds,
 Denoise-DEG 5k gave the highest mean Δ PCC (0.4066) and the lowest mean
@@ -77,27 +77,48 @@ manifests, the report and its two CSV-reproducible PNGs. The materialized
 paths are `output/formal-matched-control` for checkpoints, registrations
 and predictions, `log/319-runs` for resource and process evidence, and
 `output/report-matched-control` for condition and fold metrics, eligibility,
-bandwidths and the shared disease reference. The two summary CSVs are in
-`figure/data/`.
+bandwidths and the shared disease reference. This sealed report keeps its
+original axis IDs and digests. The tracked summary CSVs in `figure/data/`
+and current figures use the canonical IDs.
+
+Export the six axis-bearing condition, fold and summary CSVs with canonical
+IDs. The export verifies the sealed report's manifest and output digests
+against the formal receipt and copies each row's other fields byte for byte.
+
+```bash
+STEP=stage2/04_tsg_axis
+WORK=$(mktemp -d "$PWD/tmp/tsg-axis-export.XXXXXX")
+python "$STEP/execution/export_canonical.py" --output "$WORK/report"
+python "$STEP/figure/script/render.py" --data "$WORK/report/figure/data" --output "$WORK/figures"
+```
+
+Replay the sealed report with the original evaluator, renderer and path
+names. The temporary Step 03 aliases point to the same unchanged releases.
 
 ```bash
 STEP=stage2/04_tsg_axis
 VERIFY=$(mktemp -d "$PWD/tmp/tsg-axis-verify.XXXXXX")
 git worktree add --detach "$VERIFY/runtime" 3f4cbb65
+mkdir "$VERIFY/legacy-step03"
+for release in "$PWD"/stage2/03_data_train/03.*_tenv_*; do
+  name=${release##*/}
+  ln -s "$release" "$VERIFY/legacy-step03/${name%-*}-deg-${name##*-}"
+done
 capped_step04 python "$VERIFY/runtime/$STEP/execution/report_formal.py" verify \
   --matrix "$STEP/output/formal-matched-control" --matrix-audit "$STEP/log/319-runs" \
   --report "$STEP/output/report-matched-control" --figures "$VERIFY/runtime/$STEP/figure" \
-  --step03 "$PWD/stage2/03_data_train" --raw "$PWD/stage2/01_data_raw/output" \
+  --step03 "$VERIFY/legacy-step03" --raw "$PWD/stage2/01_data_raw/output" \
   --logs "$VERIFY"
+git worktree remove "$VERIFY/runtime"
 ```
 
 ## Register and replay one fit
 
 ```bash
 STEP=stage2/04_tsg_axis
-RUN=$PWD/tmp/tsg-axis/hvg-deg-5k-fold-0
-capped_step04 python "$STEP/execution/run.py" register --axis hvg-deg-5k --fold 0 \
-  --training stage2/03_data_train/03.1_tenv_hvg-deg-5k/output --device cuda --output "$RUN" &&
+RUN=$PWD/tmp/tsg-axis/hvg-5k-fold-0
+capped_step04 python "$STEP/execution/run.py" register --axis hvg-5k --fold 0 \
+  --training stage2/03_data_train/03.1_tenv_hvg-5k/output --device cuda --output "$RUN" &&
 capped_step04 python "$STEP/execution/run.py" train --output "$RUN" &&
 capped_step04 python "$STEP/execution/run.py" predict --output "$RUN" &&
 capped_step04 python "$STEP/execution/run.py" replay --output "$RUN"
@@ -168,7 +189,7 @@ evaluated the same 462, 459 and 462 conditions in folds 0, 1 and 2.
 The fold RBF bandwidths were 0.430414, 0.425762 and 0.439392. Every metric
 and every disease score was defined in all three folds.
 
-| Delta metric | HVG-DEG 3k | HVG-DEG 4k | HVG-DEG 5k | Denoise-DEG 3k | Denoise-DEG 4k | Denoise-DEG 5k |
+| Delta metric | `hvg-3k` | `hvg-4k` | `hvg-5k` | `denoise-3k` | `denoise-4k` | `denoise-5k` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | JAC_top200 | 0.1453 | 0.1428 | 0.1416 | 0.1454 | 0.1427 | 0.1409 |
 | JAC_pos100 | 0.1375 | 0.1319 | 0.1258 | 0.1283 | 0.1227 | 0.1134 |
@@ -180,7 +201,7 @@ and every disease score was defined in all three folds.
 | Δ MMD | 0.2253 | 0.2208 | 0.1994 | 0.1955 | 0.1873 | 0.1793 |
 | Δ R² | -0.1953 | -0.2407 | -0.1842 | -0.1993 | -0.2275 | -0.1587 |
 
-| Signed disease DEG F1 | HVG-DEG 3k | HVG-DEG 4k | HVG-DEG 5k | Denoise-DEG 3k | Denoise-DEG 4k | Denoise-DEG 5k |
+| Signed disease DEG F1 | `hvg-3k` | `hvg-4k` | `hvg-5k` | `denoise-3k` | `denoise-4k` | `denoise-5k` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | nHF | 0.1603 | 0.1639 | 0.1905 | 0.1197 | 0.1063 | 0.0969 |
 | ICM | 0.1083 | 0.1258 | 0.1734 | 0.1211 | 0.1057 | 0.0961 |
@@ -193,9 +214,11 @@ See the [nine-metric figure](figure/delta-metrics.png) and the
 [disease CSV](figure/data/disease-f1.csv) retain the full numerical
 precision and eligibility counts. The materialized report retains the
 per-fold and per-condition values and the full CM direction reference.
-The [figure revision receipt](log/delta-metrics-style.json) binds the current
-nine-metric figure to the formal summary CSV. Revision `3f4cbb65` retains
-the figure and renderer pinned by the original formal receipt.
+The [canonical export receipt](log/322-canonical-axis-report.json) records
+the six ID mappings, sealed table hashes and current figure digests.
+Revision `3f4cbb65` retains the figures and renderer pinned by the formal
+receipt. Revision `0067ce54` retains the first revision of the Delta figure
+styling and its receipt.
 
 ## Historical single-dose comparison
 

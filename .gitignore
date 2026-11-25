@@ -151,28 +151,18 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 /stage2/03_data_train/.output.publication.lock
 
 # Source-specific Step 03 publishes manifests and materializes expression locally.
-!/stage2/03_data_train/03.1_tenv_hvg-deg-5k/output/
-/stage2/03_data_train/03.1_tenv_hvg-deg-5k/output/*
-!/stage2/03_data_train/03.1_tenv_hvg-deg-5k/output/manifest.json
-/stage2/03_data_train/03.1_tenv_hvg-deg-5k/.output.previous/
-/stage2/03_data_train/03.1_tenv_hvg-deg-5k/.output.publication.lock
-/stage2/03_data_train/03.3_tenv_hvg-deg-3k/.output.previous/
-/stage2/03_data_train/03.3_tenv_hvg-deg-3k/.output.publication.lock
-/stage2/03_data_train/03.4_tenv_hvg-deg-4k/.output.previous/
-/stage2/03_data_train/03.4_tenv_hvg-deg-4k/.output.publication.lock
-/stage2/03_data_train/03.5_tenv_denoise-deg-3k/.output.previous/
-/stage2/03_data_train/03.5_tenv_denoise-deg-3k/.output.publication.lock
-/stage2/03_data_train/03.6_tenv_denoise-deg-4k/.output.previous/
-/stage2/03_data_train/03.6_tenv_denoise-deg-4k/.output.publication.lock
-/stage2/03_data_train/03.7_tenv_denoise-deg-5k/.output.previous/
-/stage2/03_data_train/03.7_tenv_denoise-deg-5k/.output.publication.lock
-!/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/
-/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/*
-!/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/api/
-!/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/api/*.py
-!/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/release/
-/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/release/*
-!/stage2/03_data_train/03.2_tahoe_hvg-deg-5k/output/release/manifest.json
+!/stage2/03_data_train/03.*_tenv_*/output/
+/stage2/03_data_train/03.*_tenv_*/output/*
+!/stage2/03_data_train/03.*_tenv_*/output/manifest.json
+/stage2/03_data_train/03.*_tenv_*/.output.previous/
+/stage2/03_data_train/03.*_tenv_*/.output.publication.lock
+!/stage2/03_data_train/03.2_tahoe_hvg-5k/output/
+/stage2/03_data_train/03.2_tahoe_hvg-5k/output/*
+!/stage2/03_data_train/03.2_tahoe_hvg-5k/output/api/
+!/stage2/03_data_train/03.2_tahoe_hvg-5k/output/api/*.py
+!/stage2/03_data_train/03.2_tahoe_hvg-5k/output/release/
+/stage2/03_data_train/03.2_tahoe_hvg-5k/output/release/*
+!/stage2/03_data_train/03.2_tahoe_hvg-5k/output/release/manifest.json
 
 # Step 04 owns axis training code. Local run payloads stay ignored.
 !/stage2/04_tsg_axis/output/

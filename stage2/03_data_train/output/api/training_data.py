@@ -20,14 +20,14 @@ FOLD_COLUMNS = tuple(f"{scenario.replace('-', '_')}_{fold}" for scenario in SCEN
 STRIP_COLUMNS = tuple(f"{column}_reason" for column in FOLD_COLUMNS[3:])
 STRIPS = {"excluded-held-parent": "held_parent", "excluded-held-dose": "held_dose"}
 FILES = {"training.h5", "genes.csv", "controls.csv", "treatments.csv", "members.csv", "exclusions.csv"}
-TENV_BASELINE_AXIS = "hvg-deg-5k"
+TENV_BASELINE_AXIS = "hvg-5k"
 TENV_AXIS_STEPS = {
-    "hvg-deg-3k": "03.3_tenv_hvg-deg-3k",
-    "hvg-deg-4k": "03.4_tenv_hvg-deg-4k",
-    TENV_BASELINE_AXIS: "03.1_tenv_hvg-deg-5k",
-    "denoise-deg-3k": "03.5_tenv_denoise-deg-3k",
-    "denoise-deg-4k": "03.6_tenv_denoise-deg-4k",
-    "denoise-deg-5k": "03.7_tenv_denoise-deg-5k",
+    "hvg-3k": "03.3_tenv_hvg-3k",
+    "hvg-4k": "03.4_tenv_hvg-4k",
+    TENV_BASELINE_AXIS: "03.1_tenv_hvg-5k",
+    "denoise-3k": "03.5_tenv_denoise-3k",
+    "denoise-4k": "03.6_tenv_denoise-4k",
+    "denoise-5k": "03.7_tenv_denoise-5k",
 }
 TENV_DEFAULT = DEFAULT.parent / TENV_AXIS_STEPS[TENV_BASELINE_AXIS] / "output"
 TENV_SCHEMA = "stage2-tenv-plate-matched-training-v2"

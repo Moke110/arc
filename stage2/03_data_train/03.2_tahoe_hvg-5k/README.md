@@ -9,7 +9,7 @@ call `tahoe_expression.open_tahoe()`. The reader returns at most 256 rows of
 well-level `X`, `control` or `delta` per call.
 
 ```bash
-BUILDER=stage2/03_data_train/03.2_tahoe_hvg-deg-5k/execution/publish_tahoe.py
+BUILDER=stage2/03_data_train/03.2_tahoe_hvg-5k/execution/publish_tahoe.py
 python "$BUILDER" verify
 ```
 
