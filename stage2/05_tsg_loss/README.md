@@ -60,3 +60,60 @@ The [smoke receipt](log/325-smoke.json) records four two-epoch fits with
 64 training, 24 validation and 24 test conditions each. It verifies the
 native anchor, alternate objective calculations, exact model replay and
 the nine Step 04 scores on the common held-out rows.
+
+## Run the formal matrix
+
+The formal grid registers all 36 fits before the first training run. It
+compares the full ordered train, validation and test populations of each arm
+to the released folds. Runs use one CUDA fit at a time in a 10 GiB memory
+and 8 GiB swap scope, with two CPU threads. The driver samples WSL RAM, GPU
+memory and disk headroom every 10 seconds and records each phase's peak RSS.
+An interrupted matrix can be resumed with the same command and candidate
+paths. A completed phase keeps its registration and hashes.
+
+```bash
+set -e
+STEP="$PWD/stage2/05_tsg_loss"
+WORK=$(mktemp -d "$PWD/tmp/tsg-loss-formal.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+capped_step04 python -u "$STEP/execution/matrix.py" \
+  --output "$WORK/matrix" --logs "$WORK/matrix-audit"
+capped_step04 python "$STEP/execution/report_formal.py" build \
+  --matrix "$WORK/matrix" --matrix-audit "$WORK/matrix-audit" \
+  --report "$WORK/report" --publication "$WORK/publication" \
+  --activity "$WORK/report-audit" --scratch "$WORK/scratch" \
+  --code-revision "$(git rev-parse HEAD)"
+```
+
+Use the same pinned inputs in each phase. If the run workspace has a separate
+checkout, supply the materialized input paths as in the smoke instructions.
+Use `--previous-runs` and `--previous-bandwidths` when the sealed Step 04
+matched-control products live in another checkout.
+
+## Nine held-out Delta metrics
+
+[The four-panel figure](figure/delta-metrics.png) groups the Step 04 metrics
+by loss form and uses three colors for the loss weights. Its source
+[metric summary](figure/data/delta-metrics.csv) weights the three folds
+equally. The [fold scores](log/fold-scores.csv) include condition
+eligibility, and [run identities](log/runs.csv) bind the selected and
+stopping epochs to the exact training and prediction evidence.
+The [actual fold bandwidths](log/bandwidths.csv) match the Step 04 values.
+
+The [formal receipt](log/326-formal.json) records the resource
+[samples](log/326-resources.jsonl) and pins the local products under
+`output/formal/matrix`, `output/formal/matrix-audit` and
+`output/formal/report`. The MSE × 1/3 checkpoint predictions and objective
+traces replay the three accepted Step 04 results exactly in the recorded
+environment. Run `report_formal.py verify` with those local paths, a new
+activity and scratch directory, and `--publication "$STEP"` to repeat
+the end-to-end score and figure verification.
+
+Render the metric figure from its source CSV alone.
+
+```bash
+mkdir -p "$PWD/tmp/tsg-loss-figure"
+python stage2/05_tsg_loss/figure/script/render_metrics.py \
+  --data stage2/05_tsg_loss/figure/data --output "$PWD/tmp/tsg-loss-figure"
+```
