@@ -743,11 +743,11 @@ The Stage 2 comparison of fixed prediction axes with TranSiGen on plate–parent
 **Tenv matched plate control** (`C_b`):
 The pooled DMSO expression profile for the treatment condition's tenv plate on the same prediction axis. It is the common reference for the predicted and measured changes from control in the matched-control protocol.
 
-**TranSiGen loss comparison** (`05_tsg_loss`):
+**TranSiGen loss comparison** (`05.1_loss_metrics`):
 The Stage 2 study comparing alternative objectives for predicted Delta at fixed prediction inputs and frozen tenv cold-drug folds.
 
 **Delta loss weight** (`alpha`):
-In the TranSiGen loss comparison, the share of the combined expression-loss coefficients assigned to the predicted Delta term.
+In the TranSiGen loss comparison, the coefficient of the predicted Delta loss when each reconstruction MSE has coefficient one.
 
 **Historical single-dose tenv comparison** (`04_model_view`):
 The archived Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result.

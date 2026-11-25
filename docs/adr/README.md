@@ -121,3 +121,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0086](0086-tenv-axis-matched-plate-control.md) | Condition the tenv axis comparison on matched plate controls in every partition |
 | [0087](0087-stage2-active-steps-and-history.md) | Keep Steps 01–04 active and retain Stage 2 history in one local archive |
 | [0088](0088-transigen-delta-loss-comparison.md) | Reopen Step 05 to compare TranSiGen Delta losses and weights on tenv |
+| [0089](0089-transigen-delta-metric-weight.md) | Vary the TranSiGen Delta loss coefficient independently in Step 05.1 |
