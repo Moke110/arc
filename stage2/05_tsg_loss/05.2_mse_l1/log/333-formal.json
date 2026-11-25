@@ -9,7 +9,7 @@
     "execution/additive_objective.py": "099c8a3b6c232eb0ceea23ccf3abb6cc06f602f58c54dd153060d94b7eb6663b",
     "execution/evaluate_sweep.py": "5557b54d40ae48660ae5fb985eabae904e18d98855fac26b7aee379dd332174a",
     "execution/matrix_sweep.py": "c1dc3e1ec0910aecd9425778bf69f0b3fadd9da45dddc307c7808a3a2f17f0a2",
-    "execution/report_sweep.py": "234211d1c203f0f12cd4f7f305546f3c334025e8159579ace9aedf005eb09848",
+    "execution/report_sweep.py": "36d949592fa0dc08cad4210953e8c468b3f60797fc00b8303a0bfe70641ec763",
     "execution/run_sweep.py": "5526acbc56d9e21191f37213828c2392d849bb863d166c0f4e08cbf1df78a8a8",
     "figure/script/render_learning_curves.py": "1941340f2279e59335fe539279b490ed89ccf77d1c4a361fcee4cca9ace00535",
     "figure/script/render_metrics.py": "a336e3fc60fce3ed89afccdba9b136f74fca02d4c49a0eb7e072501cc674c2db"
@@ -20,6 +20,7 @@
     "figure/delta-metrics-improvement.png": "1d86e3c783891cd67d0a9b7e10addce1785680f7e833e18aa17c10d663aea2b0",
     "figure/delta-metrics.png": "d126517eda138a3e04866206138b27fede64dabca3703ec2c4f2508c693a3e26",
     "figure/learning-curves.png": "332d510b0c1f1bd14ea672bc633ee79424daa8455a351ea2b06d0854b8068d21",
+    "log/333-coordinator-resources.jsonl": "f3e9710680f73d7ec7386d80dcae9f07ee60fffccf6e8fd2a4c19a2360da373d",
     "log/333-resources.jsonl": "e1fe99e9a6769eb12446edd49da2778618f4c05a63b66e65c1519ae3203d1518",
     "log/bandwidths.csv": "4651e0fc856041a4e5b7853110904c0c947c09e2fe2e3e7bc0b9c89fd3d607c2",
     "log/fold-scores.csv": "9fbc067f4ef17dc8fdf4575899299901745fbef80c0a8d6fc4e1dcb7373aebd4",
@@ -35,6 +36,14 @@
     "runs.csv": "d88b25db32a282f363c2c0edd3a95e7b9c0cc1f876d3d45d971bce904892b98a"
   },
   "resources": {
+    "coordinator": {
+      "maximum_gpu_used_mib": 3270,
+      "maximum_observed_sample_gap_seconds": 10.147,
+      "minimum_wsl_available_kib": 18459324,
+      "sample_gaps_over_12_seconds": 0,
+      "sample_interval_seconds": 10,
+      "samples": 137
+    },
     "maximum_gpu_used_mib": 3249,
     "maximum_observed_sample_gap_seconds": 19.951,
     "minimum_disk_free_bytes": 1370178588672,
