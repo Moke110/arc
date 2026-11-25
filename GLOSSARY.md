@@ -176,6 +176,9 @@ _Avoid_: results (when meaning the whole area), artifacts
 **Stage 2 report figure**:
 A human-facing visual conclusion whose complete plotted values are retained separately, allowing the same figure to be reproduced independently of model execution and scientific recalculation.
 
+**Stage 2 palette coordinate**:
+A hue and depth pair that identifies a plotted group or an ordered color level. Each coordinate has a main color for foreground marks and a secondary color for fills and ranges.
+
 **Stage 2 acceptance evidence**:
 The retained records establishing a product’s identity, provenance and successful scientific and downstream-use checks. Failure diagnoses and migration mappings preserve the interpretation of historical records.
 
