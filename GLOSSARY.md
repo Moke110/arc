@@ -770,6 +770,15 @@ The Stage 2 studies of the effect of adding bounded Pearson correlation or cosin
 **Delta similarity loss weight** (`alpha` in `05.4_mse-l1_pcc` and `05.5_mse-l1_cos`):
 The coefficient of the additional bounded dissimilarity between predicted and measured matched-control Delta vectors.
 
+**TranSiGen shape comparison** (`06_tsg_shape`):
+The Stage 2 study of how expression encoder width, expression latent
+dimension, and expression encoder or decoder depth affect held-out Delta
+prediction under a fixed training objective.
+
+**TranSiGen expression latent dimension**:
+The shared dimension of the control, measured treated, and predicted treated
+expression latent vectors.
+
 **Historical single-dose tenv comparison** (`04_model_view`):
 The archived Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result.
 _Avoid_: benchmark step (when meaning this comparison)
