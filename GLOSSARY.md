@@ -774,7 +774,8 @@ The coefficient of the additional bounded dissimilarity between predicted and me
 The Stage 2 series comparing how TranSiGen architectures affect held-out
 Delta prediction in tenv. Round one varies expression widths and depths.
 Round two varies prediction readout, conditioning, encoder sharing, and
-latent residual parameterization.
+latent residual parameterization. Round three combines the two direct Delta
+readouts with FiLM conditioning.
 
 **Step 06.1 original architecture** (`original`):
 The TranSiGen expression shape with one 1,200-unit encoder hidden layer,
@@ -784,6 +785,10 @@ score is the reference for each paired comparison on the same fold.
 **Step 06.2 prediction architecture comparison** (`06.2_round2`):
 The matched-control tenv comparison of direct Delta readouts, latent
 conditioning heads, shared expression encoding, and latent residuals.
+
+**Step 06.3 prediction architecture composition comparison** (`06.3_round3`):
+The matched-control tenv comparison of two direct Delta readouts, FiLM
+conditioning, and each readout combined with FiLM across repeated training seeds.
 
 **TranSiGen expression latent dimension**:
 The shared dimension of the control, measured treated, and predicted treated

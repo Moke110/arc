@@ -129,3 +129,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0094](0094-transigen-shape-round1.md) | Compare TranSiGen expression widths and depths in Stage 2 Step 06.1 |
 | [0095](0095-transigen-shape-encoder-width-extension.md) | Extend the Step 06.1 encoder-width comparison with sealed prior fits |
 | [0096](0096-transigen-shape-round2.md) | Compare TranSiGen prediction readouts, conditioning heads, and latent residuals in Stage 2 Step 06.2 |
+| [0097](0097-transigen-shape-round3.md) | Combine direct Delta readouts with FiLM in Stage 2 Step 06.3 |
