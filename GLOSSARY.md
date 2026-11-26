@@ -1,6 +1,6 @@
-# ARC
+# CarPS
 
-AI-driven drug repositioning for cardiac diseases. Predict the transcriptional perturbation a drug causes on cardiomyocytes, then rank drugs by predicted MIRI efficacy. The repository holds five external-source data/model categories (one directory per download source; see *External data provenance*), the Stage 1 drug-repositioning workflows (`stage1/`), Stage 2 model setup/selection (`stage2/`), and dev-tool files.
+CarPS (Cardiomyocyte Perturbation Prediction System) is the repository for cardiomyocyte chemical perturbation prediction and related cardiac drug-repositioning research. It contains external data and models, the Stage 1 repositioning workflows, and the Stage 2 prediction studies.
 
 ## Language
 
@@ -14,10 +14,16 @@ _Avoid_: phase, milestone, step
 The completed AICM stage that established XPert+DToxS MIRI drug repositioning: the four MIRI screens v1 (frozen baseline), v1.1 (DToxS-LINCS testbed), v2 (primary+iPSC), and v3 (all-CM, current frontier). "DToxS" names their shared primary-arm test-set anchor, not their only corpus.
 
 **Stage 2**:
-The AICM stage that selects an open-source whole-transcriptome drug-perturbation model for MIRI perturbome prediction. It separates model setup, the source-dataset corpus, and model comparison on held-out perturbations.
+The stage that develops and evaluates transcriptome prediction for chemical perturbations in cardiomyocytes. Its selected model is CarPS-VAE.
 
 **Stage 2 tree**:
-The top-level `stage2/` directory that runs model setup and, later, model selection. It is distinct from a Stage 1 *repositioning workflow*; it produces no MIRI drug ranking in the setup stage. Preprint models are excluded from its setup set.
+The `stage2_CarPS-VAE/` tree that owns Stage 2 data releases, the CarPS-VAE initial release, and subsequent perturbation prediction studies.
+
+**CarPS-VAE**:
+The selected Stage 2 variational autoencoder for predicting the signed transcriptomic response of cardiomyocytes to a chemical perturbation from matched control expression, chemical representation, and dose.
+
+**CarPS-VAE alpha**:
+The initial fixed release of CarPS-VAE, derived from the Step 06.4 `XΔ-XΔ` arm and released in Step 07. It is the reference against which subsequent model experiments are evaluated.
 
 **Stage 3**:
 The AICM stage that predicts the direction of change of one cardiomyocyte phenotype under one specified experimental condition from a drug-induced perturbome. Its first effort establishes the drug–phenotype data foundation; the perturbome will come from Stage 2 model predictions.
