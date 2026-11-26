@@ -10,9 +10,9 @@ of the numeric dose standardized on the training fold.
 | `0_original` | Original Step 06.1 expression architecture and prediction head. |
 | `1_output-delta` | Independent signed Δ decoder. |
 | `2_output-delta-no-x2` | Treated decoder emits signed Δ and omits the treated reconstruction. |
-| `3_z-interact_FiLM` | FiLM prediction head with identity modulation at initialization. |
-| `4_1+3` | Independent signed Δ decoder and FiLM prediction head. |
-| `5_2+3` | Treated decoder emits signed Δ with a FiLM prediction head. |
+| `3_z-interact_FiLM` | FiLM with LayerNorm before the Gaussian projection. |
+| `4_1+3` | Independent signed Δ decoder and normalized FiLM head. |
+| `5_2+3` | Treated decoder emits signed Δ with a normalized FiLM head. |
 
 The four direct Δ arms add signed Δ to the measured control to predict
 treated expression. Arms 2 and 5 preserve the measured treated encoder
@@ -20,10 +20,18 @@ and all three native KL terms. They use
 `0.1 K + MSE_X1 + 2 MSE_Δ + 1.75 L1_Δ`. The remaining arms use the
 Step 05.2 objective, `0.1 K + MSE_X1 + MSE_X2 + MSE_Δ + 1.75 L1_Δ`.
 
-The registered training seeds are 17, 42, 2026 and 43. Training seeds
-repeat fits within each held-out split. Twelve seed-42 fits from arms 0–3
-reuse accepted Step 06.2 evidence, with the three originals traced to the
-sealed Step 06.1 source.
+Arms 3, 4 and 5 apply `LayerNorm(100, elementwise_affine=False)` immediately
+after FiLM modulation and before the Gaussian projection. The conditioner
+starts with identity modulation. The normalization has no trainable parameters.
+The [first formal attempt](log/356-blocked.json) recorded eight overflows in
+the prediction KL during training and 52 exact independent replays.
+
+The registered training seeds are 17, 42, 2026 and 43. They repeat fits
+within each of the three held-out splits. The revised 72-coordinate matrix
+trains all 36 fits of arms 3–5 from scratch. Arms 0–2 reuse nine accepted
+seed-42 fits from Steps 06.1 and 06.2 and 27 independently replayed fits from
+the first Round 3 attempt. The source manifests and registered populations
+are checked before rescoring.
 
 ## Reproduce the bounded CUDA smoke
 
@@ -37,7 +45,7 @@ and two epochs. Each fold supplies its first 64 training, 24 validation and
 24 held-out registered conditions. Validation and test sampling seeds
 remain 22617 and 100042.
 
-The [smoke receipt](log/355-smoke.json) records exact independent replays
+The [original smoke receipt](log/355-smoke.json) records exact independent replays
 for all 24 fits, 216 held-out scores, 48 coordinate contrasts and
 12 contrast summaries. The [objective audit](log/355-objective-audit.json)
 recomputed 96 objective values and verified the seed behavior. The
@@ -45,6 +53,13 @@ recomputed 96 objective values and verified the seed behavior. The
 CSV-only renders of four smoke figures. The resource records cover
 the [matrix scope](log/355-resources.jsonl) and
 [coordinator samples](log/355-coordinator-resources.jsonl).
+
+Verify the original sealed smoke using `report_composition.py verify --smoke`
+at revision `7ce9e6259c6554072a7193b2830ce9fd03c54248` with the original
+matrix, matrix audit, report and publication paths. That revision contains
+the verifier files whose hashes are recorded in the receipt. The receipt
+records `29c7e1680e79b32d40de18950260ff57ad5615bd` as the matrix execution
+revision. The commands below run a fresh smoke using the current heads.
 
 ```bash
 set -e
@@ -69,3 +84,57 @@ for output in figures figures-replay; do
 done
 diff -r "$WORK/figures" "$WORK/figures-replay"
 ```
+
+## Reproduce the revised formal run
+
+Run from the materialized checkout in the `arc` environment. Use the
+[Step 04 capped runtime](../../04_tsg_axis/README.md#prepare-the-capped-runtime)
+and keep the coordinator sampler active for the entire matrix, including
+at least one sample before launch and one after completion. Keep the
+candidate and report scratch on the same filesystem.
+
+```bash
+set -e
+STEP="$PWD/stage2/06_tsg_shape/06.3_round3"
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/tsg-architecture-composition-formal.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+REVISION=$(git rev-parse HEAD)
+SAMPLES="$WORK/coordinator-resources.jsonl"
+
+python "$STEP/../06.1_round1/execution/sample_resources.py" --output "$SAMPLES" &
+SAMPLER_PID=$!
+stop_sampler() {
+  kill -TERM "$SAMPLER_PID" 2>/dev/null || true
+  wait "$SAMPLER_PID"
+}
+trap 'stop_sampler || true' EXIT
+while [ ! -s "$SAMPLES" ]; do
+  kill -0 "$SAMPLER_PID" 2>/dev/null || exit 1
+  sleep 1
+done
+capped_step04 python "$STEP/execution/matrix_composition.py" \
+  --output "$WORK/matrix" --logs "$WORK/matrix-audit"
+sleep 10
+stop_sampler
+trap - EXIT
+
+capped_step04 python "$STEP/execution/report_composition.py" build \
+  --matrix "$WORK/matrix" --matrix-audit "$WORK/matrix-audit" \
+  --report "$WORK/report" --publication "$WORK/publication" \
+  --activity "$WORK/report-audit" --scratch "$WORK/scratch" \
+  --coordinator-samples "$SAMPLES" --code-revision "$REVISION"
+```
+
+The matrix driver seals separate-process replay of the validation objective,
+validation predictions and held-out predictions. The report checks the 36
+retained source fits and independently rescores and renders the full study.
+If verified source products have moved, supply `--round-one-matrix`,
+`--round-two-matrix`, or `--prior-unnormalized` to the report command.
+
+To verify an installed release, run `report_composition.py verify` with
+`output/formal/{matrix,matrix-audit,report}` and the step directory as
+`--publication`. The installed verification reads the coordinator samples
+and execution revision from the publication. Use fresh `--activity` and
+`--scratch` directories below the checkout's `tmp/`.
