@@ -85,9 +85,26 @@ done
 diff -r "$WORK/figures" "$WORK/figures-replay"
 ```
 
+## Revised CUDA gate
+
+The [revised bounded study](log/356-normalized-smoke.json) passed all 24
+exact fit replays and independent rescoring. The
+[objective audit](log/356-normalized-smoke-objective-audit.json) checked
+96 weighted objective values and the
+[figure receipt](log/356-normalized-smoke-figure-render.json) records
+two matching CSV-only renders of four figures.
+
+The first revised formal scope started at 15:34:33 Asia/Shanghai on
+2026-11-26, before the revised bounded check. It paused at a sealed
+coordinate boundary after 13 fits. The bounded scope started at 15:42:41
+and its report passed at 15:48:43. Formal processing resumed at 15:48:47
+after checking the 13 retained registrations and replay manifests against
+their pre-gate hashes. Both formal scopes used identical matrix, runner and
+model source files.
+
 ## Reproduce the revised formal run
 
-Run from the materialized checkout in the `arc` environment. Use the
+Complete the bounded CUDA check above first. Run from the materialized checkout in the `arc` environment. Use the
 [Step 04 capped runtime](../../04_tsg_axis/README.md#prepare-the-capped-runtime)
 and keep the coordinator sampler active for the entire matrix, including
 at least one sample before launch and one after completion. Keep the
