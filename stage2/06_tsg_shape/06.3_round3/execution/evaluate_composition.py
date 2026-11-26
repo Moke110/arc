@@ -11,12 +11,11 @@ from composition_model import STEP, axis_run
 from composition_roster import CONTROL, HEAD_PARAMETERS, coordinates, objective_label
 from composition_scores import CONTRASTS, paired_report
 
-ROUND_TWO = STEP.with_name("06.2_round2")
 STAGE = STEP.parents[1]
 
 from evaluate_loss import axis_evaluate, score_run
 from matrix_composition import verify_matrix
-from prior_composition import load_reused
+from prior_composition import ROUND_ONE_MATRIX, ROUND_TWO_MATRIX, load_reused
 from run_composition import AXIS, DEFAULT_TRAINING
 from training_data import TENV_DEFAULT, open_tenv_training
 from tsg_axis.inputs import AxisInputs
@@ -164,8 +163,8 @@ def main():
     parser.add_argument("--matrix", type=Path, required=True)
     parser.add_argument("--training", type=Path, default=DEFAULT_TRAINING)
     parser.add_argument("--bandwidth-training", type=Path, default=TENV_DEFAULT)
-    parser.add_argument("--round-one-matrix", type=Path)
-    parser.add_argument("--round-two-matrix", type=Path)
+    parser.add_argument("--round-one-matrix", type=Path, default=ROUND_ONE_MATRIX)
+    parser.add_argument("--round-two-matrix", type=Path, default=ROUND_TWO_MATRIX)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--scratch", type=Path, required=True)
     parser.add_argument("--smoke", action="store_true")
