@@ -121,52 +121,61 @@ def invoke(logs, resources, coordinate, phase, args):
 def execute(root, logs, training, representations, source, smoke):
     if logs.is_relative_to(root) or root.is_relative_to(logs):
         raise ValueError("matrix and audit logs require separate directories")
-    logs.mkdir(parents=True, exist_ok=True)
-    scope = scope_directory()
     inputs = ["--training", str(training), "--representations", str(representations), "--source", str(source)]
-    with (ResourceMonitor(logs, scope) as resources, axis_run.publication_lock(root) as output):
-        output.mkdir(exist_ok=True)
-        paths = run_paths(output, smoke)
-        expected, evidence = preflight(training, representations, source, smoke)
-        preflight_path = output / "preflight.json"
-        enforce_record(preflight_path, evidence)
-        for (shape, fold, seed), path in paths.items():
-            if not (path / "registration.json").exists():
-                def register(staged):
-                    invoke(logs, resources, path.relative_to(output), "register",
-                           ["--shape", shape, "--fold", str(fold), "--seed", str(seed),
-                            "--output", str(staged), *inputs, *(["--smoke"] if smoke else [])])
-                register_coordinate(path, output, register)
-        registrations = check_registrations(paths, expected, smoke)
-        print(json.dumps({"phase": "registered", "coordinates": len(registrations)}), flush=True)
-
-        fits = []
-        for key, path in paths.items():
-            relative = path.relative_to(output)
-            for phase, receipt in PHASES.items():
-                if not (path / receipt).is_file():
-                    invoke(logs, resources, relative, phase, ["--output", str(path), *inputs])
-            resources.phase = "verify"
-            resources.check()
-            verified_key, (_, _, manifest, training_record, _) = read_run(path, smoke)
-            if verified_key != key or manifest["registration_sha256"] != registrations[key]:
-                raise ValueError(f"sealed run differs from the formal registration: {relative}")
-            fits.append({"path": relative.as_posix(), "shape": key[0], "fold": key[1], "seed": key[2],
-                         "registration_sha256": registrations[key],
-                         "run_manifest_sha256": axis_run.digest(path / "manifest.json"),
-                         "best_epoch": training_record["best_epoch"], "stopping_epoch": training_record["epochs"],
-                         "train_wall_seconds": training_record["wall_seconds"],
-                         "train_peak_rss_kib": training_record["peak_rss_kib"],
-                         "train_cuda_peak_allocated_bytes": training_record["cuda_peak_allocated_bytes"]})
-            print(json.dumps({"phase": "complete", "completed": len(fits), **fits[-1]}), flush=True)
-        resources.check()
-        resources.phase = "matrix-complete"
-        enforce_record(logs / f"scope-{time.time_ns()}.json",
-                       {"memory_peak_bytes": int((scope / "memory.peak").read_text())})
+    with axis_run.publication_lock(root) as output:
         manifest_path = output / "manifest.json"
-        enforce_record(manifest_path, {"schema": SCHEMA, "preflight_sha256": axis_run.digest(preflight_path),
-                                       "fits": fits})
-        return {"result": "PASS", "fits": len(fits), "manifest_sha256": axis_run.digest(manifest_path)}
+        preflight_path = output / "preflight.json"
+        if manifest_path.exists():
+            paths, fits = verify_matrix(output, smoke)
+            expected, evidence = preflight(training, representations, source, smoke)
+            if axis_run.read_json(preflight_path) != evidence:
+                raise ValueError("completed matrix differs from the current frozen inputs or runtime")
+            check_registrations(paths, expected, smoke)
+            return {"result": "PASS", "fits": len(fits), "manifest_sha256": axis_run.digest(manifest_path)}
+
+        scope = scope_directory()
+        logs.mkdir(parents=True, exist_ok=True)
+        with ResourceMonitor(logs, scope) as resources:
+            output.mkdir(exist_ok=True)
+            paths = run_paths(output, smoke)
+            expected, evidence = preflight(training, representations, source, smoke)
+            enforce_record(preflight_path, evidence)
+            for (shape, fold, seed), path in paths.items():
+                if not (path / "registration.json").exists():
+                    def register(staged):
+                        invoke(logs, resources, path.relative_to(output), "register",
+                               ["--shape", shape, "--fold", str(fold), "--seed", str(seed),
+                                "--output", str(staged), *inputs, *(["--smoke"] if smoke else [])])
+                    register_coordinate(path, output, register)
+            registrations = check_registrations(paths, expected, smoke)
+            print(json.dumps({"phase": "registered", "coordinates": len(registrations)}), flush=True)
+
+            fits = []
+            for key, path in paths.items():
+                relative = path.relative_to(output)
+                for phase, receipt in PHASES.items():
+                    if not (path / receipt).is_file():
+                        invoke(logs, resources, relative, phase, ["--output", str(path), *inputs])
+                resources.phase = "verify"
+                resources.check()
+                verified_key, (_, _, manifest, training_record, _) = read_run(path, smoke)
+                if verified_key != key or manifest["registration_sha256"] != registrations[key]:
+                    raise ValueError(f"sealed run differs from the formal registration: {relative}")
+                fits.append({"path": relative.as_posix(), "shape": key[0], "fold": key[1], "seed": key[2],
+                             "registration_sha256": registrations[key],
+                             "run_manifest_sha256": axis_run.digest(path / "manifest.json"),
+                             "best_epoch": training_record["best_epoch"], "stopping_epoch": training_record["epochs"],
+                             "train_wall_seconds": training_record["wall_seconds"],
+                             "train_peak_rss_kib": training_record["peak_rss_kib"],
+                             "train_cuda_peak_allocated_bytes": training_record["cuda_peak_allocated_bytes"]})
+                print(json.dumps({"phase": "complete", "completed": len(fits), **fits[-1]}), flush=True)
+            resources.check()
+            resources.phase = "matrix-complete"
+            enforce_record(logs / f"scope-{time.time_ns()}.json",
+                           {"memory_peak_bytes": int((scope / "memory.peak").read_text())})
+            enforce_record(manifest_path, {"schema": SCHEMA, "preflight_sha256": axis_run.digest(preflight_path),
+                                           "fits": fits})
+            return {"result": "PASS", "fits": len(fits), "manifest_sha256": axis_run.digest(manifest_path)}
 
 
 def main():
