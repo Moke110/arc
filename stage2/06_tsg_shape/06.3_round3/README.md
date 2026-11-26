@@ -33,6 +33,76 @@ seed-42 fits from Steps 06.1 and 06.2 and 27 independently replayed fits from
 the first Round 3 attempt. The source manifests and registered populations
 are checked before rescoring.
 
+## Formal results
+
+On the 12 paired fold and training-seed coordinates, `4_1+3` increased
+mean Δ PCC by 0.004550 and reduced mean Δ RMSE by 0.009452 relative to
+`0_original`. Relative to its signed Δ readout alone, its mean Δ PCC was
+0.000485 lower and its mean Δ RMSE was 0.000973 higher. `5_2+3` reduced
+mean Δ RMSE relative to the original and had lower mean Δ PCC. Both
+combinations increased mean Δ PCC and reduced mean Δ RMSE relative to
+normalized FiLM alone.
+
+Each score below gives equal weight to the 12 fold and training-seed
+coordinates. All 12 scores and differences were defined for each metric.
+
+| Architecture | Δ PCC | Δ RMSE | JAC_top200 | JAC_pos100 | JAC_neg100 | Δ Spearman | Δ E-distance | Δ MMD | Δ R² |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `0_original` | 0.424154 | 0.251615 | 0.149628 | 0.126681 | 0.180589 | 0.407390 | 0.026717 | 0.158379 | -0.054433 |
+| `1_output-delta` | 0.429189 | 0.241190 | 0.162041 | 0.145929 | 0.185989 | 0.406710 | 0.026999 | 0.139171 | 0.095294 |
+| `2_output-delta-no-x2` | 0.421896 | 0.241106 | 0.160724 | 0.145181 | 0.184052 | 0.398976 | 0.029478 | 0.141678 | 0.092696 |
+| `3_z-interact_FiLM` | 0.396089 | 0.259210 | 0.134883 | 0.123063 | 0.153621 | 0.383520 | 0.022962 | 0.148617 | -0.139372 |
+| `4_1+3` | 0.428704 | 0.242163 | 0.163303 | 0.150076 | 0.183734 | 0.406540 | 0.024876 | 0.135851 | 0.084055 |
+| `5_2+3` | 0.400866 | 0.243244 | 0.150913 | 0.138536 | 0.170243 | 0.375642 | 0.027724 | 0.137394 | 0.079498 |
+
+The signed differences below subtract the original fit on the same fold
+and training seed. Values are mean ± sample SD.
+
+| Architecture | Paired Δ PCC difference | Paired Δ RMSE difference |
+| --- | --- | --- |
+| `0_original` | +0.000000 ± 0.000000 | +0.000000 ± 0.000000 |
+| `1_output-delta` | +0.005035 ± 0.016649 | -0.010425 ± 0.004631 |
+| `2_output-delta-no-x2` | -0.002258 ± 0.018312 | -0.010509 ± 0.004267 |
+| `3_z-interact_FiLM` | -0.028065 ± 0.017481 | +0.007595 ± 0.005446 |
+| `4_1+3` | +0.004550 ± 0.013717 | -0.009452 ± 0.004250 |
+| `5_2+3` | -0.023288 ± 0.016215 | -0.008371 ± 0.004231 |
+
+The component and interaction contrasts use the same paired coordinates.
+Higher Δ PCC and lower Δ RMSE are favorable. The last two rows describe
+departures from additive differences. The four seeds repeat training within
+the same three held-out folds.
+
+| Contrast | Δ PCC difference | Δ RMSE difference |
+| --- | --- | --- |
+| 4−1 | -0.000485 ± 0.019832 | +0.000973 ± 0.002256 |
+| 4−3 | +0.032615 ± 0.019659 | -0.017047 ± 0.003908 |
+| 5−2 | -0.021030 ± 0.021985 | +0.002138 ± 0.002250 |
+| 5−3 | +0.004777 ± 0.018678 | -0.015966 ± 0.003005 |
+| 4−1−3+0 | +0.027580 ± 0.032154 | -0.006622 ± 0.006550 |
+| 5−2−3+0 | +0.007035 ± 0.030273 | -0.005457 ± 0.005543 |
+
+[Held-out scores](figure/delta-metrics.png) ·
+[Paired differences](figure/delta-metrics-paired-difference.png) ·
+[Primary contrasts](figure/primary-contrasts.png) ·
+[Learning curves](figure/learning-curves.png) ·
+[Fold and seed scores](figure/data/fold-scores.csv) ·
+[Aggregates and sample SD](figure/data/delta-metrics.csv) ·
+[Coordinate contrasts](figure/data/primary-contrasts.csv) ·
+[Contrast summaries](figure/data/primary-contrast-summary.csv) ·
+[Epoch objectives](figure/data/epoch-objectives.csv)
+
+All 36 normalized fits passed exact independent validation-objective,
+validation-prediction, and held-out prediction replay. They include all
+eight coordinates that failed in the first attempt. The 36 reused fits
+passed source and artifact verification. The rescoring reproduced all
+81 earlier seed-42 metric values and eligibility records for arms 0–2.
+The [formal receipt](log/356-formal.json) records the independent rescore
+and the [fit ledger](log/runs.csv) records the source of each fit. The
+[table audit](log/356-formal-table-audit.json) independently recomputed
+the paired differences, means, sample SDs, and component contrasts.
+The [matrix samples](log/356-resources.jsonl) and
+[coordinator samples](log/356-coordinator-resources.jsonl) record resource use.
+
 ## Reproduce the bounded CUDA smoke
 
 Run from the materialized checkout in the `arc` environment using the
@@ -98,7 +168,7 @@ The first revised formal scope started at 15:34:33 Asia/Shanghai on
 2026-11-26, before the revised bounded check. It paused at a sealed
 coordinate boundary after 13 fits. The bounded scope started at 15:42:41
 and its report passed at 15:48:43. Formal processing resumed at 15:48:47
-after checking the 13 retained registrations and replay manifests against
+after checking the 13 sealed registrations and replay manifests against
 their pre-gate hashes. Both formal scopes used identical matrix, runner and
 model source files.
 
@@ -155,3 +225,22 @@ To verify an installed release, run `report_composition.py verify` with
 `--publication`. The installed verification reads the coordinator samples
 and execution revision from the publication. Use fresh `--activity` and
 `--scratch` directories below the checkout's `tmp/`.
+
+## Replay the published figures
+
+The renderer uses only the [plot CSVs](figure/data/). The
+[figure receipt](log/figure-render.json) records their hashes and the
+software versions for byte-identical replay.
+
+```bash
+STEP="$PWD/stage2/06_tsg_shape/06.3_round3"
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/tsg-architecture-composition-figures.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+python "$STEP/figure/script/render_composition.py" \
+  --data "$STEP/figure/data" --output "$WORK/figures"
+for figure in delta-metrics.png delta-metrics-paired-difference.png learning-curves.png primary-contrasts.png; do
+  cmp "$STEP/figure/$figure" "$WORK/figures/$figure"
+done
+```

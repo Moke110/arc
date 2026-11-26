@@ -20,6 +20,7 @@ REPORTS = {
     "04_tsg_axis": ("342-figure-render.json", (("figure", "figure/script/render.py"),)),
     "06_tsg_shape/06.1_round1": ("figure-render.json", (("figure", "figure/script/render_shape.py"),)),
     "06_tsg_shape/06.2_round2": ("figure-render.json", (("figure", "figure/script/render_architecture.py"),)),
+    "06_tsg_shape/06.3_round3": ("figure-render.json", (("figure", "figure/script/render_composition.py"),)),
 }
 
 
@@ -98,8 +99,8 @@ def main():
     env = {**os.environ, "MPLCONFIGDIR": str(work / "matplotlib"), "TMPDIR": str(work / "scratch")}
     count = sum(verify_report(STAGE / step, receipt, renderers, work / step, env)
                 for step, (receipt, renderers) in REPORTS.items())
-    if count != 13:
-        raise ValueError(f"expected 13 Step 02, Step 04 and Step 06 figures, verified {count}")
+    if count != 17:
+        raise ValueError(f"expected 17 Step 02, Step 04 and Step 06 figures, verified {count}")
     loss_verifier = STAGE / "05_tsg_loss/figure/script/verify_figures.py"
     subprocess.run([sys.executable, str(loss_verifier), "--work", str(work / "loss")],
                    cwd=work, env=env, check=True)
@@ -115,7 +116,7 @@ def main():
         check_layout(directory)
     for directory in STAGE.glob("*/*/figure"):
         check_layout(directory)
-    print("Verified all 29 current Stage 2 PNGs")
+    print("Verified all 33 current Stage 2 PNGs")
 
 
 if __name__ == "__main__":

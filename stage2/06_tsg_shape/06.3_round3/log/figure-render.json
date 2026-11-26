@@ -1,0 +1,33 @@
+{
+  "csv_files_sha256": {
+    "figure/data/delta-metrics.csv": "edab0ded7e0fa7814c0764b093b9c2d18cfc198804bc800a1592601a609b39f1",
+    "figure/data/epoch-objectives.csv": "07839fec3a2faa46c8457f1a2b53734eacae0f4167d2e742c1f46851107d9c10",
+    "figure/data/fold-scores.csv": "be4395028869b31798853292adf8a0d290cfb3fe5b3eaf49714b31b014ed7c3a",
+    "figure/data/primary-contrast-summary.csv": "c885ee8f6d11e8031e8ca6dc6dcf2c193438a605ebfee4a1ef75f89a20a0010e",
+    "figure/data/primary-contrasts.csv": "b68cc7ab954c0beef66b5402eaa1051506cc9cbdbf374c97da011b4552d69e40"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13"
+  },
+  "independent_renders": 2,
+  "png_files_sha256": {
+    "figure/delta-metrics-paired-difference.png": "dde40f6b60f1b23db2d06ac198239a738664db7f7bdb6eaf2efefc1cc9e2a356",
+    "figure/delta-metrics.png": "801d30eea23fb5fc854c033b4808258d069cfd67d66361fb3fc5791ce85cff0c",
+    "figure/learning-curves.png": "cac8b1043f8904ba14b332730f607c11bf539ff85a41f70e0cfcb236e4a3e45f",
+    "figure/primary-contrasts.png": "ebed0b3d0723f35068254b60bae08e7b7e8798d1b0b24fce2c0270edbafcc5d3"
+  },
+  "renderer_files_sha256": {
+    "06_tsg_shape/06.3_round3/execution/composition_roster.py": "912f3bac5092093b5d3e5da91119ea9aafe7b5c3dc76f89156d9df6a39c5ed62",
+    "06_tsg_shape/06.3_round3/execution/composition_scores.py": "24c586e54d62d6104b0d252d2fba60859e02ee5d2ff8c36916fe9d7162003a81",
+    "06_tsg_shape/06.3_round3/figure/script/render_composition.py": "09b5a5f067e281a213f3fbac18c099c5180f0d86c378bf4ad5dba3361b90c789",
+    "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
+    "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
+  },
+  "schema": "stage2-figure-render-v1",
+  "scientific_receipt_sha256": "cc53a143c5c5a121ef27050e5bc6122469f2ea73f0ce83b332e00ffd26a5ebb2",
+  "status": "PASS",
+  "step": "06.3_round3"
+}
