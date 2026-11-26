@@ -65,7 +65,7 @@ for old in 01_bases 01_corpus 03_tsg_dose 04_tsg_transfer 02_models_tenv 02_data
   printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
   if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
 done
-printf 'p = "stage2/01_data_raw/output/x"\nq = "stage2/04_tsg_axis/output/x"\nr = "stage2/03_data_train/03.7_tenv_denoise-5k/output/x"\ns = "stage2/05_tsg_loss/05.1_loss_metrics/output/x"\nt = "stage2/05_tsg_loss/05.2_mse_l1/output/x"\nu = "stage2/05_tsg_loss/05.3_mse-l1_mse-x/output/x"\nv = "stage2/05_tsg_loss/05.4_mse-l1_pcc/output/x"\nw = "stage2/05_tsg_loss/05.5_mse-l1_cos/output/x"\ny = "stage2/06_tsg_shape/06.1_round1/output/x"\nz = "stage2/06_tsg_shape/06.2_round2/output/x"\naa = "stage2/06_tsg_shape/06.3_round3/output/x"\n' >"$tmp/current.py"
+printf 'p = "stage2/01_data_raw/output/x"\nq = "stage2/04_tsg_axis/output/x"\nr = "stage2/03_data_train/03.7_tenv_denoise-5k/output/x"\ns = "stage2/05_tsg_loss/05.1_loss_metrics/output/x"\nt = "stage2/05_tsg_loss/05.2_mse_l1/output/x"\nu = "stage2/05_tsg_loss/05.3_mse-l1_mse-x/output/x"\nv = "stage2/05_tsg_loss/05.4_mse-l1_pcc/output/x"\nw = "stage2/05_tsg_loss/05.5_mse-l1_cos/output/x"\ny = "stage2/06_tsg_shape/06.1_round1/output/x"\nz = "stage2/06_tsg_shape/06.2_round2/output/x"\naa = "stage2/06_tsg_shape/06.3_round3/output/x"\nab = "stage2/06_tsg_shape/06.4_round4/output/x"\n' >"$tmp/current.py"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "active roots/external source must pass"
 printf 'p = "stage2/05_tsg_loss/output/x"\n' >"$tmp/old-loss.py"
@@ -88,7 +88,7 @@ run_root() {
   STAGE2_PATH_AUDIT_ROOT="$1" STAGE2_PATH_AUDIT_FILES="$2" bash "$audit"
 }
 fixture_root="$tmp/layout/stage2"
-for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} 06_tsg_shape 06_tsg_shape/{06.1_round1,06.2_round2,06.3_round3}; do
+for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} 06_tsg_shape 06_tsg_shape/{06.1_round1,06.2_round2,06.3_round3,06.4_round4}; do
   mkdir -p "$fixture_root/$step"
   printf '%s\n' "$step" >"$fixture_root/$step/AGENTS.md"
   printf '%s\n' "$step" >"$fixture_root/$step/README.md"
@@ -132,7 +132,7 @@ for substep in 05.1_loss_metrics 05.2_mse_l1 05.3_mse-l1_mse-x 05.4_mse-l1_pcc 0
     || fail "the missing loss substep routing file must be named in the failure"
   mv "$tmp/substep-README.off" "$fixture_root/05_tsg_loss/$substep/README.md"
 done
-for round in 06.1_round1 06.2_round2 06.3_round3; do
+for round in 06.1_round1 06.2_round2 06.3_round3 06.4_round4; do
   for routing in AGENTS.md README.md; do
     mv "$fixture_root/06_tsg_shape/$round/$routing" "$tmp/shape-routing.off"
     if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
