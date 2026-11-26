@@ -1,0 +1,28 @@
+{
+  "csv_files_sha256": {
+    "figure/data/delta-metrics.csv": "41ce22fd4607374102ad8510ddff6897a8eff367b3710e60449ad92dec87ab62",
+    "figure/data/epoch-objectives.csv": "9d54edc7a8bf5a93e8753e1654e564de917ce88d9e3d3bad906a68ce030d5bd6",
+    "figure/data/fold-scores.csv": "5fd641b3a0e31230fc355602ebe135f6e09855625cf58467e2ec0fb249c57363"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "python": "3.13.13"
+  },
+  "independent_renders": 2,
+  "png_files_sha256": {
+    "figure/delta-metrics-paired-difference.png": "20d875947df65b5a2eb89a927891e3dc6c113ec66f3f1cbfcb0e7f375bf48f32",
+    "figure/delta-metrics.png": "f522ee5889a52673df9a539cdfe2e074823ef857347d1970766167a5d6f387fe",
+    "figure/learning-curves.png": "a42fef8da83146871c5a950751ef4ca4f77a9b758e1a969af00b3d67d5a22083"
+  },
+  "renderer_files_sha256": {
+    "06_tsg_shape/06.2_round2/execution/architecture_roster.py": "0793ebcbd741ba273a2d22333855e805378a89585a457d7c6ce52235799c9194",
+    "06_tsg_shape/06.2_round2/figure/script/render_architecture.py": "63c1ab9684e9bfa963dccf42d825b80255bcfeee590d07051f618e2f847d3d61",
+    "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
+    "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
+  },
+  "schema": "stage2-figure-render-v1",
+  "scientific_receipt_sha256": "aa66defedbbb127f41d3db88a859a469fd53792e035941732d02d8b38ae0b872",
+  "status": "PASS",
+  "step": "06.2_round2"
+}

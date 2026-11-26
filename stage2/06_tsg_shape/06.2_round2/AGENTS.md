@@ -10,3 +10,7 @@ fixed. Register each coordinate before training. Train one memory-capped CUDA
 coordinate at a time and run prediction and replay in fresh processes.
 Record WSL RAM, available host RAM and GPU use at ten-second intervals.
 Supply the renderer with verified CSVs.
+
+- Before changing the architecture runtime, reproduce the [bounded CUDA smoke](README.md#reproduce-the-bounded-cuda-smoke).
+- Before publishing, verify the [formal matrix and three sealed originals](README.md#reproduce-the-formal-matrix).
+- To redraw published figures, use the [plot CSVs and renderer](README.md#replay-the-published-figures).

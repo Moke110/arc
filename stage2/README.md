@@ -36,10 +36,11 @@ fell to 0.249215, compared with 0.406610 and 0.259575 at weight zero.
 | [05.4 Delta PCC](05_tsg_loss/05.4_mse-l1_pcc/README.md) | Adds a bounded Δ PCC loss to the selected objective. Weight zero led Δ PCC and Δ RMSE. |
 | [05.5 Delta cosine](05_tsg_loss/05.5_mse-l1_cos/README.md) | Adds a bounded Δ cosine loss to the selected objective. Weight 0.3 increased JAC_neg100 from 0.183801 to 0.185508. Weight zero led Δ PCC and Δ RMSE. |
 | [06.1 Expression shape](06_tsg_shape/06.1_round1/README.md#formal-results) | Compares ten encoder, decoder and latent architectures over three frozen cold-drug folds. Six new fits extend the encoder-width series, and the accepted original fit on each fold remains the paired reference for nine held-out metrics. |
+| [06.2 Prediction architecture](06_tsg_shape/06.2_round2/README.md#formal-results) | Compares eight prediction architectures on the three frozen folds. The three accepted Step 06.1 original fits supply the paired references for 21 new fits. |
 
 ## Verify the current figures
 
-All 25 active report figures and the palette preview use the [Stage 2 palette and drawing API](util/README.md#plotting).
+All 28 active report figures and the palette preview use the [Stage 2 palette and drawing API](util/README.md#plotting).
 The verifier checks the current render receipts and reproduces each PNG
 twice from its published plot data using the `arc` rendering environment.
 For byte-identical replay, use the exact Python, Matplotlib, NumPy and,
@@ -55,6 +56,7 @@ python stage2/util/figure/script/verify_report_figures.py --work "$WORK/replay"
 [Step 04 receipt](04_tsg_axis/log/342-figure-render.json) ·
 [Step 05 receipt](05_tsg_loss/log/343-figure-render.json) ·
 [Step 06.1 receipt](06_tsg_shape/06.1_round1/log/figure-render.json) ·
+[Step 06.2 receipt](06_tsg_shape/06.2_round2/log/figure-render.json) ·
 [ADR 0093](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
 
 ## Local history

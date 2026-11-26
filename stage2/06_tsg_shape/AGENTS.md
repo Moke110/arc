@@ -5,3 +5,5 @@ Read the [Stage 2 routing](../AGENTS.md), [README](README.md), ADRs 0062,
 
 [Step 06.1](06.1_round1/AGENTS.md) owns the first comparison of expression
 encoder width, latent width, and encoder and decoder depth.
+
+[Step 06.2](06.2_round2/AGENTS.md) owns the prediction architecture comparison.
