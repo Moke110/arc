@@ -775,7 +775,8 @@ The Stage 2 series comparing how TranSiGen architectures affect held-out
 Delta prediction in tenv. Round one varies expression widths and depths.
 Round two varies prediction readout, conditioning, encoder sharing, and
 latent residual parameterization. Round three combines the two direct Delta
-readouts with FiLM conditioning.
+readouts with FiLM conditioning. Round four compares measured encoder targets
+and signed Delta decoder sharing.
 
 **Step 06.1 original architecture** (`original`):
 The TranSiGen expression shape with one 1,200-unit encoder hidden layer,
@@ -790,9 +791,17 @@ conditioning heads, shared expression encoding, and latent residuals.
 The matched-control tenv comparison of two direct Delta readouts, FiLM
 conditioning, and each readout combined with FiLM across repeated training seeds.
 
+**Step 06.4 measured encoder target and readout comparison** (`06.4_round4`):
+The matched-control tenv comparison of measured-treated, control-only, and
+measured-Delta encoding and of shared and independent signed Delta readouts.
+
+**Measured Delta latent** (`ZΔ`):
+The stochastic latent inferred from the measured signed difference between
+treated expression and its matched control.
+
 **TranSiGen expression latent dimension**:
-The shared dimension of the control, measured treated, and predicted treated
-expression latent vectors.
+The shared dimension of the control, measured treated, measured Delta, and
+predicted latent vectors in the arms that use them.
 
 **Historical single-dose tenv comparison** (`04_model_view`):
 The archived Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result.
