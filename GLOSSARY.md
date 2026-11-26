@@ -771,14 +771,19 @@ The Stage 2 studies of the effect of adding bounded Pearson correlation or cosin
 The coefficient of the additional bounded dissimilarity between predicted and measured matched-control Delta vectors.
 
 **TranSiGen shape comparison** (`06_tsg_shape`):
-The Stage 2 study of how expression encoder width, expression latent
-dimension, and expression encoder or decoder depth affect held-out Delta
-prediction under a fixed training objective.
+The Stage 2 series comparing how TranSiGen architectures affect held-out
+Delta prediction in tenv. Round one varies expression widths and depths.
+Round two varies prediction readout, conditioning, encoder sharing, and
+latent residual parameterization.
 
 **Step 06.1 original architecture** (`original`):
 The TranSiGen expression shape with one 1,200-unit encoder hidden layer,
 one 800-unit decoder hidden layer, and latent dimension 100. Its held-out
 score is the reference for each paired comparison on the same fold.
+
+**Step 06.2 prediction architecture comparison** (`06.2_round2`):
+The matched-control tenv comparison of direct Delta readouts, latent
+conditioning heads, shared expression encoding, and latent residuals.
 
 **TranSiGen expression latent dimension**:
 The shared dimension of the control, measured treated, and predicted treated
