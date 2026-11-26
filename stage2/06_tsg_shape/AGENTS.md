@@ -7,3 +7,6 @@ Read the [Stage 2 routing](../AGENTS.md), [README](README.md), ADRs 0062,
 encoder width, latent width, and encoder and decoder depth.
 
 [Step 06.2](06.2_round2/AGENTS.md) owns the prediction architecture comparison.
+
+[Step 06.3](06.3_round3/AGENTS.md) owns the six-arm comparison of signed
+Δ readouts, FiLM and their combinations across four training seeds.
