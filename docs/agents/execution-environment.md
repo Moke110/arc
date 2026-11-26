@@ -1,6 +1,6 @@
 # Execution environment (WSL2)
 
-Measured inside the development WSL2 distro on 2026-11-02 (Asia/Shanghai). Every agent that
+Measured inside the development WSL2 distro on 2026-11-26 (Asia/Shanghai). Every agent that
 loads data, trains, or runs the test suite must respect this envelope: one VM with one shared
 memory pool backs every worktree and subagent, so one unconstrained process can take the whole
 session — and every other agent's work — down with it. This file records the measured limits
@@ -11,16 +11,14 @@ and the rules that go with them; re-measure after any WSL restart and update the
 | Resource | Measured value | Notes |
 |---|---|---|
 | CPU in WSL | 8 vCPU | `nproc`; `.wslconfig` sets `processors=8` |
-| RAM, current boot | **47.0 GiB** | `MemTotal: 49,333,916 kB`; WSL user cgroup `memory.max=50,484,375,552` (~47.0 GiB); `hv_balloon: Max. dynamic memory size: 49152 MB` |
-| RAM, earlier 2026-11-02 boots | 31.3 GiB | the pre-14:35 default (50% of host); the 12:33 crash happened in this envelope |
-| Swap | 64 GiB | `swapFile=F:\linux-temp\swap.vhdx` — on a Windows drive, so heavy swap thrash is slow |
-| GPU | NVIDIA RTX 4070 Ti SUPER, 16,376 MiB | ~1.1 GiB already in use at idle |
-| Disk | 1.2 TB, **207 GB free** | ext4 on `/dev/sdd`, 82% used |
-| Windows host | 63.8 GiB RAM total | WSL can never exceed the host, whatever `.wslconfig` says |
+| RAM, 2026-11-22 01:39 boot | **23.47 GiB** | `MemTotal: 24,612,504 KiB`. Use live `MemAvailable` for scheduling. |
+| Swap | 64 GiB | `SwapTotal: 67,108,864 KiB`. Heavy swap activity can slow the VM. |
+| GPU | NVIDIA GeForce RTX 4070 Ti SUPER, 16,376 MiB | 2,446 MiB used at measurement time. Query GPU usage before training. |
+| Disk | 1.2 TiB, **66 GiB free** | ext4 on `/dev/sdd`, 95% used at measurement time. |
+| Windows host | 63.77 GiB RAM total | 25.55 GiB available at measurement time. |
 
-The 48 GB setting became active on the 14:35 boot after a clean `wsl --shutdown` (verified by
-`hv_balloon: Max. dynamic memory size: 49152 MB` and `free -h`). Always budget against
-`free -h`; `.wslconfig` changes do nothing until the distro is restarted.
+Use live WSL and Windows host memory readings when budgeting jobs. Changes to
+`.wslconfig` take effect after WSL restarts.
 
 ## Incident: 2026-11-02 WSL crash during `/implement-spec`
 
@@ -33,16 +31,17 @@ peak is page cache charged to the scope rather than anonymous memory. No `oom-ki
 was captured: the VM died rather than killing a userspace process. The host survived.
 
 `.wslconfig` was then edited to give WSL 48 GB and a 64 GB swap file; the distro was restarted
-cleanly at 14:31 and again at 14:35 (systemd `exit.target` in the journal, no crash), and the
-48 GB envelope took effect. Boot ends after 13:53 are shutdowns, not crashes — only the
-12:33:50 boot end lacks a shutdown sequence.
+cleanly at 14:31 and again at 14:35 (systemd `exit.target` in the journal, no crash). The
+12:33 crash occurred with 31.3 GiB of WSL RAM. The 14:35 boot reported 47.0 GiB of WSL RAM
+and `hv_balloon: Max. dynamic memory size: 49152 MB`. The 12:33:50 boot end is the only
+one in this incident without a shutdown sequence.
 
 ## Rules
 
-1. **Two heavy jobs repo-wide, not per agent.** All worktrees and subagents share this VM.
-   At most two jobs that each load datasets or train may run at once; keep their combined
-   peak RSS under ~28 GiB (the VM is 47 GiB, so leave headroom for page cache and the harness).
-   When a job is heavy and long (a training ticket), run it alone.
+1. **At most two heavy jobs repo-wide.** All worktrees and subagents share this VM.
+   Compare the jobs' measured memory peaks with available WSL and host RAM, leaving
+   headroom for page cache and the agent runtime. Use one heavy job if the peaks
+   are unknown or there is insufficient headroom for both. Run long training jobs alone.
 2. **Cap every heavy process.** Preferred: `systemd-run --user --scope -p MemoryMax=10G
    -p MemorySwapMax=8G -- <cmd>`; use `MemoryMax=18G` for a single formal pretrain (measured
    15.1 GiB) and `MemoryMax=12G` for the 06.3/06.4 data jobs. Portable fallback:
@@ -68,12 +67,15 @@ cleanly at 14:31 and again at 14:35 (systemd `exit.target` in the journal, no cr
 
 ```bash
 wsl.exe --shutdown          # from Windows, not from inside the distro
-free -h                     # expect ~47 GiB; if not, the .wslconfig did not apply
+free -h
+rg '^btime' /proc/stat
 nvidia-smi --query-gpu=memory.total,memory.used --format=csv
+df -h /home/chang/arc
 ```
 
-The 14:35 restart reports 47.0 GiB and `Max. dynamic memory size: 49152 MB`. If a later restart
-still reports ~32 GiB, check `.wslconfig` for a UTF-8 BOM or a misspelled section.
+Re-measure WSL RAM, swap, GPU, disk, and Windows host RAM. Update the table
+for the new boot. If the RAM differs from the intended `.wslconfig` limit,
+check that WSL restarted and that the file has the expected section and encoding.
 
 ## Known heavy jobs (measured)
 
@@ -84,7 +86,7 @@ still reports ~32 GiB, check `.wslconfig` for a UTF-8 BOM or a misspelled sectio
 | `script/verify_all.sh` (27 offline verifiers, 52 GB hashed) | 9.7 GiB charged, `4min 33s` CPU | mostly page cache; run it when no heavy job is running, not concurrently |
 | `06.4_pipeline` real-data smoke (ticket #4 Phase B) | measure per run and record here | the Tahoe view is 16.2 GB; the loader must be header/memmap-based |
 | `06.8_baselines --all` on the synthetic fixture (post-fix) | 1.2-1.7 GiB | dominated by imports and the shared evaluator, not the data |
-| `06.7_cm_tahoe` bounded wrapper profile (1 CM unit, 2 epochs, 2 workers) | **2,293 MiB host process tree**, 1,583 MiB scope cgroup, 1,325 MiB run manifest | ran as the second heavy job beside the #5 pretrain, never near the 12 GiB cap; a 45-unit matrix is expected to match #6's ~3.0 GiB |
+| `06.7_cm_tahoe` bounded wrapper profile (1 CM unit, 2 epochs, 2 workers) | **2,293 MiB host process tree**, 1,583 MiB scope cgroup, 1,325 MiB run manifest | historical measurement beside the #5 pretrain; a 45-unit matrix is expected to match #6's ~3.0 GiB |
 | full test suites of the 06 substeps | < 1 GiB each | two suites may run together, a third heavy job may not |
 
 The pretrain number is the reason the training tickets (#5–#7) are serialised: two
