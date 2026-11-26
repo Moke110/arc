@@ -49,14 +49,19 @@ def audit_resources(activity, coordinator, fresh, *, bracket=False):
             records = sorted(directory.glob(f"{phase}-*.resources"))
             if not records:
                 raise ValueError(f"missing bounded {phase} measurement for {(arm, fold, seed)}")
+            successful = False
             for record in records:
                 output = record.with_suffix(".log")
-                measure = next((line.rsplit(": ", 1)[1] for line in record.read_text().splitlines()
+                lines = record.read_text().splitlines()
+                successful |= any(line.strip() == "Exit status: 0" for line in lines)
+                measure = next((line.rsplit(": ", 1)[1] for line in lines
                                 if "Maximum resident set size (kbytes):" in line), None)
                 if measure is None or not output.is_file():
                     raise ValueError(f"incomplete phase resource measurement at {record}")
                 files.extend((record, output))
                 peaks[phase] = max(peaks.get(phase, 0), int(measure))
+            if not successful:
+                raise ValueError(f"no successful {phase} recorded for {(arm, fold, seed)}")
     return selected, {
         "status": "PASS", "matrix": gaps_summary(matrix), "coordinator": coverage_gaps,
         "scope_memory_max_bytes": MEMORY_CAP, "scope_swap_max_bytes": SWAP_CAP,

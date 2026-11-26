@@ -47,7 +47,7 @@ exceeded the absolute mean difference on both metrics.
 | [06.3 Architecture combinations](06_tsg_shape/06.3_round3/README.md#formal-results) | Compares signed Δ readouts and normalized FiLM across three folds and four seeds. The independent signed Δ readout improved both primary means relative to the original. Adding normalized FiLM gave a lower mean Δ PCC and higher mean Δ RMSE than that readout alone. Step 06.4 retained the original Gaussian prediction head. |
 | [06.4 Measured encoder targets](06_tsg_shape/06.4_round4/README.md#formal-results) | Compares measured treated-expression and signed Δ encoders and signed Δ decoder sharing across three folds and three seeds. The shared signed Δ decoder had the lowest Δ RMSE, and the independent decoder had the highest Δ PCC. CarPS-VAE selects the shared decoder as recorded in ADR 0099. |
 | [07 CarPS-VAE alpha](07_cpsv_alpha/README.md) | Freezes the shared signed Δ model and KPGT default. All nine selected checkpoints exactly replayed the validation objective and predictions and held-out predictions. |
-| [08 Chemical representation comparison](08_cpsv_chem-emb/README.md) | All seven frozen representations passed the bounded CUDA gate, with matched folds, seeds and conditions for the formal comparison. |
+| [08 Chemical representation comparison](08_cpsv_chem-emb/README.md) | 63 matched fold and seed coordinates across seven representations. UniMol led Δ PCC and UniMol led Δ RMSE. KPGT remains the working default. |
 
 ## Verify the current figures
 

@@ -257,6 +257,14 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 /stage2_CarPS-VAE/07_cpsv_alpha/output/api/*
 !/stage2_CarPS-VAE/07_cpsv_alpha/output/api/carps_vae_alpha.py
 
+# Stage 2 Step 08 formal report tables
+!/stage2_CarPS-VAE/08_cpsv_chem-emb/figure/data/fold-scores.csv
+!/stage2_CarPS-VAE/08_cpsv_chem-emb/figure/data/paired-by-fold.csv
+!/stage2_CarPS-VAE/08_cpsv_chem-emb/figure/data/paired-summary.csv
+!/stage2_CarPS-VAE/08_cpsv_chem-emb/figure/data/epoch-objectives.csv
+!/stage2_CarPS-VAE/08_cpsv_chem-emb/log/bandwidths.csv
+!/stage2_CarPS-VAE/08_cpsv_chem-emb/log/runs.csv
+
 # HVG-DEG axes and compact selection evidence. Keep candidates local.
 !/stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/output/
 /stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/output/*

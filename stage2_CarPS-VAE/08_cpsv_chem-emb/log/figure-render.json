@@ -1,0 +1,25 @@
+{
+  "csv_files_sha256": {
+    "figure/data/fold-scores.csv": "31d3aa314ac3d2e2c7ebf65a2dd2cf0aa198c71fbc940d3c786ca91ac3822d42"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13"
+  },
+  "independent_renders": 2,
+  "png_files_sha256": {
+    "figure/paired-primary.png": "76c3eb1b2eecbb2bcd80d7b875d3a2df3d4a39acd6bb1e458d9ce60a11309798",
+    "figure/primary-scores.png": "61d2a8727bd822f2c9c07e7b6ccdb90553eefc7eeed9e0f80483167aae4a05ab"
+  },
+  "renderer_files_sha256": {
+    "08_cpsv_chem-emb/figure/script/render_chem.py": "8835bf8dfc40b342d4f17b5f4af663a0f3a3bac6a4f8a509b74ce5729700d53d",
+    "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
+    "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
+  },
+  "schema": "stage2-figure-render-v1",
+  "scientific_receipt_sha256": "56b8983678f72adc2deb9a34613561428b3bd77507f44b0ae091b1bc7d40a6f2",
+  "status": "PASS",
+  "step": "08_cpsv_chem-emb"
+}

@@ -34,3 +34,76 @@ cmp "$WORK/alpha-before.json" "$WORK/alpha-after.json"
 ```
 
 The matrix, phase and scoring commands accept alternate paths for the same frozen training release, vector manifest and author source. Scoring also accepts the frozen HVG-DEG 5k bandwidth training release path. The registration captures content identities and ordered partitions so accepted runs can be replayed after moving the checkout.
+
+## Formal results
+
+The accepted matrix covers all 63 coordinates. It reuses 9 verified
+KPGT fits from Step 06.4 and exactly replays 54 fresh fits.
+Each point is one cold-drug fold and training-seed coordinate, and each mean gives equal
+weight to the nine coordinates. Uncertainty is sample SD across the repeated coordinates.
+
+| Arm | Δ PCC | Δ RMSE | Paired Δ PCC vs KPGT | Paired Δ RMSE vs KPGT |
+| --- | ---: | ---: | ---: | ---: |
+| ECFP4C | 0.424806 ± 0.014891 | 0.242734 ± 0.001844 | -0.004024 ± 0.019202 | +0.001982 ± 0.003108 |
+| ECFP6C | 0.421715 ± 0.016410 | 0.242380 ± 0.001609 | -0.007115 ± 0.015305 | +0.001628 ± 0.001952 |
+| FCFP4C | 0.428691 ± 0.024270 | 0.240448 ± 0.001044 | -0.000139 ± 0.019621 | -0.000304 ± 0.002016 |
+| FCFP6C | 0.423095 ± 0.013477 | 0.241313 ± 0.001584 | -0.005735 ± 0.016716 | +0.000560 ± 0.002741 |
+| E3FP | 0.435100 ± 0.021071 | 0.238626 ± 0.002190 | +0.006270 ± 0.014760 | -0.002126 ± 0.002559 |
+| KPGT | 0.428830 ± 0.018574 | 0.240752 ± 0.002598 | +0.000000 ± 0.000000 | +0.000000 ± 0.000000 |
+| UniMol | 0.441262 ± 0.013620 | 0.238599 ± 0.003729 | +0.012432 ± 0.013493 | -0.002153 ± 0.002016 |
+
+UniMol had the highest mean Δ PCC (0.441262).
+UniMol had the lowest mean Δ RMSE (0.238599).
+UniMol’s mean paired Δ PCC gain was smaller than its sample SD (0.012432 versus 0.013493). KPGT remains the working default.
+
+- [All nine metrics by fold and seed](figure/data/fold-scores.csv), [foldwise paired summaries](figure/data/paired-by-fold.csv) and [overall paired summaries](figure/data/paired-summary.csv)
+- [Primary scores](figure/primary-scores.png), [paired differences](figure/paired-primary.png) and [CSV-only figure replay receipt](log/figure-render.json)
+- [Fit and checkpoint ledger](log/runs.csv), [epoch objectives](figure/data/epoch-objectives.csv) and [bandwidths](log/bandwidths.csv)
+- [Formal acceptance receipt](log/364-formal.json), [matrix resources](log/364-resources.jsonl) and [coordinator resources](log/364-coordinator-resources.jsonl)
+
+## Formal reproduction
+
+Run the formal comparison under the same resource limits and environment as
+the bounded gate. The formal runner checks each KPGT reference separately
+against the frozen Step 07 release, the Step 06.4 ledgers, a fresh exact
+checkpoint replay and independently rescored held-out metrics. It registers
+a new fit for any rejected coordinate. Each new fit has separate training,
+prediction and exact replay processes.
+
+Use the `capped` function and `STEP` defined above. Set `COORDINATOR` to the
+location of the running ten-second sampler’s JSONL file. Start the sampler
+before the matrix and keep it running until at least one sample after the
+matrix completes.
+
+```bash
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/carps-chemical-formal.XXXXXX")
+mkdir "$WORK/scratch" "$WORK/formal" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib" PYTHONDONTWRITEBYTECODE=1
+capped python "$STEP/execution/chem_reference.py" \
+  --matrix "$WORK/formal/matrix" --logs "$WORK/formal/matrix-audit" \
+  --evidence "$WORK/formal/reuse-preflight.json"
+sleep 10
+capped python "$STEP/execution/chem_formal.py" build \
+  --bundle "$WORK/formal" --coordinator "$COORDINATOR" \
+  --scratch "$WORK/scratch" --publication "$WORK/publication"
+```
+
+The comparison publishes one score per metric, arm, fold and training
+seed. The paired differences subtract the matching KPGT score. Higher
+Δ PCC and lower Δ RMSE indicate improvement. Each summary weights
+its coordinates equally and reports sample SD. The experiment changes
+its working configuration only when the same representation leads both
+primary metrics and both paired improvements exceed their sample SD
+across all nine pairs. Any alternative is recorded in a distinct Step 08
+configuration.
+
+To verify the installed release from the materialized checkout, use the
+canonical bundle in `output/formal` and pass a fresh scratch directory under
+`tmp/`. This replays the retained KPGT predictions, independently rescores
+the complete matrix, audits the arithmetic and verifies the PNGs using
+only their tracked CSV.
+
+```bash
+capped python "$STEP/execution/chem_formal.py" verify --scratch "$WORK/scratch"
+```

@@ -137,10 +137,13 @@ def publish(args):
     previous = {} if build else axis_run.read_json(args.publication / RECEIPT)
     with TemporaryDirectory(prefix="step08-formal-", dir=args.scratch) as temporary:
         work = Path(temporary)
+        if build:
+            print(json.dumps({"phase": "independent-scoring", "pass": 1}), flush=True)
+            first, first_peak = score_in_process(args, work, "score-first")
+        print(json.dumps({"phase": "independent-scoring", "pass": 2 if build else "verify"}), flush=True)
         independently_scored, peak = score_in_process(args, work, "score-replay")
         replayed = checked_report(independently_scored)
         if build:
-            first, first_peak = score_in_process(args, work, "score-first")
             if replayed != checked_report(first):
                 raise ValueError("independent formal scoring processes disagree")
             score_peaks = [first_peak, peak]
@@ -151,6 +154,7 @@ def publish(args):
         if replayed != checked_report(report):
             raise ValueError("independently regenerated scores differ from the formal report")
 
+        print(json.dumps({"phase": "table-and-figure-audit"}), flush=True)
         numerical = audit(report)
         registrations = axis_run.read_json(matrix / "preflight.json")
         fresh = tuple(map(tuple, registrations["fresh_fits"]))
