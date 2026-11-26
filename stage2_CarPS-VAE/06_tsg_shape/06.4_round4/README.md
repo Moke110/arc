@@ -196,18 +196,22 @@ The [formal receipt](log/359-formal.json) pins the matrix code at
 repository-relative path as well as digest. Use a detached worktree with
 the original `stage2/` layout. Supply the canonical locations of the same
 materialized inputs. Run the following from the live checkout with
-`capped_round4` defined above. The example replays one shared decoder fit.
+`capped_round4` defined above. The example copies one sealed shared decoder
+fit into scratch and replays that copy.
 
 ```bash
 BASE="$PWD"
+mkdir -p "$BASE/tmp"
 WORK=$(mktemp -d "$BASE/tmp/tsg-measured-pinned.XXXXXX")
 STAGE="$BASE/stage2_CarPS-VAE"
 STEP="$STAGE/06_tsg_shape/06.4_round4"
+SEALED_RUN="$STEP/output/formal/matrix/runs/XΔ-XΔ/fold-0/seed-17"
 git worktree add --detach "$WORK/code" f387f2c370eb87cd27c02502aa98f165851491a7
-mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+mkdir -p "$WORK/scratch" "$WORK/matplotlib" "$WORK/run"
+cp --reflink=auto --dereference -- "$SEALED_RUN"/* "$WORK/run/"
 export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib" PYTHONDONTWRITEBYTECODE=1
 capped_round4 python "$WORK/code/stage2/06_tsg_shape/06.4_round4/execution/run_measured.py" replay \
-  --output "$STEP/output/formal/matrix/runs/XΔ-XΔ/fold-0/seed-17" \
+  --output "$WORK/run" \
   --training "$STAGE/03_data_train/03.7_tenv_denoise-5k/output" \
   --representations "$STAGE/util/output/representations" \
   --source "$BASE/pert_model/TranSiGen/source"

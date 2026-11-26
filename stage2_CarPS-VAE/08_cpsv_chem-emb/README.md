@@ -11,6 +11,7 @@ Run from the materialized checkout with the `arc` environment active and at leas
 ```bash
 set -e
 STEP="$PWD/stage2_CarPS-VAE/08_cpsv_chem-emb"
+mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/carps-chemical-gate.XXXXXX")
 mkdir "$WORK/scratch"
 export TMPDIR="$WORK/scratch" PYTHONDONTWRITEBYTECODE=1
@@ -66,8 +67,10 @@ UniMol’s mean paired Δ PCC gain was smaller than its sample SD (0.012432 vers
 Run the formal comparison under the same resource limits and environment as
 the bounded gate. The formal runner checks each KPGT reference separately
 against the frozen Step 07 release, the Step 06.4 ledgers, a fresh exact
-checkpoint replay and independently rescored held-out metrics. It registers
-a new fit for any rejected coordinate. Each new fit has separate training,
+checkpoint replay and independently rescored held-out metrics. It checks
+the inherited loss and fit modules against the original code hashes in the
+alpha release. It registers a new fit for any rejected coordinate.
+Each new fit has separate training,
 prediction and exact replay processes.
 
 Use the `capped` function and `STEP` defined above. Set `COORDINATOR` to the

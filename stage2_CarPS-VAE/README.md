@@ -47,11 +47,11 @@ exceeded the absolute mean difference on both metrics.
 | [06.3 Architecture combinations](06_tsg_shape/06.3_round3/README.md#formal-results) | Compares signed Δ readouts and normalized FiLM across three folds and four seeds. The independent signed Δ readout improved both primary means relative to the original. Adding normalized FiLM gave a lower mean Δ PCC and higher mean Δ RMSE than that readout alone. Step 06.4 retained the original Gaussian prediction head. |
 | [06.4 Measured encoder targets](06_tsg_shape/06.4_round4/README.md#formal-results) | Compares measured treated-expression and signed Δ encoders and signed Δ decoder sharing across three folds and three seeds. The shared signed Δ decoder had the lowest Δ RMSE, and the independent decoder had the highest Δ PCC. CarPS-VAE selects the shared decoder as recorded in ADR 0099. |
 | [07 CarPS-VAE alpha](07_cpsv_alpha/README.md) | Freezes the shared signed Δ model and KPGT default. All nine selected checkpoints exactly replayed the validation objective and predictions and held-out predictions. |
-| [08 Chemical representation comparison](08_cpsv_chem-emb/README.md) | 63 matched fold and seed coordinates across seven representations. UniMol led Δ PCC and UniMol led Δ RMSE. KPGT remains the working default. |
+| [08 Chemical representation comparison](08_cpsv_chem-emb/README.md) | 63 matched fold and seed coordinates across seven representations. UniMol led both Δ PCC and Δ RMSE. KPGT remains the working default. |
 
 ## Verify the current figures
 
-All 36 active report figures and the palette preview use the [Stage 2 palette and drawing API](util/README.md#plotting).
+All 38 active report figures and the palette preview use the [Stage 2 palette and drawing API](util/README.md#plotting).
 The verifier checks the current render receipts and reproduces each PNG
 twice from its published plot data using the `arc` rendering environment.
 For byte-identical replay, use the exact Python, Matplotlib, NumPy and,
@@ -70,6 +70,7 @@ python stage2_CarPS-VAE/util/figure/script/verify_report_figures.py --work "$WOR
 [Step 06.2 receipt](06_tsg_shape/06.2_round2/log/figure-render.json) ·
 [Step 06.3 receipt](06_tsg_shape/06.3_round3/log/figure-render.json) ·
 [Step 06.4 receipt](06_tsg_shape/06.4_round4/log/figure-render.json) ·
+[Step 08 receipt](08_cpsv_chem-emb/log/figure-render.json) ·
 [ADR 0093](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
 
 ## Local history
@@ -116,7 +117,10 @@ specified work directory. It verifies the identities of preserved files and
 directories, hashes small files and checks each external symlink target.
 Use the same arguments with `resume` if interrupted after a plan has been
 recorded. Run `verify` to compare the just-installed checkout against that
-plan. For a later checkout-root move, repair the Git metadata for each
+plan. Use `resume` and `verify` before installing the new Step 08
+`output/formal` bundle. After installing the bundle, run the
+[Step 08 scientific verifier](08_cpsv_chem-emb/README.md#formal-reproduction).
+For a later checkout-root move, repair the Git metadata for each
 relocated linked worktree with `git worktree repair <linked-worktree-path>`
 from the moved primary checkout. Working-tree payload locations and Git
 worktree registrations are separate.
