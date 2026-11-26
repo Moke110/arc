@@ -37,6 +37,15 @@ and two epochs. Each fold supplies its first 64 training, 24 validation and
 24 held-out registered conditions. Validation and test sampling seeds
 remain 22617 and 100042.
 
+The [smoke receipt](log/355-smoke.json) records exact independent replays
+for all 24 fits, 216 held-out scores, 48 coordinate contrasts and
+12 contrast summaries. The [objective audit](log/355-objective-audit.json)
+recomputed 96 objective values and verified the seed behavior. The
+[figure receipt](log/355-figure-render.json) records two matching
+CSV-only renders of four smoke figures. The resource records cover
+the [matrix scope](log/355-resources.jsonl) and
+[coordinator samples](log/355-coordinator-resources.jsonl).
+
 ```bash
 set -e
 STEP="$PWD/stage2/06_tsg_shape/06.3_round3"
@@ -47,6 +56,7 @@ export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
 
 capped_step04 python "$STEP/execution/matrix_composition.py" --smoke \
   --output "$WORK/matrix" --logs "$WORK/matrix-audit"
+python "$STEP/execution/audit_smoke_objectives.py" --matrix "$WORK/matrix"
 python "$STEP/execution/prior_composition.py" > "$WORK/source-lineage.json"
 for phase in score verify; do
   capped_step04 python "$STEP/execution/evaluate_composition.py" "$phase" --smoke \

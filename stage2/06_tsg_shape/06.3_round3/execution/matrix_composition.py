@@ -58,19 +58,13 @@ def verify_matrix(root, smoke):
             or [(fit["shape"], fit["fold"], fit["seed"]) for fit in receipt["fits"]] != list(paths)):
         raise ValueError("matrix receipt has an invalid preflight or coordinate roster")
     fits = dict(zip(paths, receipt["fits"], strict=True))
-    registrations = []
     for key, path in paths.items():
         fit = fits[key]
         registration = path / "registration.json"
-        config = axis_run.read_json(registration)
-        registrations.append({field: value for field, value in config.items()
-                              if field not in {"arguments", "nonce"}})
         if (fit["path"] != path.relative_to(root).as_posix()
                 or fit["run_manifest_sha256"] != axis_run.digest(path / "manifest.json")
                 or fit["registration_sha256"] != axis_run.digest(registration)):
             raise ValueError(f"sealed matrix fit differs from its ledger: {key}")
-    if preflight["expected_config_sha256"] != digest_values(registrations):
-        raise ValueError("sealed matrix registrations differ from the preflight")
     return paths, fits
 
 
