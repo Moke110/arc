@@ -17,7 +17,7 @@ from matrix import (SAMPLE_SECONDS, ResourceMonitor, digest_values, enforce_reco
                     register_coordinate, scope_directory)
 from matrix_sweep import signal_process_group
 
-SCHEMA = "stage2-tenv-transigen-architecture-composition-matrix-v1"
+SCHEMA = "stage2-tenv-transigen-architecture-composition-matrix-v2"
 
 
 

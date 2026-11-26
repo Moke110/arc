@@ -14,12 +14,13 @@ ROUND_TWO_SHAPES = dict(zip(SHAPES, (
     "output-delta", "output-delta-nox2",
 ), strict=True))
 COMBINATIONS = (DIRECT_DELTA_FILM, NO_X2_FILM)
+NORMALIZED_FILM_SHAPES = (FILM, *COMBINATIONS)
 SEEDS = (17, 42, 2026, 43)
 SMOKE_FOLDS = (0, 1)
 SMOKE_SEEDS = (17, 42)
 REUSED_SEED = 42
 NO_X2_SHAPES = (NO_X2, NO_X2_FILM)
-HEAD_PARAMETERS = {shape: 106488 if shape in (FILM, *COMBINATIONS) else 106600 for shape in SHAPES}
+HEAD_PARAMETERS = {shape: 106488 if shape in NORMALIZED_FILM_SHAPES else 106600 for shape in SHAPES}
 
 
 def coordinates(smoke):
@@ -29,7 +30,7 @@ def coordinates(smoke):
 
 def fit_coordinates(smoke):
     return tuple(key for key in coordinates(smoke)
-                 if smoke or key[0] in COMBINATIONS or key[2] != REUSED_SEED)
+                 if smoke or key[0] in NORMALIZED_FILM_SHAPES)
 
 
 def objective_label(shape):

@@ -12,7 +12,7 @@ import pandas as pd
 import torch
 
 from composition_model import CompositionAdapter, axis_run, configure_objective, objective_identity
-from composition_roster import (COMBINATIONS, HEAD_PARAMETERS, ROUND_TWO_SHAPES, SEEDS, SHAPES,
+from composition_roster import (COMBINATIONS, HEAD_PARAMETERS, NORMALIZED_FILM_SHAPES, ROUND_TWO_SHAPES, SEEDS, SHAPES,
                                 fit_coordinates, objective_label)
 from run_architecture import ARCHITECTURE_CHANGES, MODEL_DEPENDENCIES as ROUND_TWO_DEPENDENCIES
 from run_architecture import architecture_config as round_two_config
@@ -20,8 +20,8 @@ from run_shape import kl_diagnostics
 from run_sweep import (AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING,
                        INPUT_PATHS, PHASES, bind as bind_loss, fit as fit_loss)
 
-SCHEMA = "stage2-tenv-transigen-architecture-composition-run-v1"
-PROTOCOL = "matched-plate-control-transigen-architecture-composition-v1"
+SCHEMA = "stage2-tenv-transigen-architecture-composition-run-v2"
+PROTOCOL = "matched-plate-control-transigen-architecture-composition-v2"
 ALPHA = "1.75"
 TRAINING_FILES = (*axis_run.TRAINING_FILES, "kl-diagnostics.csv")
 PREDICTION_FILES = axis_run.PREDICTION_FILES
@@ -40,6 +40,12 @@ def architecture_config(model, shape):
     fields["prediction_head_parameters"] = HEAD_PARAMETERS[shape]
     if shape in COMBINATIONS:
         fields["constructor_order"].append(ARCHITECTURE_CHANGES["z-interact_FiLM"])
+    if shape in NORMALIZED_FILM_SHAPES:
+        fields["prediction_head_normalization"] = {
+            "type": "LayerNorm", "normalized_shape": [100], "elementwise_affine": False,
+            "eps": 1e-5, "position": "after_film_before_projection",
+        }
+        fields["constructor_order"].append("apply parameter-free LayerNorm to the modulated control latent")
     fields["initialization"] = "; ".join(fields["constructor_order"])
     fields["validation_objective"] = f"{objective_label(shape)}, batch sums per condition"
     return fields

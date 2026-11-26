@@ -1,7 +1,9 @@
-"""Compose the accepted Round 2 signed readouts with its FiLM Gaussian head."""
+"""Compose the signed readouts with the normalized Round 3 FiLM Gaussian head."""
 
 from pathlib import Path
 import sys
+
+from torch import nn
 
 STEP = Path(__file__).resolve().parents[1]
 ROUND_TWO = STEP.with_name("06.2_round2")
@@ -10,7 +12,21 @@ sys.path.insert(0, str(ROUND_TWO / "execution"))
 from architecture_model import ArchitectureAdapter, FiLMPrediction, axis_run
 from architecture_model import configure_objective as configure_round_two
 from architecture_model import objective_identity as round_two_objective
-from composition_roster import COMBINATIONS, ROUND_TWO_SHAPES
+from composition_roster import COMBINATIONS, NORMALIZED_FILM_SHAPES, ROUND_TWO_SHAPES
+
+
+class NormalizedFiLMPrediction(nn.Module):
+    """Apply parameter-free LayerNorm to the modulated control latent."""
+
+    def __init__(self, head):
+        super().__init__()
+        self.conditioner = head.conditioner
+        self.projection = head.projection
+        self.normalization = nn.LayerNorm(100, elementwise_affine=False)
+
+    def forward(self, control, drug_dose):
+        scale, shift = self.conditioner(drug_dose).chunk(2, dim=1)
+        return self.projection(self.normalization((1 + scale) * control + shift))
 
 
 class CompositionAdapter(ArchitectureAdapter):
@@ -20,14 +36,17 @@ class CompositionAdapter(ArchitectureAdapter):
 
     def network(self):
         network = super().network()
-        if self.composition not in COMBINATIONS:
+        if self.composition not in NORMALIZED_FILM_SHAPES:
             return network
+        combined = self.composition in COMBINATIONS
 
         class ComposedArchitecture(network):
             def __init__(self, **kwargs):
                 super().__init__(**kwargs)
-                del self.mu_z2Fz1, self.logvar_z2Fz1
-                self.prediction_head = FiLMPrediction()
+                if combined:
+                    del self.mu_z2Fz1, self.logvar_z2Fz1
+                    self.prediction_head = FiLMPrediction()
+                self.prediction_head = NormalizedFiLMPrediction(self.prediction_head)
 
             def predictive_distribution(self, z1, drug_dose):
                 return self.prediction_head(z1, drug_dose).chunk(2, dim=1)
