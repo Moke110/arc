@@ -8,7 +8,7 @@ from tempfile import TemporaryDirectory
 import pandas as pd
 
 from composition_model import STEP, axis_run
-from composition_roster import CONTROL, HEAD_PARAMETERS, coordinates, objective_label
+from composition_roster import CONTROL, HEAD_PARAMETERS, SHAPES, coordinates, objective_label
 from composition_scores import CONTRASTS, paired_report
 
 STAGE = STEP.parents[1]
@@ -16,13 +16,14 @@ STAGE = STEP.parents[1]
 from evaluate_loss import axis_evaluate, score_run
 from matrix_composition import verify_matrix
 from prior_composition import ROUND_ONE_MATRIX, ROUND_TWO_MATRIX, load_reused
+from prior_unnormalized import SOURCE_ROOT, load_unnormalized
 from run_composition import AXIS, DEFAULT_TRAINING
 from training_data import TENV_DEFAULT, open_tenv_training
 from tsg_axis.inputs import AxisInputs
 from tsg_axis.metrics import METRICS
 from verify_composition import read_run
 
-REPORT_SCHEMA = "stage2-tenv-transigen-architecture-composition-report-v1"
+REPORT_SCHEMA = "stage2-tenv-transigen-architecture-composition-report-v2"
 SOURCE_SCORE_FIELDS = [
     "shape", "fold", "seed", "run_sha256", "metric", "value", "n_conditions", "n_eligible", "n_undefined",
 ]
@@ -33,7 +34,7 @@ def verify_configurations(verified):
     variable_fields = {"arguments", "nonce", "schema", "protocol", "shape", "seed", "objective",
                        "conditions", "partitions", "model", "code_sha256"}
     model_fields = {"constructor_order", "initialization", "prediction_head_parameters",
-                    "validation_objective", "transform"}
+                    "validation_objective", "transform", "prediction_head_normalization"}
     for (shape, fold, seed), (_, config, _, _, _) in verified.items():
         shared = {name: value for name, value in config.items() if name not in variable_fields}
         shared["model"] = {name: value for name, value in config["model"].items() if name not in model_fields}
@@ -47,8 +48,8 @@ def verify_configurations(verified):
             raise ValueError(f"mismatched protocol or population in {shape}, fold {fold}, seed {seed}")
 
 
-def verify_source_scores(scores, bandwidths, reused, source_scores, source_bandwidths):
-    index = pd.MultiIndex.from_tuples(reused, names=["shape", "fold", "seed"])
+def verify_source_scores(scores, bandwidths, source_scores, source_bandwidths):
+    index = pd.MultiIndex.from_frame(source_scores[["shape", "fold", "seed"]])
     reconstructed = scores.loc[pd.MultiIndex.from_frame(scores[["shape", "fold", "seed"]]).isin(index),
                                SOURCE_SCORE_FIELDS]
     score_index = SOURCE_SCORE_FIELDS[:3] + ["metric"]
@@ -59,6 +60,20 @@ def verify_source_scores(scores, bandwidths, reused, source_scores, source_bandw
     if not bandwidths.sort_values("fold").reset_index(drop=True).equals(
             source_bandwidths[bandwidths.columns].sort_values("fold").reset_index(drop=True)):
         raise ValueError("reproduced fold bandwidths differ from accepted Round 2")
+
+
+def load_report_sources(round_two_matrix, round_one_matrix, prior_unnormalized, smoke):
+    reused, lineage, scores, bandwidths = load_reused(round_two_matrix, round_one_matrix)
+    unchanged = set(SHAPES[:3])
+    earlier = {key: run for key, run in reused.items() if key[0] in unchanged}
+    lineage["coordinates"] = [fit for fit in lineage["coordinates"] if fit["shape"] in unchanged]
+    scores = scores.loc[scores["shape"].isin(unchanged)]
+    if smoke:
+        return {}, {"round_two": lineage}, None, None
+    retained, retained_lineage = load_unnormalized(prior_unnormalized)
+    if set(earlier) & set(retained):
+        raise ValueError("earlier releases and first Round 3 attempt overlap")
+    return earlier | retained, {"round_two": lineage, "unnormalized_round_three": retained_lineage}, scores, bandwidths
 
 
 def build_report(candidate, paths, training, bandwidth_training, smoke, prior):
@@ -89,9 +104,15 @@ def build_report(candidate, paths, training, bandwidth_training, smoke, prior):
                 path, config, receipt, data, base, fold, smoke, bandwidths[fold]["bandwidth"])
             key = dict(shape=shape, fold=fold, seed=seed, run_sha256=receipt["registration_sha256"])
             objective = objective_label(shape)
-            source = ("Step 06.1" if shape == CONTROL else "Step 06.2") if coordinate in reused else "Step 06.3"
+            source = "Step 06.3 normalized matrix"
+            if coordinate in reused:
+                if config["protocol"].endswith("architecture-composition-v1"):
+                    source = "Step 06.3 first attempt"
+                else:
+                    source = "Step 06.1" if shape == CONTROL else "Step 06.2"
             run_rows.append({
                 **key, "source": source, "source_shape": config["shape"], "protocol": config["protocol"],
+                "prediction_head_normalization": config["model"].get("prediction_head_normalization", {}).get("type", ""),
                 "manifest_sha256": axis_run.digest(path / "manifest.json"),
                 "checkpoint_sha256": receipt["outputs"]["checkpoint.pt"],
                 "trace_sha256": receipt["outputs"]["learning_curve.csv"],
@@ -108,7 +129,7 @@ def build_report(candidate, paths, training, bandwidth_training, smoke, prior):
         pd.concat(fold_metrics, ignore_index=True), expected, METRICS)
     bandwidth_table = pd.DataFrame(bandwidths.values())
     if reused:
-        verify_source_scores(paired, bandwidth_table, reused, source_scores, source_bandwidths)
+        verify_source_scores(paired, bandwidth_table, source_scores, source_bandwidths)
     candidate.mkdir()
     tables = {
         "runs.csv": pd.DataFrame(run_rows),
@@ -129,7 +150,7 @@ def build_report(candidate, paths, training, bandwidth_training, smoke, prior):
         "runs": len(verified), "new_runs": len(fresh), "reused_runs": len(reused),
         "fold_scores": len(paired), "metrics": list(METRICS), "reference": CONTROL,
         "contrasts": list(CONTRASTS), "primary_contrast_scores": len(contrasts),
-        "exact_reused_scores": len(reused) * len(METRICS), "prior_release": provenance,
+        "exact_reused_scores": 0 if smoke else len(source_scores), "prior_release": provenance,
         "selected_checkpoint_and_replay_verified": True,
         "aggregation": "equal eligible conditions per fold; equal defined fold and seed coordinates per arm",
         "scientific_replay_tolerances": {"rtol": 0., "atol": 0.},
@@ -165,14 +186,14 @@ def main():
     parser.add_argument("--bandwidth-training", type=Path, default=TENV_DEFAULT)
     parser.add_argument("--round-one-matrix", type=Path, default=ROUND_ONE_MATRIX)
     parser.add_argument("--round-two-matrix", type=Path, default=ROUND_TWO_MATRIX)
+    parser.add_argument("--prior-unnormalized", type=Path, default=SOURCE_ROOT)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--scratch", type=Path, required=True)
     parser.add_argument("--smoke", action="store_true")
     args = parser.parse_args()
     paths, _ = verify_matrix(args.matrix, args.smoke)
-    prior = load_reused(args.round_two_matrix, args.round_one_matrix)
-    if args.smoke:
-        prior = {}, prior[1], None, None
+    prior = load_report_sources(args.round_two_matrix, args.round_one_matrix,
+                                args.prior_unnormalized, args.smoke)
     score_or_verify(args.output, args.scratch, paths, args.training, args.bandwidth_training,
                     args.smoke, args.command == "verify", prior)
     print(json.dumps({"status": "PASS", "report_sha256": axis_run.digest(args.output / "manifest.json")},

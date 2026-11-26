@@ -15,6 +15,7 @@ from composition_roster import coordinates, fit_coordinates
 from evaluate_composition import METRICS, REPORT_SCHEMA
 from matrix_composition import check_registrations, preflight, verify_matrix
 from prior_composition import ROUND_ONE_MATRIX, ROUND_TWO_MATRIX
+from prior_unnormalized import SOURCE_ROOT
 from report_formal import command
 from report_shape import gaps_summary, read_samples
 from run_composition import AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING
@@ -142,8 +143,8 @@ def verify_ledger(report, fits, smoke):
         raise ValueError("scoring ledger differs from the registered fit roster")
     all_fits = dict(fits)
     if not smoke:
-        all_fits.update({(fit["shape"], fit["fold"], fit["seed"]): fit
-                         for fit in receipt["prior_release"]["coordinates"]})
+        for source in receipt["prior_release"].values():
+            all_fits.update({(fit["shape"], fit["fold"], fit["seed"]): fit for fit in source["coordinates"]})
     for row in runs.itertuples(index=False):
         fit = all_fits[row.shape, row.fold, row.seed]
         if ((row.run_sha256, row.manifest_sha256, row.best_epoch, row.stopping_epoch)
@@ -166,14 +167,16 @@ def publish(args):
     check_registrations(paths, expected, args.smoke)
 
     build = args.command == "build"
-    receipt_name = "log/355-smoke.json" if args.smoke else "log/356-formal.json"
-    matrix_samples = "log/355-resources.jsonl" if args.smoke else "log/356-resources.jsonl"
-    coordinator_samples = "log/355-coordinator-resources.jsonl" if args.smoke else "log/356-coordinator-resources.jsonl"
+    receipt_name = "log/356-normalized-smoke.json" if args.smoke else "log/356-formal.json"
+    matrix_samples = "log/356-normalized-smoke-resources.jsonl" if args.smoke else "log/356-resources.jsonl"
+    coordinator_samples = ("log/356-normalized-smoke-coordinator-resources.jsonl" if args.smoke
+                           else "log/356-coordinator-resources.jsonl")
     args.activity.mkdir(parents=True, exist_ok=True)
     evaluator_options = [
         "--matrix", str(args.matrix), "--output", str(args.report), "--scratch", str(args.scratch),
         "--training", str(args.training), "--bandwidth-training", str(args.bandwidth_training),
         "--round-one-matrix", str(args.round_one_matrix), "--round-two-matrix", str(args.round_two_matrix),
+        "--prior-unnormalized", str(args.prior_unnormalized),
         *(["--smoke"] if args.smoke else []),
     ]
     with (axis_run.publication_lock(args.publication) as release,
@@ -196,7 +199,10 @@ def publish(args):
         figures = render_figures(candidate, Path(temporary), args.activity, args.smoke)
         revision = args.code_revision if build else axis_run.read_json(release / receipt_name)["matrix_code_revision"]
         receipt = {
-            "status": "PASS", "ticket": 355 if args.smoke else 356,
+            "status": "PASS", "ticket": 356,
+            "prediction_head_normalization": {shape: config["model"]["prediction_head_normalization"]
+                                              for (shape, _, _), config in expected.items()
+                                              if "prediction_head_normalization" in config["model"]},
             "matrix_code_revision": revision, "smoke": args.smoke,
             "new_fits": len(fits), "reused_fits": score_receipt["reused_runs"],
             "independent_exact_new_replays": len(fits), "independent_exact_score_replay": True,
@@ -210,7 +216,7 @@ def publish(args):
             "resources": resources,
             "scientific_code_sha256": axis_run.file_hashes(STEP / "execution", [
                 "composition_model.py", "composition_roster.py", "composition_scores.py",
-                "matrix_composition.py", "prior_composition.py", "run_composition.py",
+                "matrix_composition.py", "prior_composition.py", "prior_unnormalized.py", "run_composition.py",
                 "verify_composition.py", "evaluate_composition.py", Path(__file__).name,
             ]),
             "outputs": axis_run.file_hashes(candidate, [*sources, coordinator_samples]),
@@ -243,6 +249,7 @@ def main():
     parser.add_argument("--bandwidth-training", type=Path, default=TENV_DEFAULT)
     parser.add_argument("--round-one-matrix", type=Path, default=ROUND_ONE_MATRIX)
     parser.add_argument("--round-two-matrix", type=Path, default=ROUND_TWO_MATRIX)
+    parser.add_argument("--prior-unnormalized", type=Path, default=SOURCE_ROOT)
     parser.add_argument("--coordinator-samples", type=Path)
     parser.add_argument("--code-revision")
     parser.add_argument("--smoke", action="store_true")
