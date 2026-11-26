@@ -24,7 +24,9 @@ PUBLISHED_SCORES = "figure/data/fold-scores.csv"
 PUBLISHED_BANDWIDTHS = "log/bandwidths.csv"
 
 
-def load_reused(round_two_matrix=ROUND_TWO_MATRIX, round_one_matrix=ROUND_ONE_MATRIX):
+def load_reused(round_two_matrix=None, round_one_matrix=None):
+    round_two_matrix = ROUND_TWO_MATRIX if round_two_matrix is None else round_two_matrix
+    round_one_matrix = ROUND_ONE_MATRIX if round_one_matrix is None else round_one_matrix
     if axis_run.digest(RELEASE_RECEIPT) != RELEASE_RECEIPT_SHA256:
         raise ValueError("Step 06.2 receipt differs from the accepted #353 release")
     release = axis_run.read_json(RELEASE_RECEIPT)

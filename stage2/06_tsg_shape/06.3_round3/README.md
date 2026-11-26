@@ -52,7 +52,7 @@ for phase in score verify; do
   capped_step04 python "$STEP/execution/evaluate_composition.py" "$phase" --smoke \
     --matrix "$WORK/matrix" --output "$WORK/report" --scratch "$WORK/scratch"
 done
-cp "$WORK/report/"{delta-metrics,fold-scores,epoch-objectives}.csv "$WORK/plot-csv"
+cp "$WORK/report/"{delta-metrics,fold-scores,epoch-objectives,primary-contrasts,primary-contrast-summary}.csv "$WORK/plot-csv"
 for output in figures figures-replay; do
   python "$STEP/figure/script/render_composition.py" --smoke \
     --data "$WORK/plot-csv" --output "$WORK/$output"
