@@ -1,0 +1,42 @@
+{
+  "coordinator_interval_seconds": 10,
+  "coordinator_samples": [
+    {
+      "gpu_total_used_mib_and_utilization_percent": "16376, 2445, 13",
+      "monotonic_seconds": 423540.268760285,
+      "schedule_lag_seconds": 7.438100874423981e-05,
+      "wall_time": "2026-11-27T00:28:52.739025+08:00",
+      "windows_host_total_and_available_kib": "66870312,20419296",
+      "workspace_free_bytes": 41375170560,
+      "wsl": {
+        "MemAvailable_kib": 20974148,
+        "MemTotal_kib": 24612504,
+        "SwapFree_kib": 65927056,
+        "SwapTotal_kib": 67108864
+      }
+    },
+    {
+      "gpu_total_used_mib_and_utilization_percent": "16376, 2449, 10",
+      "monotonic_seconds": 423550.26885659,
+      "schedule_lag_seconds": 0.00017068599117919803,
+      "wall_time": "2026-11-27T00:29:05.706289+08:00",
+      "windows_host_total_and_available_kib": "66870312,20300944",
+      "workspace_free_bytes": 41375109120,
+      "wsl": {
+        "MemAvailable_kib": 21274248,
+        "MemTotal_kib": 24612504,
+        "SwapFree_kib": 65924980,
+        "SwapTotal_kib": 67108864
+      }
+    }
+  ],
+  "cuda_peak_allocated_bytes": 136005632,
+  "elapsed_seconds": 4.778,
+  "finished_at": "2026-11-27T00:29:02.004848+08:00",
+  "peak_rss_kib": 1567984,
+  "schema": "carps-vae-alpha-replay-resources-v1",
+  "scope_memory_max_bytes": 12884901888,
+  "scope_swap_max_bytes": 8589934592,
+  "started_at": "2026-11-27T00:28:54.276632+08:00",
+  "status": "PASS"
+}
