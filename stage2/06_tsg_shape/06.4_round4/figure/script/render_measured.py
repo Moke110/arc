@@ -35,7 +35,7 @@ LABELS = {
     "Δ MMD": "Δ MMD",
     "Δ R²": "Δ R²",
 }
-SHAPE_COLORS = dict(zip(SHAPES, ((20, 2), (60, 2), (140, 2), (220, 2), (220, 3)), strict=True))
+SHAPE_HUES = dict(zip(SHAPES, (20, 60, 140, 220, 300), strict=True))
 FIELDS = {"value": "delta-metrics.png", "score_difference": "delta-metrics-paired-difference.png"}
 CURVE_NAME = "learning-curves.png"
 CONTRAST_NAME = "primary-contrasts.png"
@@ -93,8 +93,7 @@ def render_metrics(data, output, smoke):
             means = [summary[shape, metric][field] for shape in SHAPES]
             groups = [[replicates[shape, metric, *key][field] for key in keys] for shape in SHAPES]
             for position, shape, mean, values in zip(positions, SHAPES, means, groups, strict=True):
-                hue, depth = SHAPE_COLORS[shape]
-                plotting.replicate_bar(plot, position, values, hue=hue, depth=depth, width=.68)
+                plotting.replicate_bar(plot, position, values, hue=SHAPE_HUES[shape], depth=2, width=.68)
                 if math.isnan(mean):
                     plot.text(position, .02, "NA", ha="center", fontsize=7, transform=plot.get_xaxis_transform())
             reference = 0 if difference or metric == "Δ R²" else None

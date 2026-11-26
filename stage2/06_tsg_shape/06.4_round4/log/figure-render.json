@@ -15,8 +15,8 @@
   },
   "independent_renders": 2,
   "png_files_sha256": {
-    "figure/delta-metrics-paired-difference.png": "7ce45a11b79276395002d0705356190c87f41ba51032a75b9bc22d0bbfb7457a",
-    "figure/delta-metrics.png": "823c4ed9b57c6ed20af9b0db21209643718538b6a34c87b0c1772b4a16a7e17a",
+    "figure/delta-metrics-paired-difference.png": "5fc83a241936c1c21f276e66c7dc73c7f2fd5bcfb557056363b9b23ced84fcc7",
+    "figure/delta-metrics.png": "f191e4cbfdd7239fbeca232573e91924661a537953848d1f17771f273b76f4f7",
     "figure/learning-curves.png": "b976b109ded799830f9a5da9b3d0385631eabe65bab1fc8a3519a9655afe86e9",
     "figure/primary-contrasts.png": "5aa4b502567dd29f454635bcda60d836eb6e4caa8656ae0b6db821df6f56e587"
   },
@@ -24,7 +24,7 @@
     "06_tsg_shape/06.4_round4/execution/audit_measured_figures.py": "d72b6053ddee2b447c5a40d2c2db3fa3fa2777f0a1a3e25149a620776b1a944a",
     "06_tsg_shape/06.4_round4/execution/measured_roster.py": "f53bedafe6f91505392ef62d991f8ff4559fa29e7d1bd9fcebbaead549b04945",
     "06_tsg_shape/06.4_round4/execution/measured_scores.py": "9224d61c9d7327fe68c84f2fd952d873711ff9e46a3206d2f491a7bbe022b94e",
-    "06_tsg_shape/06.4_round4/figure/script/render_measured.py": "0c735a0c169d5a8e332727d930fca69ee39f200a98feb9cca705be5c8ee9be21",
+    "06_tsg_shape/06.4_round4/figure/script/render_measured.py": "93150653d35782dee655158108532fc9719bbd10a788cf6e5b3f5d0920252b4e",
     "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },

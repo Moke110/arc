@@ -31,7 +31,9 @@ validation and 24 held-out conditions per fold for two epochs. It uses
 the same fit, prediction, replay and report entry points as the formal
 study. The [gate receipt](log/358-gate.json) records the matrix, objective,
 source provenance, independent rescoring, CSV figure renders and resource
-evidence.
+evidence. To reproduce the figure hashes in that receipt, use renderer
+revision `f387f2c3`. The current renderer uses a distinct hue for each
+arm in the metric figures under [ADR 0093](../../../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md).
 
 Run from the materialized checkout with the `arc` environment active.
 Start the [coordinator sampler](../06.1_round1/execution/sample_resources.py)
@@ -40,6 +42,7 @@ Check for 12 GiB of available WSL memory before each capped command. Use
 the commands below with an unused work directory.
 
 ```bash
+set -e
 STEP="$PWD/stage2/06_tsg_shape/06.4_round4"
 mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/tsg-measured-encoder-smoke.XXXXXX")
@@ -55,6 +58,11 @@ capped_round4() {
 python "$STEP/../06.1_round1/execution/sample_resources.py" \
   --output "$WORK/coordinator-resources.jsonl" &
 SAMPLER_PID=$!
+stop_sampler() {
+  kill -TERM "$SAMPLER_PID" 2>/dev/null || true
+  wait "$SAMPLER_PID"
+}
+trap 'stop_sampler || true' EXIT
 until [ -s "$WORK/coordinator-resources.jsonl" ]; do
   kill -0 "$SAMPLER_PID" || exit 1
   sleep 1
@@ -74,8 +82,8 @@ python "$STEP/execution/audit_measured_figures.py" build --smoke \
   --scratch "$WORK/scratch"
 capped_round4 env TSG_MEASURED_TEST_DEVICE=cuda python -m unittest discover \
   -s "$STEP/execution/tests" -p 'test_measured_model.py'
-kill -TERM "$SAMPLER_PID"
-wait "$SAMPLER_PID"
+stop_sampler
+trap - EXIT
 python "$STEP/execution/audit_measured.py" resources --smoke \
   --matrix-audit "$WORK/matrix-audit" --coordinator "$WORK/coordinator-resources.jsonl" \
   --coverage-output "$WORK/coordinator-coverage.jsonl"
