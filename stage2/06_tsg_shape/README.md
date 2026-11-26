@@ -14,3 +14,7 @@ original fits supply the paired references.
 normalized FiLM and their combinations on the same three cold-drug folds
 across four training seeds. Its 72-coordinate report compares each
 combination with its components and the original within fold and seed.
+
+[Step 06.4](06.4_round4/README.md#formal-results) compares measured
+encoder targets and signed Δ decoder sharing across the same three
+cold-drug folds and three training seeds.

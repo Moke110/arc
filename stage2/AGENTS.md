@@ -22,7 +22,7 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 - [06_tsg_shape](06_tsg_shape/AGENTS.md) compares TranSiGen expression widths, depths and prediction architectures on the fixed denoise-5k axis.
 
 Use Step 04's `execution/matrix.py` and `execution/evaluate.py` for the axis comparison.
-Steps 05.1–05.5 and 06.1–06.3 reuse the matched-control runtime and metric primitives with their own run and report commands.
+Steps 05.1–05.5 and 06.1–06.4 reuse the matched-control runtime and metric primitives with their own run and report commands.
 
 ## TranSiGen defaults
 

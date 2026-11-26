@@ -1,0 +1,35 @@
+{
+  "csv_files_sha256": {
+    "figure/data/delta-metrics.csv": "1ab05ef7cee76407a5cf15ec7f1c125b941643af2a1f2cef931096b11a9e4191",
+    "figure/data/epoch-objectives.csv": "c90ace9d60ba1e13130d14b8cb9cd164edffafb0b4d127157005fb686d9acf1c",
+    "figure/data/fold-scores.csv": "9c81112ef98437a944fa783e72d8da40d3096e241b66c3ea762a1f8818a42eac",
+    "figure/data/primary-contrast-by-fold.csv": "2873057fe9b1329d00868de7454f205060d29b629978f601e8e9466c3cc07d56",
+    "figure/data/primary-contrast-summary.csv": "25c6a356d7fd8cfd72b661e663c56dc1eb0b67826dc485f40f01fc1e80e09802",
+    "figure/data/primary-contrasts.csv": "c4a7490646e258712530a76083b47aa4701c985b00a253e5f6523e6ba6795692"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13"
+  },
+  "independent_renders": 2,
+  "png_files_sha256": {
+    "figure/delta-metrics-paired-difference.png": "7ce45a11b79276395002d0705356190c87f41ba51032a75b9bc22d0bbfb7457a",
+    "figure/delta-metrics.png": "823c4ed9b57c6ed20af9b0db21209643718538b6a34c87b0c1772b4a16a7e17a",
+    "figure/learning-curves.png": "b976b109ded799830f9a5da9b3d0385631eabe65bab1fc8a3519a9655afe86e9",
+    "figure/primary-contrasts.png": "5aa4b502567dd29f454635bcda60d836eb6e4caa8656ae0b6db821df6f56e587"
+  },
+  "renderer_files_sha256": {
+    "06_tsg_shape/06.4_round4/execution/audit_measured_figures.py": "d72b6053ddee2b447c5a40d2c2db3fa3fa2777f0a1a3e25149a620776b1a944a",
+    "06_tsg_shape/06.4_round4/execution/measured_roster.py": "f53bedafe6f91505392ef62d991f8ff4559fa29e7d1bd9fcebbaead549b04945",
+    "06_tsg_shape/06.4_round4/execution/measured_scores.py": "9224d61c9d7327fe68c84f2fd952d873711ff9e46a3206d2f491a7bbe022b94e",
+    "06_tsg_shape/06.4_round4/figure/script/render_measured.py": "0c735a0c169d5a8e332727d930fca69ee39f200a98feb9cca705be5c8ee9be21",
+    "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
+    "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
+  },
+  "schema": "stage2-figure-render-v1",
+  "scientific_receipt_sha256": "84d973a16b36de4861cc62072bdf25bcb78540b6c44727fc01c4affd5c941ddb",
+  "status": "PASS",
+  "step": "06.4_round4"
+}

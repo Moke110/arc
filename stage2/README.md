@@ -38,10 +38,11 @@ fell to 0.249215, compared with 0.406610 and 0.259575 at weight zero.
 | [06.1 Expression shape](06_tsg_shape/06.1_round1/README.md#formal-results) | Compares ten encoder, decoder and latent architectures over three frozen cold-drug folds. Six new fits extend the encoder-width series, and the accepted original fit on each fold remains the paired reference for nine held-out metrics. |
 | [06.2 Prediction architecture](06_tsg_shape/06.2_round2/README.md#formal-results) | Compares eight prediction architectures on the three frozen folds. The three accepted Step 06.1 original fits supply the paired references for 21 new fits. |
 | [06.3 Architecture combinations](06_tsg_shape/06.3_round3/README.md#formal-results) | Compares the signed Δ readouts and normalized FiLM head across three frozen folds and four training seeds. Each combination is paired with its components and the original at the same fold and seed. |
+| [06.4 Measured encoder targets](06_tsg_shape/06.4_round4/README.md#formal-results) | Compares measured treated-expression and signed Δ encoders and signed Δ decoder sharing across three frozen folds and three training seeds. Reuses 18 accepted reference fits and independently replays 27 new fits. |
 
 ## Verify the current figures
 
-All 32 active report figures and the palette preview use the [Stage 2 palette and drawing API](util/README.md#plotting).
+All 36 active report figures and the palette preview use the [Stage 2 palette and drawing API](util/README.md#plotting).
 The verifier checks the current render receipts and reproduces each PNG
 twice from its published plot data using the `arc` rendering environment.
 For byte-identical replay, use the exact Python, Matplotlib, NumPy and,
@@ -59,6 +60,7 @@ python stage2/util/figure/script/verify_report_figures.py --work "$WORK/replay"
 [Step 06.1 receipt](06_tsg_shape/06.1_round1/log/figure-render.json) ·
 [Step 06.2 receipt](06_tsg_shape/06.2_round2/log/figure-render.json) ·
 [Step 06.3 receipt](06_tsg_shape/06.3_round3/log/figure-render.json) ·
+[Step 06.4 receipt](06_tsg_shape/06.4_round4/log/figure-render.json) ·
 [ADR 0093](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
 
 ## Local history

@@ -10,3 +10,6 @@ encoder width, latent width, and encoder and decoder depth.
 
 [Step 06.3](06.3_round3/AGENTS.md) owns the six-arm comparison of signed
 Δ readouts, FiLM and their combinations across four training seeds.
+
+[Step 06.4](06.4_round4/AGENTS.md) owns the five-arm comparison of measured
+encoder targets and signed Δ decoder sharing across three training seeds.
