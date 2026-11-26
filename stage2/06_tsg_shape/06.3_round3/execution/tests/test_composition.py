@@ -11,7 +11,8 @@ from torch.nn import functional as F
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from composition_model import CompositionAdapter, axis_run, configure_objective
-from composition_roster import coordinates, fit_coordinates
+from composition_roster import ROUND_TWO_SHAPES, coordinates, fit_coordinates
+from architecture_model import ArchitectureAdapter
 
 SOURCE = axis_run.REPO / "pert_model/TranSiGen/source"
 TRANSFORM = dict(kind="training-log10-dose-population-standardization-v1", mean=0., std=1.)
@@ -27,6 +28,24 @@ class CompositionTests(unittest.TestCase):
         self.assertEqual(len(coordinates(True)), 24)
         self.assertEqual({key[0] for key in fit_coordinates(False)},
                          {"3_z-interact_FiLM", "4_1+3", "5_2+3"})
+
+    def test_non_film_arms_preserve_the_seeded_reference(self):
+        control = torch.ones(2, 4)
+        features = torch.ones(2, 2305)
+        for shape in ("0_original", "1_output-delta", "2_output-delta-no-x2"):
+            with self.subTest(shape=shape), torch.no_grad():
+                actual = self.build(shape).eval()
+                reference = ArchitectureAdapter(SOURCE, TRANSFORM, ROUND_TWO_SHAPES[shape]).build(
+                    17, "cpu", n_genes=4).eval()
+                self.assertEqual(actual.state_dict().keys(), reference.state_dict().keys())
+                for name, value in actual.state_dict().items():
+                    self.assertTrue(torch.equal(value, reference.state_dict()[name]), name)
+                torch.manual_seed(703)
+                predicted = actual(control, features)
+                torch.manual_seed(703)
+                expected = reference(control, features)
+                self.assertTrue(all(torch.equal(left, right)
+                                    for left, right in zip(predicted, expected, strict=True)))
 
     def test_film_arms_normalize_after_modulation_and_before_projection(self):
         for shape in ("3_z-interact_FiLM", "4_1+3", "5_2+3"):
