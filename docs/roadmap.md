@@ -68,7 +68,7 @@ Record: `docs/wetlab-validation-stage1.md`; raw data `wet_data/` (gitignored).
 
 ## Stage 2 — perturbation prediction
 
-The [Stage 2 routing](../stage2/AGENTS.md) lists source-native counts, prediction
+The [Stage 2 routing](../stage2_CarPS-VAE/AGENTS.md) lists source-native counts, prediction
 axes, expression views, and the model and TranSiGen comparisons. ADR 0084
 retired Bases replay and reserved Step 05 for a loss comparison.
 
@@ -76,7 +76,7 @@ The Stage 2 exit is now fixed: **the predicted Δ on a selected gene axis, as
 accurate as possible**. Narrowing the frozen 18,164-gene axis to that selected
 axis — from tenv HVG plus public myocardial-disease datasets — is being decided
 and delivered under the [Stage 2 exit → Stage 3 exit decision
-map](https://github.com/Moke110/arc/issues/171). Model, chemistry, dose and
+map](https://github.com/Moke110/carps/issues/171). Model, chemistry, dose and
 pretraining-transfer optimisation is recorded on that map only, as a decision
 card with its supporting research in `docs/research/`.
 
@@ -92,7 +92,7 @@ are **the predicted Δ on the selected gene axis**, and the Stage 3 exit is a
 detect** (for example cell viability), not an in-vivo endpoint. Input
 representation and model design remain open; they are recorded, with their
 evidence, on the [Stage 2 exit → Stage 3 exit decision
-map](https://github.com/Moke110/arc/issues/171).
+map](https://github.com/Moke110/carps/issues/171).
 
 The first effort plans the drug–phenotype experimental database: 24–48 h drug
 exposure followed by MTT/CCK8, the same exposure followed by hypoxia/reoxygenation
@@ -102,7 +102,7 @@ transcriptomes or process Stage 2 predictions. Scope and counting boundaries are
 recorded in [ADR 0034](adr/0034-stage3-phenotype-data-boundary.md).
 
 The canonical decision index is the
-[Stage 3 phenotype-database wayfinder map](https://github.com/Moke110/arc/issues/21).
+[Stage 3 phenotype-database wayfinder map](https://github.com/Moke110/carps/issues/21).
 The current source-first strategy ([ADR 0044](adr/0044-stage3-source-first-corpora.md))
 selects Heliste 2021 for separate baseline and H-R chemical-perturbation CTG
 `cell_viability` corpora at `stage3/01_corpus/output/`. The public
@@ -114,6 +114,6 @@ Statistics and endpoint labels are outside this corpus contract.
 The earlier endpoint-gated first wave is superseded. Its unchanged
 [handoff](../stage3/01_corpus/execution/historical/handoff.md) and coverage evidence
 remain under `execution/historical/`; the retired implementation remains in Git.
-Current implementation is tracked by [spec #52](https://github.com/Moke110/arc/issues/52)
-and [ticket #53](https://github.com/Moke110/arc/issues/53). Model views and training
+Current implementation is tracked by [spec #52](https://github.com/Moke110/carps/issues/52)
+and [ticket #53](https://github.com/Moke110/carps/issues/53). Model views and training
 remain later work.

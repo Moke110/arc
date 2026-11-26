@@ -183,18 +183,18 @@ Per-workflow rows are isolated `du -sb` values that each include their own hard-
 
 ## Stage 2 — published products and comparison payloads
 
-The [Stage 2 routing](../stage2/AGENTS.md) identifies the active product
-owners. The materialized [local archive](../stage2/README.md#local-history)
+The [Stage 2 routing](../stage2_CarPS-VAE/AGENTS.md) identifies the active product
+owners. The materialized [local archive](../stage2_CarPS-VAE/README.md#local-history)
 keeps superseded releases and study payloads at their original relative paths
-under `stage2/history/`.
+under `stage2_CarPS-VAE/history/`.
 
 | Owner | Accepted products |
 | --- | --- |
-| [Raw data](../stage2/01_data_raw/README.md) | Seven source-native datasets and their release manifest under `output/`. |
-| [Prediction axes](../stage2/02_gene_axis/README.md) | Ordered HVG-DEG and Denoise-DEG families with selection evidence. |
-| [Training data](../stage2/03_data_train/README.md) | Six tenv plate-pooled releases and the Tahoe well-level release. |
-| [Axis comparison](../stage2/04_tsg_axis/README.md) | Held-out matched-control TranSiGen evaluation, sealed formal results and canonical report exports. |
-| [Util](../stage2/util/README.md) | Accepted gene identity and representation products plus shared operations. |
+| [Raw data](../stage2_CarPS-VAE/01_data_raw/README.md) | Seven source-native datasets and their release manifest under `output/`. |
+| [Prediction axes](../stage2_CarPS-VAE/02_gene_axis/README.md) | Ordered HVG-DEG and Denoise-DEG families with selection evidence. |
+| [Training data](../stage2_CarPS-VAE/03_data_train/README.md) | Six tenv plate-pooled releases and the Tahoe well-level release. |
+| [Axis comparison](../stage2_CarPS-VAE/04_tsg_axis/README.md) | Held-out matched-control TranSiGen evaluation, sealed formal results and canonical report exports. |
+| [Util](../stage2_CarPS-VAE/util/README.md) | Accepted gene identity and representation products plus shared operations. |
 
 ### Archived single-dose three-fold comparison (#226/#231)
 

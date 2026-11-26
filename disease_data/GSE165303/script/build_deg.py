@@ -47,7 +47,7 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2/util/output/api'))
+sys.path.insert(0, str(REPO / 'stage2_CarPS-VAE/util/output/api'))
 from stage2_util.derivation import disease_deg  # noqa: E402
 
 MASTER_TABLE = 'source/GSE165303_RNA-Seq_master_table.txt.gz'
@@ -408,7 +408,7 @@ def main():
         'method': {
             'deposition': 'log2(normalised counts) as deposited (floored matrix)',
             'model': 'limma on the deposited log2 matrix (moderated t)',
-            'implementation': 'stage2/util/output/api/stage2_util/derivation/disease_deg.R',
+            'implementation': 'stage2_CarPS-VAE/util/output/api/stage2_util/derivation/disease_deg.R',
             'implementation_sha256': sha256(Path(disease_deg.DEG_WORKER)),
             'derivation': str(Path(__file__).resolve().relative_to(REPO)),
             'derivation_sha256': sha256(Path(__file__).resolve()),

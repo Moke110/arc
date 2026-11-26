@@ -40,8 +40,8 @@ every item.
 Nine items historically completed Stage 2 setup; their run cards are retained in
 Git history. Five were historically **reference-only** (`WAVE`, `ExPO`, `State`, `TranSiGen`,
 `XPert`). ADR 0074 now admits TranSiGen to the single-dose 5k comparison,
-without using retained pretrained assets or changing Stage 3. The accepted [single-dose comparison](https://github.com/Moke110/arc/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/04_tsg_axis/historical/04_model_view/README.md) is archived,
-using the archived [well-level HVG-DEG full view](https://github.com/Moke110/arc/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/03_data_train/03.1_hvg-deg-5k/README.md) for study replay. `pert_data/`,
+without using retained pretrained assets or changing Stage 3. The accepted [single-dose comparison](https://github.com/Moke110/carps/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/04_tsg_axis/historical/04_model_view/README.md) is archived,
+using the archived [well-level HVG-DEG full view](https://github.com/Moke110/carps/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/03_data_train/03.1_hvg-deg-5k/README.md) for study replay. `pert_data/`,
 `drug_emb_model/`, `disease_data/` are the sibling external categories under the
 same contract; `pert_model/` is the model-code one, so its `source/` trees are
 the upstream repositories themselves plus whatever weights/data the authors

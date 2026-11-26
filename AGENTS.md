@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Operating manual for agents in this repository (AI-driven MIRI drug-repositioning, research code): how to work, where the reference docs live, and which skills to use. This is not a status board — do not add plans, progress, or result summaries here.
+Operating manual for agents in this repository (CarPS, Cardiomyocyte Perturbation Prediction System): how to work, where the reference docs live, and which skills to use. This is not a status board — do not add plans, progress, or result summaries here.
 
 ## Workflow
 
@@ -12,7 +12,7 @@ Before loading datasets or training, read [`docs/agents/execution-environment.md
 
 ## Tracker and doc conventions
 
-- **Issue tracker**: GitHub issues at `Moke110/arc` via the `gh` CLI; specs are drafted in `.scratch/<feature-slug>/spec.md` and published. `.scratch/` is not a tracker and keeps no issue files. See `docs/agents/issue-tracker.md`.
+- **Issue tracker**: GitHub issues at `Moke110/carps` via the `gh` CLI; specs are drafted in `.scratch/<feature-slug>/spec.md` and published. `.scratch/` is not a tracker and keeps no issue files. See `docs/agents/issue-tracker.md`.
 - **Triage labels**: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
 - **Domain docs**: single-context — root `GLOSSARY.md` + `docs/adr/`. See `docs/agents/domain.md`.
 
@@ -31,7 +31,7 @@ Before loading datasets or training, read [`docs/agents/execution-environment.md
 - `docs/data-inventory.md` — inventory of ignored large assets.
 - `docs/roadmap.md` — program-level roadmap.
 - `docs/wetlab-validation-stage1.md` — wet-lab validation record.
-- Routing indexes: `stage1/AGENTS.md`, `stage2/AGENTS.md`, `pert_data/AGENTS.md`, `pert_model/AGENTS.md`, `disease_data/AGENTS.md`, `drug_emb_model/AGENTS.md`; each Stage 2 step has its own `AGENTS.md` + `README.md`.
+- Routing indexes: `stage1/AGENTS.md`, `stage2_CarPS-VAE/AGENTS.md`, `pert_data/AGENTS.md`, `pert_model/AGENTS.md`, `disease_data/AGENTS.md`, `drug_emb_model/AGENTS.md`; each Stage 2 step has its own `AGENTS.md` + `README.md`.
 - `environment.yml` — shared conda environment `arc`; `skills-lock.json` — pinned agent-skills lockfile.
 
 ## Skills

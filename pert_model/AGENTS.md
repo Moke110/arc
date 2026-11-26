@@ -27,4 +27,4 @@ Layout: ADR 0030. Category overview, exclusion table and the manual-download
 procedure: `README.md`. Every item carries `manifest.sha256` (453.0 GB hashed,
 27/27 verified); `script/verify.sh` checks it offline.
 
-Stage 2 comparison adapters live in [`02_models_tenv-5k`](../stage2/02_models_tenv-5k/README.md); verify retained external sources with each item’s `script/verify.sh`.
+Current Stage 2 comparison adapters are routed from [the Stage 2 index](../stage2_CarPS-VAE/AGENTS.md). Verify retained external sources with each item’s `script/verify.sh`.

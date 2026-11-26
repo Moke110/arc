@@ -98,7 +98,7 @@ Three items added for the Stage 2 gene axis are **cardiomyocyte-derived**, not
 whole tissue: two GEO single-cell deposits and one cellxgene object. Each follows
 the same five-member ADR 0030 contract, adds a CM-gate + per-donor pseudobulk
 derivation under `local/`, and publishes one compact DEG table per dataset into
-the historical [disease DEG release](https://github.com/Moke110/arc/tree/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/output/disease-deg):
+the historical [disease DEG release](https://github.com/Moke110/carps/tree/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/output/disease-deg):
 
 | item | deposit | CM gate | donors | feeds |
 |---|---|---|---|---|
@@ -116,7 +116,7 @@ Conventions specific to these three items:
 - **`local/deg/<item>_deg.csv` + tracked `_deg.json`** — the item-local
   full DEG table (long, one row per gene × contrast) and its tracked summary.
   The DEG is the single live implementation in
-  `stage2/util/output/api/stage2_util/derivation/disease_deg.R` (limma: voom for counts,
+  `stage2_CarPS-VAE/util/output/api/stage2_util/derivation/disease_deg.R` (limma: voom for counts,
   `lmFit` for the log-scale deposit); the item scripts only bind inputs and run
   it. GSE270788's three arms share one control set, so its table comes from
   **one joint `~ 0 + arm` fit** over all 23 donors (three contrasts), not three
@@ -142,7 +142,7 @@ category, where the two Reichart genotype-split exports (genotype-positive DCM
 and ARVC donors) are the tier-1 human CM-pseudobulk datasets and the six
 in-vitro models enter at tier 2 under ADR 0066's **Isogenic exception**. Each
 item follows the same five-member ADR 0030 contract, and one shared adapter
-(`stage2/util/output/api/stage2_util/derivation/bulk_deg.py`) binds the deposited matrix +
+(`stage2_CarPS-VAE/util/output/api/stage2_util/derivation/bulk_deg.py`) binds the deposited matrix +
 GEO series matrix and runs the one live DEG implementation
 (`stage2_util/derivation/disease_deg.R`); the item script only declares its design.
 
@@ -266,9 +266,9 @@ acute-MI bulk case–control series exists.
 - **Stage 1 MIRI screen** — `stage1/*/08_miri_phenotype/miri_phenotype.py` reads
   `disease_data/<GSE>/local/deg/*.json` (and `source/*_deg_results.csv`) for the
   Stage-1 L1000 reference lists. That interface is unchanged.
-- **Stage 2 gene axis** — the [HVG-DEG step](../stage2/02_gene_axis/02.1_hvg-deg/README.md)
+- **Stage 2 gene axis** — the [HVG-DEG step](../stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/README.md)
   owns published selection and evidence. Shared DEG workers and rank helpers
-  are documented in [Stage 2 util](../stage2/util/README.md).
+  are documented in [Stage 2 util](../stage2_CarPS-VAE/util/README.md).
 
 ## How a new GEO series would be added
 
@@ -290,7 +290,7 @@ acute-MI bulk case–control series exists.
 ## Unified TOX source admission (ADR 0072)
 
 The independent pre-DEG ledger and its evidence are retained in the
-[historical Bases records](https://github.com/Moke110/arc/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/README.md). These additions have immutable GEO matrices and sample
+[historical Bases records](https://github.com/Moke110/carps/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/03_data_train/03.1_hvg-deg-5k/historical/bases/README.md). These additions have immutable GEO matrices and sample
 metadata, fetch recipes, offline manifests and per-item design records:
 
 | items | deposited measurements | eligible comparison |

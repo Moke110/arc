@@ -1,6 +1,6 @@
 # Issue tracker: GitHub
 
-Issues live as GitHub issues at `Moke110/arc`; specs start locally under `.scratch/<feature-slug>/spec.md` and are published to the tracker. Use the `gh` CLI for all operations. Local `.scratch/` keeps working specs and plans only — it is not an issue tracker and keeps no issue files.
+Issues live as GitHub issues at `Moke110/carps`; specs start locally under `.scratch/<feature-slug>/spec.md` and are published to the tracker. Use the `gh` CLI for all operations. Local `.scratch/` keeps working specs and plans only — it is not an issue tracker and keeps no issue files.
 
 ## Conventions
 

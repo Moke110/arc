@@ -107,7 +107,7 @@ main() {
   # 1. Code files on disk (find prunes, NUL-safe for odd path names).
   if ! find . \
     \( -path './.git' -o -path './.worktrees' -o -path './.scratch' -o -path './tmp' -o -path './reference' \
-       -o -path './wet_data' -o -path './.uploads' -o -path './stage2/history' \
+       -o -path './wet_data' -o -path './.uploads' -o -path './stage2_CarPS-VAE/history' \
        -o -name '_envs' -o -name '.venv' -o -name 'venv' -o -name 'source' \
        -o -name 'local' -o -name '__pycache__' \) -prune \
     -o -type f \( -name '*.py' -o -name '*.sh' -o -name '*.R' \) -print0 \

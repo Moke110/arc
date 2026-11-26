@@ -70,7 +70,7 @@ wsl.exe --shutdown          # from Windows, not from inside the distro
 free -h
 rg '^btime' /proc/stat
 nvidia-smi --query-gpu=memory.total,memory.used --format=csv
-df -h /home/chang/arc
+df -h .
 ```
 
 Re-measure WSL RAM, swap, GPU, disk, and Windows host RAM. Update the table

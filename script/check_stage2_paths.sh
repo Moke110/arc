@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# check_stage2_paths.sh — assert stage2/ executable code has no retired step paths.
+# check_stage2_paths.sh — assert stage2_CarPS-VAE/ executable code has no retired step paths.
 #
 # Scan tracked Stage 2 executable code for retired or archived paths.
 # The layout guard allows Steps 01–06, util, routing docs, and the ignored local
@@ -87,14 +87,18 @@ main() {
   local files_scanned=0 occurrences=0 whitelisted=0 stale=0
 
   local old_alias='03[.][1-7]_(tenv|tahoe)_(hvg|denoise)-deg-[345]k'
-  local step_pattern="stage2/[[:alnum:]_./+@-]+|(06_tsg_drug_emb|07_tsg_dose|08_tsg_width_dose|09_tsg_transfer|03[.]1_hvg-deg-5k|$old_alias|log/316-runs)(/[[:alnum:]_./+@-]*)?"
+  local step_pattern="(stage2_CarPS-VAE|stage2)/[[:alnum:]_./+@-]+|(06_tsg_drug_emb|07_tsg_dose|08_tsg_width_dose|09_tsg_transfer|03[.]1_hvg-deg-5k|$old_alias|log/316-runs)(/[[:alnum:]_./+@-]*)?"
   local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 06_tsg_shape)
   local shape_rounds=(06_tsg_shape/06.1_round1 06_tsg_shape/06.2_round2 06_tsg_shape/06.3_round3 06_tsg_shape/06.4_round4)
-  local stage2_root="${STAGE2_PATH_AUDIT_ROOT:-stage2}"
+  local stage2_root="${STAGE2_PATH_AUDIT_ROOT:-stage2_CarPS-VAE}"
   if [ -z "${STAGE2_PATH_AUDIT_ROOT:-}" ]; then
+    if [ -e stage2 ] || [ -L stage2 ]; then
+      echo "RESULT: FAIL — previous Stage 2 root remains: stage2" >&2
+      return 1
+    fi
     local archived_files
-    archived_files="$(git ls-files -- stage2/history)" || return 2
-    if [ -n "$archived_files" ] || ! git check-ignore -q -- stage2/history/.archive-probe; then
+    archived_files="$(git ls-files -- stage2_CarPS-VAE/history)" || return 2
+    if [ -n "$archived_files" ] || ! git check-ignore -q -- stage2_CarPS-VAE/history/.archive-probe; then
       echo "RESULT: FAIL — Stage 2 history must be ignored and untracked" >&2
       return 1
     fi
@@ -167,7 +171,7 @@ main() {
   if [ -n "${STAGE2_PATH_AUDIT_FILES:-}" ]; then
     tr '\n' '\0' <"$STAGE2_PATH_AUDIT_FILES" >"$files_list" || exit 2
   else
-    git ls-files -z stage2 >"$files_list" || exit 2
+    git ls-files -z stage2_CarPS-VAE >"$files_list" || exit 2
   fi
 
   local f
@@ -187,21 +191,21 @@ main() {
       literal="${hit#*:}"
       local active_literal=0
       for root in "${active_roots[@]}"; do
-        case "$literal" in "stage2/$root" | "stage2/$root"/*) active_literal=1 ;; esac
+        case "$literal" in "stage2_CarPS-VAE/$root" | "stage2_CarPS-VAE/$root"/*) active_literal=1 ;; esac
       done
       case "$literal" in
-        stage2/06_tsg_shape/AGENTS.md | stage2/06_tsg_shape/README.md) ;;
-        stage2/06_tsg_shape/?*)
+        stage2_CarPS-VAE/06_tsg_shape/AGENTS.md | stage2_CarPS-VAE/06_tsg_shape/README.md) ;;
+        stage2_CarPS-VAE/06_tsg_shape/?*)
           active_literal=0
           for root in "${shape_rounds[@]}"; do
-            case "$literal" in "stage2/$root" | "stage2/$root"/*) active_literal=1 ;; esac
+            case "$literal" in "stage2_CarPS-VAE/$root" | "stage2_CarPS-VAE/$root"/*) active_literal=1 ;; esac
           done ;;
       esac
       case "$literal" in
-        stage2/05_tsg_loss/execution | stage2/05_tsg_loss/execution/* | \
-        stage2/05_tsg_loss/output | stage2/05_tsg_loss/output/* | \
-        stage2/05_tsg_loss/log | stage2/05_tsg_loss/log/* | \
-        stage2/05_tsg_loss/figure | stage2/05_tsg_loss/figure/*)
+        stage2_CarPS-VAE/05_tsg_loss/execution | stage2_CarPS-VAE/05_tsg_loss/execution/* | \
+        stage2_CarPS-VAE/05_tsg_loss/output | stage2_CarPS-VAE/05_tsg_loss/output/* | \
+        stage2_CarPS-VAE/05_tsg_loss/log | stage2_CarPS-VAE/05_tsg_loss/log/* | \
+        stage2_CarPS-VAE/05_tsg_loss/figure | stage2_CarPS-VAE/05_tsg_loss/figure/*)
           active_literal=0 ;;
         */historical | */historical/* | */03.1_hvg-deg-5k | */03.1_hvg-deg-5k/*)
           active_literal=0 ;;

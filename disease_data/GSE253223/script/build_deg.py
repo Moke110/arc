@@ -24,7 +24,7 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2/util/output/api'))
+sys.path.insert(0, str(REPO / 'stage2_CarPS-VAE/util/output/api'))
 from stage2_util.derivation import bulk_deg  # noqa: E402
 
 SPEC = {
