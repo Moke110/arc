@@ -121,10 +121,13 @@ def scientific_receipt(bundle, publication, report, numerical):
 
 def build(bundle, publication, scratch, step03):
     """Stage only verified public artifacts and retain the full local report."""
+    report = bundle / "report"
+    resolved_publication, resolved_report = publication.resolve(), report.resolve()
+    if resolved_publication.is_relative_to(resolved_report) or resolved_report.is_relative_to(resolved_publication):
+        raise ValueError("publication destination overlaps the local report directory")
     with axis_run.publication_lock(publication) as output:
         if output.exists():
             raise ValueError("build requires an unused publication directory")
-        report = bundle / "report"
         with TemporaryDirectory(prefix="step10-formal-", dir=scratch) as temporary:
             work = Path(temporary)
             candidate = work / "publication"
@@ -202,8 +205,9 @@ def install(bundle, publication, destination):
             with TemporaryDirectory(prefix=".step10-install-", dir=output.parent) as temporary:
                 candidate = Path(temporary) / "formal"
                 candidate.mkdir()
-                for name in ("matrix", "matrix-audit", "report"):
-                    shutil.copytree(bundle / name, candidate / name, copy_function=os.link)
+                shutil.copytree(bundle / "matrix", candidate / "matrix", copy_function=os.link)
+                for name in ("matrix-audit", "report"):
+                    shutil.copytree(bundle / name, candidate / name)
                 candidate.rename(output)
     return {"status": "PASS", "output": str(output), "receipt_sha256": scientific_hash}
 

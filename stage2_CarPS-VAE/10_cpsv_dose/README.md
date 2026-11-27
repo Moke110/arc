@@ -106,8 +106,9 @@ systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=8G -- \
 
 Pass `--step03` to `build` and `verify` when working in a linked checkout.
 The install command checks the passing receipts and atomically materializes
-the immutable fits, phase audit evidence and all report tables at
-`output/formal` using hardlinks. Keep the bundle and destination on the
-same filesystem. The published PNGs, plotted CSVs and compact report tables
-live in this step's `figure/` and `log/`. To verify the installed study,
+the fits, phase audit evidence and report tables at `output/formal`.
+It hardlinks the immutable fit files and copies the audit evidence and
+report tables. Keep the bundle and destination on the same filesystem.
+The published PNGs, plotted CSVs and compact report tables live in this
+step's `figure/` and `log/`. To verify the installed study,
 run `verify --scratch "$work/scratch"` with the default bundle and publication.
