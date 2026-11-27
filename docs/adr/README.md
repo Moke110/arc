@@ -139,3 +139,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0104](0104-carps-vae-no-dose.md) | Select no-dose for subsequent CarPS-VAE work |
 
 - [0105](0105-stage-cleanup.md) Retain the Stage 1 v2 screen and consolidate Stage 2 model experiments.
+- [0106](0106-cpst-and-cpsp-public-release-boundaries.md) Name the public stages CPST and CPSP and define their release and documentation boundaries.

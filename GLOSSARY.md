@@ -1,6 +1,6 @@
 # CarPS
 
-CarPS (Cardiomyocyte Perturbation Prediction System) is the repository for cardiomyocyte chemical perturbation prediction and related cardiac drug-repositioning research. It contains external data and models, the Stage 1 repositioning workflows, and the Stage 2 prediction studies.
+CarPS (Cardiomyocyte Perturbation Prediction System) develops transcriptome and phenotype prediction for chemical perturbations in cardiomyocytes.
 
 ## Language
 
@@ -11,22 +11,19 @@ A program-level milestone of the AICM roadmap, with its own entry and exit condi
 _Avoid_: phase, milestone, step
 
 **Stage 1**:
-The completed AICM stage for XPert-based MIRI drug repositioning. Its retained screen is v2, which uses primary and iPSC-derived cardiomyocyte data. Earlier studies also evaluated v1, v1.1 and v3.
+The local predecessor stage of CarPS.
 
-**Stage 2**:
-The stage that develops and evaluates transcriptome prediction for chemical perturbations in cardiomyocytes. Its selected model is CarPS-VAE.
+**Stage 2 (CPST)**:
+The CarPS-Transcriptome stage, which develops and evaluates models that predict the transcriptomic response of cardiomyocytes to chemical perturbations.
 
-**Stage 2 tree**:
-The `stage2_CarPS-VAE/` tree that owns Stage 2 data releases, the CarPS-VAE initial release, and subsequent perturbation prediction studies.
-
-**CarPS-VAE**:
+**CarPS-Transcriptome model**:
 The selected Stage 2 variational autoencoder for predicting the signed transcriptomic response of cardiomyocytes to a chemical perturbation from matched control expression and chemical representation.
 
-**CarPS-VAE alpha**:
-The initial fixed release of CarPS-VAE, derived from the Step 06.4 `XΔ-XΔ` arm and released in Step 07. It is the reference against which subsequent model experiments are evaluated.
+**CarPS-Transcriptome alpha**:
+The initial fixed release of the CarPS-Transcriptome model, derived from the Step 06.4 `XΔ-XΔ` arm and released in Step 07. It is the reference against which subsequent model experiments are evaluated.
 
-**Stage 3**:
-The AICM stage that predicts the direction of change of one cardiomyocyte phenotype under one specified experimental condition from a drug-induced perturbome. Its first effort establishes the drug–phenotype data foundation; the perturbome will come from Stage 2 model predictions.
+**Stage 3 (CPSP)**:
+The CarPS-Phenotype stage, which predicts the direction of change of one cardiomyocyte phenotype under a specified experimental condition from the drug-induced transcriptomic response predicted by CPST.
 
 ### Stage 2 chemical representation
 
@@ -703,8 +700,8 @@ _Avoid_: experiment, trial
 
 ### Stage 2 tenv model comparison
 
-**CarPS-VAE dose-input comparison**:
-The Stage 2 Step 10 comparison of dose inputs for CarPS-VAE when both the
+**CarPS-Transcriptome dose-input comparison**:
+The Stage 2 Step 10 comparison of dose inputs for the CarPS-Transcriptome model when both the
 drug parent and measured dose are held out from model development.
 
 **Tenv dose-input comparison**:
