@@ -29,13 +29,15 @@ cp -p stage1/xpert-fda-miri-v1.1/03_cm_finetune_data/output/dtoxs_lincs.h5ad \
 cp -p stage1/xpert-fda-miri-v3/03_cm_finetune_data/output/compound_external_audit.csv \
   pert_data/Annotation/local/
 (cd stage1/input/references && sha256sum -c manifest.sha256)
-(cd pert_data/Annotation/local && sha256sum -c ../script/audit_seed.sha256)
+bash pert_data/Annotation/script/verify_audit_seed.sh
 ~~~
 
 The two predecessor H5ADs supply the original schema and official folds. The
 Annotation CSV supplies the original offline public-registry seed. These inputs
 are local data, so retain them with the materialized checkout or transfer them
 from a verified copy when setting up a new checkout.
+Annotation's `script/verify.sh` checks the downloaded HGNC source. The separate
+`script/verify_audit_seed.sh` checks the installed local CSV.
 
 The [checkpoint inventory](pre_cutover_weights.tsv) records workflow-relative
 paths and symlink targets for the 52 frozen XPert weights. Preserve the links

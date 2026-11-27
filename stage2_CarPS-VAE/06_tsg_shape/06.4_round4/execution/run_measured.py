@@ -2,23 +2,16 @@
 
 import argparse
 import json
-import os
 from pathlib import Path
-import resource
-from tempfile import TemporaryDirectory
-import time
-
-import pandas as pd
-import torch
 
 from measured_model import MeasuredAdapter, axis_run, configure_objective, objective_identity
 from measured_roster import (CONTROL, CONTROL_ONLY, DIRECT_DELTA, MEASURED_SHARED, SEEDS, SHAPES,
                              SOURCE_SHAPES, fit_coordinates, objective_label)
 from run_composition import MODEL_DEPENDENCIES as ROUND_THREE_DEPENDENCIES
 from run_composition import architecture_config as round_three_config
-from run_shape import fit_with_diagnostics
 from run_sweep import (AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING,
-                       INPUT_PATHS, PHASES, bind as bind_loss, fit as fit_loss)
+                       INPUT_PATHS, PHASES, bind as bind_loss)
+from util.training.transigen import fit_with_diagnostics
 
 SCHEMA = "stage2-tenv-transigen-measured-encoder-run-v1"
 PROTOCOL = "matched-plate-control-transigen-measured-encoder-v1"

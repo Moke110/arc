@@ -2,23 +2,16 @@
 
 import argparse
 import json
-import os
 from pathlib import Path
-import resource
-from tempfile import TemporaryDirectory
-import time
-
-import pandas as pd
-import torch
 
 from composition_model import CompositionAdapter, axis_run, configure_objective, objective_identity
 from composition_roster import (COMBINATIONS, HEAD_PARAMETERS, NORMALIZED_FILM_SHAPES, ROUND_TWO_SHAPES, SEEDS, SHAPES,
                                 fit_coordinates, objective_label)
 from run_architecture import ARCHITECTURE_CHANGES, MODEL_DEPENDENCIES as ROUND_TWO_DEPENDENCIES
 from run_architecture import architecture_config as round_two_config
-from run_shape import fit_with_diagnostics
 from run_sweep import (AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING,
-                       INPUT_PATHS, PHASES, bind as bind_loss, fit as fit_loss)
+                       INPUT_PATHS, PHASES, bind as bind_loss)
+from util.training.transigen import fit_with_diagnostics
 
 SCHEMA = "stage2-tenv-transigen-architecture-composition-run-v2"
 PROTOCOL = "matched-plate-control-transigen-architecture-composition-v2"

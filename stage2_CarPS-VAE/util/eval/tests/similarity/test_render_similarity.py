@@ -7,7 +7,8 @@ import sys
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-LOSS = (Path(__file__).resolve().parents[4] / "05_tsg_loss/similarity/tests" / Path(__file__).name).parents[2]
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+LOSS = REPO / "stage2_CarPS-VAE/05_tsg_loss"
 PCC_FIGURE = LOSS / "05.4_mse-l1_pcc/figure"
 
 

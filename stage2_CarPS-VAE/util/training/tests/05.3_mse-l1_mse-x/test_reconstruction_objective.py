@@ -7,7 +7,8 @@ from unittest import TestCase
 
 import torch
 
-EXECUTION = (Path(__file__).resolve().parents[4] / "05_tsg_loss/05.3_mse-l1_mse-x/execution/tests" / Path(__file__).name).parents[1]
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+EXECUTION = REPO / "stage2_CarPS-VAE/05_tsg_loss/05.3_mse-l1_mse-x/execution"
 sys.path.insert(0, str(EXECUTION))
 
 from reconstruction_objective import ReconstructionObjective

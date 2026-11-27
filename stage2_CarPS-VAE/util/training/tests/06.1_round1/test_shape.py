@@ -5,7 +5,8 @@ import unittest
 
 import torch
 
-EXECUTION = (Path(__file__).resolve().parents[4] / "06_tsg_shape/06.1_round1/execution/tests" / Path(__file__).name).parents[1]
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+EXECUTION = REPO / "stage2_CarPS-VAE/06_tsg_shape/06.1_round1/execution"
 sys.path.insert(0, str(EXECUTION))
 from shape_model import ShapeAdapter, axis_run
 from shape_roster import SHAPES

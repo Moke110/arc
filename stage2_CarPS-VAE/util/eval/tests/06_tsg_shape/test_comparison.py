@@ -6,7 +6,9 @@ from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 import unittest
 
-sys.path.insert(0, str((Path(__file__).resolve().parents[4] / "06_tsg_shape/execution/tests" / Path(__file__).name).parents[1]))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+STAGE = REPO / "stage2_CarPS-VAE"
+sys.path.insert(0, str(STAGE / "06_tsg_shape/execution"))
 
 from build_comparison import accepted_fit
 from stage2_util.derivation.release import sha256, write_json

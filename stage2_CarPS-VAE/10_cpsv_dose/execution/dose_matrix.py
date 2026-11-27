@@ -10,7 +10,7 @@ import time
 
 from dose_inputs import open_inputs
 from dose_protocol import REFERENCE, STEP, TRANSIGEN, coordinates
-from dose_runs import ORIGINAL_CODE, PHASES, add_inputs, axis_run, bind, read_run, verify_release
+from dose_runs import DOSE_CODE, ORIGINAL_CODE, PHASES, add_inputs, axis_run, bind, read_run, verify_release
 from util.training.provenance import legacy_configuration
 from matrix import ResourceMonitor, SAMPLE_SECONDS, digest_values, enforce_record, register_coordinate
 from matrix_measured import MEMORY_CAP, SWAP_CAP, scope_directory
@@ -86,7 +86,8 @@ def preflight(step03, representations, source, bounded):
         formal = {key: bind(key, data, vectors, source, False) for key in coordinates()}
         selected = ({key: bind(key, data, vectors, source, True) for key in coordinates(True)}
                     if bounded else formal)
-    historical = (legacy_configuration(config, axis_run.REPO, ORIGINAL_CODE) for config in formal.values())
+    historical = (legacy_configuration(config, axis_run.REPO, ORIGINAL_CODE, historical_paths=DOSE_CODE)
+                  for config in formal.values())
     folds = []
     for fold in range(3):
         config = formal[(REFERENCE, fold, 17)]

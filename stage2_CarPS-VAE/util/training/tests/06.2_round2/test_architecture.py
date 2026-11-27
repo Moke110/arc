@@ -9,11 +9,12 @@ import numpy as np
 import torch
 from torch import nn
 
-sys.path.insert(0, str((Path(__file__).resolve().parents[4] / "06_tsg_shape/06.2_round2/execution/tests" / Path(__file__).name).parents[1]))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str(REPO / "stage2_CarPS-VAE/06_tsg_shape/06.2_round2/execution"))
 
 from architecture_model import ArchitectureAdapter, ShapeAdapter, axis_run, configure_objective
 
-ROOT = Path(os.environ.get("ARC_ROOT", (Path(__file__).resolve().parents[4] / "06_tsg_shape/06.2_round2/execution/tests" / Path(__file__).name).parents[5]))
+ROOT = Path(os.environ.get("ARC_ROOT", REPO))
 SOURCE_ROOT = ROOT / "pert_model/TranSiGen/source"
 TRANSFORM = dict(kind="training-log10-dose-population-standardization-v1", mean=0., std=1.)
 

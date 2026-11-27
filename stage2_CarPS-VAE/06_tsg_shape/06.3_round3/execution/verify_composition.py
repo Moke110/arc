@@ -3,7 +3,7 @@
 from composition_model import axis_run, objective_identity
 from composition_roster import NO_X2_SHAPES, fit_coordinates
 from run_composition import AXIS, PHASES, PHASE_FILES, PROTOCOL, SCHEMA, SEALED_FILES, architecture_config
-from run_shape import kl_diagnostics
+from util.training.transigen import kl_diagnostics
 from evaluate_loss import axis_evaluate, check_trace
 from evaluate_sweep import TRACE_COLUMNS
 

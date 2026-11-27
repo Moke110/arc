@@ -16,7 +16,7 @@ from dose_model import DoseAdapter, configuration, epoch_streams, initialization
 from dose_protocol import (ARMS, AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_STEP03,
                            SCENARIO, SEEDS, coordinates, representation)
 from chem_runs import ALPHA_MANIFEST, axis_run, verify_release
-from tsg_axis.learning import EarlyStopping, fixed_rng
+from tsg_axis.learning import fixed_rng
 from tsg_axis.protocol import MAX_EPOCHS, PATIENCE
 from util.training import registered
 from util.training.provenance import verify_replay_configuration, verify_sealed_code
@@ -24,6 +24,10 @@ from util.training.transigen import fit_epochs, replay_validation
 
 SCHEMA = "carps-vae-dose-run-v1"
 ORIGINAL_CODE = "b8be1ad9244c9a3e03eba3e0c77ec64a59ed695d"
+DOSE_CODE = tuple(
+    Path(__file__).resolve().with_name(name).relative_to(axis_run.REPO).as_posix()
+    for name in ("dose_runs.py", "dose_model.py", "dose_inputs.py", "dose_protocol.py")
+)
 PHASES = {"train": "training.json", "predict": "predictions.json", "replay": "manifest.json"}
 TRAINING_FILES = axis_run.TRAINING_FILES
 PREDICTION_FILES = axis_run.PREDICTION_FILES
@@ -53,6 +57,21 @@ def input_identity(data, fold, bounded):
     }
 
 
+def code_hashes():
+    """Bind the dose runner, its shared runtime and the alpha input adapters."""
+    extra = (
+        *DOSE_CODE,
+        "stage2_CarPS-VAE/07_cpsv_alpha/output/api/carps_vae_alpha.py",
+        "stage2_CarPS-VAE/07_cpsv_alpha/execution/verify_alpha.py",
+        "stage2_CarPS-VAE/08_cpsv_chem-emb/execution/chem_runs.py",
+        "stage2_CarPS-VAE/03_data_train/output/api/fold_ledger.py",
+        "stage2_CarPS-VAE/03_data_train/output/api/tenv_axes.py",
+        "stage2_CarPS-VAE/util/output/api/stage2_util/derivation/release.py",
+        "stage2_CarPS-VAE/util/output/api/stage2_util/publication.py",
+    )
+    return {**axis_run.code_hashes(), **axis_run.file_hashes(axis_run.REPO, extra)}
+
+
 def bind(key, data, vectors, source, bounded):
     args = arguments(key, bounded)
     arm, fold, seed = key
@@ -61,15 +80,12 @@ def bind(key, data, vectors, source, bounded):
     if (native["src/model.py"] != axis_run.kpgt.SOURCE_DIGEST
             or native["src/train_TranSiGen.py"] != axis_run.kpgt.SCRIPT_HASH):
         raise ValueError("TranSiGen author source differs from the frozen model and configuration")
-    step = Path(__file__).resolve().parent
-    dependencies = tuple(step / name for name in ("dose_runs.py", "dose_model.py", "dose_inputs.py", "dose_protocol.py"))
-    shared = sorted((axis_run.STAGE / "util/training").glob("*.py"))
     config = {
         **input_identity(data, fold, bounded),
         "schema": SCHEMA, "scenario": SCENARIO, "seed": seed,
         "alpha_release_sha256": axis_run.digest(ALPHA_MANIFEST),
         "native_sha256": native,
-        "code_sha256": {path.relative_to(axis_run.REPO).as_posix(): axis_run.digest(path) for path in (*dependencies, *shared)},
+        "code_sha256": code_hashes(),
         "representation": {"name": chemistry, "width": vectors.width(chemistry),
                            "manifest_sha256": vectors.manifest_sha256,
                            "vectors_sha256": vectors.manifest["files"][f"{chemistry}.npy"]},
@@ -198,7 +214,7 @@ def execute(output, phase, step03, representations, source):
         with open_inputs(step03, representations) as (data, vectors):
             current = bind(key, data, vectors, source, args["bounded"])
             verify_replay_configuration(config, current, replay=run.sealed is not None,
-                                        repo=axis_run.REPO, revision=ORIGINAL_CODE)
+                                        repo=axis_run.REPO, revision=ORIGINAL_CODE, historical_paths=DOSE_CODE)
             adapter = DoseAdapter(source, key[0])
             model = adapter.build(key[2], "cuda", n_genes=len(data.genes))
             inputs = features_for(data, vectors, key[0])
@@ -217,7 +233,7 @@ def execute(output, phase, step03, representations, source):
 def read_run(path, bounded):
     registration = path / "registration.json"
     config = axis_run.read_json(registration)
-    verify_sealed_code(config, axis_run.REPO, ORIGINAL_CODE)
+    verify_sealed_code(config, axis_run.REPO, ORIGINAL_CODE, historical_paths=DOSE_CODE)
     args = config["arguments"]
     key = args["arm"], args["fold"], args["seed"]
     registration_sha = axis_run.digest(registration)

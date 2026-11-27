@@ -6,7 +6,8 @@ import unittest
 
 import pandas as pd
 
-sys.path.insert(0, str((Path(__file__).resolve().parents[4] / "06_tsg_shape/06.3_round3/execution/tests" / Path(__file__).name).parents[1]))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str(REPO / "stage2_CarPS-VAE/06_tsg_shape/06.3_round3/execution"))
 from composition_scores import paired_report
 
 

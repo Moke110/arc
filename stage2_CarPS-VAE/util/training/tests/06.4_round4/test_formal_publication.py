@@ -6,7 +6,8 @@ import sys
 from tempfile import TemporaryDirectory
 import unittest
 
-sys.path.insert(0, str((Path(__file__).resolve().parents[4] / "06_tsg_shape/06.4_round4/execution/tests" / Path(__file__).name).parents[1]))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str(REPO / "stage2_CarPS-VAE/06_tsg_shape/06.4_round4/execution"))
 
 from publish_measured import verify_ledger
 from measured_roster import coordinates, fit_coordinates

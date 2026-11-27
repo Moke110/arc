@@ -10,13 +10,14 @@ import pandas as pd
 from architecture_model import STEP, axis_run
 from architecture_roster import CONTROL, HEAD_PARAMETERS, coordinates, objective_label
 from evaluate_loss import axis_evaluate, score_run
-from evaluate_shape import pair_scores, validate_coordinates
+from evaluate_shape import validate_coordinates
 from matrix_architecture import SCHEMA as MATRIX_SCHEMA, fit_coordinates
 from prior_shape import verify_matrix
 from run_architecture import AXIS, DEFAULT_TRAINING, architecture_config
 from training_data import TENV_DEFAULT, open_tenv_training
 from tsg_axis.inputs import AxisInputs
 from tsg_axis.metrics import METRICS
+from util.eval.shape import pair_shape_scores
 from verify_architecture import read_run
 
 REPORT_SCHEMA = "stage2-tenv-transigen-prediction-architecture-report-v1"
@@ -81,7 +82,7 @@ def build_report(candidate, runs, training, bandwidth_training, smoke, reused=No
             epochs.append(pd.DataFrame({**key, "objective": objective_label(shape), **dict(trace)}))
             conditions.append(pd.DataFrame({**key, **dict(paired)}))
             fold_metrics.append(pd.DataFrame({**key, **dict(metrics)}))
-    fold_scores, summary = pair_scores(pd.concat(fold_metrics, ignore_index=True))
+    fold_scores, summary = pair_shape_scores(pd.concat(fold_metrics, ignore_index=True), control=CONTROL)
     candidate.mkdir()
     tables = {
         "runs.csv": pd.DataFrame(run_rows),

@@ -3,7 +3,7 @@
 from architecture_model import axis_run, objective_identity
 from architecture_roster import NO_X2, coordinates
 from run_architecture import AXIS, PHASES, PHASE_FILES, PROTOCOL, SCHEMA, SEALED_FILES, architecture_config
-from run_shape import kl_diagnostics
+from util.training.transigen import kl_diagnostics
 from evaluate_loss import axis_evaluate, check_trace
 from evaluate_sweep import TRACE_COLUMNS
 

@@ -4,11 +4,12 @@ import unittest
 
 import pandas as pd
 
-EXECUTION = (Path(__file__).resolve().parents[4] / "06_tsg_shape/06.2_round2/execution/tests" / Path(__file__).name).parents[1]
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+EXECUTION = REPO / "stage2_CarPS-VAE/06_tsg_shape/06.2_round2/execution"
 sys.path.insert(0, str(EXECUTION))
 from prior_architecture import verify_original_scores
 
-PUBLISHED = EXECUTION.parents[1] / "06.1_round1/figure/data/fold-scores.csv"
+PUBLISHED = REPO / "stage2_CarPS-VAE/06_tsg_shape/06.1_round1/figure/data/fold-scores.csv"
 
 
 class FormalArchitectureTest(unittest.TestCase):

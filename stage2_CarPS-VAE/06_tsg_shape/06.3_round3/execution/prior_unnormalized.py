@@ -9,7 +9,7 @@ from architecture_model import objective_identity
 from evaluate_loss import axis_evaluate, check_trace
 from evaluate_sweep import TRACE_COLUMNS
 from run_architecture import architecture_config
-from run_shape import kl_diagnostics
+from util.training.transigen import kl_diagnostics
 from run_sweep import PHASES
 from verify_composition import AXIS, PHASE_FILES, SEALED_FILES
 

@@ -1,6 +1,7 @@
 """Score or independently verify all registered architecture comparisons."""
 
 import argparse
+from functools import partial
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -12,13 +13,16 @@ from shape_model import STEP, axis_run
 from shape_roster import CONTROL, PRIOR_NAMES, coordinates, dimensions
 from prior_shape import PRIOR_MATRIX, PRIOR_PROTOCOL, PRIOR_RECEIPT, PRIOR_RUN_SCHEMA, load_prior
 from run_shape import (AXIS, DEFAULT_TRAINING, OBJECTIVE, PHASES, PHASE_FILES, PROTOCOL,
-                       SCHEMA, SEALED_FILES, kl_diagnostics)
+                       SCHEMA, SEALED_FILES)
 from evaluate_loss import axis_evaluate, check_trace, score_run
 from evaluate_sweep import TRACE_COLUMNS
 from tsg_axis.inputs import AxisInputs
-from tsg_axis.metrics import METRICS, summarize_folds
+from tsg_axis.metrics import METRICS
 from training_data import TENV_DEFAULT, open_tenv_training
+from util.eval.shape import pair_shape_scores
+from util.training.transigen import kl_diagnostics
 
+pair_scores = partial(pair_shape_scores, control=CONTROL)
 REPORT_SCHEMA = "stage2-tenv-transigen-shape-width-extension-report-v1"
 
 
@@ -67,21 +71,6 @@ def read_run(path, smoke, *, prior=False):
     if not kl.equals(kl_diagnostics(trace, config["model"]["n_latent"])):
         raise ValueError(f"KL diagnostics differ from the objective trace: {path}")
     return key, (path, config, replay, training, kl)
-
-
-def pair_scores(fold_scores):
-    baseline = fold_scores.loc[fold_scores["shape"] == CONTROL, ["fold", "metric", "value"]]
-    pairs = fold_scores.merge(baseline.rename(columns={"value": "control_score"}),
-                              on=["fold", "metric"], how="left", validate="many_to_one", indicator=True)
-    if not pairs["_merge"].eq("both").all():
-        raise ValueError("every score needs the original architecture on the same fold and metric")
-    pairs = pairs.drop(columns="_merge")
-    pairs["score_difference"] = pairs.value - pairs.control_score
-    summary = summarize_folds(pairs, ["shape", "metric"])
-    difference = pairs.groupby(["shape", "metric"], sort=False).score_difference.agg(["mean", "count"])
-    summary = summary.merge(difference.rename(columns={"mean": "score_difference", "count": "n_paired_folds"}),
-                            on=["shape", "metric"], validate="one_to_one")
-    return pairs, summary
 
 
 def shared_configuration(config):

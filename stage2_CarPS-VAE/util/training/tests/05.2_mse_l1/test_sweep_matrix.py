@@ -5,7 +5,8 @@ import sys
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-sys.path.insert(0, str((Path(__file__).resolve().parents[4] / "05_tsg_loss/05.2_mse_l1/execution/tests" / Path(__file__).name).parents[1]))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str(REPO / "stage2_CarPS-VAE/05_tsg_loss/05.2_mse_l1/execution"))
 
 from matrix_sweep import check_registrations, run_paths
 from run_sweep import axis_run

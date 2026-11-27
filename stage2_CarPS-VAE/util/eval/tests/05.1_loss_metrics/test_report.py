@@ -5,7 +5,8 @@ import sys
 from unittest import TestCase
 import pandas as pd
 
-sys.path.insert(0, str((Path(__file__).resolve().parents[4] / "05_tsg_loss/05.1_loss_metrics/execution/tests" / Path(__file__).name).parents[1]))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str(REPO / "stage2_CarPS-VAE/05_tsg_loss/05.1_loss_metrics/execution"))
 from evaluate_loss import check_trace
 
 
