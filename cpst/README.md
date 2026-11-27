@@ -104,6 +104,13 @@ regularize the two encoder distributions against the standard normal prior
    [Step 10 formal results](10_cpst_dose/README.md#formal-results) ·
    [No-dose decision](../docs/adr/0104-carps-vae-no-dose.md)
 
+## Reporting for the tenv rerun
+
+Read the primary held-out comparison metrics in order of priority. First
+read Δ Spearman, then signed Jaccard at 200 genes (JAC-top200), then Δ PCC. Use each step's
+established baseline model when running the next step. Each step report
+documents the protocol used for its release.
+
 ## Prospective use in CarPS-Phenotype
 
 The planned phenotype predictor would take ordered signed CarPS-Transcriptome

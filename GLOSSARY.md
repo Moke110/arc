@@ -20,7 +20,7 @@ The CarPS-Transcriptome stage, which develops and evaluates models that predict 
 The selected Stage 2 variational autoencoder for predicting the signed transcriptomic response of cardiomyocytes to a chemical perturbation from matched control expression and chemical representation.
 
 **CarPS-Transcriptome alpha**:
-The initial fixed release of the CarPS-Transcriptome model, derived from the Step 06.4 `XΔ-XΔ` arm and released in Step 07. It is the reference against which subsequent model experiments are evaluated.
+The historical fixed release of the CarPS-Transcriptome model, derived from the Step 06.4 `XΔ-XΔ` arm. It served as the reference for the original Step 08 chemical representation comparison.
 
 **Stage 3 (CPSP)**:
 The CarPS-Phenotype stage, which predicts the direction of change of one cardiomyocyte phenotype under a specified experimental condition from the drug-induced transcriptomic response predicted by CPST.
