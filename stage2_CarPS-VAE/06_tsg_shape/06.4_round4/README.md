@@ -1,5 +1,7 @@
 # Step 06.4 TranSiGen measured encoder targets
 
+The numbered commands use the [shared TranSiGen training and evaluation APIs](../../util/README.md#transigen-training-and-evaluation).
+
 [ADR 0098](../../../docs/adr/0098-transigen-shape-round4.md) compares five
 architectures on the frozen tenv Denoise-DEG 5k protocol with measured
 same-plate DMSO, KPGT and a numeric dose standardized on the training fold.
@@ -81,7 +83,7 @@ python "$STEP/execution/audit_measured_figures.py" build --smoke \
   --data "$WORK/report" --output "$WORK/figures" --receipt "$WORK/figures.json" \
   --scratch "$WORK/scratch"
 capped_round4 env TSG_MEASURED_TEST_DEVICE=cuda python -m unittest discover \
-  -s "$STEP/execution/tests" -p 'test_measured_model.py'
+  -s "$STEP/../../util/training/tests/06.4_round4" -p 'test_measured_model.py'
 stop_sampler
 trap - EXIT
 python "$STEP/execution/audit_measured.py" resources --smoke \

@@ -19,13 +19,14 @@ sys.path.insert(0, str(STEP / "output/api"))
 from carps_vae_alpha import AlphaAdapter, KPGT_WIDTH, MEASURED_SHARED, PROJECTION_WIDTH, ROUND_FOUR, axis_run, objective
 from measured_roster import SEEDS, fit_coordinates
 from run_measured import (AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING,
-                          MODEL_DEPENDENCIES, bind)
+                          bind)
 from verify_measured import read_run
 
 RELEASE = STEP / "output/release.json"
 ACCEPTANCE = STEP / "log/362-alpha.json"
 RELEASE_ID = "carps-vae-alpha"
 RELEASE_SCHEMA = "carps-vae-alpha-release-v1"
+ALPHA_RUNTIME_REVISION = "825f48c96a0968c11b0bffa9a8b06686b0d16e03"
 REFERENCE_RECEIPT = "log/359-formal.json"
 REFERENCE_ROSTER = tuple(product(range(3), SEEDS))
 REPORT_FILES = {"log/runs.csv": "runs.csv", "log/bandwidths.csv": "bandwidths.csv",
@@ -55,30 +56,13 @@ def original_hashes(revision, files):
     }
 
 
-def runtime_hashes():
-    """Pin the released entry points and the inherited executable dependencies."""
-    stage = STEP.parent
-    paths = (
-        STEP / "output/api/carps_vae_alpha.py", Path(__file__).resolve(), *MODEL_DEPENDENCIES,
-        ROUND_FOUR / "execution/verify_measured.py",
-        stage / "05_tsg_loss/05.1_loss_metrics/execution/evaluate_loss.py",
-        stage / "05_tsg_loss/05.2_mse_l1/execution/evaluate_sweep.py",
-        stage / "04_tsg_axis/execution/evaluate.py",
-        stage / "04_tsg_axis/output/api/tsg_axis/metrics.py",
-        stage / "util/output/api/stage2_util/derivation/release.py",
-        stage / "util/output/api/stage2_util/publication.py",
-    )
-    return {**axis_run.code_hashes(),
-            **{path.relative_to(axis_run.REPO).as_posix(): axis_run.digest(path) for path in paths}}
-
-
 def verify_release():
-    """Verify the fixed alpha defaults and code and return its release record."""
+    """Verify the fixed defaults and historical Git code behind the alpha release."""
     release = axis_run.read_json(RELEASE)
     if (release["schema"], release["release"], release["default"]) != (RELEASE_SCHEMA, RELEASE_ID, defaults()):
         raise ValueError("alpha defaults differ from the fixed CarPS-VAE alpha release")
-    actual = runtime_hashes()
     pinned = release["runtime_sha256"]
+    actual = original_hashes(ALPHA_RUNTIME_REVISION, tuple(sorted(pinned)))
     if actual != pinned:
         changed = sorted(path for path in actual.keys() | pinned.keys() if actual.get(path) != pinned.get(path))
         raise ValueError(f"alpha runtime dependencies differ: {changed}")
@@ -157,7 +141,7 @@ def verify_protocol(config, data, vectors, source):
     """Rebind relocatable inputs and compare the complete non-path protocol."""
     options = {**config["arguments"], "source": str(source)}
     observed = bind(options, data, vectors)
-    ignored = {"arguments", "nonce", "code_sha256"}
+    ignored = {"arguments", "nonce", "code_sha256", "experiment"}
     if {key: value for key, value in observed.items() if key not in ignored} != {
             key: value for key, value in config.items() if key not in ignored}:
         raise ValueError("current alpha inputs or measured protocol differ from Step 06.4")

@@ -26,7 +26,7 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 - [10_cpsv_dose](10_cpsv_dose/AGENTS.md) compares dose inputs on the cold-dose-drug folds.
 
 Use Step 04's `execution/matrix.py` and `execution/evaluate.py` for the axis comparison.
-Steps 05.1–05.5 and 06.1–06.4 reuse the matched-control runtime and metric primitives with their own run and report commands.
+Steps 04–06 use the [shared training and evaluation APIs](util/README.md#transigen-training-and-evaluation) through their numbered run and report commands.
 
 ## CarPS-VAE configuration
 

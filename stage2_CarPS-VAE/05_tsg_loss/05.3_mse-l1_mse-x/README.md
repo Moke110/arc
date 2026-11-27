@@ -1,5 +1,7 @@
 # TranSiGen reconstruction MSE sweep
 
+The numbered commands use the [shared TranSiGen training and evaluation APIs](../../util/README.md#transigen-training-and-evaluation).
+
 [Spec 11](https://github.com/Moke110/carps/issues/334) varies the shared
 expression reconstruction MSE weight on the [denoise-5k training release](../../03_data_train/03.7_tenv_denoise-5k/README.md)
 while fixing the Delta L1 weight at 1.75. The objective is

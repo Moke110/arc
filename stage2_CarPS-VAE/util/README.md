@@ -90,3 +90,31 @@ From the repository root:
 ```sh
 PYTHONPATH=stage2_CarPS-VAE/util/output/api python -m unittest discover -s stage2_CarPS-VAE/util/execution/tests
 ```
+
+
+## TranSiGen training and evaluation
+
+`training/transigen.py` owns registration, fit, checkpoint validation, prediction
+and independent replay for Steps 04–06. Each study supplies its roster, model
+builder and objective. New registrations explicitly identify architecture,
+objective and weights, chemical representation, fitted dose transform and
+conditioning, ordered axis digest, split, fold and training seed. The native
+study records the author MSE and KL coefficients. The numbered run commands
+retain their arguments and continue to require separate processes for each phase.
+
+`eval/fixed_prediction.py` checks ordered held-out conditions, paired predictions
+and their signed Delta arrays before computing condition and fold metrics.
+Step 04 adds its disease-direction score and each study owns its aggregation,
+training calibration, reused coordinates and publication.
+
+The [verification record](training/verification.md) lists formal products, code
+revisions and parity checks. Historical registrations retain the original
+recorded code hashes. Replay them in the pinned Git checkout with the verified
+input locations; new registrations bind the shared runtime.
+
+Run one test group at a time from the repository root, for example
+
+```bash
+python -m unittest discover -s stage2_CarPS-VAE/util/training/tests/06.4_round4
+python -m unittest discover -s stage2_CarPS-VAE/util/eval/tests/04_tsg_axis
+```

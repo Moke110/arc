@@ -1,5 +1,7 @@
 # TranSiGen Delta loss metrics
 
+The numbered commands use the [shared TranSiGen training and evaluation APIs](../../util/README.md#transigen-training-and-evaluation).
+
 [Spec 9](https://github.com/Moke110/carps/issues/328) compares four Delta loss
 metrics (MSE, cosine, Pearson correlation and L1) at coefficients 0.75, 1 and
 1.25. The study uses the [denoise-5k training release](../../03_data_train/03.7_tenv_denoise-5k/README.md),

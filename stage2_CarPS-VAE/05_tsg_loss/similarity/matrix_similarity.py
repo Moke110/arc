@@ -31,9 +31,10 @@ def preflight(training, representations, source):
         folds = {(metric, fold): bind({"axis": AXIS, "metric": metric, "fold": fold, "alpha": "0",
                                        "smoke": False, "device": "cuda", **inputs}, data, vectors)
                  for metric in METRICS for fold in range(3)}
-    expected = {(metric, alpha, fold): {
-        **folds[metric, fold], "objective": SimilarityObjective(metric, Fraction(alpha)).identity(),
-    } for metric, alpha, fold in run_paths(Path("."))}
+    expected = {}
+    for metric, alpha, fold in run_paths(Path(".")):
+        config = {**folds[metric, fold], "objective": SimilarityObjective(metric, Fraction(alpha)).identity()}
+        expected[metric, alpha, fold] = axis_run.transigen.bind_experiment({"axis": AXIS, "fold": fold}, config)
     evidence = {
         "schema": SCHEMA, "driver_sha256": axis_run.digest(Path(__file__)),
         "input_identity": digest_values(list(folds.values())), "seed": axis_run.SEED,

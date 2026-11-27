@@ -14,7 +14,7 @@ import pandas as pd
 STEP = Path(__file__).resolve().parents[1]
 STAGE = STEP.parent
 sys.path[:0] = [str(STEP / "output/api"), str(STAGE / "01_data_raw/output/api"),
-                str(STAGE / "02_gene_axis/02.1_hvg-deg/output/api")]
+                str(STAGE / "02_gene_axis/02.1_hvg-deg/output/api"), str(STAGE)]
 
 from native_corpus import open_corpus
 from prediction_axis import COMMON_SHA256, COMMON_SIZE, axis_coordinates, open_axes
@@ -27,15 +27,15 @@ from training_data import TENV_AXIS_STEPS, TENV_BASELINE_AXIS, open_tenv_axis_tr
 from stage2_util.derivation.release import check_outputs, read_json as _read, sha256, write_json
 from stage2_util.publication import publication_lock
 
-PARTITIONS = {"train": 64, "valid": 24, "test": 24}
+from util.eval.fixed_prediction import (
+    PARTITIONS, fixed_bandwidth as _bandwidth, read_paired_prediction, read_table as _csv,
+    score_paired_prediction, verify_inputs as _verify_inputs,
+)
+
 RUN_OUTPUTS = {"checkpoint.pt", "validation_prediction.npy", "learning_curve.csv", "training.json",
                "predictions.json", "prediction.npy", "predicted_delta.npy", "measured_delta.npy",
                "conditions.csv", "genes.csv"}
 DISEASE_RELEASE = STAGE / "02_gene_axis/02.1_hvg-deg/output/release"
-
-
-def _csv(path):
-    return pd.read_csv(path, keep_default_na=False, float_precision="round_trip")
 
 
 def _file_hashes(root):
@@ -74,88 +74,22 @@ def _run_inputs(paths, smoke):
     return runs
 
 
-def _verify_inputs(path, config, data, base, axis, fold, smoke):
-    family, width = axis_coordinates(axis)
-    axes = open_axes(family=family)
-    released_axis = axes.axis(width)
-    stage03 = data.release.manifest["inputs"]
-    baseline = base.release.manifest["inputs"]
-    if (config["axis_sha256"] != stage03["axis_sha256"]
-            or config["axis_sha256"] != released_axis.sha256
-            or config["axis_family_manifest_sha256"] != axes.manifest_sha256
-            or config["training_sha256"] != data.release.manifest_sha256
-            or config["raw_sha256"] != stage03["raw_sha256"]
-            or config["raw_sha256"] != baseline["raw_sha256"]
-            or config["folds"] != stage03["folds"] or config["folds"] != baseline["folds"]
-            or not _csv(path / "genes.csv").equals(data.genes)):
-        raise ValueError(f"axis, training, raw or frozen fold identity differs: {path}")
-    for phase, limit in PARTITIONS.items():
-        rows = data.rows(fold, phase)
-        reference_rows = base.rows(fold, phase)
-        if smoke:
-            rows, reference_rows = rows[:limit], reference_rows[:limit]
-        ids = data.condition_ids(rows)
-        if (rows.tolist() != config["partitions"][phase] or list(ids) != config["conditions"][phase]
-                or ids != base.condition_ids(reference_rows)):
-            raise ValueError(f"registered {phase} condition IDs differ from the shared fold: {path}")
-    test = np.asarray(config["partitions"]["test"], dtype=np.int64)
-    reference_test = base.rows(fold, "test")
-    return test, reference_test[:len(test)]
-
-
-def _bandwidth(base, fold):
-    data = base.release
-    rows = base.rows(fold, "train")
-    parts = []
-    for start in range(0, len(data.treatments), 64):
-        stop = min(start + 64, len(data.treatments))
-        indexes = rows[(rows >= start) & (rows < stop)]
-        if len(indexes):
-            parts.append(data.read_treatments(start, stop, "delta")[indexes - start])
-    measured = np.concatenate(parts)
-    record = {"fold": fold, "bandwidth": fold_bandwidth(measured), "rows": len(measured),
-              "width": len(data.genes), "pair_count": math.comb(len(measured), 2),
-              "training_manifest_sha256": data.manifest_sha256,
-              "training_delta_values_sha256": hash_bytes(measured.tobytes()).hexdigest(),
-              "training_conditions_sha256": hash_bytes(base.condition_table(rows).to_csv(index=False).encode()).hexdigest()}
-    return record
-
-
 def _score_run(path, config, manifest, data, base, axis, fold, smoke, directions, disease, bandwidth):
-    rows, reference_rows = _verify_inputs(path, config, data, base, axis, fold, smoke)
-    conditions = _csv(path / "conditions.csv")
-    if (not conditions.equals(data.condition_table(rows).reset_index(drop=True))
-            or len(conditions) != manifest["test_conditions"]):
-        raise ValueError(f"fixed prediction condition table differs: {path}")
-    prediction = np.load(path / "prediction.npy", mmap_mode="r", allow_pickle=False)
-    target = score_fixed_prediction(data, fold, prediction, conditions.condition_id, rows=rows)
-    for name, expected in (("predicted_delta", target.predicted_delta),
-                           ("measured_delta", target.measured_delta)):
-        array = np.load(path / f"{name}.npy", mmap_mode="r", allow_pickle=False)
-        if array.dtype != expected.dtype or not np.array_equal(array, expected):
-            raise ValueError(f"fixed prediction {name} differs from paired source arrays: {path}")
-
+    conditions, reference_rows, targets = read_paired_prediction(path, config, manifest, data, base, axis, fold, smoke)
     genes = data.genes.gene_index.to_numpy()
-    paired, disease_scores = [], []
-    for condition, cm_row, truth, predicted in zip(conditions.condition_id, reference_rows,
-                                                   target.measured_delta, target.predicted_delta, strict=True):
-        key = {"axis": axis, "fold": fold, "condition_id": condition}
-        paired.append({**key, **condition_scores(truth, predicted, genes)})
+    paired, folds = score_paired_prediction(conditions, targets, genes, bandwidth)
+    paired.insert(0, "fold", fold)
+    paired.insert(0, "axis", axis)
+    disease_scores = []
+    for condition, cm_row, predicted in zip(conditions.condition_id, reference_rows,
+                                            targets.predicted_delta, strict=True):
         for name, members in disease.items():
             result = signed_disease_f1(predicted, genes, directions[cm_row], members)
-            disease_scores.append({**key, "disease": name, "f1": result.f1,
-                                   "tp": result.tp, "fp": result.fp, "fn": result.fn})
-    paired = pd.DataFrame(paired)
+            disease_scores.append({"axis": axis, "fold": fold, "condition_id": condition,
+                                   "disease": name, "f1": result.f1, "tp": result.tp,
+                                   "fp": result.fp, "fn": result.fn})
     disease_scores = pd.DataFrame(disease_scores)
-    dist = dict(zip(DISTRIBUTION, distribution_scores(target.measured_delta, target.predicted_delta,
-                                                       bandwidth), strict=True))
-    fold_metrics = []
-    for metric in METRICS:
-        score = summarize_conditions(paired[metric]) if metric in CONDITION else {
-            "value": dist[metric], "n_conditions": len(paired),
-            "n_eligible": len(paired), "n_undefined": 0,
-        }
-        fold_metrics.append({"axis": axis, "fold": fold, "metric": metric, **score})
+    fold_metrics = [{"axis": axis, "fold": fold, **record} for record in folds.to_dict("records")]
     fold_disease = [{"axis": axis, "fold": fold, "disease": name,
                      **summarize_conditions(disease_scores.loc[disease_scores.disease.eq(name), "f1"])}
                     for name in disease]

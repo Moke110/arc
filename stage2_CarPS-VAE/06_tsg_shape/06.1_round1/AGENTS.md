@@ -1,5 +1,7 @@
 # TranSiGen expression shape round one
 
+For runner or scoring changes, read the [shared TranSiGen APIs](../../util/README.md#transigen-training-and-evaluation).
+
 Read [README.md](README.md), the [Stage 2 routing](../../AGENTS.md),
 [ADR 0094](../../../docs/adr/0094-transigen-shape-round1.md) and the
 [execution environment](../../../docs/agents/execution-environment.md).

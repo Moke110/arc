@@ -1,5 +1,7 @@
 # Step 06.3 TranSiGen architecture combinations
 
+The numbered commands use the [shared TranSiGen training and evaluation APIs](../../util/README.md#transigen-training-and-evaluation).
+
 [ADR 0097](../../../docs/adr/0097-transigen-shape-round3.md) registers six
 architectures on the frozen Step 06.2 denoise-5k protocol. The three tenv
 cold-drug folds use measured same-plate DMSO, frozen KPGT and 32 repeats

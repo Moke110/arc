@@ -42,7 +42,8 @@ def preflight(training, representations, source):
             for fold in range(3)
         }
     for loss, alpha, fold in coordinates():
-        expected[loss, alpha, fold] = {**folds[fold], "objective": Objective(loss, Fraction(alpha)).identity()}
+        config = {**folds[fold], "objective": Objective(loss, Fraction(alpha)).identity()}
+        expected[loss, alpha, fold] = axis_run.transigen.bind_experiment({"axis": AXIS, "fold": fold}, config)
     evidence = {"input_identity": digest_values(folds), "seed": axis_run.SEED, "scenario": "cold-drug",
                 "axis": AXIS, "folds": [
                     {"fold": fold, "counts": {part: len(ids) for part, ids in config["conditions"].items()},

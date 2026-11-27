@@ -1,5 +1,7 @@
 # TranSiGen architecture composition comparison
 
+For runner or scoring changes, read the [shared TranSiGen APIs](../../util/README.md#transigen-training-and-evaluation).
+
 Read [README.md](README.md), the [Stage 2 routing](../../AGENTS.md),
 [ADR 0097](../../../docs/adr/0097-transigen-shape-round3.md),
 [ADR 0096](../../../docs/adr/0096-transigen-shape-round2.md), and

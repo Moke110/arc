@@ -1,5 +1,7 @@
 # TranSiGen architecture studies
 
+For runner or scoring changes, read the [shared TranSiGen APIs](../util/README.md#transigen-training-and-evaluation).
+
 Read the [Stage 2 routing](../AGENTS.md), [README](README.md), ADRs 0062,
 0087, and 0094, and the [execution environment](../../docs/agents/execution-environment.md).
 

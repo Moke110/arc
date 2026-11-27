@@ -1,5 +1,7 @@
 # TranSiGen Delta cosine sweep
 
+For runner or scoring changes, read the [shared TranSiGen APIs](../../util/README.md#transigen-training-and-evaluation).
+
 Read [README.md](README.md), the [Stage 2 routing](../../AGENTS.md), and
 [ADR 0092](../../../docs/adr/0092-transigen-bounded-delta-similarity-sweeps.md).
 

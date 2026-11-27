@@ -1,5 +1,7 @@
 # TranSiGen prediction-axis comparison
 
+For runner or scoring changes, read the [shared TranSiGen APIs](../util/README.md#transigen-training-and-evaluation).
+
 Read [README.md](README.md), [Stage 2 routing](../AGENTS.md), ADRs 0062,
 0080 and 0086, and the [execution environment](../../docs/agents/execution-environment.md).
 Use the verified Step 03 tenv release, frozen KPGT vectors and published

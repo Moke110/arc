@@ -33,8 +33,10 @@ def preflight(training, representations, source):
         folds = {fold: bind({"axis": AXIS, "fold": fold, "alpha": "0", "smoke": False,
                              "device": "cuda", **inputs}, data, vectors)
                  for fold in range(3)}
-    expected = {(alpha, fold): {**folds[fold], "objective": ReconstructionObjective(Fraction(alpha)).identity()}
-                for alpha, fold in coordinates()}
+    expected = {}
+    for alpha, fold in coordinates():
+        config = {**folds[fold], "objective": ReconstructionObjective(Fraction(alpha)).identity()}
+        expected[alpha, fold] = axis_run.transigen.bind_experiment({"axis": AXIS, "fold": fold}, config)
     evidence = {"schema": SCHEMA, "driver_sha256": axis_run.digest(Path(__file__)),
                 "input_identity": digest_values(folds), "seed": axis_run.SEED,
                 "scenario": "cold-drug", "axis": AXIS, "folds": [

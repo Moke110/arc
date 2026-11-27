@@ -17,6 +17,8 @@ from tsg_axis.metrics import (CONDITION, DISTRIBUTION, METRICS, condition_scores
                               distribution_scores, summarize_conditions, summarize_folds)
 from training_data import TENV_DEFAULT, open_tenv_training
 
+from util.eval.fixed_prediction import read_paired_prediction, score_paired_prediction
+
 axis_evaluate = load_step04("evaluate")
 REPORT_SCHEMA = "stage2-tenv-transigen-loss-report-v1"
 TRACE_COLUMNS = ("epoch", "train_loss", "validation_loss", "validation_mse",
@@ -78,30 +80,8 @@ def read_run(path, smoke):
 
 
 def score_run(path, config, manifest, data, base, fold, smoke, bandwidth):
-    rows, _ = axis_evaluate._verify_inputs(path, config, data, base, AXIS, fold, smoke)
-    conditions = axis_evaluate._csv(path / "conditions.csv")
-    if (not conditions.equals(data.condition_table(rows).reset_index(drop=True))
-            or len(conditions) != manifest["test_conditions"]):
-        raise ValueError(f"verified run has different held-out conditions: {path}")
-    prediction = np.load(path / "prediction.npy", mmap_mode="r", allow_pickle=False)
-    paired = score_fixed_prediction(data, fold, prediction, conditions.condition_id, rows=rows)
-    for name, expected in (("predicted_delta", paired.predicted_delta), ("measured_delta", paired.measured_delta)):
-        values = np.load(path / f"{name}.npy", mmap_mode="r", allow_pickle=False)
-        if values.dtype != expected.dtype or not np.array_equal(values, expected):
-            raise ValueError(f"fixed prediction {name} differs from the matched source arrays: {path}")
-    gene_indexes = data.genes.gene_index.to_numpy()
-    by_condition = pd.DataFrame(condition_scores(truth, predicted, gene_indexes)
-                                for truth, predicted in zip(paired.measured_delta, paired.predicted_delta, strict=True))
-    by_condition.insert(0, "condition_id", conditions.condition_id)
-    distribution = dict(zip(DISTRIBUTION, distribution_scores(paired.measured_delta, paired.predicted_delta,
-                                                                bandwidth), strict=True))
-    by_fold = pd.DataFrame([
-        {"metric": metric, **(summarize_conditions(by_condition[metric]) if metric in CONDITION else
-                             {"value": distribution[metric], "n_conditions": len(conditions),
-                              "n_eligible": len(conditions), "n_undefined": 0})}
-        for metric in METRICS
-    ])
-    return by_condition, by_fold
+    conditions, _, paired = read_paired_prediction(path, config, manifest, data, base, AXIS, fold, smoke)
+    return score_paired_prediction(conditions, paired, data.genes.gene_index.to_numpy(), bandwidth)
 
 
 def summarize_loss_scores(fold_scores):

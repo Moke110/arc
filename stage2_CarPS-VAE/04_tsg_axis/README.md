@@ -1,5 +1,7 @@
 # TranSiGen prediction-axis comparison
 
+The numbered commands use the [shared TranSiGen training and evaluation APIs](../util/README.md#transigen-training-and-evaluation).
+
 [Spec 6](https://github.com/Moke110/carps/issues/317) compares three HVG-DEG
 and three Denoise-DEG axes on the same tenv plate–parent–dose conditions.
 Each fit starts with random weights at seed 42 and uses the original

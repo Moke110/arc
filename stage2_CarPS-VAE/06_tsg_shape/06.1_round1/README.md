@@ -1,5 +1,7 @@
 # Step 06.1 TranSiGen expression shape round one
 
+The numbered commands use the [shared TranSiGen training and evaluation APIs](../../util/README.md#transigen-training-and-evaluation).
+
 Ten expression architectures share the ordered Denoise-DEG 5k gene axis,
 frozen tenv cold-drug folds, seed 42, frozen KPGT vectors, standardized
 numeric dose, and measured same-plate DMSO throughout. The objective is

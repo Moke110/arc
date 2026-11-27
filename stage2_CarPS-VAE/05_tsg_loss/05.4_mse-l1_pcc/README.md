@@ -1,5 +1,7 @@
 # TranSiGen Delta PCC sweep
 
+The numbered commands use the [shared TranSiGen training and evaluation APIs](../../util/README.md#transigen-training-and-evaluation).
+
 [Spec 12](https://github.com/Moke110/carps/issues/337) adds a bounded Pearson correlation
 loss on predicted and measured Delta from the same matched-plate DMSO
 control. The sweep fixes the Step 05.3 shared reconstruction weight at 1

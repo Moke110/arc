@@ -1,5 +1,7 @@
 # TranSiGen Delta loss metrics
 
+For runner or scoring changes, read the [shared TranSiGen APIs](../../util/README.md#transigen-training-and-evaluation).
+
 Read [README.md](README.md), the [Stage 2 routing](../../AGENTS.md), ADRs
 0062 and 0086–0089, and the [execution environment](../../../docs/agents/execution-environment.md).
 

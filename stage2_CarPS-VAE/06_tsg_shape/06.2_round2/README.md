@@ -1,5 +1,7 @@
 # Step 06.2 TranSiGen prediction architectures
 
+The numbered commands use the [shared TranSiGen training and evaluation APIs](../../util/README.md#transigen-training-and-evaluation).
+
 [ADR 0096](../../../docs/adr/0096-transigen-shape-round2.md) registers
 eight prediction architectures on the Denoise-DEG 5k axis. Each fit uses
 measured same-plate DMSO, frozen KPGT, and 32 repeats of log-dose

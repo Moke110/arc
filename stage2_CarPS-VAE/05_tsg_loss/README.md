@@ -1,5 +1,7 @@
 # TranSiGen loss studies
 
+The numbered commands use the [shared TranSiGen training and evaluation APIs](../util/README.md#transigen-training-and-evaluation).
+
 ## Selected objective
 
 The selected TranSiGen loss is

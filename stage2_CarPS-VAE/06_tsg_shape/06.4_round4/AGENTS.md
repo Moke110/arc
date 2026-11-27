@@ -1,5 +1,7 @@
 # TranSiGen measured encoder and signed readout comparison
 
+For runner or scoring changes, read the [shared TranSiGen APIs](../../util/README.md#transigen-training-and-evaluation).
+
 Read [README.md](README.md), the [Stage 2 routing](../../AGENTS.md),
 [ADR 0098](../../../docs/adr/0098-transigen-shape-round4.md),
 [ADR 0097](../../../docs/adr/0097-transigen-shape-round3.md), and the

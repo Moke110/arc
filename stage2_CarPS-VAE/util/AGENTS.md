@@ -8,3 +8,6 @@ and [ADR 0083](../../docs/adr/0083-stage2-corpus-axis-view-boundaries.md).
 - Open accepted parent and representation data through `RepresentationTable`.
 - Preserve sealed legacy files when updating current defaults.
 - Run the test command in README before publishing an API change.
+
+For TranSiGen architecture, objective, fit, replay or scoring changes, read the
+[shared API and test routes](README.md#transigen-training-and-evaluation).

@@ -1,5 +1,7 @@
 # TranSiGen additive Delta L1 sweep
 
+The numbered commands use the [shared TranSiGen training and evaluation APIs](../../util/README.md#transigen-training-and-evaluation).
+
 [Spec 10](https://github.com/Moke110/carps/issues/331) sweeps nine additive
 Delta L1 weights from 0 to 2 in 0.25 increments across the three frozen
 cold-drug folds on the [denoise-5k training release](../../03_data_train/03.7_tenv_denoise-5k/README.md).

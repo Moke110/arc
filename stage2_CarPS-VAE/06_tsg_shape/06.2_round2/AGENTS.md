@@ -1,5 +1,7 @@
 # TranSiGen prediction architecture comparison
 
+For runner or scoring changes, read the [shared TranSiGen APIs](../../util/README.md#transigen-training-and-evaluation).
+
 Read [README.md](README.md), the [Stage 2 routing](../../AGENTS.md), ADRs
 [0096](../../../docs/adr/0096-transigen-shape-round2.md) and
 [0095](../../../docs/adr/0095-transigen-shape-encoder-width-extension.md),

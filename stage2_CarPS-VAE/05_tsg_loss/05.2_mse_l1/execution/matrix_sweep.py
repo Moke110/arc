@@ -33,8 +33,10 @@ def preflight(training, representations, source):
         folds = {fold: bind({"axis": AXIS, "fold": fold, "alpha": "0", "smoke": False,
                              "device": "cuda", **inputs}, data, vectors)
                  for fold in range(3)}
-    expected = {(alpha, fold): {**folds[fold], "objective": AdditiveObjective(Fraction(alpha)).identity()}
-                for alpha, fold in coordinates()}
+    expected = {}
+    for alpha, fold in coordinates():
+        config = {**folds[fold], "objective": AdditiveObjective(Fraction(alpha)).identity()}
+        expected[alpha, fold] = axis_run.transigen.bind_experiment({"axis": AXIS, "fold": fold}, config)
     evidence = {"schema": SCHEMA, "input_identity": digest_values(folds), "seed": axis_run.SEED,
                 "scenario": "cold-drug", "axis": AXIS, "folds": [
                     {"fold": fold, "counts": {part: len(ids) for part, ids in config["conditions"].items()},
