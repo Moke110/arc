@@ -1,4 +1,4 @@
-axis,fold,seed,epoch,train_loss,validation_loss
+arm,fold,seed,epoch,train,validation
 hvg-2k,0,17,1,7406.950483091788,5929.523521505376
 hvg-2k,0,17,2,6162.346391908212,5121.249663978495
 hvg-2k,0,17,3,5202.333484299517,4331.558971774193

@@ -1,4 +1,4 @@
-"""Verify that the seven figures reproduce exactly from their isolated CSVs."""
+"""Verify that the three figures reproduce exactly from their isolated CSVs."""
 
 import argparse
 import json
@@ -10,11 +10,11 @@ import sys
 from tempfile import TemporaryDirectory
 
 from axis_protocol import STEP
-from axis_report import CSV_FIGURES
+from axis_report import PLOT_TABLES
+from stage2_util.comparison import FIGURES
 from axis_runs import axis_run
 
 RENDERER = STEP / "figure/script/render_axes.py"
-FIGURES = ("learning-curves", *CSV_FIGURES)
 
 
 def replay(data, output, scratch, *, verify=False):
@@ -23,9 +23,9 @@ def replay(data, output, scratch, *, verify=False):
         work = Path(temporary)
         csv_only = work / "data"
         csv_only.mkdir()
-        for name in FIGURES:
-            shutil.copyfile(data / f"{name}.csv", csv_only / f"{name}.csv")
-        files = tuple(f"{name}.png" for name in FIGURES)
+        for name in PLOT_TABLES:
+            shutil.copyfile(data / name, csv_only / name)
+        files = FIGURES
         rendered = []
         for name in ("first", "second"):
             place = work / name
@@ -37,7 +37,8 @@ def replay(data, output, scratch, *, verify=False):
         if rendered[0] != rendered[1]:
             raise ValueError("independent CSV-only renders differ")
         if verify:
-            if axis_run.file_hashes(output, files) != rendered[0]:
+            if ({path.name for path in output.glob("*.png")} != set(files)
+                    or axis_run.file_hashes(output, files) != rendered[0]):
                 raise ValueError("published figures differ from their CSV-only reproduction")
         else:
             output.mkdir(parents=True, exist_ok=True)
@@ -46,7 +47,7 @@ def replay(data, output, scratch, *, verify=False):
             for name in files:
                 shutil.copyfile(work / "first" / name, output / name)
         return {"status": "PASS", "independent_csv_only_renders": 2,
-                "csv_sha256": axis_run.file_hashes(csv_only, (f"{name}.csv" for name in FIGURES)),
+                "csv_sha256": axis_run.file_hashes(csv_only, PLOT_TABLES),
                 "png_sha256": rendered[0]}
 
 

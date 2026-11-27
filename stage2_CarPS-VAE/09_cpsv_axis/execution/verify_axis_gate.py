@@ -4,14 +4,12 @@ import argparse
 import json
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
-
 from axis_matrix import verify_matrix
 from axis_model import AxisAdapter, named_tensor_digest, paired_initialization
-from axis_protocol import AXES, DISEASE_OVERLAP, DISEASE_SIZE, REFERENCE_AXIS, coordinates
+from axis_protocol import REFERENCE_AXIS, coordinates
 from axis_runs import axis_run, configure_cuda
-from axis_scores import COVERAGE
+from axis_scores import REPORT_METRICS
+from stage2_util.comparison import FIGURES
 from audit_chem_resources import audit_resources
 
 
@@ -23,29 +21,6 @@ def process_resources(path):
         raise ValueError(f"unsuccessful process: {path.name}")
     return {"peak_rss_kib": int(maximum.rsplit(": ", 1)[1]),
             "elapsed": elapsed.rsplit(": ", 1)[1]}
-
-
-def audit_coverage(fresh, report, union):
-    """Recalculate the fixed-union signed counts and every paired coverage value."""
-    rows = pd.read_csv(report / "condition-scores.csv")
-    paired = pd.read_csv(report / "fold-scores.csv")
-    eligible = rows[rows.scope.eq("disease")]
-    for axis in AXES:
-        run = fresh[axis, 0, 17][0]
-        genes = pd.read_csv(run / "genes.csv").gene_index.to_numpy()
-        columns = [i for i, gene in enumerate(genes) if gene in union]
-        truth = np.load(run / "measured_delta.npy", allow_pickle=False, mmap_mode="r")[:, columns]
-        predicted = np.load(run / "predicted_delta.npy", allow_pickle=False, mmap_mode="r")[:, columns]
-        count = ((truth > 0) & (predicted > 0)).sum(axis=1) + ((truth < 0) & (predicted < 0)).sum(axis=1)
-        expected = 100 * count / DISEASE_SIZE
-        result = eligible.loc[eligible.axis.eq(axis), COVERAGE].to_numpy()
-        if len(columns) != DISEASE_OVERLAP[axis] or not np.allclose(result, expected, atol=1e-13, rtol=0):
-            raise ValueError(f"{axis} direction-correct coverage differs from independently counted signs")
-    values = paired[paired.metric.eq(COVERAGE)].set_index("axis")
-    if not np.allclose(values.paired_difference, values.value - values.loc[REFERENCE_AXIS, "value"],
-                       atol=1e-13, rtol=0):
-        raise ValueError("paired direction-correct coverage must be in percentage points")
-    return len(eligible)
 
 
 def audit_initialized_projections(fresh, source):
@@ -86,21 +61,18 @@ def gate_receipt(work, coordinator, source):
     if trained["initialization"] != decisions[0]["paired_initialization"]:
         raise ValueError("Step 09 bounded reference and sealed UniMol initialization differ")
     if (figures["status"] != "PASS" or figures["independent_csv_only_renders"] != 2
-            or len(figures["png_sha256"]) != 7 or score["scores"] != len(fresh) * 19):
-        raise ValueError("gate did not independently score both scopes and render all seven figures")
+            or set(figures["png_sha256"]) != set(FIGURES)
+            or score["scores"] != len(fresh) * len(REPORT_METRICS)):
+        raise ValueError("gate did not score the full prediction axes and render the three canonical figures")
     for subdirectory, artifacts in (("figures", figures["png_sha256"]),
                                     ("figures/data", figures["csv_sha256"]), ("report", score["outputs"])):
         if axis_run.file_hashes(work / subdirectory, artifacts) != artifacts:
             raise ValueError(f"gate artifacts changed: {subdirectory}")
-    union = set(axis_run.read_json(report / "disease-union.json")["gene_indices"])
-    coverage_count = audit_coverage(fresh, report, union)
     coverage, resources = audit_resources(work / "matrix-audit", coordinator, coordinates(True), bracket=True)
     evidence = {
         "status": "PASS", "ticket": 367, "formal_coordinates": len(coordinates()),
         "bounded_coordinates": len(fresh), "fresh_alpha_replays": len(alpha["coordinates"]),
         "fresh_sealed_unimol_replays": len(decisions), "step08_acceptance_sha256": reference["step08_acceptance_sha256"],
-        "disease_union_size": len(union), "disease_overlaps": DISEASE_OVERLAP,
-        "independent_directional_coverage_conditions": coverage_count,
         "matrix_sha256": axis_run.digest(matrix / "manifest.json"),
         "preflight_sha256": axis_run.digest(matrix / "preflight.json"),
         "reference_plan_sha256": axis_run.digest(work / "reference.json"),
