@@ -157,13 +157,13 @@ def build(bundle, publication, scratch, step03):
     return {"status": "PASS", "receipt_sha256": scientific_hash, **numerical}
 
 
-def verify(bundle, publication, scratch, step03):
+def verify(bundle, publication, scratch, step03, *, audit=measured_report_action):
     """Recompute the numerical audit and regenerate all three PNGs from CSVs."""
     report = bundle / "report"
     figure = publication / "figure"
     with TemporaryDirectory(prefix="step10-verify-", dir=scratch) as temporary:
         work = Path(temporary)
-        numerical = measured_report_action("audit", bundle, report, figure / "data", step03, work / "audit.resources")
+        numerical = audit("audit", bundle, report, figure / "data", step03, work / "audit.resources")
         current = scientific_receipt(bundle, publication, report, numerical)
         if current != axis_run.read_json(publication / RECEIPT):
             raise ValueError("scientific receipt differs from the verified Step 10 evidence")
