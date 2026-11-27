@@ -1,0 +1,509 @@
+{
+  "decisions": [
+    {
+      "checkpoint_sha256": "ca68efe6a4075d02160d9ae67182ea3e71e086f5b234e4bc30066b1588e022d4",
+      "coordinate": [
+        "denoise-5k",
+        0,
+        17
+      ],
+      "decision": "reuse",
+      "initialization": {
+        "downstream_sha256": "7f982da8272628281efd5f96a1252fcdaa68a1014fc319917d2b8fb79983dcb2",
+        "projection_sha256": "0cc0b3977c98a07680a36340c3a6c5608e1f408740e1b1e4116b1e4012e05b98",
+        "projection_shape": [
+          512,
+          400
+        ],
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "manifest_sha256": "62b872982ec4d4ce4ba9a60e2cdaaf9b2fde1c2037b7d258e82750ed5c0d7ee1",
+      "paired_initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            5000
+          ],
+          "decoder_delta.4.weight": [
+            5000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            5000
+          ],
+          "decoder_x1.4.weight": [
+            5000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            5000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            5000
+          ]
+        },
+        "invariant_sha256": "c1161f6d0a1d872ddc4cd5146e04aa2ad62cf06c8469e167e13f4396143aae0f",
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "prediction_sha256": "0d574ed4979ff7cf7c460b65dc85a79defca9887dda728003dd08608c0dd2870",
+      "registration_sha256": "9f49e94d46ca155fbc16653f51f7cf2ffb390df166b5ba7599e24f4e57c9a55e",
+      "test_replay": "exact",
+      "trace_sha256": "cad048ffacd94397579002197f33daa637b289c18fcc5a837c2965d6844a3bb2",
+      "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
+      "validation_prediction_sha256": "5ed73c9211b99998d660768992b55739a51fea5337f35fb768d05bafa272edc7",
+      "validation_replay": "exact"
+    },
+    {
+      "checkpoint_sha256": "fe9751e9c055b9d027611d436aa336db0f9c540740f3d950c5112c521e87c89d",
+      "coordinate": [
+        "denoise-5k",
+        0,
+        42
+      ],
+      "decision": "reuse",
+      "initialization": {
+        "downstream_sha256": "edc6edd582111ad95fa565cae5b22f185932da9b8a147959a6e1830c121c3d73",
+        "projection_sha256": "a680fe9bde2624d1eb9120e7df5560235292120f0f4ab7b786a441bee67a2466",
+        "projection_shape": [
+          512,
+          400
+        ],
+        "torch_cpu_rng_sha256": "89a353c499634866c94a2122472e12ef859b35506500ffec60633bdd2bc16704",
+        "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "manifest_sha256": "8fc39bb008b926ebb3c19741351ba293d57f089a8dc56f674bac8fa09ac4ed8d",
+      "paired_initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            5000
+          ],
+          "decoder_delta.4.weight": [
+            5000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            5000
+          ],
+          "decoder_x1.4.weight": [
+            5000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            5000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            5000
+          ]
+        },
+        "invariant_sha256": "bdcfa5952ca28721a157387959f26c3b1a6ff050cb9b2a61a5a85bca55becc02",
+        "torch_cpu_rng_sha256": "89a353c499634866c94a2122472e12ef859b35506500ffec60633bdd2bc16704",
+        "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "prediction_sha256": "bc63eca1082e375b5f53da40fc7554b00878aa42ca8a45301d18c274cbd519dd",
+      "registration_sha256": "60d072bed998ff25c09cdf2a8ff86788722ba08b4e9d40b98d7a7bbadeb7ee4f",
+      "test_replay": "exact",
+      "trace_sha256": "a1ecfb1638168fea1f01cee0d24b4ddc0b0850fca5c720c0ab271c5cbbe2bc84",
+      "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
+      "validation_prediction_sha256": "965821f9136255855f0315e223c72dd8558f020e188a500a9be21b38f58aca60",
+      "validation_replay": "exact"
+    },
+    {
+      "checkpoint_sha256": "1a4b79c4dbefac320fb5bc01d92f46378e64452f7a9bfadd3f9fd739cf17dd72",
+      "coordinate": [
+        "denoise-5k",
+        0,
+        2026
+      ],
+      "decision": "reuse",
+      "initialization": {
+        "downstream_sha256": "5670f84e83e2a55e9f53ebb9447a4df3c4a52ae35764535e97cf47158153f99d",
+        "projection_sha256": "c7bc7e0ec8e0ccdf6b8d3ef58fd9cc6cbe225dc6bf35f67e3732ebadffb7c106",
+        "projection_shape": [
+          512,
+          400
+        ],
+        "torch_cpu_rng_sha256": "af9bbaa2c06738870ee8abef7b553606f95b5b8600c98f714fb7ac83d63d20dc",
+        "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
+      },
+      "manifest_sha256": "58b810fd8036e8c9472960366c682cbbddbbb4489dcac18a906142cb3f5f8a1c",
+      "paired_initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            5000
+          ],
+          "decoder_delta.4.weight": [
+            5000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            5000
+          ],
+          "decoder_x1.4.weight": [
+            5000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            5000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            5000
+          ]
+        },
+        "invariant_sha256": "4a958526c7e97ea2e69bdec3a3a84c2ac84375fd3088675f8ce96326b77a7393",
+        "torch_cpu_rng_sha256": "af9bbaa2c06738870ee8abef7b553606f95b5b8600c98f714fb7ac83d63d20dc",
+        "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
+      },
+      "prediction_sha256": "06494b16c40f8f5f79808fe0605ac4dc7ec0cfa355fb5627fd30cedcefe24272",
+      "registration_sha256": "cb6a7dfb2de090875601dacd1028c80c271e82029e7f21c64cefeb0af9afdc29",
+      "test_replay": "exact",
+      "trace_sha256": "26444cd115a28f16a0541e3251ec0ad9950d230b071d0a38269a1e050958dcd2",
+      "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
+      "validation_prediction_sha256": "59ec7888cbe8102fc30f6f9785cd639d5301fd28c0041db6a21605bacc05ba35",
+      "validation_replay": "exact"
+    },
+    {
+      "checkpoint_sha256": "d3a2c1431886a286d4ccbd0080ae60a6736fb7cbad3dff3f4bc555cb25d818a4",
+      "coordinate": [
+        "denoise-5k",
+        1,
+        17
+      ],
+      "decision": "reuse",
+      "initialization": {
+        "downstream_sha256": "7f982da8272628281efd5f96a1252fcdaa68a1014fc319917d2b8fb79983dcb2",
+        "projection_sha256": "0cc0b3977c98a07680a36340c3a6c5608e1f408740e1b1e4116b1e4012e05b98",
+        "projection_shape": [
+          512,
+          400
+        ],
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "manifest_sha256": "7a7c372472e9b541abd48769163bbbd871c126bb869efd8097e9d7ec0a863342",
+      "paired_initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            5000
+          ],
+          "decoder_delta.4.weight": [
+            5000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            5000
+          ],
+          "decoder_x1.4.weight": [
+            5000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            5000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            5000
+          ]
+        },
+        "invariant_sha256": "c1161f6d0a1d872ddc4cd5146e04aa2ad62cf06c8469e167e13f4396143aae0f",
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "prediction_sha256": "3ce89820743a77acfdaf1e76ae15a23fb35442a72bc62e608d9c701f91ac7b34",
+      "registration_sha256": "68f9662f74bcb3fe4ad505c1af531afb5d86e0d37a3a4081529065c4eed34299",
+      "test_replay": "exact",
+      "trace_sha256": "aacacce15af4d2e967be025ffd4101bb4156c390f7513dbf4986d6ddbfaa9275",
+      "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
+      "validation_prediction_sha256": "a27842734480afcf03d939bdd815d52b9a23f115045b1fc6fa5513616a0a54b3",
+      "validation_replay": "exact"
+    },
+    {
+      "checkpoint_sha256": "10f156c73174578135ef5e0105006c9729199aa0def4ba277d2d585be3a68067",
+      "coordinate": [
+        "denoise-5k",
+        1,
+        42
+      ],
+      "decision": "reuse",
+      "initialization": {
+        "downstream_sha256": "edc6edd582111ad95fa565cae5b22f185932da9b8a147959a6e1830c121c3d73",
+        "projection_sha256": "a680fe9bde2624d1eb9120e7df5560235292120f0f4ab7b786a441bee67a2466",
+        "projection_shape": [
+          512,
+          400
+        ],
+        "torch_cpu_rng_sha256": "89a353c499634866c94a2122472e12ef859b35506500ffec60633bdd2bc16704",
+        "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "manifest_sha256": "e3601c0e2aa2e3030ebfdf58d62278a1f7467a157239efcae9a1f5b7a185be67",
+      "paired_initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            5000
+          ],
+          "decoder_delta.4.weight": [
+            5000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            5000
+          ],
+          "decoder_x1.4.weight": [
+            5000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            5000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            5000
+          ]
+        },
+        "invariant_sha256": "bdcfa5952ca28721a157387959f26c3b1a6ff050cb9b2a61a5a85bca55becc02",
+        "torch_cpu_rng_sha256": "89a353c499634866c94a2122472e12ef859b35506500ffec60633bdd2bc16704",
+        "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "prediction_sha256": "e21258fd8a0a63122215f38cbd14a032f18c0814dc61b7713183c9c2df107d74",
+      "registration_sha256": "04d59e47c3f640b46a1b63edb9d0bd6e50191879dd2b3bbf771675aef2bce11d",
+      "test_replay": "exact",
+      "trace_sha256": "80b5575c7b681f3a0e6006abd3bc78bd038d04ea6a6a4bcbdb1d6fb2c2827bd6",
+      "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
+      "validation_prediction_sha256": "85511a0ca076536b368a8610f92fccb0715316bb8970ebfbded4bbdade4f02ed",
+      "validation_replay": "exact"
+    },
+    {
+      "checkpoint_sha256": "31066d2d1cd3496342916bca833994e447e5cb998668068283d19f0e7186e93b",
+      "coordinate": [
+        "denoise-5k",
+        1,
+        2026
+      ],
+      "decision": "reuse",
+      "initialization": {
+        "downstream_sha256": "5670f84e83e2a55e9f53ebb9447a4df3c4a52ae35764535e97cf47158153f99d",
+        "projection_sha256": "c7bc7e0ec8e0ccdf6b8d3ef58fd9cc6cbe225dc6bf35f67e3732ebadffb7c106",
+        "projection_shape": [
+          512,
+          400
+        ],
+        "torch_cpu_rng_sha256": "af9bbaa2c06738870ee8abef7b553606f95b5b8600c98f714fb7ac83d63d20dc",
+        "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
+      },
+      "manifest_sha256": "67766f6331f9e301381d6732458b67372f7b4f3ab904a965e2404dc0e54cdd30",
+      "paired_initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            5000
+          ],
+          "decoder_delta.4.weight": [
+            5000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            5000
+          ],
+          "decoder_x1.4.weight": [
+            5000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            5000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            5000
+          ]
+        },
+        "invariant_sha256": "4a958526c7e97ea2e69bdec3a3a84c2ac84375fd3088675f8ce96326b77a7393",
+        "torch_cpu_rng_sha256": "af9bbaa2c06738870ee8abef7b553606f95b5b8600c98f714fb7ac83d63d20dc",
+        "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
+      },
+      "prediction_sha256": "6d563e39be43b1310a955df5f608ab04059cdd6f57c145cc845bb578bbc49315",
+      "registration_sha256": "4abb3fcd4a62bc18e41356bed850c3540a949a7baab4c550882fb363b530dae9",
+      "test_replay": "exact",
+      "trace_sha256": "60a76fe87a27c63429178a12ba3227c5f7f843aa644921ccd60419868c972771",
+      "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
+      "validation_prediction_sha256": "e32ec458c67878e0b156033621494ddcfe5ad8f4eeaffae1a56010eef6563a8e",
+      "validation_replay": "exact"
+    },
+    {
+      "checkpoint_sha256": "27cc0c8e1ab8b6a0d71a7f1d112c305c191b70359467229e3811444863b55576",
+      "coordinate": [
+        "denoise-5k",
+        2,
+        17
+      ],
+      "decision": "reuse",
+      "initialization": {
+        "downstream_sha256": "7f982da8272628281efd5f96a1252fcdaa68a1014fc319917d2b8fb79983dcb2",
+        "projection_sha256": "0cc0b3977c98a07680a36340c3a6c5608e1f408740e1b1e4116b1e4012e05b98",
+        "projection_shape": [
+          512,
+          400
+        ],
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "manifest_sha256": "4c4884c7dfea0e276565a18c4661988fc73171312140b30e76a2e8af3cdc490a",
+      "paired_initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            5000
+          ],
+          "decoder_delta.4.weight": [
+            5000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            5000
+          ],
+          "decoder_x1.4.weight": [
+            5000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            5000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            5000
+          ]
+        },
+        "invariant_sha256": "c1161f6d0a1d872ddc4cd5146e04aa2ad62cf06c8469e167e13f4396143aae0f",
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "prediction_sha256": "c27e65691a730c5b85331ba5e5f44d4feb3a29fa9b68a63afa86e48cf9e8d351",
+      "registration_sha256": "fcd70549e952270d1c5754fa0f5967187c28387c4795bd4e65d4f96ccaaae0ed",
+      "test_replay": "exact",
+      "trace_sha256": "68a5bc60e14cad22142da5c3c84f44b505bc78862d6c5fdfe5e2a1cddfa23cce",
+      "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
+      "validation_prediction_sha256": "bb1e4e1b74523963c9e028d56920f5e7da040bd871a15e5fce317325bb08e628",
+      "validation_replay": "exact"
+    },
+    {
+      "checkpoint_sha256": "0aae5a07116d6adfbe9c4f1c5df7270b87ae74f79ccee4ee0ff418233bc78c76",
+      "coordinate": [
+        "denoise-5k",
+        2,
+        42
+      ],
+      "decision": "reuse",
+      "initialization": {
+        "downstream_sha256": "edc6edd582111ad95fa565cae5b22f185932da9b8a147959a6e1830c121c3d73",
+        "projection_sha256": "a680fe9bde2624d1eb9120e7df5560235292120f0f4ab7b786a441bee67a2466",
+        "projection_shape": [
+          512,
+          400
+        ],
+        "torch_cpu_rng_sha256": "89a353c499634866c94a2122472e12ef859b35506500ffec60633bdd2bc16704",
+        "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "manifest_sha256": "ce6bf23b1665f6e0dbcc4c24448818bca2dac5ec36df893715f9498b1127b477",
+      "paired_initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            5000
+          ],
+          "decoder_delta.4.weight": [
+            5000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            5000
+          ],
+          "decoder_x1.4.weight": [
+            5000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            5000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            5000
+          ]
+        },
+        "invariant_sha256": "bdcfa5952ca28721a157387959f26c3b1a6ff050cb9b2a61a5a85bca55becc02",
+        "torch_cpu_rng_sha256": "89a353c499634866c94a2122472e12ef859b35506500ffec60633bdd2bc16704",
+        "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
+      },
+      "prediction_sha256": "efa073a640d0402f634d7b70e325101ed6ccb34e147557722eff0a1d7bb81c3f",
+      "registration_sha256": "e75434e848444694131c9cea0f555252ec899c955322ae2fae18ccd773f00389",
+      "test_replay": "exact",
+      "trace_sha256": "59ed0f20468a5904c71215926eb938cbbd7ea825c605921c345e377cd79e3602",
+      "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
+      "validation_prediction_sha256": "c29222a2739f619d510241b82c99d185602c12c0179e9e69153d9c8bb36a0f48",
+      "validation_replay": "exact"
+    },
+    {
+      "checkpoint_sha256": "a6ed69cc6368461c157f110468ebbe98cbae8fc84c942e7ee5e02d6a490a22a9",
+      "coordinate": [
+        "denoise-5k",
+        2,
+        2026
+      ],
+      "decision": "reuse",
+      "initialization": {
+        "downstream_sha256": "5670f84e83e2a55e9f53ebb9447a4df3c4a52ae35764535e97cf47158153f99d",
+        "projection_sha256": "c7bc7e0ec8e0ccdf6b8d3ef58fd9cc6cbe225dc6bf35f67e3732ebadffb7c106",
+        "projection_shape": [
+          512,
+          400
+        ],
+        "torch_cpu_rng_sha256": "af9bbaa2c06738870ee8abef7b553606f95b5b8600c98f714fb7ac83d63d20dc",
+        "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
+      },
+      "manifest_sha256": "7cdb043194389e3b9b08e0a9228ed9e578fff58c823fc3294028603ad612aa13",
+      "paired_initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            5000
+          ],
+          "decoder_delta.4.weight": [
+            5000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            5000
+          ],
+          "decoder_x1.4.weight": [
+            5000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            5000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            5000
+          ]
+        },
+        "invariant_sha256": "4a958526c7e97ea2e69bdec3a3a84c2ac84375fd3088675f8ce96326b77a7393",
+        "torch_cpu_rng_sha256": "af9bbaa2c06738870ee8abef7b553606f95b5b8600c98f714fb7ac83d63d20dc",
+        "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
+      },
+      "prediction_sha256": "663d3f9accc6fcf6b853af71729f4a27ed9dd82c76fae99c18bb5c4ad671c76c",
+      "registration_sha256": "7500f23e5886c857495fba76e3102c97ef307d06a82a920f0c67c01785646a84",
+      "test_replay": "exact",
+      "trace_sha256": "2e5d075cf6bffec41b67dd3a8c27bccb780795169c340413f9ef9b8dc6f94268",
+      "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
+      "validation_prediction_sha256": "83f070962d1ad89e02f0bfdd83233e413597c66afdd2fb1948ebf39d6aaae907",
+      "validation_replay": "exact"
+    }
+  ],
+  "step08_acceptance_sha256": "56b8983678f72adc2deb9a34613561428b3bd77507f44b0ae091b1bc7d40a6f2"
+}

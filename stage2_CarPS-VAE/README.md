@@ -49,11 +49,11 @@ exceeded the absolute mean difference on both metrics.
 | [06.4 Measured encoder targets](06_tsg_shape/06.4_round4/README.md#formal-results) | Compares measured treated-expression and signed Δ encoders and signed Δ decoder sharing across three folds and three seeds. The shared signed Δ decoder had the lowest Δ RMSE, and the independent decoder had the highest Δ PCC. CarPS-VAE selects the shared decoder as recorded in ADR 0099. |
 | [07 CarPS-VAE alpha](07_cpsv_alpha/README.md) | Freezes the shared signed Δ model and KPGT default. All nine selected checkpoints exactly replayed the validation objective and predictions and held-out predictions. |
 | [08 Chemical representation comparison](08_cpsv_chem-emb/README.md) | Completed 63 matched fold and seed coordinates across seven representations. UniMol led both Δ PCC and Δ RMSE and is selected for subsequent CarPS-VAE studies. |
-| [09 CarPS-VAE prediction axes](09_cpsv_axis/README.md) | Accepted design for eight HVG-DEG and Denoise-DEG axes with UniMol and a paired Denoise-DEG 5k reference. |
+| [09 CarPS-VAE prediction axes](09_cpsv_axis/README.md#formal-results) | Completed 72 UniMol coordinates across eight axes. Denoise-DEG 5k led mean Δ PCC and Δ RMSE in both scopes. HVG-DEG 5k had the highest direction-correct disease coverage. |
 
 ## Verify the current figures
 
-All 38 active report figures and the palette preview use the [Stage 2 palette and drawing API](util/README.md#plotting).
+All 45 active report figures and the palette preview use the [Stage 2 palette and drawing API](util/README.md#plotting).
 The verifier checks the current render receipts and reproduces each PNG
 twice from its published plot data using the `arc` rendering environment.
 For byte-identical replay, use the exact Python, Matplotlib, NumPy and,
@@ -73,6 +73,7 @@ python stage2_CarPS-VAE/util/figure/script/verify_report_figures.py --work "$WOR
 [Step 06.3 receipt](06_tsg_shape/06.3_round3/log/figure-render.json) ·
 [Step 06.4 receipt](06_tsg_shape/06.4_round4/log/figure-render.json) ·
 [Step 08 receipt](08_cpsv_chem-emb/log/figure-render.json) ·
+[Step 09 receipt](09_cpsv_axis/log/figure-render.json) ·
 [ADR 0093](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
 
 ## Local history

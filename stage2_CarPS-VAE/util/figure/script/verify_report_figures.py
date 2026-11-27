@@ -23,6 +23,7 @@ REPORTS = {
     "06_tsg_shape/06.3_round3": ("figure-render.json", (("figure", "figure/script/render_composition.py"),)),
     "06_tsg_shape/06.4_round4": ("figure-render.json", (("figure", "figure/script/render_measured.py"),)),
     "08_cpsv_chem-emb": ("figure-render.json", (("figure", "figure/script/render_chem.py"),)),
+    "09_cpsv_axis": ("figure-render.json", (("figure", "figure/script/render_axes.py"),)),
 }
 
 
@@ -105,8 +106,8 @@ def main():
     env["PYTHONPATH"] = os.pathsep.join(paths)
     count = sum(verify_report(STAGE / step, receipt, renderers, work / step, env)
                 for step, (receipt, renderers) in REPORTS.items())
-    if count != 23:
-        raise ValueError(f"expected 23 Step 02, Step 04, Step 06 and Step 08 figures, verified {count}")
+    if count != 30:
+        raise ValueError(f"expected 30 Step 02, Step 04, Step 06, Step 08 and Step 09 figures, verified {count}")
     loss_verifier = STAGE / "05_tsg_loss/figure/script/verify_figures.py"
     subprocess.run([sys.executable, str(loss_verifier), "--work", str(work / "loss")],
                    cwd=work, env=env, check=True)
@@ -122,7 +123,7 @@ def main():
         check_layout(directory)
     for directory in STAGE.glob("*/*/figure"):
         check_layout(directory)
-    print("Verified all 39 current Stage 2 PNGs")
+    print("Verified all 46 current Stage 2 PNGs")
 
 
 if __name__ == "__main__":
