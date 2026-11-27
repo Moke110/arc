@@ -11,7 +11,7 @@ A program-level milestone of the AICM roadmap, with its own entry and exit condi
 _Avoid_: phase, milestone, step
 
 **Stage 1**:
-The completed AICM stage that established XPert+DToxS MIRI drug repositioning: the four MIRI screens v1 (frozen baseline), v1.1 (DToxS-LINCS testbed), v2 (primary+iPSC), and v3 (all-CM, current frontier). "DToxS" names their shared primary-arm test-set anchor, not their only corpus.
+The completed AICM stage for XPert-based MIRI drug repositioning. Its retained screen is v2, which uses primary and iPSC-derived cardiomyocyte data. Earlier studies also evaluated v1, v1.1 and v3.
 
 **Stage 2**:
 The stage that develops and evaluates transcriptome prediction for chemical perturbations in cardiomyocytes. Its selected model is CarPS-VAE.

@@ -137,3 +137,5 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0102](0102-stage2-axis-selection-and-comparison-figures.md) | Select Denoise-DEG 5k and standardize Stage 2 comparison figures |
 | [0103](0103-carps-vae-dose-inputs.md) | Compare CarPS-VAE dose inputs on cold-dose-drug folds |
 | [0104](0104-carps-vae-no-dose.md) | Select no-dose for subsequent CarPS-VAE work |
+
+- [0105](0105-stage-cleanup.md) Retain the Stage 1 v2 screen and consolidate Stage 2 model experiments.
