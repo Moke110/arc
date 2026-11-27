@@ -272,6 +272,15 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2_CarPS-VAE/09_cpsv_axis/log/runs.csv
 !/stage2_CarPS-VAE/09_cpsv_axis/log/summary.csv
 
+# Keep Step 10 reports and plotted data in Git. Fit bundles stay local.
+/stage2_CarPS-VAE/10_cpsv_dose/output/
+!/stage2_CarPS-VAE/10_cpsv_dose/figure/data/*.csv
+!/stage2_CarPS-VAE/10_cpsv_dose/log/bandwidths.csv
+!/stage2_CarPS-VAE/10_cpsv_dose/log/fold-scores.csv
+!/stage2_CarPS-VAE/10_cpsv_dose/log/foldwise-summary.csv
+!/stage2_CarPS-VAE/10_cpsv_dose/log/runs.csv
+!/stage2_CarPS-VAE/10_cpsv_dose/log/summary.csv
+
 # HVG-DEG axes and compact selection evidence. Keep candidates local.
 !/stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/output/
 /stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/output/*
