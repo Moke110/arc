@@ -1,132 +1,125 @@
-# Stage 2 shared utilities
+# CarPS-Transcriptome shared utilities
 
-Add `cpst/util/output/api` to the Python import path. The public
-`cpst_util` package provides source-specific drug identities and representations,
-indexed gene identities, seed selection, generic metrics, CSV rendering and derivation utilities.
+`cpst/util` provides the identities, frozen features, training and scoring code,
+and figure renderers used across CarPS-Transcriptome. Steps 01–03 own the raw
+counts, ordered prediction axes and training releases. Steps 04–10 own their
+study populations, folds, calibration, score aggregation and reports.
+[CarPS-Transcriptome steps](../README.md) · [Utility execution guide](AGENTS.md)
 
-| Module | Entry point |
+## Shared input and release APIs
+
+Add `cpst/util/output/api` to the Python import path to import `cpst_util`.
+
+| Module | Entry points and contracts |
 | --- | --- |
-| `identity` | `load_gene_table()` verifies and reads the accepted 18,164 rows in index order. `GeneIdentity` resolves global and source-specific identifiers. |
-| `representations` | `RepresentationTable(source="tenv")` or `RepresentationTable(source="tahoe_bulk")` verifies the source manifest, reads the parent identity table, and selects vectors by ordered parent InChIKeys. `ordered_parents(observations)` and `verified_parent_keys(parents)` validate profile and accepted representation identities. |
-| `ecfp4` | `open_ecfp4(path)` verifies the accepted binary fingerprint and parent order. `publish_ecfp4(source, candidate)` preserves frozen input provenance. |
-| `seeds` | `read_seeds()` returns the accepted seed tuple. Pass a count to select a prefix. |
-| `metrics` | `vector_metrics(truth, prediction)` scores paired finite vectors, including the accepted constant-vector policy. `signed_jaccard_scores(truth, prediction, gene_indices)` returns JAC-top200 and wJAC-2000 for one paired Delta vector. |
-| `comparison` | `write_paired_metrics(data, reference)` and `render_comparison(data, output, arms=..., reference=..., title=...)` publish the three canonical comparison figures. |
-| `comparison_publication` | `render_receipt(stage, step, output, renderer, dependencies=...)` replays the figures twice and records the plotted CSV, PNG and renderer hashes. |
-| `plotting`, `palette` | `read_rows(path)`, `save_figure(figure, path, **kwargs)` and the drawing functions below support rendering solely from plotted CSV values. |
-| `publication` | `publication_lock(destination)` and `replace_release(...)` coordinate verified replacement of accepted releases. |
-| `derivation` | `bulk_deg`, `disease_deg`, and `deg_rank` provide common DEG, rank, and worker interfaces. `r_env` locates R resources and `release` provides derivation manifest and candidate verification. |
+| [`identity`](output/api/cpst_util/identity.py) | `load_gene_table(directory=None)` verifies the indexed table and reads its 18,164 genes in frozen row order. `GeneIdentity` resolves global and source-specific identifiers and rejects ambiguous mappings. [Gene-identity manifest](output/gene-identity/manifest.json) |
+| [`representations`](output/api/cpst_util/representations.py) | `RepresentationTable(source="tenv")` or `RepresentationTable(source="tahoe_bulk")` checks the source-specific manifest and its files. `ordered_parents(observations)` collapses repeated records to unique desalted parents in InChIKey order. `table.verified_parent_keys(parents)` checks structures, and `table.vectors(arm, keys)` returns vectors in the caller’s key order, including duplicates. |
+| [`ecfp4`](output/api/cpst_util/ecfp4.py) | `open_ecfp4(directory, source_manifest=...)` verifies the 2,048-bit binary fingerprints and parent order, with an optional original manifest binding. `publish_ecfp4(input_directory, candidate_directory)` copies the verified fingerprint and parent table into a separate candidate and records their provenance. |
+| [`seeds`](output/api/cpst_util/seeds.py) | `read_seeds(count=None)` verifies the [seed table](output/tables/seeds.csv) and reads `(17, 42, 2026)` in order. Supply `count` to take a prefix. |
+| [`metrics`](output/api/cpst_util/metrics.py) | `vector_metrics(truth, prediction)` computes PCC, Spearman, RMSE and R² on paired finite vectors. Constant truth leaves both correlations and R² undefined. Constant prediction with varying truth gives zero for both correlations. `signed_jaccard_scores(truth, predicted, gene_indices)` returns JAC-top200 and wJAC-2000 for one signed Δ pair. |
+| [`publication`](output/api/cpst_util/publication.py) | `publication_lock(destination)` coordinates writers. Hold it while `publish_candidate` builds and verifies a candidate and `replace_release` installs it. |
+| [`derivation`](output/api/cpst_util/derivation) | `bulk_deg`, `disease_deg` and `deg_rank` share DEG and ranking operations. `r_env` locates the R worker environment and `release` handles derivation manifests, verification and publication. |
+
+The gene reader defaults to `cpst/util/output/gene-identity/`. The representation
+reader defaults to the locally materialized `cpst/util/output/representations/`
+for tenv and its `tahoe/` subdirectory for Tahoe. Either reader accepts an
+explicit directory. The representation reader uses its built-in source manifest
+pin unless `manifest_sha256` is supplied. The manifest pins the input generation,
+parent identities, conformer ledger and seven sets of frozen vectors.
+[Representation readers and manifest pins](output/api/cpst_util/representations.py) · [Step 08 release evidence](../08_cpst_chem-emb/log/364-formal.json)
+
+## TranSiGen training and evaluation
+
+[`training/transigen.py`](training/transigen.py) owns registration, epoch
+selection, minimum-validation checkpoints, prediction and exact replay. It also
+provides the architecture KL diagnostics. New runs record the architecture,
+objective and coefficients, frozen chemical representation, fitted dose transform
+and conditioning, ordered axis digest, split, fold and seed. Numbered run commands
+bind the study configuration and execute each phase in a separate process.
+
+| Studies | Shared runtime and accepted evidence |
+| --- | --- |
+| 04–06 | [`eval/fixed_prediction.py`](eval/fixed_prediction.py) verifies held-out condition and gene order, paired predictions and signed Δ arrays before scoring. [`eval/shape.py`](eval/shape.py) pairs architecture scores with the registered control on the same fold. The consolidation checked 285 installed registrations against the original Git blobs and matched 343 smoke and formal configurations between the original and shared entry points. Representative CUDA fits matched the original checkpoints, predictions and metrics. [TranSiGen verification](training/verification.md) · [Formal receipt checksums](training/formal-receipts.sha256) |
+| 07 | [`training/cpst_model.py`](training/cpst_model.py) implements the fixed `XΔ-XΔ` CarPS-Transcriptome alpha. The KPGT default preserves the Step 06.4 initialization and forward path. The alpha release verified its source pins and nine Step 06.4 checkpoint replays. [Alpha release](../07_cpst_alpha/README.md) · [Tracked release manifest](../07_cpst_alpha/output/release.json) |
+| 08–10 | [`training/chemical.py`](training/chemical.py) aligns frozen chemical vectors to pooled conditions. [`training/registered.py`](training/registered.py) locks runs and validates their phase receipts. [`eval/axis_delta.py`](eval/axis_delta.py) adds wJAC-2000 for the full-axis comparisons in Steps 09 and 10. The acceptance checked the original source and scientific configuration of 207 fresh registrations across Steps 08–10, with reused fits bound to predecessor receipts. [Shared runtime verification](training/cpst-verification.md) · [Receipt checksums](training/cpst-receipts.sha256) |
+
+Step 08’s formal rule retained KPGT as the working default. Changing it required
+one representation to lead both primary metrics and each mean paired improvement
+to exceed its sample SD. UniMol led both metrics, and its mean Δ PCC improvement
+fell below its sample SD. ADR 0100 subsequently adopted frozen UniMol for
+CarPS-Transcriptome studies starting with Step 09. [Chemical representation results](../08_cpst_chem-emb/README.md#formal-results) · [Successor decision](../../docs/adr/0100-carps-vae-unimol.md)
+
+Step 09 selected Denoise-DEG 5k on the full prediction axis. Step 10 selected
+`no-dose` on the cold-dose-drug intersection. Step 09’s historical common-axis
+scores and Step 10’s fold calibration belong to their own reports.
+[Prediction axes](../09_cpst_axis/README.md#formal-results) · [Dose inputs](../10_cpst_dose/README.md#formal-results)
+
+Current registrations and receipts use `cpst` paths. The release migration maps
+reissued registration digests to the originals embedded in unchanged checkpoints.
+The provenance reader checks historical source digests at each experiment’s pinned
+Git revision. [Migration inventory](execution/385-release-migration.json) · [Pinned Step 06.4 replay](../06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit)
 
 ## Comparison figures
 
-Use the four shared signed Jaccard cutoffs from [ADR 0102](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
-at the held-out condition boundary. Each study keeps its established fold
-and seed aggregation. Provide the comparison renderer with these CSVs in
-its `data` directory.
+[`comparison`](output/api/cpst_util/comparison.py) renders `learning-curve.png`,
+`metrics.png` and `metrics-paired.png` from the published CSVs. Its paired scores
+subtract the reference within the same fold and seed. Studies compute
+signed Jaccard at cutoffs 200, 500, 1,000 and 2,000 per held-out condition
+before aggregating at their established boundaries.
+[Comparison design](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
 
-| CSV | Columns |
+| CSV under `figure/data/` | Columns |
 | --- | --- |
 | `learning-curve.csv` | `arm,fold,seed,epoch,train,validation` |
 | `metrics.csv` | `arm,fold,seed,metric,value` |
 | `metrics-paired.csv` | `arm,fold,seed,metric,reference,arm_value,reference_value,value` |
 
-Use `comparison.METRIC_NAMES` for metric IDs. Keep undefined metric values
-blank. `write_paired_metrics` derives the paired CSV from matching reference
-rows. Give the renderer an ordered mapping from arm IDs to `(label, hue, depth)`
-and the reference arm ID. It checks fit coverage, epoch order and paired
-values before producing the three PNGs.
+Use `comparison.METRIC_NAMES` for metric IDs and leave undefined values blank.
+`write_paired_metrics(data, reference)` derives the paired CSV.
+`render_comparison(data, output, arms=..., reference=..., title=...)` takes an
+ordered mapping from arm IDs to `(label, hue, depth)`. The renderer checks fit
+coverage, epoch order and pair values. `render_receipt(stage, step, output,
+renderer, dependencies=...)` runs the renderer twice and records the input CSV,
+PNG and renderer hashes. The shared figure gate covers 45 PNGs across the 13
+comparisons, Step 02 and the palette. [Figure receipt API](output/api/cpst_util/comparison_publication.py) · [Figure verifier](figure/script/verify_report_figures.py)
 
 ## Plotting
 
-The [palette figure](figure/palette.png) shows all 36 hue–depth coordinates
-and the mark roles defined in [ADR 0093](../../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md).
-Run `python cpst/util/figure/script/render_palette.py` from the repository
-root to reproduce it. Use `--output PATH` to render to a different file.
+The palette has nine hues and four depths. `palette.color_pair(hue, depth=2)`
+returns the main and secondary RGBA colors. Hue is in degrees and API depths run
+from 0 (darkest) to 3 (lightest). The preview labels the depths 1 to 4. Encode
+the first grouping variable with hue and the second with depth. Replicates
+inherit their group’s color. [Palette preview](figure/palette.png) · [Plotting design](../../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
 
-- `palette.color_pair(hue, depth=2)` returns the `main` and `secondary`
-  RGBA colors. Hue is in degrees and depth runs from 0 (darkest) to 3
-  (lightest). The palette figure labels those depths 1 to 4.
-- `plotting.bar(axis, x, height, hue=..., depth=...)` accepts one palette
-  coordinate for the series or per-bar hue and depth arrays.
-  `grouped_bar(axis, x, groups, width=.8)` centers each group at its x
-  value and divides the total width among its series. Each series provides
-  `(heights, hue, depth, label)`.
-- `line`, `scatter`, `errorbar`, `range_band`, `bubble`, and `histogram`
-  take one coordinate per series. Pass measurement errors as `yerr` or
-  `xerr` to `errorbar` and the existing bin edges as `bins` to `histogram`.
-- `plotting.replicate_dots(axis, x, values, hue=..., depth=..., spread=...)`
-  draws one dot per defined replicate at the group center. Its symmetric
-  spread separates dots without using fold or seed as a position variable.
-- `heatmap(axis, values, hue=..., vmin=..., vmax=..., colorbar_label=...)`
-  uses the four ordered depths of one hue and adds a numeric color scale.
+[`plotting`](output/api/cpst_util/plotting.py) provides CSV reading, figure saving
+and Matplotlib drawing functions. Study renderers control panel layout and labels.
 
-- `plotting.replicate_bar(axis, x, values, hue=..., depth=...)` draws the
-  mean, one dot per defined replicate and sample SD for at least two
-  defined measurements. Use `replicate_errorbar` for the same dots and
-  error bars on an explicitly requested non-bar chart.
-- `plotting.learning_curve(axis, runs)` draws one training and one
-  validation line per run. Pass its observed `(epochs, train, validation)`
-  values and call once per model subplot.
-- `plotting.focus_y(axis, groups, reference=...)` sets a padded y range
-  covering finite observations and sample SD. Pass one iterable per group
-  and provide a reference value when the panel needs it in view. Use the
-  same collection of groups for panels that share a scale.
+- `bar` accepts a single hue and depth for the series or one of each per bar.
+  `grouped_bar(axis, x, groups, width=.8)` centers the supplied series
+  `(heights, hue, depth, label)` over each x position.
+- `replicate_bar` shows the mean, one dot per defined replicate and sample SD
+  when at least two values are defined. `replicate_errorbar` provides the same
+  dots and errors on non-bar charts. `replicate_dots` offsets replicates
+  symmetrically around the group center.
+- `learning_curve(axis, runs)` draws one train and one validation line from
+  each run’s `(epochs, train, validation)` values. Call it per model subplot.
+- `focus_y(axis, groups, reference=...)` covers finite observations, sample SD
+  and the supplied reference. Use the same groups in panels sharing a scale.
+  Comparison metric panels pass zero as the reference.
+- `line`, `scatter`, `errorbar`, `range_band`, `bubble` and `histogram` use one
+  hue and depth per series. `heatmap` uses four depths of one hue and a numeric
+  color scale. Pass existing bin edges to `histogram` and `xerr` or `yerr` to
+  `errorbar`.
 
-Use one color axis per grouping variable. Map the first variable to hue
-and the second to depth when present. Replicates inherit the color of
-their group. See the [Stage 2 contract](../AGENTS.md#step-contract) for
-publication layout and chart defaults. Study renderers own the layout
-and labels. Drawing functions return Matplotlib artists.
+Run `python cpst/util/figure/script/render_palette.py` from the repository root
+to redraw the preview. Supply `--output PATH` to write a separate PNG.
+[Palette renderer](figure/script/render_palette.py)
 
-The default readers open the accepted gene and feature products under util.
-For a separate materialized checkout, pass the directory explicitly to `load_gene_table` or `RepresentationTable`. The
-feature reader checks the shipped source-specific manifest pin unless an
-explicit expected manifest digest is provided. The manifest binds the frozen
-input generation, extraction provenance, parent structures and vector files.
-Studies retain fold coverage verification, aggregation and report tables.
+## Verify the utility APIs
 
-From the repository root:
+The shared API tests cover tracked metadata and small fixtures. The utility
+execution guide gives the commands for these tests and the study-specific
+training and scoring test groups. [Utility test commands](AGENTS.md#verify-the-utility-apis)
 
-```sh
-PYTHONPATH=cpst/util/output/api python -m unittest discover -s cpst/util/execution/tests
-```
-
-
-## TranSiGen training and evaluation
-
-Steps 07–10 use the same runtime. `util/training/cpst_model.py` implements the fixed
-CarPS-Transcriptome alpha. `util/training/transigen.py` owns shared epoch selection,
-minimum-validation checkpointing and exact replay. Compare the study-owned rows,
-dose transforms, evaluation seeds and metric definitions when using these APIs.
-`util/training/chemical.py` aligns frozen chemical vectors to condition order.
-`util/training/registered.py` handles locked phase receipts for Steps 08–10.
-`util/eval/axis_delta.py` adds the weighted signed Jaccard to the shared scoring
-kernels for the Step 09 and 10 full-axis comparisons. Step 09 retains its
-tracked historical common-axis evidence and the accepted full-axis report.
-Step 10 scores the held-out drug-and-dose intersection with its own fold calibration.
-
-`training/transigen.py` owns registration, fit, checkpoint validation,
-prediction, independent replay and architecture KL diagnostics for Steps 04–06.
-Each study supplies its roster, model builder and objective. New registrations explicitly identify architecture,
-objective and weights, chemical representation, fitted dose transform and
-conditioning, ordered axis digest, split, fold and training seed. The native
-study records the author MSE and KL coefficients. The numbered run commands
-retain their arguments and continue to require separate processes for each phase.
-
-`eval/fixed_prediction.py` checks ordered held-out conditions, paired predictions
-and their signed Delta arrays before computing condition and fold metrics.
-`eval/shape.py` pairs architecture fold scores with their registered control.
-Step 04 adds its disease-direction score and each study owns its aggregation,
-training calibration, reused coordinates and publication.
-
-The [verification record](training/verification.md) lists formal products, code
-revisions and parity checks. Historical registrations retain the original
-recorded code hashes. Replay them in the pinned Git checkout with the verified
-input locations; new registrations bind the shared runtime.
-
-Run one test group at a time from the repository root, for example
-
-```bash
-python -m unittest discover -s cpst/util/training/tests/06.4_round4
-python -m unittest discover -s cpst/util/eval/tests/04_tsg_axis
-```
+Use the materialized release checkout for full receipt and scientific verification.
+[Steps 04–06 verification](training/verification.md) · [Steps 07–10 verification](training/cpst-verification.md)

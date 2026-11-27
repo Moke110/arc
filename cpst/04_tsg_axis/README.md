@@ -1,195 +1,64 @@
-# TranSiGen prediction-axis comparison
+# Step 04 TranSiGen prediction-axis comparison
 
-The numbered commands use the [shared TranSiGen training and evaluation APIs](../util/README.md#transigen-training-and-evaluation).
+Step 04 compared HVG-DEG and Denoise-DEG at 3k, 4k and 5k genes on the
+same tenv plate–parent–dose conditions. The comparison reused the frozen
+three cold-drug folds from Step 03. Each axis set the expression input and
+output width. All 18 fits started from random weights at seed 42 with the
+original TranSiGen internal widths, frozen 2,304-dimensional KPGT vectors
+and a fold-fitted numeric dose transform on the latent input.
+[Spec 6](https://github.com/Moke110/carps/issues/317) ·
+[Step 03 tenv training axes](../03_data_train/README.md#tenv-training-axes)
 
-[Spec 6](https://github.com/Moke110/carps/issues/317) compares three HVG-DEG
-and three Denoise-DEG axes on the same tenv plate–parent–dose conditions.
-Each fit starts with random weights at seed 42 and uses the original
-TranSiGen internal widths, frozen 2,304-dimensional KPGT and the registered
-latent numeric dose transform. The selected prediction axis sets the gene
-interface width. Fold membership comes from the frozen cold-drug folds in
-the [Step 03 tenv training release](../03_data_train/README.md).
+## Matched-plate protocol
 
-Training, validation and test each use the released same-plate DMSO expression
-matched to the condition. Training and validation use the author-published
-TranSiGen MSE + KLD objective with beta 0.1. Validation sums the objective
-over batches in evaluation mode with a fixed seed and divides by the number
-of validation conditions. The minimum selects the checkpoint. Training stops
-after 30 consecutive epochs without improvement or at 1,000 epochs.
+Training, validation and test each used the measured same-plate DMSO profile
+from the release. Training and checkpoint selection used TranSiGen's native
+MSE + KLD objective with β = 0.1. The selected checkpoint minimized the
+validation objective summed over batches and divided by the number of
+validation conditions. Validation ran in evaluation mode with a fixed seed.
+The fit stopped after 30 epochs without improvement or at 1,000 epochs.
+[ADR 0086](../../docs/adr/0086-tenv-axis-matched-plate-control.md)
 
-At the fixed prediction boundary, `prediction.npy` stores absolute treated
-expression. Predicted and measured Delta both subtract the same matched plate
-control. All three matrices follow `conditions.csv` and `genes.csv`. Test
-treated expression is used for scoring after prediction. The control and
-validation protocol is recorded in [ADR 0086](../../docs/adr/0086-tenv-axis-matched-plate-control.md).
+The model produced absolute treated expression in `prediction.npy`.
+Predicted and measured Delta each subtract the same matched plate control,
+with rows and columns ordered by `conditions.csv` and `genes.csv`.
+Measured test treatment entered only at scoring. The comparison estimates
+performance for published axes constructed with tenv evidence, conditional
+on having a measured same-plate control at prediction time.
+[Fixed-prediction input interface](output/api/tsg_axis/inputs.py)
 
-## Gene axis selection
+The report averages defined conditions within each fold and gives equal
+weight to defined folds within each axis. Signed Jaccard ranks strictly
+positive and strictly negative genes separately, with ties resolved by
+frozen gene index. E-distance and RBF MMD use
+Euclidean distance divided by the square root of axis width and include
+the empirical diagonal terms. All six axes share one bandwidth per fold,
+estimated as the median distance between distinct conditions in the full
+HVG-DEG 5k training measured Delta. The report records the bandwidths and
+their training membership in `bandwidths.csv` and `fold-memberships.csv`.
+[Formal receipt](log/319-formal.json)
 
-Select **Denoise-DEG 5k (`denoise-5k`)** as the Stage 2 prediction axis.
-The decision prioritizes held-out perturbation Delta prediction with a measured
-same-plate control. Across the six axes and three frozen cold-drug folds,
-Denoise-DEG 5k gave the highest mean Δ PCC (0.4066) and the lowest mean
-Δ RMSE (0.2596) and Δ MMD (0.1793). HVG-DEG variants scored higher on signed
-DEG F1 for each of the four disease references. See the
-[formal results](#formal-results) for the full comparison.
-
-## Prepare the capped runtime
-
-Activate the `arc` environment and run from the repository root. Use one CUDA
-job at a time. The launcher checks for at least 12 GiB of available WSL RAM
-before each command and sets the measured run's limits of 10 GiB of memory,
-8 GiB of swap and two CPU threads. Monitor available RAM and GPU usage every
-10 seconds while fitting.
-
-```bash
-capped_step04() {
-  if ! LC_ALL=C free -g | awk '
-    { print }
-    $1 == "Mem:" { available = $7 }
-    END { exit available < 12 }
-  '; then
-    printf '%s\n' 'Step 04 requires at least 12 GiB of available RAM.' >&2
-    return 1
-  fi
-  systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- \
-    env OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 "$@"
-}
-```
-
-## Run the formal matrix
-
-The matrix driver checks the complete ordered condition and fold rosters
-across all six releases. It registers all 18 coordinates before training,
-then runs each fit, prediction and exact replay in separate processes.
-For the formal dataset, use the full cold-drug folds and seed 42.
-
-```bash
-STEP=cpst/04_tsg_axis
-WORK=$(mktemp -d "$PWD/tmp/tsg-axis-matched-control.XXXXXX")
-capped_step04 python "$STEP/execution/matrix.py" \
-  --output "$WORK/matrix" --logs "$WORK/matrix-audit/logs" &&
-capped_step04 python "$STEP/execution/report_formal.py" build \
-  --matrix "$WORK/matrix" --matrix-audit "$WORK/matrix-audit" \
-  --report "$WORK/report" --figures "$WORK/figures" \
-  --logs "$WORK/logs"
-```
-
-The accepted [formal receipt](log/319-formal.json) pins all 18 run
-manifests, the report and the original two figures. The materialized
-paths are `output/formal-matched-control` for checkpoints, registrations
-and predictions, `log/319-runs` for resource and process evidence, and
-`output/report-matched-control` for condition and fold metrics, eligibility,
-bandwidths and the shared disease reference. This sealed report keeps its
-original axis IDs and digests. The current plotted CSVs in `figure/data/` use canonical IDs.
-
-Export the six axis-bearing condition, fold and summary CSVs with canonical
-IDs. The export verifies the sealed report's manifest and output digests
-against the formal receipt and copies each row's other fields byte for byte.
-
-```bash
-STEP=cpst/04_tsg_axis
-WORK=$(mktemp -d "$PWD/tmp/tsg-axis-export.XXXXXX")
-python "$STEP/execution/export_canonical.py" --output "$WORK/report"
-```
-
-Verify the sealed scientific report with its pinned evaluator and axis IDs.
-The temporary Step 03 aliases point to the same releases.
-
-```bash
-STEP=cpst/04_tsg_axis
-VERIFY=$(mktemp -d "$PWD/tmp/tsg-axis-verify.XXXXXX")
-git worktree add --detach "$VERIFY/runtime" 3f4cbb65
-mkdir "$VERIFY/legacy-step03"
-for release in "$PWD"/cpst/03_data_train/03.*_tenv_*; do
-  name=${release##*/}
-  ln -s "$release" "$VERIFY/legacy-step03/${name%-*}-deg-${name##*-}"
-done
-runs=()
-for run in "$STEP"/output/formal-matched-control/runs/*/fold-*; do
-  runs+=(--run "$run")
-done
-capped_step04 python "$VERIFY/runtime/stage2/04_tsg_axis/execution/evaluate.py" verify "${runs[@]}" \
-  --output "$STEP/output/report-matched-control" \
-  --step03 "$VERIFY/legacy-step03" --raw "$PWD/cpst/01_data_raw/output"
-git worktree remove "$VERIFY/runtime"
-```
-
-## Register and replay one fit
-
-```bash
-STEP=cpst/04_tsg_axis
-RUN=$PWD/tmp/tsg-axis/hvg-5k-fold-0
-capped_step04 python "$STEP/execution/run.py" register --axis hvg-5k --fold 0 \
-  --training cpst/03_data_train/03.1_tenv_hvg-5k/output --device cuda --output "$RUN" &&
-capped_step04 python "$STEP/execution/run.py" train --output "$RUN" &&
-capped_step04 python "$STEP/execution/run.py" predict --output "$RUN" &&
-capped_step04 python "$STEP/execution/run.py" replay --output "$RUN"
-```
-
-Pass `--representations` and `--source` when frozen KPGT or immutable native
-TranSiGen is materialized in a different checkout. Keep the same CPU thread
-caps for each phase. Registration binds dataset and gene order, parent
-and condition partitions, feature and native code digests and the runtime.
-Prediction exactly replays the validation loss and validation predictions
-before producing held-out predictions.
-A fresh replay verifies all scores' source arrays and row identities against
-the recorded values and publishes the run manifest. Repeating replay checks
-the sealed run again without changing it. Pass the corresponding path flags
-when an input has moved. Its registered digests still apply.
-
-Pass `--smoke` only for a bounded two-epoch fit with 64 training, 24
-validation and 24 test conditions. Its manifest marks it as smoke and it is
-excluded from formal results. The [smoke receipt](log/318-matched-control-smoke.json)
-records the matched-control 5k fit, scoring and figure replay.
-
-## Score and replay an axis comparison
-
-Pass one `--run` per sealed fit. The formal report requires all 18 axis–fold
-coordinates. Add `--smoke` to score a single replayed HVG-DEG 5k smoke fit.
-The evaluator checks all registered partitions and prediction arrays against
-the Stage 03 releases. Use `--step03` and `--raw` for materialized inputs in
-another checkout.
-
-```bash
-STEP=cpst/04_tsg_axis
-REPORT=$PWD/tmp/tsg-axis/report
-python "$STEP/execution/evaluate.py" score --smoke --run "$RUN" --output "$REPORT"
-python "$STEP/execution/evaluate.py" verify --smoke --run "$RUN" --output "$REPORT"
-```
-
-The report orders the metrics as JAC_top200, JAC_pos100, JAC_neg100, Δ PCC,
-Δ Spearman, Δ RMSE, Δ E-distance, Δ MMD and Δ R². Jaccard counts strictly
-positive and strictly negative genes separately and breaks ties by frozen gene
-index. E-distance and RBF MMD use Euclidean distance divided by the square
-root of axis width and include the empirical diagonal terms. Each fold uses
-one kernel bandwidth for all six axes. It is the median over distinct
-condition pairs in the full HVG-DEG 5k training measured Delta. The distance
-and kernel bandwidth evidence is in `bandwidths.csv` and its condition
-membership is in `fold-memberships.csv`.
-
-For each eligible disease, signed DEG F1 compares the full model-axis
-predictions against nonzero directions in its DEG1000 list, measured from
-raw pooled counts and matched plate controls on the full common CM axis.
-Opposite signs count as one false positive and one false negative. An off-axis
-reference gene counts as a false negative. Two empty sets produce NA. The
-same `reference/` files supply all models' disease targets.
-
-The report retains per-condition, per-fold and summary CSVs with eligibility counts.
-The report weights defined conditions equally within a fold and defined folds
-equally within each axis. The current comparison also includes wJAC-2000, a
-weighted average of the signed Jaccard cutoffs 200, 500, 1,000 and 2,000 per
-condition. Its fold scores use the same condition aggregation. These are
-retrospective results on published fixed axes built with tenv evidence and
-measure prediction conditional on a measured matched control.
+For each disease gene set, signed DEG F1 compares model-axis predictions
+with nonzero measured directions within its DEG1000 list. The reference
+directions come from raw pooled counts and matched plate controls on the
+full common CM axis and are shared across all six axes. An opposite sign
+counts as one false positive and one false negative. An off-axis reference
+gene counts as a false negative. Two empty sets give an undefined score.
+[Disease reference implementation](output/api/tsg_axis/disease_reference.py) ·
+[Shared metric implementation](../util/eval/metrics.py)
 
 ## Formal results
 
-All 18 fits passed exact replay of validation loss, validation predictions
-and held-out predictions. Training stopped after 127 to 243 epochs, with
-30 epochs without validation loss improvement in every fit. All six axes
-evaluated the same 462, 459 and 462 conditions in folds 0, 1 and 2.
-The fold RBF bandwidths were 0.430414, 0.425762 and 0.439392. Every metric
-and every disease score was defined in all three folds.
+The bounded HVG-DEG 5k smoke fit passed matched-control, scoring and figure
+replay checks. The formal run then passed exact replay of the validation
+objective, validation predictions and held-out predictions on all 18 fits.
+Every fit reached the 30-epoch patience limit, with 127 to 243 epochs run.
+The six axes shared the same test rosters of 462, 459 and 462 conditions
+for folds 0–2. Their RBF bandwidths were 0.430414, 0.425762 and 0.439392.
+All nine Delta metrics and all four disease scores were defined on every
+fold. The sealed report also reproduced byte for byte.
+[Smoke receipt](log/318-matched-control-smoke.json) ·
+[Formal receipt](log/319-formal.json)
 
 | Delta metric | `hvg-3k` | `hvg-4k` | `hvg-5k` | `denoise-3k` | `denoise-4k` | `denoise-5k` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -207,47 +76,64 @@ and every disease score was defined in all three folds.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | nHF | 0.1603 | 0.1639 | 0.1905 | 0.1197 | 0.1063 | 0.0969 |
 | ICM | 0.1083 | 0.1258 | 0.1734 | 0.1211 | 0.1057 | 0.0961 |
-| genetic cardiomyopathy | 0.2136 | 0.2469 | 0.2193 | 0.1208 | 0.1057 | 0.0950 |
+| Genetic cardiomyopathy | 0.2136 | 0.2469 | 0.2193 | 0.1208 | 0.1057 | 0.0950 |
 | TOX | 0.3026 | 0.2587 | 0.2162 | 0.1302 | 0.1148 | 0.1036 |
 
-See the [learning curves](figure/learning-curve.png), the
-[held-out scores](figure/metrics.png) and the [paired differences](figure/metrics-paired.png).
-The paired figure subtracts Denoise-DEG 5k from each other axis in the same
-fold and seed. Every metric panel includes zero, the defined fold scores,
-their mean and sample SD. The
-[previous publication](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/04_tsg_axis/README.md#formal-results)
-contains the disease F1 figure and historical rendering receipt.
+## Gene axis selection
 
-Rebuild the comparison directly from the sealed Step 04 fits and report.
-The build checks all 18 registrations, rehashes the matched-control Delta
-arrays and epoch traces, and checks JAC-top200 against the sealed
-per-condition and fold scores.
+**Denoise-DEG 5k (`denoise-5k`)** led mean held-out Δ PCC (0.4066) and
+had the lowest mean Δ RMSE (0.2596) and Δ MMD (0.1793). HVG-DEG variants
+led signed DEG F1 for all four disease reference sets. Step 04 prioritized
+held-out Delta fidelity under matched controls and selected Denoise-DEG 5k
+for the subsequent TranSiGen loss and architecture studies. Step 09 later
+compared eight axes with CarPS-Transcriptome and UniMol and selected
+Denoise-DEG 5k under that protocol as well.
+[Step 03.7 training release](../03_data_train/03.7_tenv_denoise-5k/README.md) ·
+[Step 05 loss studies](../05_tsg_loss/README.md) ·
+[Step 06 architecture studies](../06_tsg_shape/README.md) ·
+[Step 09 selection](../09_cpst_axis/README.md#formal-results)
 
-```bash
-STEP=cpst/04_tsg_axis
-mkdir -p "$PWD/tmp"
-WORK=$(mktemp -d "$PWD/tmp/tsg-axis-figures.XXXXXX")
-export TMPDIR="$WORK" MPLCONFIGDIR="$WORK/mpl"
-python "$STEP/execution/build_comparison.py" --output "$WORK/publication"
-```
+## Figures and evidence
 
-Reproduce the three PNGs using only the plotted CSVs.
+| Figure | Evidence |
+| --- | --- |
+| [Learning curves](figure/learning-curve.png) | Training and validation traces for all 18 fits.
+[Plotted data](figure/data/learning-curve.csv) |
+| [Held-out metrics](figure/metrics.png) | Fold scores, means and sample SDs.
+[Plotted data](figure/data/metrics.csv) |
+| [Paired differences](figure/metrics-paired.png) | Each other axis minus Denoise-DEG 5k within the same fold and seed.
+[Plotted data](figure/data/metrics-paired.csv) |
 
-```bash
-python "$STEP/figure/script/render.py" --data "$STEP/figure/data" \
-  --output "$WORK/replayed"
-```
+The metrics figures include zero and add wJAC-2000, computed as a weighted
+mean of signed Jaccard at cutoffs 200, 500, 1,000 and 2,000 for each
+condition before fold aggregation. The current figure receipt binds all
+three CSVs and three PNGs to the sealed fit and report manifests. The
+historical publication retains the disease F1 figure.
+[Figure policy and metric definition](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md) ·
+[Current rendering receipt](log/figure-render.json) ·
+[Historical disease F1 figure](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/04_tsg_axis/figure/disease-f1.png)
 
-The [current rendering receipt](log/figure-render.json) pins the
-[trace CSV](figure/data/learning-curve.csv), [score CSV](figure/data/metrics.csv),
-[paired CSV](figure/data/metrics-paired.csv) and all three reproducible PNGs.
-The [canonical export receipt](log/322-canonical-axis-report.json) records the
-historical six ID mappings and sealed table hashes.
+The formal receipt records the checkpoint, registration and prediction
+inventory under `output/formal-matched-control/`, the report tables and
+shared disease reference under `output/report-matched-control/` and the
+process evidence under `log/319-runs/`. These paths require the materialized
+release. The sealed report retains its original axis IDs. The canonical
+export rewrites the IDs in six tables while preserving all other fields.
+[Formal receipt](log/319-formal.json) ·
+[Canonical export receipt](log/322-canonical-axis-report.json)
 
 ## Historical comparisons
 
-The [previous routing](https://github.com/Moke110/carps/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/04_tsg_axis/README.md)
-records the original inputs and pinned replay commands for the single-dose and
-axis-wide-control comparisons and the subsequent dose and width studies.
-Use the [original tracked evidence](../README.md#historical-evidence-and-active-input-checks)
-for the earlier comparisons.
+The earlier single-dose and axis-wide-control protocols, and their dose and
+width successors, are documented at a fixed revision.
+[Historical comparison protocols](https://github.com/Moke110/carps/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/04_tsg_axis/README.md#historical-single-dose-comparison)
+
+## Prepare the capped runtime
+
+Use the owner guide to prepare the capped runtime, run fits and replay the
+accepted report and figures.
+[Capped runtime](AGENTS.md#prepare-the-capped-runtime) ·
+[Run the formal matrix](AGENTS.md#run-the-formal-matrix) ·
+[Register and replay one fit](AGENTS.md#register-and-replay-one-fit) ·
+[Verify the sealed report](AGENTS.md#verify-the-sealed-report) ·
+[Rebuild and verify figures](AGENTS.md#rebuild-and-verify-the-comparison-figures)

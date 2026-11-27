@@ -1,93 +1,60 @@
-# TranSiGen Delta PCC sweep
+# Step 05.4 · TranSiGen Delta PCC sweep
 
-The numbered commands use the [shared TranSiGen training and evaluation APIs](../../util/README.md#transigen-training-and-evaluation).
+Step 05.4 tested whether adding a bounded Pearson correlation penalty to
+TranSiGen improved held-out treatment response. It used the Step 05.3
+objective with unit MSE weights for control reconstruction, treated
+reconstruction and Δ prediction, and a Δ L1 weight of 1.75. For each
+condition, it computed Pearson correlation across genes between predicted
+and measured Δ using the measured DMSO control from the same plate. The
+added loss was the batch mean of `(1 - clamp(PCC, -1, 1)) / 2` multiplied
+by `alpha`. The sweep tested 0, 0.1, 0.2, 0.3, 0.4 and 0.5 on Denoise-DEG
+5k with frozen KPGT vectors, tenv cold-drug folds 0–2 and seed 42. Held-out
+scoring used frozen HVG-DEG 5k bandwidths.
+[Step 05.3 report](../05.3_mse-l1_mse-x/README.md) ·
+[ADR 0092](../../../docs/adr/0092-transigen-bounded-delta-similarity-sweeps.md) ·
+[Denoise-DEG 5k manifest](../../03_data_train/03.7_tenv_denoise-5k/output/manifest.json) ·
+[Frozen tenv folds](../../03_data_train/output/frozen-folds/tenv/manifest.json) ·
+[Bandwidths](log/bandwidths.csv)
 
-[Spec 12](https://github.com/Moke110/carps/issues/337) adds a bounded Pearson correlation
-loss on predicted and measured Delta from the same matched-plate DMSO
-control. The sweep fixes the Step 05.3 shared reconstruction weight at 1
-and Delta L1 weight at 1.75. The added loss is the batch mean of half of
-one minus similarity, with each similarity clipped to [−1, 1].
-The six weights are 0, 0.1, 0.2, 0.3, 0.4 and 0.5.
-[ADR 0092](../../../docs/adr/0092-transigen-bounded-delta-similarity-sweeps.md)
+## Accepted results and follow-up
+
+The two-epoch smoke test at weights 0 and 0.5 on fold 0 passed exact
+prediction replay and byte-identical figure reproduction from the report
+CSVs. The formal sweep completed 18 fresh CUDA fits with exact independent
+replay, 162 held-out fold scores and 54 equal-fold aggregates. The three
+fresh zero-weight fits exactly matched the Step 05.3 unit-reconstruction
+fits on objective traces, selected and stopping epochs, validation and test
+predictions, Δ arrays, fold scores and eligibility counts.
+[Smoke receipt](log/338-smoke.json) · [Formal receipt](log/339-formal.json) ·
+[Run ledger](log/runs.csv) · [Fold scores](log/fold-scores.csv)
+
+Weight 0 had the highest mean Δ PCC (0.431920) and the lowest mean Δ RMSE
+(0.249215). Weight 0.3 was the closest positive weight on both metrics,
+with mean Δ PCC of 0.431519 and mean Δ RMSE of 0.249290. Step 05 retained
+the zero-weight objective. Step 05.5 tested a cosine penalty with the same
+base objective and its own fresh zero-weight fits.
+[Equal-fold scores](figure/data/delta-metrics.csv) ·
+[Step 05 selected objective](../README.md#selected-objective) ·
+[Step 05.5 cosine sweep](../05.5_mse-l1_cos/README.md)
+
+The current comparison figures include wJAC-2000. Paired differences
+subtract the fresh zero-weight score for the same fold and seed. The
+learning curves show training and validation through each fit's stopping
+epoch.
+[Metric scores](figure/metrics.png) ·
+[Paired differences](figure/metrics-paired.png) ·
+[Learning curves](figure/learning-curve.png) ·
+[Plot CSVs](figure/data/) · [Render receipt](log/figure-render.json) ·
+[Figure verification](AGENTS.md#verify-the-current-figures)
 
 ## Reproduce the smoke
 
-Use the `arc` environment and [capped runtime](../../04_tsg_axis/README.md#prepare-the-capped-runtime)
-from the materialized checkout. Monitor WSL RAM and GPU usage every ten
-seconds. The [smoke receipt](log/338-smoke.json) covers two fold-zero
-fits with two epochs each, exact prediction replay, and two identical
-renders from the report CSVs alone.
+The study guide covers the bounded two-fit run, scoring and CSV-only
+smoke renders. [Smoke procedure](AGENTS.md#reproduce-the-smoke)
 
-```bash
-set -e
-metric=pcc
-LOSS="$PWD/cpst/05_tsg_loss"
-SHARED="$LOSS/similarity"
-mkdir -p "$PWD/tmp"
-WORK=$(mktemp -d "$PWD/tmp/tsg-$metric-smoke.XXXXXX")
-mkdir -p "$WORK/scratch" "$WORK/matplotlib"
-export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
-runs=()
-for alpha in 0 0.5; do
-  run="$WORK/alpha-$alpha"
-  capped_step04 python "$SHARED/run_similarity.py" register \
-    --metric "$metric" --alpha "$alpha" --fold 0 --smoke --output "$run"
-  runs+=(--run "$run")
-done
-for alpha in 0 0.5; do
-  for phase in train predict replay; do
-    capped_step04 python "$SHARED/run_similarity.py" "$phase" \
-      --metric "$metric" --output "$WORK/alpha-$alpha"
-  done
-done
-for phase in score verify; do
-  capped_step04 python "$SHARED/evaluate_similarity.py" "$phase" \
-    --metric "$metric" --smoke "${runs[@]}" --output "$WORK/report" --scratch "$WORK/scratch"
-done
-mkdir "$WORK/csv-only"
-cp "$WORK/report/"{delta-metrics,epoch-objectives}.csv "$WORK/csv-only/"
-for attempt in first second; do
-  capped_step04 python "$LOSS/05.4_mse-l1_pcc/execution/render.py" --smoke \
-    --data "$WORK/csv-only" --output "$WORK/$attempt"
-done
-for figure in delta-metrics.png delta-metrics-improvement.png learning-curves.png; do
-  cmp "$WORK/first/$figure" "$WORK/second/$figure"
-done
-```
+## Reproduce the formal sweep
 
-Use `--training`, `--representations` and `--source` to locate the
-pinned runner inputs in another checkout. The evaluator accepts
-`--training` and `--bandwidth-training`.
-
-## Verify the published sweep
-
-The release contains 18 fresh CUDA fits with exact independent replay, 162
-held-out fold scores and 54 equal-fold aggregates. Its three zero-weight
-fits agree exactly with the corresponding Step 05.3 unit-weight references
-on the objective and component traces, selected and stopping epochs,
-validation and test predictions, Delta arrays, nine scores and eligibility
-counts. The acceptance receipt binds the shared matrix and registered
-inputs, the exact reference comparisons, and the scoring and resource
-evidence. [Acceptance receipt](log/339-formal.json) · [Run ledger](log/runs.csv) ·
-[Fold scores](log/fold-scores.csv) · [Frozen bandwidths](log/bandwidths.csv)
-
-Score bars include wJAC-2000. Bars show means, dots show individual fold scores,
-and error bars show sample SD. Paired differences subtract the matching fresh zero-weight score within
-each fold and seed. The learning curves show one model per weight and one training
-and validation trace per run.
-
-[Scores](figure/metrics.png) · [Signed differences](figure/metrics-paired.png) ·
-[Learning curves](figure/learning-curve.png) ·
-[Score CSV](figure/data/metrics.csv) · [Paired CSV](figure/data/metrics-paired.csv) ·
-[Curve CSV](figure/data/learning-curve.csv)
-
-The independent coordinator recorded 172 samples with a maximum observed
-gap of 10.002 seconds. The capped fit scope recorded 170 samples with a
-maximum gap of 14.421 seconds and peak RAM of 1.84 GiB.
-[Coordinator samples](log/339-coordinator-resources.jsonl) ·
-[Scope samples](log/339-resources.jsonl)
-
-The [render receipt](log/figure-render.json) binds the figures to the
-accepted release.
-[Current figure verification](../README.md#verify-the-current-figures)
-compares the published PNGs with two independent CSV-only renders.
+The acceptance receipt pins the joint matrix and PCC report manifests.
+[Sealed PCC replay](AGENTS.md#replay-a-sealed-fit) ·
+[Joint formal procedure](../README.md#reproduce-the-original-formal-delta-similarity-sweeps) ·
+[Registration verification record](../../util/training/verification.md)
