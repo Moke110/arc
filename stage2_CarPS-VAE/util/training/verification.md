@@ -76,3 +76,8 @@ The environment was Python 3.13.13, PyTorch 2.12.0+cu130, CUDA 13.0 and NumPy
 2.4.6 with two Torch threads on the RTX 4070 Ti SUPER. The serial six-fit
 scope peaked at 1,986,040 KiB RSS and completed in 72.91 seconds. Its scope
 used a 12 GiB memory cap and an 8 GiB swap cap.
+
+All 89 regression cases passed across the relocated test groups, including
+the two opt-in Step 06.1 predecessor cases with `TSG_PRIOR_MATRIX` set to
+the installed `output/formal/prior-347/matrix`. The Stage 2 retired-path
+audit and tracked-file check passed.
