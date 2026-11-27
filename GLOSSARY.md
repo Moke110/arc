@@ -703,6 +703,10 @@ _Avoid_: experiment, trial
 
 ### Stage 2 tenv model comparison
 
+**CarPS-VAE dose-input comparison**:
+The Stage 2 Step 10 comparison of dose inputs for CarPS-VAE when both the
+drug parent and measured dose are held out from model development.
+
 **Tenv dose-input comparison**:
 The Stage 2 comparison of ways to supply continuous dose to TranSiGen across
 the measured tenv doses, with unseen-drug prediction as its primary objective
@@ -723,10 +727,11 @@ A historical held-dose fold denotes a distinct omitted dose. Runs do not
 represent independent biological replicates.
 _Avoid_: independent replicate, Benchmark run (the historical ADR 0027 unit)
 
-**Cold-drug-dose**:
-A dose-input round1 test at the intersection of unseen drug parents and one
-unseen measured dose. The development partition contains other parents at
-the other doses. The remaining two parent-by-dose strips are excluded.
+**Cold-dose-drug**:
+A Stage 2 evaluation split that tests the intersection of held-out drug
+parents and one held-out measured dose. Model development uses other parents
+at the other doses, and conditions that match only one holdout are excluded.
+_Historical name_: cold-drug-dose
 
 **TranSiGen width multiplier**:
 The common scale factor for the internal vector dimensions of a TranSiGen
