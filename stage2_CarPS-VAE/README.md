@@ -117,6 +117,10 @@ its installed full-axis report with the sealed fits and full-axis inputs.
 
 ## Historical evidence and active-input checks
 
+The [CarPS-VAE verification](util/training/carps-vae-verification.md) and
+[TranSiGen verification](util/training/verification.md) inventory the installed
+formal results and give the acceptance commands.
+
 [ADR 0105](../docs/adr/0105-stage-cleanup.md) retires the local Stage 2 archive.
 Use the original Git revisions for tracked historical code, figures and receipts.
 The [pinned ADR 0087 cutover](https://github.com/Moke110/carps/blob/99078e6f/stage2/README.md#deploy-the-adr-0087-cutover)

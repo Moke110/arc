@@ -100,8 +100,9 @@ minimum-validation checkpointing and exact replay. Compare the study-owned rows,
 dose transforms, evaluation seeds and metric definitions when using these APIs.
 `util/training/registered.py` handles locked phase receipts for Steps 08–10.
 `util/eval/axis_delta.py` adds the weighted signed Jaccard to the shared scoring
-kernels for the Step 09 and 10 full-axis comparisons. Compare the two studies'
-distinct populations, bandwidths and full-axis versus common-axis reporting.
+kernels for the Step 09 and 10 full-axis comparisons. Step 09 retains its
+tracked historical common-axis evidence and the accepted full-axis report.
+Step 10 scores the held-out drug-and-dose intersection with its own fold calibration.
 
 
 `training/transigen.py` owns registration, fit, checkpoint validation, prediction
