@@ -134,13 +134,16 @@ the three data splits, with three repeated training fits per split.
   [eight overall summaries](figure/data/primary-contrast-summary.csv)
 - [Fit ledger](log/runs.csv), [epoch objectives](figure/data/epoch-objectives.csv)
   and [frozen fold bandwidths](log/bandwidths.csv)
-- [Metric figures](figure/delta-metrics.png), [differences from the original](figure/delta-metrics-paired-difference.png),
-  [paired contrasts](figure/primary-contrasts.png) and [learning curves](figure/learning-curves.png)
+- [Metric figures](figure/metrics.png), [differences from the original](figure/metrics-paired.png),
+  [learning curves](figure/learning-curve.png)
+- [Original paired contrast figure](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/06_tsg_shape/06.4_round4/figure/primary-contrasts.png)
 - [Formal acceptance receipt](log/359-formal.json), [matrix resources](log/359-resources.jsonl),
   [coordinator resources](log/359-coordinator-resources.jsonl) and
   [figure replay receipt](log/figure-render.json)
 
 ## Reproduce the formal study
+
+The [original release reproduction](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/06_tsg_shape/06.4_round4/README.md#reproduce-the-formal-study) pins the renderer and publication verifier for the historical results. Use that revision for the formal release verification below. The current comparison figures have their own CSV-only replay.
 
 Use the materialized checkout, `arc` environment and `capped_round4`
 function defined above. Create a fresh work directory and verify the
@@ -216,4 +219,25 @@ capped_round4 python "$WORK/code/stage2/06_tsg_shape/06.4_round4/execution/run_m
   --representations "$STAGE/util/output/representations" \
   --source "$BASE/pert_model/TranSiGen/source"
 git worktree remove "$WORK/code"
+```
+
+## Replay the published figures
+
+The three current figures use the [epoch traces](figure/data/learning-curve.csv),
+[held-out scores](figure/data/metrics.csv) and [paired differences](figure/data/metrics-paired.csv).
+Differences subtract `XX-XX` within each fold and seed. The
+[replay receipt](log/figure-render.json) records the accepted fit evidence,
+plotted CSV and PNG digests, and renderer versions.
+
+```bash
+STEP="$PWD/stage2_CarPS-VAE/06_tsg_shape/06.4_round4"
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/tsg-architecture-figures.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+python "$STEP/figure/script/render_comparison.py" \
+  --data "$STEP/figure/data" --output "$WORK/figures"
+for figure in learning-curve.png metrics.png metrics-paired.png; do
+  cmp "$STEP/figure/$figure" "$WORK/figures/$figure"
+done
 ```

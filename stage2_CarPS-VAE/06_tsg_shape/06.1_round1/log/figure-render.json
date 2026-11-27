@@ -1,61 +1,41 @@
 {
   "csv_files_sha256": {
-    "figure/data/delta-metrics.csv": "edc0c86d24a0181354c5478306f1b6346e8cfd3978e7f979f6cbd1672dbfb49f",
-    "figure/data/epoch-objectives.csv": "e517c7097f036143acdad5e5393386f976dbb93996a878dde65b7a6414bb64da",
-    "figure/data/fold-scores.csv": "39128b98167b6658e2a3c7e61990e7ea969983798c34cf37b034c1e2b042def8"
+    "figure/data/learning-curve.csv": "a000d268aa33c05be6d51cae4348baf9f0ff0c7852f6fd61636fa2ce2f27d495",
+    "figure/data/metrics-paired.csv": "7c898bba0504ff4928adbcc32f21f9ebb84f22f057a1312cbad43561f49c2554",
+    "figure/data/metrics.csv": "4cf994c606f25f21645387fd6f6487d948b35839820de5cd90d64157e1dc2377"
   },
   "environment": {
     "matplotlib": "3.10.9",
     "numpy": "2.4.6",
+    "pandas": "2.3.3",
     "python": "3.13.13"
   },
+  "evidence": {
+    "acceptance_receipt_sha256": "a3d4703b86ecfab316b0becbea9960ee2e523b50b7d155943103c2d4af039885",
+    "build_sha256": "1d33f31e18daa0bce9aceb0ef2f3902b10d10ea693c7df21236be38603613a81",
+    "fits": 30,
+    "fixed_jaccard_code_sha256": "66011526374d4405c137ba5f07f291ebad8a86c3bd8e97b8aba8ff9c540eb062",
+    "matched_controls_sha256": "97bb9f1b792efd81eeeca65a0318324680f509ecac74bb04acd22ba4523c109e",
+    "matrix_manifest_sha256": "3c8c1c66011b7d8e5b4bf63eefe335d5bcdd00a17a1de4d9044c1f55b30ad71d",
+    "reference": "original",
+    "report_manifest_sha256": "3c12114e58f568b2a5981bb022990a5cd3be3e5abe1aef65e465ed2b6d488de1",
+    "sealed_jac_top200_parity": true,
+    "shared_metrics_sha256": "0a16f66b0b02b5fb21462b5b8ae94667ca7247398372d44a54be679372a451b6"
+  },
   "independent_renders": 2,
-  "learning_curve_source_sha256": {
-    "runs/deepen-both/fold-0/learning_curve.csv": "7642100f0996abb91d03366af78a4b1f2862c13c94b56c9e55ec057c3819e919",
-    "runs/deepen-both/fold-1/learning_curve.csv": "7352625e18caf29766b38e395fdcc0c8f2368f08d4b9cb999c00e2129ee200cb",
-    "runs/deepen-both/fold-2/learning_curve.csv": "d67d77f51ea4b3e2891a83d4de218b71df34478e20ace77236ecc8178bf7b001",
-    "runs/deepen_dec/fold-0/learning_curve.csv": "e2fa7e2c2ac70633241860484463d5468f7a91f02c9ec44f09a6d970d1d7514c",
-    "runs/deepen_dec/fold-1/learning_curve.csv": "c8ae6597f3a7c0cb064b7aa5d76c99a90faaf3cedfd6479c45e31ffa53c823f8",
-    "runs/deepen_dec/fold-2/learning_curve.csv": "19780ab360333d30a4ec7171cdc3d81ed2b2cd23bf3103492a3549e68dcf57e9",
-    "runs/deepen_enc/fold-0/learning_curve.csv": "4aee6d8cab78b118dbbd4d302b4939df1970a42c78058861d96fa4fa2276b1ee",
-    "runs/deepen_enc/fold-1/learning_curve.csv": "f769f1c6892ca487913d793197b1ebeb2bc6c334ad957e4e0b1011fe115daad9",
-    "runs/deepen_enc/fold-2/learning_curve.csv": "05c3d3be2aabcd830ddccbfb82e5e72c79605b29d40cef31b7461e3897ef3e96",
-    "runs/widen_enc-2k/fold-0/learning_curve.csv": "49a9d0cea3dc0dfcc491df23f71a33db39e25982db1c8b02b07b6db77a47136c",
-    "runs/widen_enc-2k/fold-1/learning_curve.csv": "138b41201899f427b84078650742ad0bdede9889fb9afa71226fb10d2ee8a688",
-    "runs/widen_enc-2k/fold-2/learning_curve.csv": "25c49d64f1ebbd7723d39e767f69d78eb7bcee70915a7a3411902955b4f26c1c",
-    "runs/widen_enc-4k/fold-0/learning_curve.csv": "9b580ac4ea93ac5441777b0a61aafa75047a40dd94a9eebe72dd34fd04dcedc0",
-    "runs/widen_enc-4k/fold-1/learning_curve.csv": "930308ba3c8182150bedafa0b899de085ae4845b1d827b2d837e86a123d099b5",
-    "runs/widen_enc-4k/fold-2/learning_curve.csv": "6f5b8fcde5b0033ff477234468f699e7bf38aee7c928f87d0cece3426b09f8db",
-    "runs/widen_enc/fold-0/learning_curve.csv": "d09bbc847ba965d08b78c68dcbbe9e8e51b93794e79e4a1836e658657c822d34",
-    "runs/widen_enc/fold-1/learning_curve.csv": "e564124e1436f28c1ab602362fde52e1a195c7f07eb0b473c9b1e0315b3b8ab9",
-    "runs/widen_enc/fold-2/learning_curve.csv": "7dfad1dab1f02fcfac3e5136c19538e07d51da48a000c7e85f194e9c039512d2",
-    "runs/widen_z-100/fold-0/learning_curve.csv": "faea750831ec621ae41f6224a2706fc072977971e35fa3c44a2448802fb60d49",
-    "runs/widen_z-100/fold-1/learning_curve.csv": "a98d022f5961d820c96b3bf449cc5db1478abfb311bdecd8574bc6748135dd36",
-    "runs/widen_z-100/fold-2/learning_curve.csv": "aedd71bbce8ba58df50d493ac2be6a9f5cf529f4372cc4799b6e9908e4a4ea65",
-    "runs/widen_z-110/fold-0/learning_curve.csv": "b2351d03b6c77d52e8f27d7356bd4154238122e0e82eee4b90bafb062bd34ab9",
-    "runs/widen_z-110/fold-1/learning_curve.csv": "ee15559f952a19745cc3483d0b8522adf7f51f655dc7ca7e15799801413c3f7f",
-    "runs/widen_z-110/fold-2/learning_curve.csv": "e7aacd5b54c073cc88ecaea873998adcd81d9802a3dce79c4833529e38ccf68b",
-    "runs/widen_z-120/fold-0/learning_curve.csv": "707e74709dc95d2ec2b2adca6458ef2128d1dbe8677d8f34dbac272042525785",
-    "runs/widen_z-120/fold-1/learning_curve.csv": "c124f7d7034b2c410c218b064575c08efea59798596aa57ce08ee7d14375cc39",
-    "runs/widen_z-120/fold-2/learning_curve.csv": "ec358ddea5d3e95dcc353f2e8e094e9107da9ffdabfa52bb2059220aacc1a2e0",
-    "runs/widen_z-130/fold-0/learning_curve.csv": "0fc4426f33de11715ec8978ed012a020520e877c24497b2bf27bb883831c949c",
-    "runs/widen_z-130/fold-1/learning_curve.csv": "5c218504114865bc2c0885a47d264a64ee1b2905c5cda83b35649b89788f9bf9",
-    "runs/widen_z-130/fold-2/learning_curve.csv": "388d2c2a1ba41960767f2e2bb8765de3d59e8b8d7c3e8ebcd3bfc43a6ab32e28"
-  },
   "png_files_sha256": {
-    "figure/delta-metrics-paired-difference.png": "bb5bc1661237a28829c7a2a2c3a613e9f4c8ad455e3aa7eb6b55971eb541030c",
-    "figure/delta-metrics.png": "01ff460f7adbfd498f4ac1c2630952ad50a98fe6555d27e875d155f4b8bc6e46",
-    "figure/learning-curves.png": "888546dfbce8ee31824e51ca634278027e9fc533390b2988bb4ded212ab3f58d"
+    "figure/learning-curve.png": "9ab78d54c75f48ee36cf91833be58a103738ffe5de555817f9d420327f5a2d1b",
+    "figure/metrics-paired.png": "97c42a041995cdda0c514f2b62598559597f04651491aac22684c2be15286b4e",
+    "figure/metrics.png": "be687dfa9ebe937c0d422df1587928e0eaac00854c55254efad949f2aa12e721"
   },
-  "publication_builder_sha256": "88c9c8b014f308d6e64d839cca7d3982c1711f73ca3b71f96a82b9d50363eb9c",
   "renderer_files_sha256": {
-    "06_tsg_shape/06.1_round1/execution/shape_roster.py": "e2e6e5e8da2e60eba04439980c24d9c896ae1cec9d62f835e3243cb79358ebcb",
-    "06_tsg_shape/06.1_round1/figure/script/render_shape.py": "f9a22373ed5ac835b7d187b92a48d1fb4a4e32e7a421deecec484b419879b80a",
+    "06_tsg_shape/06.1_round1/figure/script/render_comparison.py": "49486baf9affb3195a48fba7802425a6cae477c2ffddb8381320d7dfbacf29ab",
+    "06_tsg_shape/figure/script/architecture_comparison.py": "7a630cd4ed2093aa3745b66bc2a3ce9e83e98d337d3afd938f848c9f2b70bbfb",
+    "util/output/api/stage2_util/comparison.py": "4b18733f177d09a3eb1b25861e18c8383f2505eb9746966fa7f75bb83f4f2572",
     "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },
   "schema": "stage2-figure-render-v1",
-  "scientific_receipt_sha256": "a3d4703b86ecfab316b0becbea9960ee2e523b50b7d155943103c2d4af039885",
   "status": "PASS",
   "step": "06.1_round1"
 }

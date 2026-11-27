@@ -18,3 +18,25 @@ combination with its components and the original within fold and seed.
 [Step 06.4](06.4_round4/README.md#formal-results) compares measured
 encoder targets and signed Δ decoder sharing across the same three
 cold-drug folds and three training seeds.
+
+## Rebuild the comparison figures
+
+Each study publishes its learning curves, held-out metrics and differences
+from its established reference within fold and seed. The weighted signed
+Jaccard score uses the verified held-out predictions and matched controls.
+The other scores come from the accepted reports. Use the current figure
+receipts to replay the PNGs from their plotted CSVs.
+
+From the materialized checkout in the `arc` environment, regenerate a
+candidate from the accepted fit and report releases. Use `--step` to
+select a single comparison and `--evidence-root` to read the materialized
+releases from a separate checkout.
+
+```bash
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/tsg-architecture-comparisons.XXXXXX")
+mkdir -p "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+python stage2_CarPS-VAE/06_tsg_shape/execution/build_comparison.py \
+  --output "$WORK/publication"
+```

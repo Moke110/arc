@@ -52,9 +52,9 @@ Compared with `original`, the combined arm had lower mean Δ PCC and lower
 mean Δ RMSE. All fits used seed 42 and require measured matched DMSO at
 prediction time.
 
-[Held-out scores](figure/delta-metrics.png) ·
-[Paired differences](figure/delta-metrics-paired-difference.png) ·
-[Learning curves](figure/learning-curves.png) ·
+[Held-out scores](figure/metrics.png) ·
+[Paired differences](figure/metrics-paired.png) ·
+[Learning curves](figure/learning-curve.png) ·
 [216 fold scores and eligibility counts](figure/data/fold-scores.csv) ·
 [72 aggregates and signed differences](figure/data/delta-metrics.csv) ·
 [Epoch objectives](figure/data/epoch-objectives.csv)
@@ -113,6 +113,8 @@ diff -r "$WORK/figures" "$WORK/figures-replay"
 
 ## Reproduce the formal matrix
 
+The [original release reproduction](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/06_tsg_shape/06.2_round2/README.md#reproduce-the-formal-matrix) pins the renderer and publication verifier for the historical results. Use that revision for the formal release verification below. The current comparison figures have their own CSV-only replay.
+
 Run from the materialized checkout in the `arc` environment and use the
 [Step 04 capped runtime](../../04_tsg_axis/README.md#prepare-the-capped-runtime).
 Reserve 8 GiB of scratch. Keep the publication candidate and its scratch
@@ -168,19 +170,21 @@ are taken from the publication. Use fresh paths for `--activity` and
 
 ## Replay the published figures
 
-The renderer takes only the plotted CSVs. The
-[figure receipt](log/figure-render.json) records their identities and the
-tool versions for byte-identical replay.
+The three current figures use the [epoch traces](figure/data/learning-curve.csv),
+[held-out scores](figure/data/metrics.csv) and [paired differences](figure/data/metrics-paired.csv).
+Differences subtract `original` within each fold and seed. The
+[replay receipt](log/figure-render.json) records the accepted fit evidence,
+plotted CSV and PNG digests, and renderer versions.
 
 ```bash
 STEP="$PWD/stage2_CarPS-VAE/06_tsg_shape/06.2_round2"
 mkdir -p "$PWD/tmp"
-WORK=$(mktemp -d "$PWD/tmp/tsg-prediction-architecture-figures.XXXXXX")
+WORK=$(mktemp -d "$PWD/tmp/tsg-architecture-figures.XXXXXX")
 mkdir -p "$WORK/scratch" "$WORK/matplotlib"
 export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
-python "$STEP/figure/script/render_architecture.py" \
+python "$STEP/figure/script/render_comparison.py" \
   --data "$STEP/figure/data" --output "$WORK/figures"
-for figure in delta-metrics.png delta-metrics-paired-difference.png learning-curves.png; do
+for figure in learning-curve.png metrics.png metrics-paired.png; do
   cmp "$STEP/figure/$figure" "$WORK/figures/$figure"
 done
 ```

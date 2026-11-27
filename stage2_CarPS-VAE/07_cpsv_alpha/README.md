@@ -12,6 +12,8 @@ The KPGT default uses its native 2,304 inputs and original 400-output projection
 
 ## Checkpoint and replay evidence
 
+The [Step 06.4 comparison](../06_tsg_shape/06.4_round4/README.md#formal-results) reports the fixed alpha as `XΔ-XΔ`. Its [held-out scores](../06_tsg_shape/06.4_round4/figure/metrics.png) and [fold–seed differences](../06_tsg_shape/06.4_round4/figure/metrics-paired.png) use the accepted Step 06.4 fit lineage.
+
 The [release manifest](output/release.json) pins the public API, verifier, runtime dependencies, KPGT defaults and original Step 06.4 revision and source digests. The [parity receipt](log/362-alpha.json) and [resource record](log/362-resources.json) record the capped CUDA replay. The parity receipt binds the registration and checkpoint hashes to exact validation predictions and objective at sampling seed 22617 and exact held-out expression and signed Δ predictions at sampling seed 100042. All nine coordinates cover three cold-drug folds and training seeds 17, 42 and 2026.
 
 From the materialized checkout with the `arc` environment active, use the normal verifier. It reads the sealed Step 06.4 checkpoints and receipts in place and compares the replay with the published parity receipt. Use the original Git history for the pinned Step 06.4 code hashes. Live alternate paths for the same frozen inputs can be passed with `--round-four`, `--training`, `--representations` and `--source`.
