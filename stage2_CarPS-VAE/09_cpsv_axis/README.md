@@ -87,4 +87,12 @@ systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=8G -- \
   --publication "$work/publication" --scratch "$work/scratch"
 ```
 
-To validate a materialized publication, run `python "$formal" verify --scratch "$work/scratch"`. The verifier reopens the 72 fit records and checks both scoring scopes, the signed coverage, the equal-weight summaries and all figures against the published bytes. To verify a candidate, pass its `--bundle` and `--publication` paths. Use `install` with the verified bundle to materialize the local fit products at `output/formal` once the tracked figure and report receipts are available. For linked worktrees, specify the materialized roots with `--step03`, `--step08`, `--representations` and `--source` for `fit` and with `--step03`, `--step04`, `--step08` and `--disease-release` for scoring.
+Before verifying a materialized publication, check `free -g` and confirm at least 12 GiB is available in WSL. Run the independent rescore alone under the same memory and swap cap and record its peak RSS.
+
+```bash
+systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=8G -- \
+  /usr/bin/time -v -o "$work/verify.resources" \
+  python "$formal" verify --scratch "$work/scratch"
+```
+
+The verifier reopens the 72 fit records and checks both scoring scopes, the signed coverage, the equal-weight summaries and all figures against the published bytes. To verify a candidate, pass its `--bundle` and `--publication` paths. Use `install` with the verified bundle to materialize the local fit products at `output/formal` once the tracked figure and report receipts are available. For linked worktrees, specify the materialized roots with `--step03`, `--step08`, `--representations` and `--source` for `fit` and with `--step03`, `--step04`, `--step08` and `--disease-release` for scoring.

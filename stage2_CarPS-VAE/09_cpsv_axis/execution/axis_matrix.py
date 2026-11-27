@@ -8,7 +8,7 @@ import subprocess
 import sys
 import time
 
-from axis_protocol import AXES, REFERENCE_AXIS, coordinates
+from axis_protocol import AXES, REFERENCE_AXIS, STEP, coordinates
 from axis_runs import PHASES, add_inputs, arguments, axis_run, bind, read_run, step08_config
 from chem_runs import open_inputs
 from matrix import SAMPLE_SECONDS, ResourceMonitor, digest_values, enforce_record, register_coordinate
@@ -18,6 +18,50 @@ from tenv_axes import tenv_axis_output
 
 SCHEMA = "carps-vae-unimol-axis-matrix-v1"
 RUNNER = Path(__file__).with_name("axis_runs.py")
+
+
+GATE_EVIDENCE = ("formal_roster", "step08_reference_roster", "formal_configs_sha256", "folds",
+                 "membership_sha256", "training_manifests_sha256", "unimol")
+
+
+def verify_bounded_gate(log=STEP / "log", *, formal_preflight=None):
+    """Check the accepted CUDA gate before a formal execution or publication."""
+    gate_path = log / "367-bounded.json"
+    gate = axis_run.read_json(gate_path)
+    evidence = {
+        "367-preflight.json": gate["preflight_sha256"],
+        "367-step07-replay.json": gate["alpha_replay_sha256"],
+        "367-step08-reference.json": gate["reference_plan_sha256"],
+        "367-resources.jsonl": gate["fit_budgets"]["matrix_samples_sha256"],
+        "367-coordinator-resources.jsonl": gate["coordinator_samples_sha256"],
+    }
+    bounded = [list(key) for key in coordinates(True)]
+    formal = [list(key) for key in coordinates()]
+    reference = [key for key in formal if key[0] == REFERENCE_AXIS]
+    if ((gate["status"], gate["ticket"], gate["bounded_coordinates"], gate["formal_coordinates"])
+            != ("PASS", 367, len(bounded), len(formal))
+            or [row["coordinate"] for row in gate["bounded_fit_lineage"]] != bounded
+            or gate["figures"]["status"] != "PASS" or gate["fit_budgets"]["status"] != "PASS"
+            or axis_run.file_hashes(log, evidence) != evidence):
+        raise ValueError("Step 09 bounded gate did not pass or its evidence changed")
+    preflight = axis_run.read_json(log / "367-preflight.json")
+    alpha = axis_run.read_json(log / "367-step07-replay.json")
+    prior = axis_run.read_json(log / "367-step08-reference.json")
+    decisions = prior["decisions"]
+    exact = [row["coordinate"] for row in decisions if row["decision"] == "reuse"
+             and row["validation_replay"] == row["test_replay"] == "exact"]
+    if (preflight["schema"] != SCHEMA or preflight["bounded"] is not True
+            or preflight["formal_roster"] != formal or preflight["step08_reference_roster"] != reference
+            or preflight["registered_roster"] != bounded or preflight["fresh_fits"] != bounded
+            or alpha["status"] != "PASS" or len(alpha["coordinates"]) != len(reference)
+            or gate["fresh_alpha_replays"] != len(reference)
+            or exact != reference or len(decisions) != len(reference)
+            or gate["fresh_sealed_unimol_replays"] != len(reference)
+            or prior["step08_acceptance_sha256"] != gate["step08_acceptance_sha256"]):
+        raise ValueError("Step 09 bounded gate roster or predecessor replay differs")
+    if formal_preflight is not None and any(preflight[field] != formal_preflight[field] for field in GATE_EVIDENCE):
+        raise ValueError("formal preflight differs from the verified Step 09 bounded gate")
+    return preflight, axis_run.digest(gate_path)
 
 
 def run_paths(output, keys):
@@ -152,6 +196,8 @@ def execute(root, logs, step03, representations, source, bounded=False, fresh=No
     if (len(fresh) != len(set(fresh)) or not set(fresh) <= set(roster) or not fresh
             or bounded and fresh != roster):
         raise ValueError("fresh fits must be a unique nonempty subset, or all eight bounded coordinates")
+    if not bounded:
+        verify_bounded_gate()
     scope = scope_directory()
     inputs = ["--step03", str(step03), "--representations", str(representations), "--source", str(source)]
     logs.mkdir(parents=True, exist_ok=True)
@@ -159,6 +205,8 @@ def execute(root, logs, step03, representations, source, bounded=False, fresh=No
         output.mkdir(exist_ok=True)
         paths = run_paths(output, fresh)
         config, evidence = preflight(step03, representations, source, bounded)
+        if not bounded:
+            verify_bounded_gate(formal_preflight=evidence)
         preflight_path = output / "preflight.json"
         enforce_record(preflight_path, {**evidence, "fresh_fits": [list(key) for key in fresh]})
         nonces = set()

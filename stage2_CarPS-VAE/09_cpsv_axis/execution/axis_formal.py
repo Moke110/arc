@@ -11,19 +11,18 @@ import sys
 from tempfile import TemporaryDirectory
 
 from axis_figures import FIGURES, RENDERER, replay
-from axis_matrix import execute, verify_matrix
+from axis_matrix import execute, verify_bounded_gate, verify_matrix
 from axis_protocol import REFERENCE_AXIS, SEEDS, STAGE, STEP, coordinates
 from axis_reference import reference_plan, verify_publication
 from axis_report import (SCHEMA as REPORT_SCHEMA, add_report_inputs, figure_data, read_reused,
                          report_tables, write_report)
 from axis_runs import add_inputs, axis_run
-from audit_axis_report import audit_report
+from audit_axis_report import audit_plotted_csvs, audit_report
 from matrix import enforce_record
 from tsg_axis.metrics import METRICS
 
 SCHEMA = "carps-vae-unimol-axis-formal-v1"
 RECEIPT = "log/368-formal.json"
-GATE = "log/367-bounded.json"
 FIGURE_RECEIPT = "log/figure-render.json"
 MATRIX_SAMPLES = "log/368-resources.jsonl"
 COORDINATOR_SAMPLES = "log/368-coordinator-resources.jsonl"
@@ -52,10 +51,14 @@ def fresh_coordinates(plan):
 
 def fit(output, step03, step08, representations, source):
     """Audit sealed references, persist the disposition, and independently replay each new fit."""
+    _, gate_hash = verify_bounded_gate()
     output.mkdir(parents=True, exist_ok=True)
+    plan_path = output / "reuse-preflight.json"
     plan = reference_plan(step08, step03, representations, source)
+    if not plan_path.exists() or "bounded_gate_sha256" in axis_run.read_json(plan_path):
+        plan["bounded_gate_sha256"] = gate_hash
     fresh = fresh_coordinates(plan)
-    enforce_record(output / "reuse-preflight.json", plan)
+    enforce_record(plan_path, plan)
     print(json.dumps({"phase": "reuse-audit", "reused": len(coordinates()) - len(fresh), "fresh": len(fresh)}),
           flush=True)
     return execute(output / "matrix", output / "matrix-audit", step03, representations, source, fresh=fresh)
@@ -64,11 +67,13 @@ def fit(output, step03, step08, representations, source):
 def collect_runs(bundle, step08):
     """Verify the full fresh and reused roster and pair the two sources at initialization."""
     plan = axis_run.read_json(bundle / "reuse-preflight.json")
-    if plan["step08_acceptance_sha256"] != verify_publication(step08)[-1]:
+    expected_fresh = fresh_coordinates(plan)
+    if (len(expected_fresh) != len(coordinates())
+            and plan["step08_acceptance_sha256"] != verify_publication(step08)[-1]):
         raise ValueError("reuse plan is not bound to the sealed Step 08 publication")
     fresh = verify_matrix(bundle / "matrix", False)
     reused = read_reused(step08, plan)
-    if (tuple(fresh) != fresh_coordinates(plan) or set(fresh) & set(reused)
+    if (tuple(fresh) != expected_fresh or set(fresh) & set(reused)
             or set(fresh) | set(reused) != set(coordinates())):
         raise ValueError("formal run evidence does not cover each registered coordinate once")
     for decision in plan["decisions"]:
@@ -138,6 +143,9 @@ def scientific_evidence(bundle, publication, reference, numerical, resources, sc
     ]
     fresh = fresh_coordinates(reference)
     preflight = axis_run.read_json(bundle / "matrix/preflight.json")
+    _, gate_hash = verify_bounded_gate(formal_preflight=preflight)
+    if reference.get("bounded_gate_sha256", gate_hash) != gate_hash:
+        raise ValueError("formal execution used different bounded gate evidence")
     if any(axis_run.digest(publication / relative) != axis_run.digest(bundle / "report" / name)
            for name, relative in PROJECTIONS.items()):
         raise ValueError("public comparison tables differ from the independently verified report")
@@ -151,7 +159,7 @@ def scientific_evidence(bundle, publication, reference, numerical, resources, sc
         "cold_drug_folds": list(range(3)), "training_seeds": list(SEEDS),
         "new_exact_replays": len(fresh), "step08_exact_reuses": len(coordinates()) - len(fresh),
         "step08_acceptance_sha256": reference["step08_acceptance_sha256"],
-        "bounded_gate_sha256": axis_run.digest(STEP / GATE),
+        "bounded_gate_sha256": gate_hash,
         "reuse_plan_sha256": reference_hash,
         "matrix_sha256": axis_run.digest(bundle / "matrix/manifest.json"),
         "preflight_sha256": axis_run.digest(bundle / "matrix/preflight.json"),
@@ -183,7 +191,7 @@ def finish(args):
             if report.exists() and checked_report(report) != checked_report(scoring_report):
                 raise ValueError("existing candidate report differs from fresh scoring")
         print(json.dumps({"phase": "independent-two-scope-audit"}), flush=True)
-        numerical, audit_peak = run_report_action(args, "audit", work, scoring_report)
+        numerical, audit_peak = run_report_action(args, "audit", work, scoring_report, figure / "data")
         score_peaks = {"scoring": score_peak, "independent_audit": audit_peak} if build else prior["score_process_peak_rss_kib"]
         reference = axis_run.read_json(bundle / "reuse-preflight.json")
         activity = bundle / "matrix-audit"
@@ -219,7 +227,7 @@ def finish(args):
             "reused_fits": receipt["step08_exact_reuses"], **numerical}
 
 
-def install(bundle, publication, destination):
+def install(bundle, publication, destination, step08):
     """Install the verified fit bundle without replacing an existing distinct release."""
     receipt = axis_run.read_json(publication / RECEIPT)
     plots = axis_run.read_json(publication / FIGURE_RECEIPT)
@@ -237,7 +245,12 @@ def install(bundle, publication, destination):
         if ({name: receipt[field] for name, field in bundle_files.items()} != axis_run.file_hashes(candidate, bundle_files)
                 or checked_report(candidate / "report")["scores"] != receipt["numerical_audit"]["score_rows"]):
             raise ValueError("formal fit bundle differs from the passed receipt")
-        verify_matrix(candidate / "matrix", False)
+        preflight = axis_run.read_json(candidate / "matrix/preflight.json")
+        _, gate_hash = verify_bounded_gate(formal_preflight=preflight)
+        if receipt["bounded_gate_sha256"] != gate_hash:
+            raise ValueError("passed receipt does not bind the verified Step 09 bounded gate")
+        fresh, reused = collect_runs(candidate, step08)
+        audit_plotted_csvs(publication / "figure/data", candidate / "report", {**fresh, **reused})
         if not output.exists():
             candidate.rename(output)
     return {"status": "PASS", "output": str(output), "receipt_sha256": axis_run.digest(publication / RECEIPT)}
@@ -261,9 +274,10 @@ def main():
             command.add_argument("--publication", type=Path, default=STEP)
             if action != "install":
                 command.add_argument("--scratch", type=Path, required=True)
-    for command in (run, *(commands.choices[name] for name in ("score", "audit", "build", "verify"))):
+    for command in (run, *(commands.choices[name] for name in ("score", "audit", "build", "verify", "install"))):
         command.add_argument("--step08", type=Path, default=STAGE / "08_cpsv_chem-emb")
     commands.choices["score"].add_argument("--figure-data", type=Path, required=True)
+    commands.choices["audit"].add_argument("--figure-data", type=Path)
     commands.choices["build"].add_argument("--coordinator", type=Path, required=True)
     commands.choices["install"].add_argument("--destination", type=Path, default=STEP / "output/formal")
     args = parser.parse_args()
@@ -278,10 +292,12 @@ def main():
             figure_data(tables, args.figure_data)
         else:
             checked_report(args.report)
-            result = audit_report(args.report, {**fresh, **reused}, args.step03, args.step04,
-                                  args.disease_release, args.step08)
+            runs = {**fresh, **reused}
+            result = audit_report(args.report, runs, args.step03, args.step04, args.disease_release, args.step08)
+            if args.figure_data is not None:
+                audit_plotted_csvs(args.figure_data, args.report, runs)
     elif args.action == "install":
-        result = install(args.bundle, args.publication, args.destination)
+        result = install(args.bundle, args.publication, args.destination, args.step08)
     else:
         if args.action == "build" and args.publication.exists():
             parser.error("build requires an unused --publication directory")

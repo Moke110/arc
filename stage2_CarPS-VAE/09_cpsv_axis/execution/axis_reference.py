@@ -17,16 +17,19 @@ def verify_publication(step08):
     """Validate the official acceptance and the hashed run ledger and matrix."""
     step08 = Path(step08)
     ledger = step08 / "log/runs.csv"
+    scores = "figure/data/fold-scores.csv"
     acceptance = step08 / "log/364-formal.json"
     accepted = axis_run.read_json(acceptance)
     matrix = step08 / "output/formal/matrix"
     manifest = matrix / "manifest.json"
     preflight = matrix / "preflight.json"
-    if (accepted["status"] != "PASS" or accepted["ticket"] != 364
+    if (not isinstance(accepted, dict) or not isinstance(accepted.get("release_files_sha256"), dict)
+            or accepted["status"] != "PASS" or accepted["ticket"] != 364
             or accepted["alpha_release_sha256"] != axis_run.digest(chem_runs.ALPHA_MANIFEST)
             or accepted["matrix_sha256"] != axis_run.digest(manifest)
             or accepted["preflight_sha256"] != axis_run.digest(preflight)
-            or accepted["release_files_sha256"]["log/runs.csv"] != axis_run.digest(ledger)):
+            or accepted["release_files_sha256"]["log/runs.csv"] != axis_run.digest(ledger)
+            or accepted["release_files_sha256"][scores] != axis_run.digest(step08 / scores)):
         raise ValueError("sealed Step 08 acceptance, matrix or run ledger differs")
     runs = axis_run.read_json(manifest)
     if runs["preflight_sha256"] != accepted["preflight_sha256"]:
@@ -85,14 +88,19 @@ def check_reference(key, data, vectors, source, matrix, rows, table):
 def reference_plan(step08, step03, representations, source):
     """Return one explicit reuse or refit decision per registered reference coordinate."""
     chem_runs.verify_release()
-    matrix, rows, table, acceptance_sha = verify_publication(step08)
+    keys = tuple(key for key in coordinates() if key[0] == REFERENCE_AXIS)
+    try:
+        matrix, rows, table, acceptance_sha = verify_publication(step08)
+    except DEFECTS as error:
+        reason = f"Step 08 publication: {error}"
+        return {"step08_acceptance_sha256": None, "decisions": [
+            {"coordinate": list(key), "decision": "refit", "reason": reason} for key in keys
+        ]}
     configure_cuda()
     decisions = []
     training = tenv_axis_output(REFERENCE_AXIS, step03)
     with chem_runs.open_inputs(training, representations) as (data, vectors):
-        for key in coordinates():
-            if key[0] != REFERENCE_AXIS:
-                continue
+        for key in keys:
             try:
                 result = check_reference(key, data, vectors, source, matrix, rows, table)
             except DEFECTS as error:

@@ -9,6 +9,7 @@ import numpy as np
 from scipy.spatial.distance import pdist
 
 from axis_protocol import ARM, DISEASE_OVERLAP, DISEASE_SIZE, REFERENCE_AXIS, SCOPES, coordinates
+from axis_report import CSV_FIGURES
 from axis_scores import COVERAGE
 from axis_runs import axis_run
 from audit_measured_scores import check_statistics, read_table, same, value
@@ -131,6 +132,45 @@ def audit_fold(key, scope, genes, truth, prediction, identities, conditions, sco
             raise ValueError(f"incorrect independently rescored replicate: {(*key, scope, metric)}")
 
 
+def audit_plotted_csvs(data, report, runs):
+    """Verify the plotted values against audited scores and the sealed per-fit traces."""
+    scores = read_table(report / "fold-scores.csv", SCORE_FIELDS)
+    summary = read_table(report / "summary.csv", ("axis", "scope", "metric"))
+    for name, (scope, paired) in CSV_FIGURES.items():
+        expected = {}
+        for key, row in scores.items():
+            axis, _, _, row_scope, metric = key
+            if row_scope != scope or (metric == COVERAGE) != ("coverage" in name):
+                continue
+            aggregate = {field: entry for field, entry in summary[axis, scope, metric].items()
+                         if field not in {"overlap", "n_eligible", "n_undefined"}}
+            expected[key] = {
+                **row, **aggregate,
+                "plotted_value": row["paired_difference" if paired else "value"],
+                "plotted_mean": aggregate["paired_mean" if paired else "mean"],
+                "plotted_sd": aggregate["paired_sd" if paired else "sample_sd"],
+                "zero_reference": "0.0" if paired or metric == "Δ R²" else "",
+            }
+        if read_table(data / f"{name}.csv", SCORE_FIELDS) != expected:
+            raise ValueError(f"{name} plotted values differ from the independently audited scores")
+
+    curve_keys = (*IDENTITY, "epoch")
+    objectives = ("train_loss", "validation_loss")
+    reported = read_table(report / "epoch-objectives.csv", curve_keys)
+    plotted = read_table(data / "learning-curves.csv", curve_keys)
+    if plotted != {key: {field: row[field] for field in (*curve_keys, *objectives)}
+                   for key, row in reported.items()}:
+        raise ValueError("learning-curves plotted values differ from the reported objectives")
+    for key, (path, *_) in runs.items():
+        for (epoch,), row in read_table(path / "learning_curve.csv", ("epoch",)).items():
+            coordinate = (*key, epoch)
+            selected = plotted.pop(coordinate, None)
+            if selected is None or any(not same(value(selected, field), value(row, field)) for field in objectives):
+                raise ValueError(f"learning-curve objectives differ from the sealed fit trace: {coordinate}")
+    if plotted:
+        raise ValueError("learning-curves has rows beyond the sealed fit traces")
+
+
 def audit_report(report, runs, step03, step04, disease_release, step08, *, bounded=False):
     """Check the report against immutable fits, ordered axes and independent matched controls."""
     expected_roster = coordinates(bounded)
@@ -149,11 +189,13 @@ def audit_report(report, runs, step03, step04, disease_release, step08, *, bound
             or disease != {"gene_indices": sorted(union), "memberships_sha256": source_hashes}):
         raise ValueError("formal report does not use the complete frozen disease union")
     bandwidths = audit_bandwidths(report, step03, step04, union)
-    original_path = "figure/data/fold-scores.csv"
-    original_acceptance = axis_run.read_json(step08 / "log/364-formal.json")
-    if axis_run.digest(step08 / original_path) != original_acceptance["release_files_sha256"][original_path]:
-        raise ValueError("the historical Step 08 score table is not sealed")
-    original_scores = read_table(step08 / original_path, ("arm", "fold", "seed", "metric"))
+    original_scores = {}
+    if any(run[1]["schema"] == STEP08_SCHEMA for run in runs.values()):
+        original_path = "figure/data/fold-scores.csv"
+        original_acceptance = axis_run.read_json(step08 / "log/364-formal.json")
+        if axis_run.digest(step08 / original_path) != original_acceptance["release_files_sha256"][original_path]:
+            raise ValueError("the historical Step 08 score table is not sealed")
+        original_scores = read_table(step08 / original_path, ("arm", "fold", "seed", "metric"))
     initial_conditions = len(conditions)
     for key in expected_roster:
         axis, fold, seed = key
