@@ -4,7 +4,7 @@
 
 Create Stage 2 Step `10_cpsv_dose` to compare dose inputs for simultaneous
 generalization to unseen drug parents and unseen measured doses. Use only the
-three frozen `cold_dose_drug` folds on the [tenv Denoise-DEG 5k release](../../stage2_CarPS-VAE/03_data_train/03.7_tenv_denoise-5k/README.md)
+three frozen `cold_dose_drug` folds on the [tenv Denoise-DEG 5k release](../../cpst/03_data_train/03.7_tenv_denoise-5k/README.md)
 and training seeds 17, 42 and 2026. Test the held-parent and held-dose
 intersection. Use other parents at the other doses for training and validation.
 Exclude conditions that match only one holdout. The held doses are 0.2, 1 and

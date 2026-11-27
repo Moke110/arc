@@ -1,79 +1,125 @@
-# AGENTS.md — Stage 2
+# CarPS-Transcriptome workflow
 
-Before working in a step, read its `AGENTS.md` and `README.md`, ADRs 0062 and 0105,
-and the scientific ADRs it names. Apply the repository execution-environment rules.
+Read the owning step's guide and report before changing it. Apply the
+[accepted-product contract](../docs/adr/0062-stage2-accepted-products-and-reproducible-figures.md)
+and the [active layout decision](../docs/adr/0105-stage-cleanup.md). Before
+loading data or training, apply the [WSL execution limits](../docs/agents/execution-environment.md).
+Use the numbered guides to materialize inputs and verify releases.
 
 ## Active steps
 
-- [util](util/AGENTS.md) owns gene and drug identities, representations, ECFP4,
-  seed selection, generic vector metrics, the palette and CSV-only plotting.
-  It also owns release publication and locking, shared DEG and ranking kernels,
-  R worker resolution, and derivation manifest verification. Read the
-  [public API inventory](util/README.md) and reuse compatible operations.
-  Keep fold validation, metric aggregation and report tables with the study.
-- [01_data_raw](01_data_raw/AGENTS.md) publishes source-native integer counts, coverage
-  and match status.
-- [02_gene_axis](02_gene_axis/AGENTS.md) owns the ordered HVG-DEG and Denoise-DEG
-  prediction axes and their selection evidence.
-- [03_data_train](03_data_train/AGENTS.md) publishes eight plate-pooled tenv axes
-  and the Tahoe well-level HVG-DEG 5k release.
-- [04_tsg_axis](04_tsg_axis/AGENTS.md) compares fixed tenv prediction axes with TranSiGen.
-- [05_tsg_loss](05_tsg_loss/AGENTS.md) compares TranSiGen Delta losses and reconstruction weights on the fixed denoise-5k axis.
-- [06_tsg_shape](06_tsg_shape/AGENTS.md) compares TranSiGen expression widths, depths and prediction architectures on the fixed denoise-5k axis.
-- [07_cpst_alpha](07_cpst_alpha/AGENTS.md) owns the fixed CarPS-Transcriptome alpha entry point, KPGT default and exact checkpoint replay.
-- [08_cpst_chem-emb](08_cpst_chem-emb/AGENTS.md) compares seven frozen chemical representations using the fixed alpha.
-- [09_cpst_axis](09_cpst_axis/AGENTS.md) compares eight CarPS-Transcriptome prediction axes with UniMol.
-- [10_cpst_dose](10_cpst_dose/AGENTS.md) compares dose inputs on the cold-dose-drug folds.
+| Guide | Owns |
+| --- | --- |
+| [01 Raw data](01_data_raw/AGENTS.md) | Source-native integer counts, gene coverage and control matching. |
+| [02 Prediction axes](02_gene_axis/AGENTS.md) | Ordered HVG-DEG and Denoise-DEG axes and their selection evidence. |
+| [03 Training data](03_data_train/AGENTS.md) | Eight tenv plate-pooled releases, frozen folds and the Tahoe well-level HVG-DEG 5k release. |
+| [04 TranSiGen axis comparison](04_tsg_axis/AGENTS.md) | The six-axis tenv study, run through [matrix.py](04_tsg_axis/execution/matrix.py) and [evaluate.py](04_tsg_axis/execution/evaluate.py). |
+| [05 TranSiGen loss](05_tsg_loss/AGENTS.md) | Δ loss and reconstruction objective studies on Denoise-DEG 5k. |
+| [06 TranSiGen architecture](06_tsg_shape/AGENTS.md) | Expression widths, depths, prediction paths and measured encoder targets. |
+| [07 CarPS-Transcriptome alpha](07_cpst_alpha/AGENTS.md) | The fixed KPGT, standardized log-dose alpha entry point and exact checkpoint verification. |
+| [08 Chemical representations](08_cpst_chem-emb/AGENTS.md) | The comparison of seven frozen representations on the fixed alpha. |
+| [09 CarPS-Transcriptome axes](09_cpst_axis/AGENTS.md) | The eight-axis UniMol comparison with the study's standardized log dose. |
+| [10 CarPS-Transcriptome dose](10_cpst_dose/AGENTS.md) | The cold-dose-drug comparison and selected `no-dose` configuration. |
 
-Use Step 04's `execution/matrix.py` and `execution/evaluate.py` for the axis comparison.
-Steps 04–10 use the [shared training and evaluation APIs](util/README.md#transigen-training-and-evaluation) through their numbered run and report commands.
-
-## CarPS-Transcriptome configuration
-
-Use the [selected CarPS-Transcriptome configuration](README.md#selected-carps-transcriptome-configuration)
-for the model release and its successors. Replay each sealed TranSiGen study
-with its pinned protocol. Use the [pinned Step 06.4 route](06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit)
-when a registration binds the prior source layout.
+For shared identities, frozen representations, seeds, vector metrics, derivation,
+publication or plotting, use the [utility guide](util/AGENTS.md) and
+[API inventory](util/README.md). Steps 04–10 call the
+[shared training and evaluation API](util/README.md#transigen-training-and-evaluation)
+through their numbered entry points. Keep population and fold validation,
+calibration, aggregation and report tables with the study. Bind each run to
+the study's pinned data, ordered axis, split, fold, seed, chemical representation,
+dose transform and conditioning, architecture, objective and source. Use the
+[selected model report](README.md#selected-carps-transcriptome-configuration)
+for the successor configuration and its decisions.
 
 ## Step contract
-- `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,
-  evaluator truth, public metric/reader code and reusable model checkpoints. Each has
-  one stable path and one owner; public implementations live here and execution imports them.
-- `figure/*.png`: human-facing report figures.
-- `figure/data/{figure}_{panel}.csv`: complete plotted values for each panel, including
-  curve coordinates, groups, uncertainty and reference values where applicable.
-- `figure/script/`: reproduce PNGs from those CSVs alone, without matrices, checkpoints
-  or recomputing scientific metrics. Record provenance when a CSV derives from output.
-  Draw marks with the [shared util plotting API](util/README.md#plotting).
-  Plot learning curves as lines with one subplot per model configuration.
-  Draw one train and one validation trace for every `(fold, seed)`.
-  Use bars or grouped bars for other figures unless the request specifies
-  another chart type. Use each `(fold, seed)` as a within-group replicate.
-  Draw defined replicate values as dots, bar heights as means and error
-  bars as sample SD when at least two values are defined.
-  Follow [ADR 0102](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
-  for comparison figures. Include zero in every comparison metrics panel.
-  Keep all dots, complete error bars and relevant references visible, and
-  use common limits for directly comparable panels. Label any other bar
-  chart that uses a range away from zero.
-  Encode each grouping variable on its own hue or depth axis, up to two
-  grouping variables. Replace figures at their canonical paths and discard
-  superseded render bundles.
-  Keep a single current set of figures, plotted data and renderers under
-  each `figure/`, using only `data/` and `script/` as subdirectories.
-  [Plotting decision](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
-  [Current figure acceptance](README.md#verify-the-current-figures)
-- `execution/`: reproducible build/audit code, configurations, tests and disposable
-  working intermediates. Keep necessary reconstruction dependencies available.
-- `log/`: execution/audit records, environments, seeds, acceptance results, hashes,
-  resource measurements, migration mappings and compact failure evidence.
-- `AGENTS.md`: agent execution/reproduction workflow; `README.md`: human-readable
-  accepted results, limitations and links to figures and reusable products.
+
+- Place the minimum reusable accepted products under `output/` at stable paths
+  with one owner per product. This includes corpus and gene-axis releases,
+  evaluator truth, reusable checkpoints and public reader or metric code.
+  Build and audit code imports the public implementation.
+- Keep build and audit code, configurations, tests and disposable intermediates
+  in `execution/`. Keep audit evidence in `log/`, including inputs and hashes,
+  seeds, environment, resource measurements, migration mappings and compact
+  failure records. Maintain a step guide for commands and a README for
+  accepted results, limitations and downstream products.
+- Publish one current set of PNGs under `figure/` with complete plotted
+  values in `figure/data/` and CSV-only renderers in `figure/script/`.
+  Record the source of each derived plot table. Render solely from those CSVs
+  and replace figures and render receipts at their canonical paths.
+- Draw report marks through the [shared plotting API](util/README.md#plotting).
+  Plot learning curves in one panel per model configuration, with train and
+  validation traces for every fold and seed. Default to bars for other
+  reports. Show each defined fold and seed as a dot, the group mean as the
+  bar height and sample SD when at least two values are defined. Use hue
+  for the first grouping variable and depth for the optional second.
+  Keep dots, complete SD intervals and relevant references in view. Use
+  common limits for directly comparable panels. Include zero in every
+  comparison metrics panel and label other bar charts that omit zero.
+  [Plotting decision](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md) ·
+  [Comparison standard](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md) ·
+  [Comparison CSV schema](util/README.md#comparison-figures)
 
 ## Acceptance and replacement
 
-Build candidates outside formal output, verify structure/data constraints, scientific
-criteria, downstream reads and CSV-only figure reproduction, then replace stable paths.
-Record metric tolerances for stochastic results and hashes for file integrity. A failed
-candidate leaves the accepted products available. Keep accepted final products active and preserve superseded tracked evidence through Git revisions.
-Treat external `source/` trees as read-only.
+Build a candidate outside the stable output, then verify its structure and
+data constraints, scientific acceptance, downstream readers and CSV-only
+figure reproduction before replacement. Record stochastic metric tolerances
+and byte hashes separately. Keep the accepted release in place if a candidate
+fails. Preserve superseded tracked evidence in Git and resolve dependencies
+before discarding superseded payloads. Keep external `source/` read-only and
+put declared additions in `local/` under the
+[external provenance contract](../docs/adr/0030-external-data-provenance-and-step-layout.md).
+
+## Verify the current figures
+
+Activate `arc` at the repository root. Match Python, Matplotlib, NumPy and
+any other package versions in the render receipts' `environment` fields.
+Run the shared gate after figure changes. It checks figure inventory,
+layout and receipt hashes, and requires two independent CSV-only renders
+to match all 45 published PNGs. The comparison tests check panel order,
+replicate marks and sample SD endpoints against the published tables.
+[Figure verifier](util/figure/script/verify_report_figures.py) ·
+[Comparison tests](util/execution/tests/test_comparison.py) ·
+[Published figure evidence](README.md#verify-the-current-figures)
+
+```bash
+(
+  set -e
+  mkdir -p "$PWD/tmp"
+  work=$(mktemp -d "$PWD/tmp/cpst-figure-check.XXXXXX")
+  python cpst/util/figure/script/verify_report_figures.py --work "$work/replay"
+  TMPDIR="$work" MPLCONFIGDIR="$work/replay/matplotlib" \
+    PYTHONPATH=cpst/util/output/api \
+    python -m unittest discover -s cpst/util/execution/tests -p test_comparison.py
+)
+```
+
+## Verify the active inputs
+
+Use the materialized Steps 01–03 releases, including all eight tenv views,
+their frozen folds and the Tahoe release. Work from the repository root
+in `arc`, with `cpst/history` absent. Define `capped_step04` using the
+[Step 04 runtime guide](04_tsg_axis/AGENTS.md#prepare-the-capped-runtime).
+Require `result: PASS` and `history_available: false` in the resulting
+JSON. The verifier exercises matched native tenv counts, ordered
+projections and both tenv and Tahoe training readers.
+[Active-input verifier](04_tsg_axis/execution/verify_active_inputs.py) ·
+[Archive-isolated receipt](04_tsg_axis/log/323-archive-isolated-smoke.json)
+
+```bash
+capped_step04 python cpst/04_tsg_axis/execution/verify_active_inputs.py
+```
+
+## Replay sealed studies
+
+Keep sealed inputs read-only. For replay, copy the fit to scratch and use its
+original registered source revision and protocol. Use the
+[pinned Step 06.4 replay](06_tsg_shape/06.4_round4/AGENTS.md#replay-a-sealed-step-064-fit)
+for registrations that bind the original `stage2/` layout. Use the
+[TranSiGen verification inventory](util/training/verification.md) for
+Steps 04–06 and the [CarPS-Transcriptome verification inventory](util/training/cpst-verification.md)
+for Steps 07–10. Retrieve tracked historical code, figures and receipts from
+their original Git revisions.
+[ADR 0087 cutover](https://github.com/Moke110/carps/blob/99078e6f/stage2/README.md#deploy-the-adr-0087-cutover) ·
+[Original CarPS path migration](https://github.com/Moke110/carps/blob/ac62a177a54aa99e6ac626728af12394f3e0d940/stage2_CarPS-VAE/README.md#deploy-the-carps-stage-2-path)

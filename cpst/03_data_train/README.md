@@ -1,79 +1,93 @@
-# Plate-matched training data
+# Step 03 plate-matched training data
 
-[03.1 tenv](03.1_tenv_hvg-5k/README.md) publishes plate-pooled tenv on the
-HVG-DEG 5k axis. [03.2 Tahoe](03.2_tahoe_hvg-5k/README.md) exposes the
-accepted Tahoe well-level data on the same gene axis. These source-specific
-routes implement [Spec 5](https://github.com/Moke110/carps/issues/310).
-The [acceptance receipt](log/312-source-specific-releases.json) records the
-real tenv replay, Tahoe asset equality and sealed combined-view replay.
+Step 03 publishes expression with measured matched vehicle controls from
+[source-native integer counts](../01_data_raw/README.md) on the ordered
+[prediction axes](../02_gene_axis/README.md). The tenv releases pool wells
+by condition. The Tahoe release retains individual well and cell-line profiles.
+
+## Source-specific releases
+
+The first tenv release used HVG-DEG 5k. It pools DMSO wells by plate and
+treated wells by plate, canonical drug parent and measured dose. Among 4,510
+source observations, 112 were excluded, leaving 16 pooled controls and 1,383
+pooled treatment conditions. The original build and its independent replay
+matched byte for byte. [03.1 tenv report](03.1_tenv_hvg-5k/README.md) ·
+[Source-specific acceptance](log/312-source-specific-releases.json)
+
+The Tahoe release preserves 66,718 eligible well and cell-line profiles on
+HVG-DEG 5k, including vehicle profiles. It pools distinct matched DMSO_TF
+observations from the same plate and cell line in integer counts, then applies
+CP10K and natural `log1p` separately to the well and its matched pool on the
+selected axis. Δ subtracts the normalized control from the normalized well
+profile. The source-specific acceptance records byte-exact replay of the
+original combined view and digest equality for the three Tahoe assets.
+[03.2 Tahoe report](03.2_tahoe_hvg-5k/README.md) ·
+[Tahoe manifest](03.2_tahoe_hvg-5k/output/release/manifest.json) ·
+[Source-specific acceptance](log/312-source-specific-releases.json)
+
+The native corpus publisher uses Tahoe to check the gene order and endpoint
+profiles before replacing the accepted corpus. The release also passed the
+archive-isolated active-input smoke test. The formal Step 04 TranSiGen and
+Step 09 CarPS-Transcriptome axis comparisons used the tenv releases below.
+[Corpus compatibility check](../01_data_raw/execution/build_corpus.py) ·
+[Archive-isolated smoke receipt](../04_tsg_axis/log/323-archive-isolated-smoke.json)
 
 ## Tenv training axes
 
-Each release follows the [03.1 contract](03.1_tenv_hvg-5k/README.md) and
-uses the same native tenv counts and [frozen folds](output/frozen-folds/). Each pools integer
-counts on its selected axis before normalizing on that axis. The
-[six-axis acceptance receipt](log/313-six-tenv-axes.json) records exact replay
-and equality of the plate–parent–dose keys, raw membership and exclusions,
-and all six fold assignments and strip reasons against HVG-DEG 5k. The
-[2k acceptance receipt](log/366-two-tenv-axes.json) records the same checks,
-plus an independent count-pooling and normalization audit for the 2k views.
+Each release selects its genes before pooling counts and uses each pooled
+profile's selected-axis total for CP10K and natural `log1p`. The released Δ
+subtracts the normalized same-plate DMSO control from the normalized treatment.
+Changing the axis can therefore change the normalized values of shared genes.
+Every release binds the same native counts and the same three cold-drug and
+three cold-dose-drug folds. The cold-dose-drug test sets use the intersection
+of held parents and held doses. Rows matching exactly one held criterion stay
+unassigned, with the reason recorded.
+[Tenv release contract](03.1_tenv_hvg-5k/README.md) ·
+[Frozen tenv folds](output/frozen-folds/tenv/manifest.json)
 
-| tenv axis key | Release |
+Five releases expanded the original HVG-DEG 5k baseline to six axes at 3k,
+4k and 5k. Acceptance recorded byte-exact replay and confirmed that the ordered
+condition keys, matched controls, raw membership, exclusions, fold assignments
+and strip reasons matched the baseline. Step 04 selected Denoise-DEG 5k from
+these six axes for the subsequent TranSiGen loss and architecture studies.
+The CarPS-Transcriptome alpha and chemical representation study then used
+the same release.
+[Six-axis acceptance](log/313-six-tenv-axes.json) ·
+[Step 04 axis selection](../04_tsg_axis/README.md#gene-axis-selection) ·
+[Downstream use of Denoise-DEG 5k](03.7_tenv_denoise-5k/README.md#downstream-use)
+
+Two 2k releases then passed the same replay and population checks. An
+independent audit recomputed every pooled row from native counts and checked
+gene order, library totals, normalized expression, matched Δ and the
+dataset-wide control vector. Step 09 evaluated all eight axes with UniMol
+and selected Denoise-DEG 5k for CarPS-Transcriptome. Step 10 held that axis
+fixed for its dose comparison. [2k acceptance](log/366-two-tenv-axes.json) ·
+[Step 09 formal results](../09_cpst_axis/README.md#formal-results) ·
+[Step 10 formal results](../10_cpst_dose/README.md#formal-results)
+
+| Tenv axis key | Release |
 | --- | --- |
-| `hvg-2k` | [03.8 HVG-DEG 2k](03.8_tenv_hvg-2k/README.md) |
+| `hvg-5k` | [03.1 HVG-DEG 5k](03.1_tenv_hvg-5k/README.md) |
 | `hvg-3k` | [03.3 HVG-DEG 3k](03.3_tenv_hvg-3k/README.md) |
 | `hvg-4k` | [03.4 HVG-DEG 4k](03.4_tenv_hvg-4k/README.md) |
-| `hvg-5k` | [03.1 HVG-DEG 5k](03.1_tenv_hvg-5k/README.md) |
-| `denoise-2k` | [03.9 Denoise-DEG 2k](03.9_tenv_denoise-2k/README.md) |
 | `denoise-3k` | [03.5 Denoise-DEG 3k](03.5_tenv_denoise-3k/README.md) |
 | `denoise-4k` | [03.6 Denoise-DEG 4k](03.6_tenv_denoise-4k/README.md) |
 | `denoise-5k` | [03.7 Denoise-DEG 5k](03.7_tenv_denoise-5k/README.md) |
+| `hvg-2k` | [03.8 HVG-DEG 2k](03.8_tenv_hvg-2k/README.md) |
+| `denoise-2k` | [03.9 Denoise-DEG 2k](03.9_tenv_denoise-2k/README.md) |
 
-With `cpst/03_data_train/output/api` on `PYTHONPATH`, call
-`open_tenv_axis_training("denoise-2k")` from `tenv_axes`. Pass a Step 03
-root as the second argument to read releases materialized in another checkout.
-Both interfaces use `training_data.open_tenv_training` to verify and read the
-release at its output path. The original six-axis lookup in `training_data`
-retains the sealed Step 04 roster and runtime hashes for Steps 07 and 08.
+The named tenv reader resolves all eight axes through the shared pooled
+training reader. The original six-axis lookup retains the roster and runtime
+pins used by the sealed Step 04 export and the Step 07 and 08 releases.
+[Named reader](output/api/tenv_axes.py) ·
+[Build and replay procedure](AGENTS.md#build-and-replay-a-tenv-release)
 
-Build and verify a candidate using the family and width documented for its
-release. This example rebuilds Denoise-DEG 3k from the original folds and raw
-corpus, verifies replay, then compares the accepted stable output against the
-expected digest. Builders reject population drift before installing artifacts.
+## Historical evidence
 
-```bash
-D=$PWD/cpst/03_data_train
-CANDIDATE=$PWD/tmp/tenv-denoise-3k/candidate
-STAGING=$PWD/tmp/tenv-denoise-3k/staging
-export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
-python "$D/execution/build_tenv_training.py" publish --axis denoise-3k \
-  --output "$CANDIDATE" --staging "$STAGING"
-python "$D/execution/build_tenv_training.py" verify --axis denoise-3k \
-  --output "$CANDIDATE" --staging "$STAGING"
-python "$D/execution/build_tenv_training.py" publish --axis denoise-3k \
-  --output "$D/03.5_tenv_denoise-3k/output" --staging "$STAGING" \
-  --expected-sha256 "$VERIFIED_SHA256"
-```
-
-Use the digest printed by verification for `VERIFIED_SHA256`. In a linked
-worktree, `--raw` and `--reference` can point to the materialized native corpus
-and HVG-DEG 5k output in another checkout. For the two 2k releases, substitute
-the axis ID and stable output path from the table. After publishing both
-2k releases, audit all their pooled rows from native counts and verify that
-the six established releases still load.
-
-```bash
-python "$D/execution/audit_tenv_2k.py"
-```
-
-Use `--raw` and `--established` for materialized inputs in another checkout.
-
-## Frozen inputs
-
-The [active frozen fold files](output/frozen-folds/) retain the original tenv
-member assignments and Step 07 receipt. Each release binds them to the native
-corpus and selected axis. The `cold_dose_drug_*` columns leave held-parent and
-held-dose strips unassigned and record their separate reasons.
-
-The earlier ADR 0085 paired release and combined well-level view are in the
-[Stage 2 historical evidence](../README.md#historical-evidence-and-active-input-checks).
+The paired dose study predates these source-specific releases and used the
+axis-local views specified in ADR 0077. ADR 0085 records the original
+publication boundary for plate-matched data. The CarPS-Transcriptome index
+links the tracked historical records and current active-input checks.
+[Dual-source dose study decision](../../docs/adr/0078-dual-source-axis-local-dose-round1.md) ·
+[Original publication decision](../../docs/adr/0085-stage2-raw-and-training-data.md) ·
+[Historical evidence and active-input checks](../README.md#historical-evidence-and-active-input-checks)

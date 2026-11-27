@@ -38,7 +38,7 @@ seeds repeat fitting within the same three held-out folds.
 
 Eight new coordinates in arms 4 and 5 stopped at a nonfinite training loss.
 The first attempt independently replayed 52 successful fits. The failure and
-its diagnostics remain in the [blocked receipt](../../stage2_CarPS-VAE/06_tsg_shape/06.3_round3/log/356-blocked.json).
+its diagnostics remain in the [blocked receipt](https://github.com/Moke110/carps/blob/28f5eea4593170466ff6ca4110def1ef3b125cce/stage2/06_tsg_shape/06.3_round3/log/356-blocked.json).
 
 Add `LayerNorm(100, elementwise_affine=False)` after FiLM modulation and before
 the Gaussian projection in arms 3, 4 and 5. The conditioning network retains

@@ -79,3 +79,26 @@ below for their document and scientific evidence work.
 | [`cpst/10_cpst_dose/README.md`](../../cpst/10_cpst_dose/README.md) | `/root/coordinator2/doc388_56` | #378 90-fit and 900-score ledgers, partition and summary counts, dose arm rankings, publication and figure hashes. |
 | [`cpst/util/AGENTS.md`](../../cpst/util/AGENTS.md) | `/root/coordinator2/doc388_57` | Shared API symbols, gene identity and chemical representation pins, both runtime verification records and 36 stage receipt hashes. |
 | [`cpst/util/README.md`](../../cpst/util/README.md) | `/root/coordinator2/doc388_58` | Shared API contracts and 28 utility tests, both representation manifests, 36 stage receipts and 14 figure receipts. |
+
+## Parent and root documents
+
+The eight intermediate guides and reports were completed before the four stage
+root documents. The two repository root documents followed the stage roots.
+Each row records the assigned author and the material checked.
+
+| Document | Author | Evidence checked |
+| --- | --- | --- |
+| [`cpst/02_gene_axis/AGENTS.md`](../../cpst/02_gene_axis/AGENTS.md) | `/root/coordinator3/doc389_59` | Both selection builders and projection API, nine axis hashes, native coverage, and 15 #342 render hashes. |
+| [`cpst/02_gene_axis/README.md`](../../cpst/02_gene_axis/README.md) | `/root/coordinator3/doc389_60` | Both axis releases and Denoise-DEG acceptance, downstream Step 03/04/09 use, and two independent #342 renders. |
+| [`cpst/03_data_train/AGENTS.md`](../../cpst/03_data_train/AGENTS.md) | `/root/coordinator3/doc389_61` | All nine release manifests and 67 installed assets, #312/#313/#366 receipts, reader and publisher interfaces, and the resource cap. |
+| [`cpst/03_data_train/README.md`](../../cpst/03_data_train/README.md) | `/root/coordinator3/doc389_62` | Nine release manifests and frozen folds, eight tenv axes, pinned Tahoe protocol and downstream #323 scope. |
+| [`cpst/05_tsg_loss/AGENTS.md`](../../cpst/05_tsg_loss/AGENTS.md) | `/root/coordinator3/doc389_63` | Five formal and figure receipt pairs, ten installed manifests, capped launcher, original runner pins and joint similarity CLIs. |
+| [`cpst/05_tsg_loss/README.md`](../../cpst/05_tsg_loss/README.md) | `/root/coordinator3/doc389_64` | Formal fit counts and metric optima, five current figure receipts, shared similarity matrix and original publication revision. |
+| [`cpst/06_tsg_shape/AGENTS.md`](../../cpst/06_tsg_shape/AGENTS.md) | `/root/coordinator3/doc389_65` | Four formal and figure receipts covering 171 coordinates, ten installed matrix/report/lineage digests, renderers and comparison API. |
+| [`cpst/06_tsg_shape/README.md`](../../cpst/06_tsg_shape/README.md) | `/root/coordinator3/doc389_66` | Four formal receipts, failed FiLM arms and accepted normalization, paired metric leaders and nine-coordinate alpha parity. |
+| [`cpsp/AGENTS.md`](../../cpsp/AGENTS.md) | `/root/coordinator3/doc389_67` | #386 corpus and Morgan migration records, eight corpus and three benchmark pins, 60 checkpoint targets, and current CLI and metric routes. |
+| [`cpsp/README.md`](../../cpsp/README.md) | `/root/coordinator3/doc389_68` | Heliste source, corpus and split pins, 60 saved-fit verification, 49,392 audited test predictions and the prospective CPST Δ contract. |
+| [`cpst/AGENTS.md`](../../cpst/AGENTS.md) | `/root/coordinator3/doc389_69` | Step contracts, 14 render receipts and 114 hashes, materialized input inventory, #323 active-input verifier and pinned replay. |
+| [`cpst/README.md`](../../cpst/README.md) | `/root/coordinator3/doc389_70` | Step 06.4 and Steps 08–10 formal receipts, nine exact alpha coordinates, selected configuration, and shared figure and dose interfaces. |
+| [`AGENTS.md`](../../AGENTS.md) | `/root/coordinator3/doc389_71` | Notion workflow and repository owners, current Bash gates, installed stage records, WSL and tracker rules, and predecessor exclusion. |
+| [`README.md`](../../README.md) | `/root/coordinator3/doc389_72` | CPST alpha and dose formal receipts, CPSP corpus pins and 60 verified Morgan fits, current guides and public predecessor boundary. |
