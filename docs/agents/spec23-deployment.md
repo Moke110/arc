@@ -21,8 +21,8 @@ The existing unstaged deletion of
   All 23 matched their original SHA-256 values. The installed schema gate
   passed on the 958 × 978 union. Rebuilding its 21 official fold columns in
   a scratch copy reproduced the installed H5AD byte for byte.
-  [Stage 1 verification](../../stage1/verification.md) ·
-  [Additional v2 checksums](../../stage1/additional_v2_payloads.sha256)
+  [Stage 1 verification](https://github.com/Moke110/carps/blob/9e7c85e38d2ab09c9b509ff8b2f30c67ea07ea85/stage1/verification.md) ·
+  [Additional v2 checksums](https://github.com/Moke110/carps/blob/9e7c85e38d2ab09c9b509ff8b2f30c67ea07ea85/stage1/additional_v2_payloads.sha256)
 - Stage 2 passed 11 TranSiGen and 25 CarPS-VAE receipt checks, the raw and
   active tenv and Tahoe release checks, and the alpha verifier. Steps 08,
   09 and 10 reproduced 567, 720 and 900 scores respectively. Step 09 also
