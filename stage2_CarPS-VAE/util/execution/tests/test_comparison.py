@@ -58,7 +58,7 @@ class ComparisonTests(unittest.TestCase):
     def test_published_metric_figures_show_every_point_and_full_sample_sd(self):
         receipts = sorted(STAGE.glob("*/log/figure-render.json"))
         receipts += sorted(STAGE.glob("*/*/log/figure-render.json"))
-        self.assertEqual(len(receipts), 12)
+        self.assertEqual(len(receipts), 13)
         with TemporaryDirectory(dir=os.environ.get("TMPDIR")) as scratch:
             for receipt in receipts:
                 with self.subTest(study=receipt.parent.parent.relative_to(STAGE)):
@@ -87,7 +87,8 @@ class ComparisonTests(unittest.TestCase):
 
         arguments = [str(renderer), "--data", str(data), "--output", scratch]
         with patch.object(sys, "argv", arguments), patch.object(sys, "path", list(sys.path)), \
-             patch("stage2_util.comparison.save_figure", side_effect=check_saved_figure):
+             patch("stage2_util.comparison.save_figure", side_effect=check_saved_figure), \
+             patch("stage2_util.plotting.save_figure", side_effect=check_saved_figure):
             runpy.run_path(str(renderer), run_name="__main__")
         self.assertEqual(checked, {"metrics.png", "metrics-paired.png"})
 

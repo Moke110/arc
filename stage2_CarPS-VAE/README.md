@@ -59,7 +59,7 @@ exceeded the absolute mean difference on both metrics.
 
 ## Verify the current figures
 
-Each of the 12 comparisons publishes `learning-curve.png`, `metrics.png`
+Each of the 13 comparisons publishes `learning-curve.png`, `metrics.png`
 and `metrics-paired.png`. The two metrics figures use eight panels in
 the same order. They show every defined fold–seed replicate, the mean,
 the sample SD for groups with at least two scores, and zero. Paired
@@ -67,8 +67,8 @@ figures show the arm score minus its reference within each fold and seed.
 [Comparison figure standard](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
 
 The verifier checks the current receipts and independently redraws each
-of the 42 PNGs twice from its published plot data using the `arc` environment.
-This covers the 36 comparison PNGs, five Step 02 figures and the palette preview.
+of the 45 PNGs twice from its published plot data using the `arc` environment.
+This covers the 39 comparison PNGs, five Step 02 figures and the palette preview.
 For byte-identical replay, use the exact Python, Matplotlib, NumPy and,
 where listed, pandas versions in the receipts’ `environment` fields.
 
@@ -91,6 +91,7 @@ python stage2_CarPS-VAE/util/figure/script/verify_report_figures.py --work "$WOR
 [Step 06.4 receipt](06_tsg_shape/06.4_round4/log/figure-render.json) ·
 [Step 08 receipt](08_cpsv_chem-emb/log/figure-render.json) ·
 [Step 09 receipt](09_cpsv_axis/log/figure-render.json) ·
+[Step 10 receipt](10_cpsv_dose/log/figure-render.json) ·
 [ADR 0093](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
 
 The comparison tests inspect the rendered panels against their CSV

@@ -97,7 +97,7 @@ run_root() {
   STAGE2_PATH_AUDIT_ROOT="$1" STAGE2_PATH_AUDIT_FILES="$2" bash "$audit"
 }
 fixture_root="$tmp/layout/stage2_CarPS-VAE"
-for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} 06_tsg_shape 06_tsg_shape/{06.1_round1,06.2_round2,06.3_round3,06.4_round4} 07_cpsv_alpha 08_cpsv_chem-emb 09_cpsv_axis; do
+for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} 06_tsg_shape 06_tsg_shape/{06.1_round1,06.2_round2,06.3_round3,06.4_round4} 07_cpsv_alpha 08_cpsv_chem-emb 09_cpsv_axis 10_cpsv_dose; do
   mkdir -p "$fixture_root/$step"
   printf '%s\n' "$step" >"$fixture_root/$step/AGENTS.md"
   printf '%s\n' "$step" >"$fixture_root/$step/README.md"

@@ -24,6 +24,7 @@ COMPARISON_RENDERERS = {
     "06_tsg_shape/06.4_round4": "render_comparison.py",
     "08_cpsv_chem-emb": "render_comparison.py",
     "09_cpsv_axis": "render_axes.py",
+    "10_cpsv_dose": "render_doses.py",
 }
 COMPARISON_NAMES = ("learning-curve", "metrics", "metrics-paired")
 
@@ -138,9 +139,9 @@ def main():
     for directory in directories:
         check_layout(directory)
     published_count = sum(1 for directory in directories for _ in directory.glob("*.png"))
-    if published_count != 42:
-        raise ValueError(f"expected 42 published Stage 2 PNGs, found {published_count}")
-    print("Verified all 42 current Stage 2 PNGs, including 12 comparison sets")
+    if published_count != 45:
+        raise ValueError(f"expected 45 published Stage 2 PNGs, found {published_count}")
+    print("Verified all 45 current Stage 2 PNGs, including 13 comparison sets")
 
 
 if __name__ == "__main__":

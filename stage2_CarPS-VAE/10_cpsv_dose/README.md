@@ -79,3 +79,35 @@ systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=8G -- \
 
 python "$step/execution/dose_gate.py" --bundle "$work" --output "$work/377-bounded.json"
 ```
+
+## Verify and install the formal report
+
+Run the fit command above without `--bounded` in a new scratch directory.
+Keep the ten-second sampler running through the final fit measurement.
+The formal publisher starts fresh scoring and independent audit processes.
+The audit reconstructs held-out Δ from the frozen plate controls, checks
+metric eligibility and fold–seed statistics, and compares plotted values
+with the audited reports and sealed learning traces. Numeric audit tolerances
+are 10⁻¹² absolute and relative. Prediction and figure replays are exact.
+
+After the formal matrix finishes, use the same `work` and `step` paths.
+
+```bash
+formal="$step/execution/dose_formal.py"
+systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=8G -- \
+  python "$formal" build --bundle "$work" --publication "$work/publication" --scratch "$work/scratch"
+
+systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=8G -- \
+  python "$formal" verify --bundle "$work" --publication "$work/publication" --scratch "$work/scratch"
+
+systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=8G -- \
+  python "$formal" install --bundle "$work" --publication "$work/publication"
+```
+
+Pass `--step03` to `build` and `verify` when working in a linked checkout.
+The install command checks the passing receipts and atomically materializes
+the immutable fits, phase audit evidence and all report tables at
+`output/formal` using hardlinks. Keep the bundle and destination on the
+same filesystem. The published PNGs, plotted CSVs and compact report tables
+live in this step's `figure/` and `log/`. To verify the installed study,
+run `verify --scratch "$work/scratch"` with the default bundle and publication.
