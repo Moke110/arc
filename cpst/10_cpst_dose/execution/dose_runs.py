@@ -232,7 +232,7 @@ def execute(output, phase, step03, representations, source):
                            report_replay_resources=True)
 
 
-def read_run(path, bounded):
+def read_run(path, bounded, *, read_receipt=axis_run.verified_receipt):
     registration = path / "registration.json"
     config = axis_run.read_json(registration)
     verify_sealed_code(config, axis_run.REPO, ORIGINAL_CODE, historical_paths=DOSE_CODE)
@@ -244,7 +244,7 @@ def read_run(path, bounded):
             or config["model"] != configuration(key[0])):
         raise ValueError(f"invalid sealed Step 10 registration: {path}")
     training, prediction, replay = (
-        axis_run.verified_receipt(path, PHASES[phase], registration_sha, PHASE_FILES[phase]) for phase in PHASES
+        read_receipt(path, PHASES[phase], registration_sha, PHASE_FILES[phase]) for phase in PHASES
     )
     receipts = (training, prediction, replay)
     if (len({config["nonce"], *(receipt["process_token"] for receipt in receipts)}) != 4

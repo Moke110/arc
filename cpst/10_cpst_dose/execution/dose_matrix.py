@@ -102,14 +102,14 @@ def preflight(step03, representations, source, bounded):
     }
 
 
-def read_fits(root, bounded):
+def read_fits(root, bounded, *, run_reader=read_run):
     runs, fits = {}, []
     paths = run_paths(root, bounded)
     observed_paths = {path.parent for path in (root / "runs").glob("*/*/*/registration.json")}
     if observed_paths != set(paths.values()):
         raise ValueError("Step 10 matrix registration paths differ from its full roster")
     for key, path in paths.items():
-        observed, run = read_run(path, bounded)
+        observed, run = run_reader(path, bounded)
         if observed != key:
             raise ValueError(f"sealed run does not match its coordinate: {key}")
         runs[key] = run
@@ -188,7 +188,7 @@ def execute(root, logs, step03, representations, source, bounded=False):
         return {"status": "PASS", "fits": len(fits), "manifest_sha256": axis_run.digest(manifest)}
 
 
-def verify_matrix(root, bounded):
+def verify_matrix(root, bounded, *, run_reader=read_run):
     """Verify fit roster, independent phase receipts, paired initialization and streams."""
     preflight_path = root / "preflight.json"
     preflight = axis_run.read_json(preflight_path)
@@ -198,7 +198,7 @@ def verify_matrix(root, bounded):
             or preflight["registered_roster"] != [list(key) for key in coordinates(bounded)]
             or manifest["schema"] != SCHEMA or manifest["preflight_sha256"] != axis_run.digest(preflight_path)):
         raise ValueError("invalid Step 10 matrix or preflight record")
-    runs, fits = read_fits(root, bounded)
+    runs, fits = read_fits(root, bounded, run_reader=run_reader)
     selected = [{name: value for name, value in run[1].items() if name != "nonce"} for run in runs.values()]
     if (manifest["fits"] != fits
             or preflight["registered_configs_sha256"] != ordered_configurations_sha256(selected)):

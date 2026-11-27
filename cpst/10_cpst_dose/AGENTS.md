@@ -160,6 +160,40 @@ capped /usr/bin/time -v -o "$WORK/verify.resources" \
   --publication "$STEP" --scratch "$WORK/scratch" --step03 "$STEP03"
 ```
 
+## Verify the prediction archive
+
+Complete the installed full acceptance and record the exact replay receipt
+digest before disposing of any crossed-dose checkpoints. Preserve the pinned
+fit runtime and its source hash roster. The archive command uses the original
+acceptance, matrix and trial receipts, verifies retained files, independently
+rescores saved predictions and renders each accepted figure twice from CSV.
+The strict verifier and exact checkpoint replay continue to require weights.
+
+First exercise the archive on a disposable copy with immutable files
+hardlinked from the accepted installation. Keep the alias inventory and
+confirm the complete Step 10 roster is eligible. The operation below
+quarantines the selected weight paths while it audits the retained evidence.
+No new fit in this study serves as a successor reference.
+
+```bash
+capped /usr/bin/time -v -o "$WORK/archive.resources" \
+  python "$EXECUTION/dose_prediction_archive.py" dispose --bundle "$ARCHIVE" \
+  --publication "$STEP" --scratch "$WORK/scratch" --step03 "$STEP03" \
+  --acceptance-sha256 "$ACCEPTED_SHA256"
+
+capped /usr/bin/time -v -o "$WORK/archive-verify.resources" \
+  python "$EXECUTION/dose_prediction_archive.py" verify --bundle "$ARCHIVE" \
+  --publication "$STEP" --scratch "$WORK/scratch" --step03 "$STEP03" \
+  --acceptance-sha256 "$ACCEPTED_SHA256" --disposition-sha256 "$DISPOSITION_SHA256"
+```
+
+Use the acceptance digest from the installed acceptance gate and the
+disposition digest returned by `dispose`. Use the same `dispose` request
+after an interruption. After successful archive verification, retire only
+candidate weight hardlinks with a verified inventory and the same checkpoint
+inode identities. Keep all historical weights, retained prediction evidence,
+and the accepted receipts.
+
 ## Replay the original study
 
 The original 90-coordinate comparison uses the materialized `output/formal`

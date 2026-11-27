@@ -95,6 +95,31 @@ measurements for scoring. Select the checkpoint by the lowest per-condition
 native validation objective (MSE + KLD, β = 0.1), with 30 epochs of patience
 and a 1,000-epoch maximum. [Matched-control protocol](../../docs/adr/0086-tenv-axis-matched-plate-control.md)
 
+## Verify an accepted prediction archive
+
+Use `execution/prediction_archive.py verify` with the matrix, matrix audit,
+report, figure and scratch-log paths from the formal report verifier. Supply
+`--disposition-sha256` from the independently pinned completed disposition
+receipt. The command checks the original #399 acceptance, verifies retained
+artifacts, independently rebuilds scores and paired plot data, and renders
+the figures twice. It does not replay checkpoint weights. Full matrix and
+report verification still require the original checkpoint files.
+
+The `dispose` subcommand is for explicitly approved checkpoint paths after
+all required uses of those weights are complete. Supply each eligible run as
+`--run-manifest` with its manifest path relative to the accepted matrix.
+Keep downstream reuse candidates and weights needed for exact replay out of
+the list. The command runs full report verification first and verifies the
+predictions and figures with the selected weights staged on the same
+filesystem. Only after both checks pass does it commit the disposition and
+remove the staged weights. Record the returned disposition SHA-256 separately
+and retain the original full acceptance and run manifests. For a later batch,
+use a new `--receipt` filename and supply `--previous-receipt` and
+`--previous-disposition-sha256` from the pinned prior batch. Use the latest
+`--receipt` with `verify` to check the cumulative archive. Rerun the same
+`dispose` arguments after an interruption to recover the quarantine and
+complete verification.
+
 ## Register and replay one fit
 
 This example runs the bounded HVG-DEG 5k smoke through exact replay and report
