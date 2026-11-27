@@ -116,7 +116,7 @@ Conventions specific to these three items:
 - **`local/deg/<item>_deg.csv` + tracked `_deg.json`** — the item-local
   full DEG table (long, one row per gene × contrast) and its tracked summary.
   The DEG is the single live implementation in
-  `stage2_CarPS-VAE/util/output/api/stage2_util/derivation/disease_deg.R` (limma: voom for counts,
+  `cpst/util/output/api/cpst_util/derivation/disease_deg.R` (limma: voom for counts,
   `lmFit` for the log-scale deposit); the item scripts only bind inputs and run
   it. GSE270788's three arms share one control set, so its table comes from
   **one joint `~ 0 + arm` fit** over all 23 donors (three contrasts), not three
@@ -142,9 +142,9 @@ category, where the two Reichart genotype-split exports (genotype-positive DCM
 and ARVC donors) are the tier-1 human CM-pseudobulk datasets and the six
 in-vitro models enter at tier 2 under ADR 0066's **Isogenic exception**. Each
 item follows the same five-member ADR 0030 contract, and one shared adapter
-(`stage2_CarPS-VAE/util/output/api/stage2_util/derivation/bulk_deg.py`) binds the deposited matrix +
+(`cpst/util/output/api/cpst_util/derivation/bulk_deg.py`) binds the deposited matrix +
 GEO series matrix and runs the one live DEG implementation
-(`stage2_util/derivation/disease_deg.R`); the item script only declares its design.
+(`cpst_util/derivation/disease_deg.R`); the item script only declares its design.
 
 | item | deposit | design | published dataset |
 |---|---|---|---|
@@ -266,9 +266,9 @@ acute-MI bulk case–control series exists.
 - **Local Stage 1 MIRI screen** — `stage1/08_miri_phenotype/miri_phenotype.py` reads
   `disease_data/<GSE>/local/deg/*.json` (and `source/*_deg_results.csv`) for the
   Stage-1 L1000 reference lists. That interface is unchanged.
-- **Stage 2 gene axis** — the [HVG-DEG step](../stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/README.md)
+- **Stage 2 gene axis** — the [HVG-DEG step](../cpst/02_gene_axis/02.1_hvg-deg/README.md)
   owns published selection and evidence. Shared DEG workers and rank helpers
-  are documented in [Stage 2 util](../stage2_CarPS-VAE/util/README.md).
+  are documented in [Stage 2 util](../cpst/util/README.md).
 
 ## How a new GEO series would be added
 

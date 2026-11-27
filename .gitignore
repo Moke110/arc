@@ -148,176 +148,176 @@ tmp/
 
 
 # Plate-matched training payloads are local, and the public reader is tracked.
-!/stage2_CarPS-VAE/03_data_train/output/
-/stage2_CarPS-VAE/03_data_train/output/*
-!/stage2_CarPS-VAE/03_data_train/output/frozen-folds/
-!/stage2_CarPS-VAE/03_data_train/output/frozen-folds/**
-!/stage2_CarPS-VAE/03_data_train/output/api/
-!/stage2_CarPS-VAE/03_data_train/output/api/*.py
+!/cpst/03_data_train/output/
+/cpst/03_data_train/output/*
+!/cpst/03_data_train/output/frozen-folds/
+!/cpst/03_data_train/output/frozen-folds/**
+!/cpst/03_data_train/output/api/
+!/cpst/03_data_train/output/api/*.py
 
 # Source-specific Step 03 publishes manifests and materializes expression locally.
-!/stage2_CarPS-VAE/03_data_train/03.*_tenv_*/output/
-/stage2_CarPS-VAE/03_data_train/03.*_tenv_*/output/*
-!/stage2_CarPS-VAE/03_data_train/03.*_tenv_*/output/manifest.json
-/stage2_CarPS-VAE/03_data_train/03.*_tenv_*/.output.previous/
-/stage2_CarPS-VAE/03_data_train/03.*_tenv_*/.output.publication.lock
-!/stage2_CarPS-VAE/03_data_train/03.2_tahoe_hvg-5k/output/
-/stage2_CarPS-VAE/03_data_train/03.2_tahoe_hvg-5k/output/*
-!/stage2_CarPS-VAE/03_data_train/03.2_tahoe_hvg-5k/output/api/
-!/stage2_CarPS-VAE/03_data_train/03.2_tahoe_hvg-5k/output/api/*.py
-!/stage2_CarPS-VAE/03_data_train/03.2_tahoe_hvg-5k/output/release/
-/stage2_CarPS-VAE/03_data_train/03.2_tahoe_hvg-5k/output/release/*
-!/stage2_CarPS-VAE/03_data_train/03.2_tahoe_hvg-5k/output/release/manifest.json
+!/cpst/03_data_train/03.*_tenv_*/output/
+/cpst/03_data_train/03.*_tenv_*/output/*
+!/cpst/03_data_train/03.*_tenv_*/output/manifest.json
+/cpst/03_data_train/03.*_tenv_*/.output.previous/
+/cpst/03_data_train/03.*_tenv_*/.output.publication.lock
+!/cpst/03_data_train/03.2_tahoe_hvg-5k/output/
+/cpst/03_data_train/03.2_tahoe_hvg-5k/output/*
+!/cpst/03_data_train/03.2_tahoe_hvg-5k/output/api/
+!/cpst/03_data_train/03.2_tahoe_hvg-5k/output/api/*.py
+!/cpst/03_data_train/03.2_tahoe_hvg-5k/output/release/
+/cpst/03_data_train/03.2_tahoe_hvg-5k/output/release/*
+!/cpst/03_data_train/03.2_tahoe_hvg-5k/output/release/manifest.json
 
 # Step 04 owns axis training code. Local run payloads stay ignored.
-!/stage2_CarPS-VAE/04_tsg_axis/output/
-/stage2_CarPS-VAE/04_tsg_axis/output/*
-!/stage2_CarPS-VAE/04_tsg_axis/output/api/
-!/stage2_CarPS-VAE/04_tsg_axis/output/api/**
-/stage2_CarPS-VAE/04_tsg_axis/output/api/**/__pycache__/
-!/stage2_CarPS-VAE/04_tsg_axis/figure/data/delta-metrics.csv
-!/stage2_CarPS-VAE/04_tsg_axis/figure/data/disease-f1.csv
-!/stage2_CarPS-VAE/04_tsg_axis/figure/data/fold-metrics.csv
-!/stage2_CarPS-VAE/04_tsg_axis/figure/data/fold-disease-f1.csv
-/stage2_CarPS-VAE/04_tsg_axis/log/319-runs/
+!/cpst/04_tsg_axis/output/
+/cpst/04_tsg_axis/output/*
+!/cpst/04_tsg_axis/output/api/
+!/cpst/04_tsg_axis/output/api/**
+/cpst/04_tsg_axis/output/api/**/__pycache__/
+!/cpst/04_tsg_axis/figure/data/delta-metrics.csv
+!/cpst/04_tsg_axis/figure/data/disease-f1.csv
+!/cpst/04_tsg_axis/figure/data/fold-metrics.csv
+!/cpst/04_tsg_axis/figure/data/fold-disease-f1.csv
+/cpst/04_tsg_axis/log/319-runs/
 
 # Step 05.1 publishes compact score evidence. Checkpoints stay under ignored output/.
-!/stage2_CarPS-VAE/05_tsg_loss/05.1_loss_metrics/figure/data/delta-metrics.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.1_loss_metrics/figure/data/epoch-objectives.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.1_loss_metrics/figure/data/fold-scores.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.1_loss_metrics/log/bandwidths.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.1_loss_metrics/log/fold-scores.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.1_loss_metrics/log/runs.csv
+!/cpst/05_tsg_loss/05.1_loss_metrics/figure/data/delta-metrics.csv
+!/cpst/05_tsg_loss/05.1_loss_metrics/figure/data/epoch-objectives.csv
+!/cpst/05_tsg_loss/05.1_loss_metrics/figure/data/fold-scores.csv
+!/cpst/05_tsg_loss/05.1_loss_metrics/log/bandwidths.csv
+!/cpst/05_tsg_loss/05.1_loss_metrics/log/fold-scores.csv
+!/cpst/05_tsg_loss/05.1_loss_metrics/log/runs.csv
 
 # Step 05.2 publishes the same compact report tables for the additive sweep.
-!/stage2_CarPS-VAE/05_tsg_loss/05.2_mse_l1/figure/data/delta-metrics.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.2_mse_l1/figure/data/epoch-objectives.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.2_mse_l1/figure/data/fold-scores.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.2_mse_l1/log/bandwidths.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.2_mse_l1/log/fold-scores.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.2_mse_l1/log/runs.csv
+!/cpst/05_tsg_loss/05.2_mse_l1/figure/data/delta-metrics.csv
+!/cpst/05_tsg_loss/05.2_mse_l1/figure/data/epoch-objectives.csv
+!/cpst/05_tsg_loss/05.2_mse_l1/figure/data/fold-scores.csv
+!/cpst/05_tsg_loss/05.2_mse_l1/log/bandwidths.csv
+!/cpst/05_tsg_loss/05.2_mse_l1/log/fold-scores.csv
+!/cpst/05_tsg_loss/05.2_mse_l1/log/runs.csv
 
 # Step 05.3 publishes compact report tables for the reconstruction sweep.
-!/stage2_CarPS-VAE/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/delta-metrics.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/epoch-objectives.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/fold-scores.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.3_mse-l1_mse-x/log/bandwidths.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.3_mse-l1_mse-x/log/fold-scores.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.3_mse-l1_mse-x/log/runs.csv
+!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/delta-metrics.csv
+!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/epoch-objectives.csv
+!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/fold-scores.csv
+!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/log/bandwidths.csv
+!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/log/fold-scores.csv
+!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/log/runs.csv
 
 # Steps 05.4 and 05.5 publish compact tables for both bounded similarity sweeps.
-!/stage2_CarPS-VAE/05_tsg_loss/05.4_mse-l1_pcc/figure/data/delta-metrics.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.4_mse-l1_pcc/figure/data/epoch-objectives.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.4_mse-l1_pcc/figure/data/fold-scores.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.4_mse-l1_pcc/log/bandwidths.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.4_mse-l1_pcc/log/fold-scores.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.4_mse-l1_pcc/log/runs.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.5_mse-l1_cos/figure/data/delta-metrics.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.5_mse-l1_cos/figure/data/epoch-objectives.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.5_mse-l1_cos/figure/data/fold-scores.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.5_mse-l1_cos/log/bandwidths.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.5_mse-l1_cos/log/fold-scores.csv
-!/stage2_CarPS-VAE/05_tsg_loss/05.5_mse-l1_cos/log/runs.csv
+!/cpst/05_tsg_loss/05.4_mse-l1_pcc/figure/data/delta-metrics.csv
+!/cpst/05_tsg_loss/05.4_mse-l1_pcc/figure/data/epoch-objectives.csv
+!/cpst/05_tsg_loss/05.4_mse-l1_pcc/figure/data/fold-scores.csv
+!/cpst/05_tsg_loss/05.4_mse-l1_pcc/log/bandwidths.csv
+!/cpst/05_tsg_loss/05.4_mse-l1_pcc/log/fold-scores.csv
+!/cpst/05_tsg_loss/05.4_mse-l1_pcc/log/runs.csv
+!/cpst/05_tsg_loss/05.5_mse-l1_cos/figure/data/delta-metrics.csv
+!/cpst/05_tsg_loss/05.5_mse-l1_cos/figure/data/epoch-objectives.csv
+!/cpst/05_tsg_loss/05.5_mse-l1_cos/figure/data/fold-scores.csv
+!/cpst/05_tsg_loss/05.5_mse-l1_cos/log/bandwidths.csv
+!/cpst/05_tsg_loss/05.5_mse-l1_cos/log/fold-scores.csv
+!/cpst/05_tsg_loss/05.5_mse-l1_cos/log/runs.csv
 
 # Step 06.1 publishes the plotted scores and compact fit diagnostics.
-!/stage2_CarPS-VAE/06_tsg_shape/06.1_round1/figure/data/delta-metrics.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.1_round1/figure/data/epoch-objectives.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.1_round1/figure/data/fold-scores.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.1_round1/log/bandwidths.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.1_round1/log/kl-diagnostics.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.1_round1/log/runs.csv
-/stage2_CarPS-VAE/06_tsg_shape/.06.1_round1.publication.lock
+!/cpst/06_tsg_shape/06.1_round1/figure/data/delta-metrics.csv
+!/cpst/06_tsg_shape/06.1_round1/figure/data/epoch-objectives.csv
+!/cpst/06_tsg_shape/06.1_round1/figure/data/fold-scores.csv
+!/cpst/06_tsg_shape/06.1_round1/log/bandwidths.csv
+!/cpst/06_tsg_shape/06.1_round1/log/kl-diagnostics.csv
+!/cpst/06_tsg_shape/06.1_round1/log/runs.csv
+/cpst/06_tsg_shape/.06.1_round1.publication.lock
 
 # Step 06.2 publishes the plotted scores and compact fit ledger.
-!/stage2_CarPS-VAE/06_tsg_shape/06.2_round2/figure/data/delta-metrics.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.2_round2/figure/data/epoch-objectives.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.2_round2/figure/data/fold-scores.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.2_round2/log/bandwidths.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.2_round2/log/runs.csv
-/stage2_CarPS-VAE/06_tsg_shape/.06.2_round2.publication.lock
+!/cpst/06_tsg_shape/06.2_round2/figure/data/delta-metrics.csv
+!/cpst/06_tsg_shape/06.2_round2/figure/data/epoch-objectives.csv
+!/cpst/06_tsg_shape/06.2_round2/figure/data/fold-scores.csv
+!/cpst/06_tsg_shape/06.2_round2/log/bandwidths.csv
+!/cpst/06_tsg_shape/06.2_round2/log/runs.csv
+/cpst/06_tsg_shape/.06.2_round2.publication.lock
 
 # Step 06.3 publishes paired scores, primary contrasts and the fit ledger.
-!/stage2_CarPS-VAE/06_tsg_shape/06.3_round3/figure/data/delta-metrics.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.3_round3/figure/data/epoch-objectives.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.3_round3/figure/data/fold-scores.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.3_round3/figure/data/primary-contrasts.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.3_round3/figure/data/primary-contrast-summary.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.3_round3/log/bandwidths.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.3_round3/log/runs.csv
-/stage2_CarPS-VAE/06_tsg_shape/.06.3_round3.publication.lock
+!/cpst/06_tsg_shape/06.3_round3/figure/data/delta-metrics.csv
+!/cpst/06_tsg_shape/06.3_round3/figure/data/epoch-objectives.csv
+!/cpst/06_tsg_shape/06.3_round3/figure/data/fold-scores.csv
+!/cpst/06_tsg_shape/06.3_round3/figure/data/primary-contrasts.csv
+!/cpst/06_tsg_shape/06.3_round3/figure/data/primary-contrast-summary.csv
+!/cpst/06_tsg_shape/06.3_round3/log/bandwidths.csv
+!/cpst/06_tsg_shape/06.3_round3/log/runs.csv
+/cpst/06_tsg_shape/.06.3_round3.publication.lock
 # Step 06.4 publishes the plotted data and compact fit ledger.
-!/stage2_CarPS-VAE/06_tsg_shape/06.4_round4/figure/data/delta-metrics.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.4_round4/figure/data/epoch-objectives.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.4_round4/figure/data/fold-scores.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.4_round4/figure/data/primary-contrast-by-fold.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.4_round4/figure/data/primary-contrast-summary.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.4_round4/figure/data/primary-contrasts.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.4_round4/log/bandwidths.csv
-!/stage2_CarPS-VAE/06_tsg_shape/06.4_round4/log/runs.csv
-/stage2_CarPS-VAE/06_tsg_shape/.06.4_round4.publication.lock
+!/cpst/06_tsg_shape/06.4_round4/figure/data/delta-metrics.csv
+!/cpst/06_tsg_shape/06.4_round4/figure/data/epoch-objectives.csv
+!/cpst/06_tsg_shape/06.4_round4/figure/data/fold-scores.csv
+!/cpst/06_tsg_shape/06.4_round4/figure/data/primary-contrast-by-fold.csv
+!/cpst/06_tsg_shape/06.4_round4/figure/data/primary-contrast-summary.csv
+!/cpst/06_tsg_shape/06.4_round4/figure/data/primary-contrasts.csv
+!/cpst/06_tsg_shape/06.4_round4/log/bandwidths.csv
+!/cpst/06_tsg_shape/06.4_round4/log/runs.csv
+/cpst/06_tsg_shape/.06.4_round4.publication.lock
 
 # Step 07 exposes the fixed alpha API and its release identity.
-!/stage2_CarPS-VAE/07_cpsv_alpha/output/
-/stage2_CarPS-VAE/07_cpsv_alpha/output/*
-!/stage2_CarPS-VAE/07_cpsv_alpha/output/release.json
-!/stage2_CarPS-VAE/07_cpsv_alpha/output/api/
-/stage2_CarPS-VAE/07_cpsv_alpha/output/api/*
-!/stage2_CarPS-VAE/07_cpsv_alpha/output/api/carps_vae_alpha.py
+!/cpst/07_cpst_alpha/output/
+/cpst/07_cpst_alpha/output/*
+!/cpst/07_cpst_alpha/output/release.json
+!/cpst/07_cpst_alpha/output/api/
+/cpst/07_cpst_alpha/output/api/*
+!/cpst/07_cpst_alpha/output/api/cpst_alpha.py
 
 # Stage 2 Step 08 formal report tables
-!/stage2_CarPS-VAE/08_cpsv_chem-emb/figure/data/fold-scores.csv
-!/stage2_CarPS-VAE/08_cpsv_chem-emb/figure/data/paired-by-fold.csv
-!/stage2_CarPS-VAE/08_cpsv_chem-emb/figure/data/paired-summary.csv
-!/stage2_CarPS-VAE/08_cpsv_chem-emb/figure/data/epoch-objectives.csv
-!/stage2_CarPS-VAE/08_cpsv_chem-emb/log/bandwidths.csv
-!/stage2_CarPS-VAE/08_cpsv_chem-emb/log/runs.csv
+!/cpst/08_cpst_chem-emb/figure/data/fold-scores.csv
+!/cpst/08_cpst_chem-emb/figure/data/paired-by-fold.csv
+!/cpst/08_cpst_chem-emb/figure/data/paired-summary.csv
+!/cpst/08_cpst_chem-emb/figure/data/epoch-objectives.csv
+!/cpst/08_cpst_chem-emb/log/bandwidths.csv
+!/cpst/08_cpst_chem-emb/log/runs.csv
 
 # Stage 2 Step 09 formal comparison and local checkpoint bundle
-/stage2_CarPS-VAE/09_cpsv_axis/output/
-!/stage2_CarPS-VAE/09_cpsv_axis/figure/data/*.csv
-!/stage2_CarPS-VAE/09_cpsv_axis/log/bandwidths.csv
-!/stage2_CarPS-VAE/09_cpsv_axis/log/runs.csv
-!/stage2_CarPS-VAE/09_cpsv_axis/log/summary.csv
+/cpst/09_cpst_axis/output/
+!/cpst/09_cpst_axis/figure/data/*.csv
+!/cpst/09_cpst_axis/log/bandwidths.csv
+!/cpst/09_cpst_axis/log/runs.csv
+!/cpst/09_cpst_axis/log/summary.csv
 
 # Keep Step 10 reports and plotted data in Git. Fit bundles stay local.
-/stage2_CarPS-VAE/10_cpsv_dose/output/
-!/stage2_CarPS-VAE/10_cpsv_dose/figure/data/*.csv
-!/stage2_CarPS-VAE/10_cpsv_dose/log/bandwidths.csv
-!/stage2_CarPS-VAE/10_cpsv_dose/log/fold-scores.csv
-!/stage2_CarPS-VAE/10_cpsv_dose/log/foldwise-summary.csv
-!/stage2_CarPS-VAE/10_cpsv_dose/log/runs.csv
-!/stage2_CarPS-VAE/10_cpsv_dose/log/summary.csv
+/cpst/10_cpst_dose/output/
+!/cpst/10_cpst_dose/figure/data/*.csv
+!/cpst/10_cpst_dose/log/bandwidths.csv
+!/cpst/10_cpst_dose/log/fold-scores.csv
+!/cpst/10_cpst_dose/log/foldwise-summary.csv
+!/cpst/10_cpst_dose/log/runs.csv
+!/cpst/10_cpst_dose/log/summary.csv
 
 # HVG-DEG axes and compact selection evidence. Keep candidates local.
-!/stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/output/
-/stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/output/*
-!/stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/output/api/
-!/stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/output/release/
-!/stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/output/release/**/*.csv
-!/stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/figure/data/disease-DEG1000-coverage_bars.csv
-/stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/execution/checkpoints/
+!/cpst/02_gene_axis/02.1_hvg-deg/output/
+/cpst/02_gene_axis/02.1_hvg-deg/output/*
+!/cpst/02_gene_axis/02.1_hvg-deg/output/api/
+!/cpst/02_gene_axis/02.1_hvg-deg/output/release/
+!/cpst/02_gene_axis/02.1_hvg-deg/output/release/**/*.csv
+!/cpst/02_gene_axis/02.1_hvg-deg/figure/data/disease-DEG1000-coverage_bars.csv
+/cpst/02_gene_axis/02.1_hvg-deg/execution/checkpoints/
 
-!/stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/output/
-/stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/output/*
-!/stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/output/release/
-!/stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/output/release/gene_axis_*.csv
-!/stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/output/release/gene_ranking.csv
-!/stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/figure/data/diagnostics_disease_deg1000.csv
-!/stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/figure/data/diagnostics_gene_exclusions.csv
-!/stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/figure/data/diagnostics_scores.csv
-!/stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/figure/data/diagnostics_variance_boundaries.csv
-!/stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/figure/data/disease-DEG1000-coverage.csv
-!/stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/figure/data/score-in-axis.csv
+!/cpst/02_gene_axis/02.2_denoise-deg/output/
+/cpst/02_gene_axis/02.2_denoise-deg/output/*
+!/cpst/02_gene_axis/02.2_denoise-deg/output/release/
+!/cpst/02_gene_axis/02.2_denoise-deg/output/release/gene_axis_*.csv
+!/cpst/02_gene_axis/02.2_denoise-deg/output/release/gene_ranking.csv
+!/cpst/02_gene_axis/02.2_denoise-deg/figure/data/diagnostics_disease_deg1000.csv
+!/cpst/02_gene_axis/02.2_denoise-deg/figure/data/diagnostics_gene_exclusions.csv
+!/cpst/02_gene_axis/02.2_denoise-deg/figure/data/diagnostics_scores.csv
+!/cpst/02_gene_axis/02.2_denoise-deg/figure/data/diagnostics_variance_boundaries.csv
+!/cpst/02_gene_axis/02.2_denoise-deg/figure/data/disease-DEG1000-coverage.csv
+!/cpst/02_gene_axis/02.2_denoise-deg/figure/data/score-in-axis.csv
 
 # Authoritative shared identities are tracked; representation vectors remain local.
-!/stage2_CarPS-VAE/util/output/
-/stage2_CarPS-VAE/util/output/*
-!/stage2_CarPS-VAE/util/output/api/
-!/stage2_CarPS-VAE/util/output/tables/
-!/stage2_CarPS-VAE/util/output/tables/seeds.csv
-!/stage2_CarPS-VAE/util/output/gene-identity/
-!/stage2_CarPS-VAE/util/output/gene-identity/**/*.csv
-/stage2_CarPS-VAE/util/output/representations/
+!/cpst/util/output/
+/cpst/util/output/*
+!/cpst/util/output/api/
+!/cpst/util/output/tables/
+!/cpst/util/output/tables/seeds.csv
+!/cpst/util/output/gene-identity/
+!/cpst/util/output/gene-identity/**/*.csv
+/cpst/util/output/representations/
 
 # Quarantine any pre-ADR 0105 local Stage 2 archive pending removal.
-/stage2_CarPS-VAE/history/
+/cpst/history/

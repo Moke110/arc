@@ -32,7 +32,7 @@ every item.
 
 Each item's `author_log.json` carries its provenance; each `local/` file is declared in that
 log's `local_additions[]`. Current downstream preparation belongs to
-the [Stage 2 raw data](../stage2_CarPS-VAE/01_data_raw/README.md), which preserves
+the [Stage 2 raw data](../cpst/01_data_raw/README.md), which preserves
 source-native counts and gene coverage. The former five-source native-axis corpus release described by ADR 0033
 was removed with the other Stage 2 steps; its tracked build evidence remains in
 Git history. The immutable downloaded sources listed above remain in this category.

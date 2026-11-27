@@ -1,0 +1,33 @@
+{
+  "csv_files_sha256": {
+    "02.1_hvg-deg/figure/data/disease-DEG1000-coverage_bars.csv": "b014eaf49b73dbf25ea394ae5911d26b7c5cc0bf6703a0b55b8dc4713071ae28",
+    "02.2_denoise-deg/figure/data/diagnostics_disease_deg1000.csv": "2cb9df7f8d0c36acc905752bde231a442913bf2418e7bff0b2f8d1919a5cb954",
+    "02.2_denoise-deg/figure/data/diagnostics_gene_exclusions.csv": "3a0bc238521fc6802f4a5e19ff2a0c10733e558aadb1efe4ddac3628de6cf042",
+    "02.2_denoise-deg/figure/data/diagnostics_genes.csv.gz": "b0ceb95f8b700883aae39aba8c2bce9dae0f4bd2a0bb4fdca248067a10fe5846",
+    "02.2_denoise-deg/figure/data/diagnostics_scores.csv": "f3031fe80ce021843365b5a028f418324ea248a52255e2e6d90e9083459a7796",
+    "02.2_denoise-deg/figure/data/diagnostics_variance_boundaries.csv": "fa3c275a28b6c9411aa7b1172a0b5bbd7f59fdd5a87521b1bf6e88aaed40a1fa",
+    "02.2_denoise-deg/figure/data/disease-DEG1000-coverage.csv": "342de85547b43dc41b0a9950fa80c43e4d4c62664141cf7dc8b470af40e1ed87",
+    "02.2_denoise-deg/figure/data/score-in-axis.csv": "ac8dfcd2786c584bc900314a613a39a190027f59610f506d0ab6935cf974b29d"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13"
+  },
+  "independent_renders": 2,
+  "png_files_sha256": {
+    "02.1_hvg-deg/figure/disease-DEG1000-coverage.png": "86de70c9787eeb8be7f075f6a487cfeb04b1587a728c00ca9d9253c850d82a88",
+    "02.2_denoise-deg/figure/deg-scores.png": "1d64690a662019dccf295c2fb0f5ba240a614ad5acd2bd2dbda0f9a8f9c68799",
+    "02.2_denoise-deg/figure/denoise.png": "f93d388c7e91d1b061cc11a51395685031a06e19463c20f1a7194fdc309db413",
+    "02.2_denoise-deg/figure/disease-DEG1000-coverage.png": "69adeab7302a3f103e9cfae4fa31bae44da99d0533e3ecd36a943ae9325a3ecd",
+    "02.2_denoise-deg/figure/score-in-axis.png": "79e129e3633e0c075882e08cce2e179adfd36adb9c31ff55055365379de6fb26"
+  },
+  "renderer_files_sha256": {
+    "02.1_hvg-deg/figure/script/render_coverage.py": "9623b0d185eca92bb28385b39b851f7c2ed46d81dcb9b57043797ec3a2aef4ee",
+    "02.2_denoise-deg/figure/script/render.py": "c43957bd3d432d0f7993a840d5f92a3eee4b3d3f00fd9e5a9459b7781649a4b7"
+  },
+  "schema": "cpst-figure-render-v1",
+  "status": "PASS",
+  "step": "02_gene_axis"
+}

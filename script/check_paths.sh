@@ -247,25 +247,25 @@ main() {
     echo "baseline written: $baseline_path"
   fi
 
-  # Ticket #17: the stage2 retired-step-path audit is part of this health check.
-  # It is a separate script so the stage2 owners can run it alone; a red audit
+  # Ticket #17: the CPST retired-step-path audit is part of this health check.
+  # It is a separate script so the CPST owners can run it alone; a red audit
   # makes this combined check red too.
-  local stage2_status=0
+  local cpst_status=0
   echo
-  if [ -f "$repo_root/script/check_stage2_paths.sh" ]; then
-    bash "$repo_root/script/check_stage2_paths.sh" || stage2_status=$?
+  if [ -f "$repo_root/script/check_cpst_paths.sh" ]; then
+    bash "$repo_root/script/check_cpst_paths.sh" || cpst_status=$?
   else
-    echo "ERROR: script/check_stage2_paths.sh is missing (ticket #17)" >&2
-    stage2_status=1
+    echo "ERROR: script/check_cpst_paths.sh is missing (ticket #17)" >&2
+    cpst_status=1
   fi
 
   local cpsp_status=0
   bash "$repo_root/script/check_cpsp_paths.sh" || cpsp_status=$?
 
-  if [ "$occ_unresolved" -eq 0 ] && [ "$stage2_status" -eq 0 ] && [ "$cpsp_status" -eq 0 ]; then
+  if [ "$occ_unresolved" -eq 0 ] && [ "$cpst_status" -eq 0 ] && [ "$cpsp_status" -eq 0 ]; then
     echo
     echo "RESULT: PASS — every extracted path literal resolves"
-    echo "stage2 retired-step-path audit: PASS"
+    echo "CPST retired-step-path audit: PASS"
     echo "exit: 0"
     return 0
   fi
@@ -273,8 +273,8 @@ main() {
   if [ "$occ_unresolved" -gt 0 ]; then
     echo "RESULT: FAIL — $occ_unresolved occurrence(s) of ${distinct_unresolved:-0} unresolved literal(s) outside the whitelist"
   fi
-  if [ "$stage2_status" -ne 0 ]; then
-    echo "RESULT: FAIL — the stage2 retired-step-path audit is red (see above)"
+  if [ "$cpst_status" -ne 0 ]; then
+    echo "RESULT: FAIL — the CPST retired-step-path audit is red (see above)"
   fi
   if [ "$cpsp_status" -ne 0 ]; then
     echo "RESULT: FAIL — the CPSP source-first path audit is red"

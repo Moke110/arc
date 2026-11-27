@@ -62,7 +62,7 @@ Record: `docs/wetlab-validation-stage1.md`; raw data `wet_data/` (gitignored).
 
 ## Stage 2 — perturbation prediction
 
-The [Stage 2 routing](../stage2_CarPS-VAE/AGENTS.md) lists source-native counts, prediction
+The [Stage 2 routing](../cpst/AGENTS.md) lists source-native counts, prediction
 axes, expression views, and the model and TranSiGen comparisons. ADR 0084
 retired Bases replay and reserved Step 05 for a loss comparison.
 

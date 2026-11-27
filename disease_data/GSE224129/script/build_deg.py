@@ -3,9 +3,9 @@
 
 The item-local derivation: the deposit's RSEM gene matrix (non-integer
 ``expected_count`` values on a count scale) and the GEO series matrix are bound
-by the shared adapter ``stage2_util.derivation.bulk_deg``, which integerises the count-scale matrix
+by the shared adapter ``cpst_util.derivation.bulk_deg``, which integerises the count-scale matrix
 with the shared rounding helper and runs the one live DEG implementation
-``stage2_util/derivation/disease_deg.R`` (limma-voom). One joint fit over all 12 ECT libraries
+``cpst_util/derivation/disease_deg.R`` (limma-voom). One joint fit over all 12 ECT libraries
 yields two contrasts — MYBPC3 +/- and -/- against the isogenic +/+ arm — which
 become one published dataset through the ticket-01 per-gene maximum-effect
 collapse.
@@ -25,8 +25,8 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2_CarPS-VAE/util/output/api'))
-from stage2_util.derivation import bulk_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'cpst/util/output/api'))
+from cpst_util.derivation import bulk_deg  # noqa: E402
 
 SPEC = {
     'matrix': 'source/GSE224129_AHNNF3DMXX_rsem_GENE.txt.gz',
