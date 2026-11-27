@@ -3,7 +3,8 @@
 The Stage 1 root retains the former v2 screen under ADR 0105. XPert finetunes
 on the DToxS primary and iPSC union, and the screen scores 1,004 FDA drugs
 against the MIRI reference. The formal run retained 130 drugs after the WCS
-filter and 64 after the critical-pathway filter.
+filter and 64 after the critical-pathway filter. See the
+[cutover verification](verification.md) for parity with the original results.
 
 ## Materialize the inputs
 

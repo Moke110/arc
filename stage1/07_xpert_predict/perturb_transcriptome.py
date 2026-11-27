@@ -18,12 +18,11 @@ Usage:
 """
 
 import argparse
-import subprocess
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
-from utils import WORKFLOW_ROOT, XPERT_ROOT  # noqa: E402
+from utils import WORKFLOW_ROOT, XPERT_METADATA, XPERT_ROOT  # noqa: E402
 
 STEP_DIR = WORKFLOW_ROOT / "07_xpert_predict"
 OUTPUT = STEP_DIR / "output" / "xpert_fda-cm_deg.csv"
@@ -54,21 +53,28 @@ def main():
     prediction_root = STEP_DIR / "output"
     prediction_root.mkdir(parents=True, exist_ok=True)
 
-    cmd = [
-        sys.executable, "-m", "src.predict",
-        "--prediction_root", str(prediction_root),
-        "--ctl_csv", str(WORKFLOW_ROOT / "02_cm_baseline/output/cm_ctl_landmark.csv"),
-        "--drug_csv", str(WORKFLOW_ROOT / "01_drug_embed/output/drug_list.csv"),
-        "--output_csv", "xpert_fda-cm_deg.csv",
-        "--model_path", args.model_path,
-        "--dose_idx", str(args.dose_idx),
-        "--time_idx", str(args.time_idx),
-        "--device", args.device,
-        "--batch_size", str(args.batch_size),
-        "--config", str(WORKFLOW_ROOT / "06_xpert_finetune/config/cm"),
-    ]
-    print(f"Running predict:\n  {' '.join(cmd)}")
-    subprocess.run(cmd, cwd=XPERT_ROOT, check=True)
+    from src import predict
+
+    call = argparse.Namespace(
+        prediction_root=str(prediction_root),
+        ctl_csv=str(WORKFLOW_ROOT / "02_cm_baseline/output/cm_ctl_landmark.csv"),
+        drug_csv=str(WORKFLOW_ROOT / "01_drug_embed/output/drug_list.csv"),
+        output_csv=OUTPUT.name,
+        model_path=str(XPERT_ROOT / args.model_path),
+        dose_idx=args.dose_idx,
+        time_idx=args.time_idx,
+        device=args.device,
+        batch_size=args.batch_size,
+        config=str(WORKFLOW_ROOT / "06_xpert_finetune/config/cm"),
+    )
+    # The frozen predictor looks up gene labels under PROJECT_ROOT/metadata.
+    # Stage 1 supplies the declared local metadata without editing vendor bytes.
+    vendor_root = predict.PROJECT_ROOT
+    try:
+        predict.PROJECT_ROOT = XPERT_METADATA.parent
+        predict.run_prediction(call)
+    finally:
+        predict.PROJECT_ROOT = vendor_root
 
     print(f"Step 07 complete — {OUTPUT}")
 
