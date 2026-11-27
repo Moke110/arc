@@ -10,14 +10,14 @@ import time
 
 from dose_inputs import open_inputs
 from cpst_util.configuration import ordered_configurations_sha256
-from dose_protocol import REFERENCE, STEP, TRANSIGEN, coordinates
-from dose_runs import DOSE_CODE, ORIGINAL_CODE, PHASES, add_inputs, axis_run, bind, read_run, verify_release
-from util.training.provenance import historical_gate_configuration, legacy_configuration
+from dose_protocol import REFERENCE, STEP, TRANSIGEN, coordinates, fold_numbers, protocol
+from dose_runs import PHASES, add_inputs, axis_run, bind, read_run, verify_release
 from matrix import ResourceMonitor, SAMPLE_SECONDS, digest_values, enforce_record, register_coordinate
 from matrix_measured import MEMORY_CAP, SWAP_CAP, scope_directory
 from matrix_sweep import signal_process_group
 
-SCHEMA = "cpst-dose-matrix-v1"
+SCHEMA = "cpst-dose-matrix-v2"
+BOUNDED_RECEIPT = "log/405-bounded.json"
 RUNNER = Path(__file__).with_name("dose_runs.py")
 
 
@@ -87,15 +87,9 @@ def preflight(step03, representations, source, bounded):
         formal = {key: bind(key, data, vectors, source, False) for key in coordinates()}
         selected = ({key: bind(key, data, vectors, source, True) for key in coordinates(True)}
                     if bounded else formal)
-    historical = (
-        historical_gate_configuration(
-            legacy_configuration(config, axis_run.REPO, ORIGINAL_CODE, historical_paths=DOSE_CODE)
-        )
-        for config in formal.values()
-    )
     folds = []
-    for fold in range(3):
-        config = formal[(REFERENCE, fold, 17)]
+    for fold in fold_numbers():
+        config = formal[(REFERENCE, fold, protocol().seeds[0])]
         folds.append({**config["population"], "fold": fold,
                       "ordered_conditions_sha256": {phase: digest_values(ids)
                                                     for phase, ids in config["conditions"].items()}})
@@ -103,7 +97,6 @@ def preflight(step03, representations, source, bounded):
         "schema": SCHEMA, "bounded": bounded, "formal_roster": [list(key) for key in formal],
         "registered_roster": [list(key) for key in selected],
         "formal_configs_sha256": ordered_configurations_sha256(formal.values()),
-        "gate_configs_sha256": ordered_configurations_sha256(historical),
         "registered_configs_sha256": ordered_configurations_sha256(selected.values()),
         "folds": folds,
     }
@@ -137,14 +130,16 @@ def read_fits(root, bounded):
 
 def verify_bounded_gate(evidence):
     """Require the completed ten-arm CUDA gate for this formal roster."""
-    receipt = axis_run.read_json(STEP / "log/377-bounded.json")
-    if (receipt["status"] != "PASS" or receipt["ticket"] != 377
+    receipt = axis_run.read_json(STEP / BOUNDED_RECEIPT)
+    if (receipt["status"] != "PASS" or receipt["ticket"] != 405
             or receipt["bounded_coordinates"] != [list(key) for key in coordinates(True)]
             or [row["coordinate"] for row in receipt["bounded_fit_lineage"]] != receipt["bounded_coordinates"]
             or any(set(row["replay"].values()) != {"exact"} for row in receipt["bounded_fit_lineage"])
             or receipt["figures"]["status"] != "PASS"
+            or receipt["numerical_audit"]["status"] != "PASS"
+            or receipt["numerical_audit"]["coordinates"] != len(coordinates(True))
             or receipt["formal_coordinates"] != len(coordinates())
-            or receipt["formal_configs_sha256"] != evidence.get("gate_configs_sha256", evidence["formal_configs_sha256"])
+            or receipt["formal_configs_sha256"] != evidence["formal_configs_sha256"]
             or receipt["full_folds"] != evidence["folds"]):
         raise ValueError("formal fit does not match the accepted Step 10 CUDA gate")
 
