@@ -64,6 +64,8 @@ class ActiveCoverageTest(unittest.TestCase):
         selected, quality = active_samples(supervisor, matrix, scopes, 1189)
         self.assertEqual(selected, supervisor)
         self.assertEqual([scope['coordinator_count'] for scope in quality], [4, 5])
+        with self.assertRaisesRegex(ValueError, 'successful matrix completion'):
+            active_samples(supervisor[:-1], matrix, scopes, 1183)
         with self.assertRaisesRegex(ValueError, 'cadence'):
             active_samples(supervisor[:2] + supervisor[3:], matrix, scopes, 1189)
 

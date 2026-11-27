@@ -8,6 +8,7 @@ import json
 import math
 from pathlib import Path
 import re
+import shlex
 
 STARTED = '39f53479d3a045ac8e11786248231fbf'
 ACCOUNTED = 'ae8f7b866b0347b9af31fe1c80b127c0'
@@ -21,6 +22,7 @@ class Scope:
     stop: float
     unix_start: float
     unix_stop: float
+    invocation: str | None = None
 
 
 def digest(path):
@@ -39,7 +41,7 @@ def pinned_file(root, name, pin):
     return path
 
 
-def scope_windows(root, journals):
+def scope_windows(root, journals, *, command_check=None):
     scopes, boots, commands, identities = [], set(), set(), set()
     if len(journals) != 2:
         raise ValueError('interrupted matrix requires exactly two scope journals')
@@ -65,11 +67,13 @@ def scope_windows(root, journals):
         match = re.search(r'\bdose_matrix\.py\s+(.*)\.$', command)
         if match is None or '--output' not in command or '--logs' not in command:
             raise ValueError(f'scope journal does not identify the matrix worker: {unit}')
+        if command_check is not None:
+            command_check(command.removesuffix("."))
         commands.add(match[1])
         scopes.append(Scope(entry['monitor_session'], *(
             int(row[key]) / 1_000_000
             for key in ('__MONOTONIC_TIMESTAMP', '__REALTIME_TIMESTAMP') for row in events
-        )))
+        ), invocation=identity))
     first, last = scopes
     if (len(boots) != 1 or len(commands) != 1 or first.session == last.session
             or not first.start < first.stop < last.start < last.stop
@@ -99,7 +103,7 @@ def active_samples(supervisor, matrix, scopes, final_measurement):
         rows = [before[-1], *active]
         if index == len(scopes) - 1:
             # Keep the existing successful-matrix bracket through its final measurement.
-            while rows[-1]['monotonic_seconds'] < ticks[-1] or (
+            while rows[-1]['monotonic_seconds'] < scope.stop or (
                 datetime.fromisoformat(rows[-1]['wall_time']).timestamp() < final_measurement
             ):
                 after = [row for row in supervisor if row['monotonic_seconds'] > rows[-1]['monotonic_seconds']]
@@ -108,7 +112,7 @@ def active_samples(supervisor, matrix, scopes, final_measurement):
                 rows.append(after[0])
         times = [row['monotonic_seconds'] for row in rows]
         if (not scope.start - 12 <= times[0] <= scope.start + 10
-                or times[-1] < scope.stop - 12
+                or not scope.stop - 12 <= times[-1] <= scope.stop + 12
                 or any(not math.isfinite(right - left) or abs(right - left - 10) > 1
                        for left, right in zip(times, times[1:]))):
             raise ValueError('independent ten-second cadence is incomplete inside an active scope')
@@ -158,6 +162,9 @@ class InterruptedResources:
         'cpst/10_cpst_dose/execution/dose_matrix.py':
             '88dbf66b2741478944940b429f3dd43d0ee52de7fc3ca8bff22943b93c7368cf',
     }
+    LAUNCH_ROOT = Path('/home/chang/carps')
+    LAUNCH_TICKET = LAUNCH_ROOT / 'tmp/spec26-405'
+    LAUNCH_RUN = LAUNCH_TICKET / 'tmp/405-backing-e/run.SylLiG'
     LAUNCHER = '56d2bfc4812fed384074e4168f88cdc92cedcb6bd8dbb2a048d017d4f2210325'
 
     def __init__(self, bundle, pin):
@@ -177,11 +184,12 @@ class InterruptedResources:
             if sha256(original).hexdigest() != expected:
                 raise ValueError('interrupted runtime cgroup guard source differs')
         pinned_file(root, 'launcher.sh', self.LAUNCHER)
-        self.scopes = scope_windows(root, record['journals'])
+        self.scopes = scope_windows(root, record['journals'], command_check=self.check_command)
         settings = dict(line.split('=', 1) for line in pinned_file(
             root, 'resumed-scope-settings.txt', record['resumed_scope_settings_sha256']
         ).read_text().splitlines())
         if (Path(settings['ControlGroup']).name != record['journals'][-1]['unit']
+                or settings['InvocationID'] != self.scopes[-1].invocation
                 or (int(settings['MemoryMax']), int(settings['MemorySwapMax'])) != (12 * 1024**3, 8 * 1024**3)
                 or abs(int(settings['ActiveEnterTimestampMonotonic']) / 1_000_000 - self.scopes[-1].start) > 0.001):
             raise ValueError('resumed scope cgroup settings disagree with the systemd journal')
@@ -198,6 +206,29 @@ class InterruptedResources:
                for left, right in zip(self.supervisor, self.supervisor[1:])):
             raise ValueError('raw coordinator logs overlap or contain nonmonotonic observations')
         self.pin = pin
+
+    @classmethod
+    def check_command(cls, command):
+        # These arguments identify the same authorized deployed candidate in both
+        # captured launcher journals, even after the release is copied to install.
+        expected_prefix = [
+            '/usr/bin/env', 'OMP_NUM_THREADS=2', 'MKL_NUM_THREADS=2', 'OPENBLAS_NUM_THREADS=2',
+            'NUMEXPR_NUM_THREADS=2', '/usr/bin/time', '-v', '-o',
+        ]
+        expected_worker = [
+            '/home/chang/miniconda3/envs/arc/bin/python',
+            str(cls.LAUNCH_TICKET / 'cpst/10_cpst_dose/execution/dose_matrix.py'),
+            '--step03', str(cls.LAUNCH_ROOT / 'cpst/03_data_train'),
+            '--representations', str(cls.LAUNCH_ROOT / 'cpst/util/output/representations'),
+            '--source', str(cls.LAUNCH_ROOT / 'pert_model/TranSiGen/source'),
+            '--output', str(cls.LAUNCH_RUN / 'matrix'), '--logs', str(cls.LAUNCH_RUN / 'matrix-audit'),
+        ]
+        args = shlex.split(command)
+        index = len(expected_prefix)
+        if (args[:index] != expected_prefix or args[index + 1:] != expected_worker
+                or Path(args[index]).parent != cls.LAUNCH_RUN
+                or not re.fullmatch(r'matrix-attempt\.[a-zA-Z0-9]+\.resources', Path(args[index]).name)):
+            raise ValueError('systemd matrix command differs from the pinned launcher and candidate')
 
     def coverage(self, matrix, final_measurement):
         selected, windows = active_samples(self.supervisor, matrix, self.scopes, final_measurement)
