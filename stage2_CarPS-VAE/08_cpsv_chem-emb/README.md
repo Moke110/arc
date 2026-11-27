@@ -55,7 +55,7 @@ weight to the nine coordinates. Uncertainty is sample SD across the repeated coo
 
 UniMol had the highest mean Δ PCC (0.441262).
 UniMol had the lowest mean Δ RMSE (0.238599).
-UniMol’s mean paired Δ PCC gain was smaller than its sample SD (0.012432 versus 0.013493). KPGT remains the working default.
+UniMol’s mean paired Δ PCC gain was smaller than its sample SD (0.012432 versus 0.013493). The comparison is closed, and [ADR 0100](../../docs/adr/0100-carps-vae-unimol.md) selects UniMol for subsequent CarPS-VAE studies.
 
 - [All nine metrics by fold and seed](figure/data/fold-scores.csv), [foldwise paired summaries](figure/data/paired-by-fold.csv) and [overall paired summaries](figure/data/paired-summary.csv)
 - [Nine held-out metrics](figure/delta-metrics.png), [nine paired differences vs KPGT](figure/delta-metrics-paired-difference.png) and [CSV-only figure replay receipt](log/figure-render.json)
@@ -95,11 +95,11 @@ capped python "$STEP/execution/chem_formal.py" build \
 The comparison publishes one score per metric, arm, fold and training
 seed. The paired differences subtract the matching KPGT score. Higher
 Δ PCC and lower Δ RMSE indicate improvement. Each summary weights
-its coordinates equally and reports sample SD. The experiment changes
-its working configuration only when the same representation leads both
-primary metrics and both paired improvements exceed their sample SD
-across all nine pairs. Any alternative is recorded in a distinct Step 08
-configuration.
+its coordinates equally and reports sample SD. The original Step 08
+criterion for changing the working configuration required the same
+representation to lead both primary metrics and both paired improvements
+to exceed their sample SD across the nine pairs. The successor decision
+is recorded in [ADR 0100](../../docs/adr/0100-carps-vae-unimol.md).
 
 To verify the installed release from the materialized checkout, use the
 canonical bundle in `output/formal` and pass a fresh scratch directory under

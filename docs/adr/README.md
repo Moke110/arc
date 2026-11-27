@@ -132,3 +132,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0097](0097-transigen-shape-round3.md) | Combine direct Delta readouts with FiLM in Stage 2 Step 06.3 |
 | [0098](0098-transigen-shape-round4.md) | Compare measured encoder targets and signed Delta readouts in Stage 2 Step 06.4 |
 | [0099](0099-carps-vae-alpha-and-chemical-representations.md) | Freeze CarPS-VAE alpha in Step 07 and compare chemical representations in Step 08 |
+| [0100](0100-carps-vae-unimol.md) | Select UniMol for subsequent CarPS-VAE studies |
