@@ -92,6 +92,8 @@ class Record:
 
 def metadata_path(name):
     path = Path(name)
+    if path.parts[:1] != (ORIGINAL_ROOT,) or ".." in path.parts or path.as_posix() != name:
+        return False
     return (
         path.name in {*FIGURE_RECEIPTS, *LEDGERS}
         or (len(path.parts) > 3 and path.parts[1] in CURRENT_STEPS
@@ -278,6 +280,8 @@ def verify(repo, tracked, archive_path, *, install=False):
 
         verify_original_ledgers(repo, read)
         names = {entry["original_path"] for entry in recorded["metadata"]}
+        if len(names) != len(recorded["metadata"]) or not all(map(metadata_path, names)):
+            raise ValueError("invalid CPST metadata migration paths")
         records = metadata_records(repo, tracked, names, read)
         verify_original_formal_code(repo, records)
         migrated = build_plan(records)
@@ -290,6 +294,8 @@ def verify(repo, tracked, archive_path, *, install=False):
                 continue
             if not install or name in tracked or observed != records[name].accepted:
                 raise ValueError(f"migrated release metadata differs: {target}")
+            if target.is_symlink() or not target.resolve().is_relative_to(repo):
+                raise ValueError(f"migrated metadata cannot replace a linked payload: {target}")
             pending[target] = expected
     if install:
         if archive_path != repo / ARCHIVE:
