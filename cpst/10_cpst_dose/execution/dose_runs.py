@@ -14,7 +14,7 @@ import torch
 from dose_inputs import features_for, open_inputs
 from dose_model import DoseAdapter, configuration, epoch_streams, initialization, objective
 from dose_protocol import (ARMS, AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_STEP03,
-                           SCENARIO, SEEDS, coordinates, representation)
+                           SCENARIO, coordinates, fold_numbers, protocol, representation)
 from chem_runs import alpha_release_digest, axis_run, verify_release
 from tsg_axis.learning import EarlyStopping, fixed_rng
 from tsg_axis.protocol import MAX_EPOCHS, PATIENCE
@@ -22,7 +22,7 @@ from util.training import registered
 from util.training.provenance import verify_replay_configuration, verify_sealed_code
 from util.training.transigen import fit_epochs, replay_validation
 
-SCHEMA = "cpst-dose-run-v1"
+SCHEMA = "cpst-dose-run-v2"
 ORIGINAL_CODE = "b8be1ad9244c9a3e03eba3e0c77ec64a59ed695d"
 DOSE_CODE = tuple(
     Path(__file__).resolve().with_name(name).relative_to(axis_run.REPO).as_posix()
@@ -49,7 +49,8 @@ def input_identity(data, fold, bounded):
     return {
         "training_sha256": release.manifest_sha256,
         "raw_sha256": release.manifest["inputs"]["raw_sha256"],
-        "folds": release.manifest["inputs"]["folds"],
+        "source_folds": release.manifest["inputs"]["folds"],
+        "protocol_sha256": protocol().release_sha256,
         "axis_sha256": release.manifest["outputs"]["genes.csv"],
         "population": data.fold_population(fold, bounded),
         "partitions": {phase: rows.tolist() for phase, rows in positions.items()},
@@ -65,6 +66,7 @@ def code_hashes():
         "cpst/util/training/cpst_reference.py",
         "cpst/08_cpst_chem-emb/execution/chem_runs.py",
         "cpst/03_data_train/output/api/fold_ledger.py",
+        "cpst/util/output/api/cpst_util/tenv_folds.py",
         "cpst/03_data_train/output/api/tenv_axes.py",
         "cpst/util/output/api/cpst_util/derivation/release.py",
         "cpst/util/output/api/cpst_util/publication.py",
@@ -282,8 +284,8 @@ def main():
     commands = parser.add_subparsers(dest="phase", required=True)
     registration = commands.add_parser("register")
     registration.add_argument("--arm", choices=ARMS, required=True)
-    registration.add_argument("--fold", choices=range(3), type=int, required=True)
-    registration.add_argument("--seed", choices=SEEDS, type=int, required=True)
+    registration.add_argument("--fold", choices=fold_numbers(), type=int, required=True)
+    registration.add_argument("--seed", choices=protocol().seeds, type=int, required=True)
     registration.add_argument("--bounded", action="store_true")
     for phase in PHASES:
         commands.add_parser(phase)

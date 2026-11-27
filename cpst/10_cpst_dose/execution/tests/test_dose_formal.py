@@ -32,7 +32,7 @@ class FormalReportTests(unittest.TestCase):
             for file in REPORT_TABLES:
                 (report / file).write_text("original\n", encoding="utf-8")
             record = {
-                "schema": "cpst-dose-report-v1", "bounded": False,
+                "schema": "cpst-dose-report-v2", "bounded": False,
                 "primary_metrics": ["Δ PCC", "Δ RMSE"],
                 "scores": len(coordinates()) * len(REPORT_METRICS),
                 "outputs": {name: sha256(b"original\n").hexdigest() for name in REPORT_TABLES},

@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from dose_matrix import verify_matrix
-from dose_protocol import coordinates
+from dose_protocol import DEFAULT_STEP03, coordinates
 from dose_report import PLOT_TABLES, PRIMARY_METRICS, REPORT_METRICS
 from dose_runs import axis_run
 from cpst_util.comparison import FIGURES
@@ -38,7 +38,8 @@ def verify_resource_samples(coordinator_path, matrix_path, final_measurement):
             "maximum_gpu_utilization_percent": max(utilization for _, _, utilization in gpus)}
 
 
-def acceptance(bundle):
+def acceptance(bundle, step03=DEFAULT_STEP03):
+    from audit_dose_report import audit_report
     matrix, report, figure = (bundle / name for name in ("matrix", "report", "figure"))
     runs = verify_matrix(matrix, True)
     preflight = axis_run.read_json(matrix / "preflight.json")
@@ -51,6 +52,7 @@ def acceptance(bundle):
             or figure_receipt["png_sha256"] != axis_run.file_hashes(figure, FIGURES)
             or figure_receipt["csv_sha256"] != axis_run.file_hashes(figure / "data", PLOT_TABLES)):
         raise ValueError("bounded reports or figures lack verified evidence")
+    numerical = audit_report(report, figure / "data", runs, step03, bounded=True)
     scope_files = sorted((bundle / "matrix-audit").glob("scope-*.json"))
     scope = axis_run.read_json(scope_files[-1])
     if (scope["memory_max_bytes"], scope["memory_swap_max_bytes"]) != (12 * 1024**3, 8 * 1024**3):
@@ -72,13 +74,13 @@ def acceptance(bundle):
             "model": config["model"],
         })
     return {
-        "status": "PASS", "ticket": 377, "bounded_coordinates": [list(key) for key in coordinates(True)],
+        "status": "PASS", "ticket": 405, "bounded_coordinates": [list(key) for key in coordinates(True)],
         "formal_coordinates": len(coordinates()), "formal_configs_sha256": preflight["formal_configs_sha256"],
         "bounded_fit_lineage": lineage, "full_folds": preflight["folds"],
         "matrix_manifest_sha256": axis_run.digest(matrix / "manifest.json"),
         "matrix_preflight_sha256": axis_run.digest(matrix / "preflight.json"),
         "report_manifest_sha256": axis_run.digest(report / "manifest.json"),
-        "figures": figure_receipt,
+        "figures": figure_receipt, "numerical_audit": numerical,
         "resources": {**resources, **scope, "fit_peak_rss_kib": max(run[3]["peak_rss_kib"] for run in runs.values()),
                       "fit_peak_cuda_allocated_bytes": max(run[3]["cuda_peak_allocated_bytes"]
                                                            for run in runs.values()),
@@ -88,10 +90,11 @@ def acceptance(bundle):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--step03", type=Path, default=DEFAULT_STEP03)
     parser.add_argument("--bundle", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    result = acceptance(args.bundle)
+    result = acceptance(args.bundle, args.step03)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     axis_run.write_json(args.output, result)
 
