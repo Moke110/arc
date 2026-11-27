@@ -263,7 +263,7 @@ acute-MI bulk case–control series exists.
 
 ## Downstream consumers
 
-- **Stage 1 MIRI screen** — `stage1/*/08_miri_phenotype/miri_phenotype.py` reads
+- **Local Stage 1 MIRI screen** — `stage1/08_miri_phenotype/miri_phenotype.py` reads
   `disease_data/<GSE>/local/deg/*.json` (and `source/*_deg_results.csv`) for the
   Stage-1 L1000 reference lists. That interface is unchanged.
 - **Stage 2 gene axis** — the [HVG-DEG step](../cpst/02_gene_axis/02.1_hvg-deg/README.md)

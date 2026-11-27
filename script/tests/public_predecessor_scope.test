@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# The public tracking check works without the local predecessor and ignores only its root.
+set -euo pipefail
+root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
+mkdir -p -- "$root/tmp"
+tmp="$(mktemp -d "$root/tmp/predecessor-scope.XXXXXXXX")"
+trap 'rm -rf -- "$tmp"' EXIT
+mkdir -p -- "$tmp/script/tests"
+cp -- "$root/.gitignore" "$tmp/"
+cp -- "$root/script/check_tracked.sh" "$tmp/script/"
+cp -- "$root/script/tests/stage1_path_constants.test" "$tmp/script/tests/"
+git -C "$tmp" init -q
+git -C "$tmp" add .gitignore script
+
+bash "$tmp/script/check_tracked.sh" >/dev/null
+bash "$tmp/script/tests/stage1_path_constants.test" | grep -q '^SKIP:'
+mkdir -p -- "$tmp/stage1"
+printf '# local predecessor\n' > "$tmp/stage1/example.sh"
+bash "$tmp/script/check_tracked.sh" >/dev/null
+git -C "$tmp" check-ignore --quiet -- stage1/example.sh
+if bash "$tmp/script/tests/stage1_path_constants.test"; then
+  echo 'FAIL: the local predecessor verifier passed with an incomplete installation' >&2
+  exit 1
+fi
+
+mkdir -p -- "$tmp/study/stage1"
+printf '# public study\n' > "$tmp/study/stage1/example.sh"
+if git -C "$tmp" check-ignore --quiet -- study/stage1/example.sh; then
+  echo 'FAIL: the root predecessor ignore matched a nested stage1 tree' >&2
+  exit 1
+fi
+if output="$(bash "$tmp/script/check_tracked.sh")"; then
+  echo 'FAIL: the public tracking check passed with untracked study code' >&2
+  exit 1
+fi
+[[ "$output" == *study/stage1/example.sh* ]]
+
+echo 'PASS: public tracking excludes the root predecessor only and local verification is scoped'

@@ -29,15 +29,16 @@ FDA drugs, score MIRI transcriptional reversal (WCS+RGES / Zhang / pathway RGES 
 `-0.3*RGES_zs - 0.2*Zhang_zs + 0.3*pathway_reversal_zs + 0.025*sum(critical efficacy zs)`),
 then filter and rank.
 
-**Screen.** Stage 1 retains the former v2 workflow at `stage1/` (ADR 0105).
+**Screen.** Stage 1 retains the former v2 workflow in materialized local
+checkouts (ADRs 0105 and 0106).
 The DToxS primary + iPSC union has 958 finetune samples across 45 drugs.
 The formal screen tested 1,004 drugs, of which 130 passed WCS < 0 and 64
 passed the critical-pathway filter. The v1.1 fold-source and v1 schema-reference
-H5ADs are frozen in `stage1/input/references/`.
+H5ADs are frozen in the local workflow's `input/references/`.
 
-**Artifacts.** See the [Stage 1 reproduction guide](../stage1/README.md) for the
-screen notebook, final rankings and reports, and the official, ablation and
-warm-start PR benchmarks.
+**Artifacts.** The [historical Stage 1 reproduction guide](https://github.com/Moke110/carps/blob/9e7c85e38d2ab09c9b509ff8b2f30c67ea07ea85/stage1/README.md)
+indexes the screen notebook, final rankings and reports, and the official,
+ablation and warm-start PR benchmarks.
 
 **Benchmark (step 05).** XPert finetune beats the L1000-pretrain zero-shot anchor; warm-start
 > cold-drug. The data-ablation (v2/v3) shows test performance rising with finetune-corpus
@@ -98,14 +99,14 @@ The canonical decision index is the
 [Stage 3 phenotype-database wayfinder map](https://github.com/Moke110/carps/issues/21).
 The current source-first strategy ([ADR 0044](adr/0044-stage3-source-first-corpora.md))
 selects Heliste 2021 for separate baseline and H-R chemical-perturbation CTG
-`cell_viability` corpora at `stage3/01_corpus/output/`. The public
-[build/verify workflow](../stage3/01_corpus/README.md) preserves supplied normalized
+`cell_viability` corpora at `cpsp/01_corpus/output/`. The public
+[build/verify workflow](../cpsp/01_corpus/README.md) preserves supplied normalized
 values, all four doses and source-cell identity. Chemical structures require
 frozen resolution evidence; unresolved treatments remain in coverage reports.
 Statistics and endpoint labels are outside this corpus contract.
 
 The earlier endpoint-gated first wave is superseded. Its unchanged
-[handoff](../stage3/01_corpus/execution/historical/handoff.md) and coverage evidence
+[handoff](../cpsp/01_corpus/execution/historical/handoff.md) and coverage evidence
 remain under `execution/historical/`; the retired implementation remains in Git.
 Current implementation is tracked by [spec #52](https://github.com/Moke110/carps/issues/52)
 and [ticket #53](https://github.com/Moke110/carps/issues/53). Model views and training

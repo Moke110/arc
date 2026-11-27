@@ -34,8 +34,9 @@ High-trust sources for the training pipeline. Primary sources are in-repo (this 
 
 ### Historical workflows (v0 vs v1)
 
-The [current Stage 1 workflow](../../stage1/README.md) retains v2. The references
-below describe the original v0 and v1 implementations.
+The local Stage 1 predecessor retains v2. Its [historical reproduction guide](https://github.com/Moke110/carps/blob/9e7c85e38d2ab09c9b509ff8b2f30c67ea07ea85/stage1/README.md)
+describes the promoted workflow. The references below describe the original v0
+and v1 implementations.
 
 - [AGENTS.md: `stage1/xpert-fda-miri-v1/`](https://github.com/Moke110/carps/blob/f0d5bb673435b1a0341301c802ceac5094708a54/stage1/xpert-fda-miri-v1/AGENTS.md)
   Use for: workflow layout, entrypoints, data facts/gotchas, ADR 0002/0008 (artifacts owned by workflow, components pure libraries).

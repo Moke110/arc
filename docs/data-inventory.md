@@ -9,7 +9,7 @@
 Three classes of asset live outside version control:
 
 1. **Downloaded content** — external items' `source/` trees (byte-identical upstream downloads) and declared `local/` additions. Gitignored by ADR 0030, hashed per file, verified offline.
-2. **Generated artifacts** — `stage1/**/output` and `stage2/**/output` trees. Expensive (GPU-hours to days) but reconstructible by rerunning the tracked code; only the conclusion tables are force-tracked.
+2. **Generated artifacts** — output trees for the local Stage 1 predecessor and the public stages. Rebuilding them can take GPU-hours to days. The public stages track selected evidence tables.
 3. **External archives and non-code material** — `archived/`, `reference/`, `wet_data/`, `logs/`.
 
 ## Totals
@@ -166,11 +166,12 @@ Unlike the other three categories these are **code libraries**: their `source/` 
 - Every declared `local/` addition (most are small, but they include the frozen v1-era LINCS package `pert_data/LINCS-LDS-1593/local/v1-frozen/`, the v0-era gene sets, and the annotation snapshot) — see `local_additions[]` in each `author_log.json`.
 - `archived/hg-fda-extension-archive/` and `wet_data/` — no upstream and no synthetic substitute.
 
-## Stage 1 — retained DToxS primary + iPSC screen
+## Stage 1 — local DToxS primary + iPSC predecessor
 
-The promoted v2 screen owns its numbered step directories and input assets
-directly under `stage1/`. See the [Stage 1 reproduction guide](../stage1/README.md)
-for the artifact inventory and pre-cutover hashes. The largest input is the
+The materialized local checkout keeps the promoted v2 screen and its inputs
+under `stage1/` ([ADR 0106](adr/0106-cpst-and-cpsp-public-release-boundaries.md)).
+The [historical Stage 1 reproduction guide](https://github.com/Moke110/carps/blob/9e7c85e38d2ab09c9b509ff8b2f30c67ea07ea85/stage1/README.md)
+indexes the artifact inventory and pre-cutover hashes. The largest input is the
 5.57 GB UniMol array. XPert weights can retain their links into the mounted
 archive. The two predecessor H5ADs are pinned under `stage1/input/references/`.
 Annotation owns the former v3 compound audit seed under its declared local
@@ -281,10 +282,10 @@ The remaining active phenotype items are `pheno_data/Heliste-2021/`,
 items; Huang contains public evidence, with its full numerical screen unavailable.
 Original images/tables remain ignored; small declared curation snapshots and
 download/verification code provide reconstruction evidence. The immutable local
-Heliste source-first corpora live in `stage3/01_corpus/output/baseline/` and
-`stage3/01_corpus/output/H-R/`; chemical-resolution reports describe admitted and
+Heliste source-first corpora live in `cpsp/01_corpus/output/baseline/` and
+`cpsp/01_corpus/output/H-R/`; chemical-resolution reports describe admitted and
 pending values separately from source availability. Historical endpoint-gated
-evidence is retained under `stage3/01_corpus/execution/historical/`. No model view or training result is implied by the archive.
+evidence is retained under `cpsp/01_corpus/execution/historical/`. No model view or training result is implied by the archive.
 
 ## ADR 0072 TOX admission inputs
 
