@@ -53,30 +53,26 @@
   "matrix_sha256": "9db7f05012f645134eeba5260c8efa2396b55a814640c35a74d7d5eb48a95a1a",
   "new_exact_replays": 63,
   "numerical_audit": {
+    "condition_rows": 33192,
     "coordinates": 72,
-    "fold_scope_bandwidths": 6,
-    "scoped_condition_rows": 66384,
-    "score_rows": 1368,
+    "fold_bandwidths": 3,
+    "score_rows": 720,
     "status": "PASS",
-    "summary_rows": 152
+    "summary_rows": 80
   },
   "preflight_sha256": "f25dd6e32e390c5c66f9e6ed0da5d0f0ec0bcbc98f3d3daa6650f09babe4c22e",
   "publication_sha256": {
-    "figure/data/axis-metrics-paired.csv": "ef5bab72aeb5adb0be5d8ddcc3e594f2b8c0e96fe79f6a5baed34fa568c0a76d",
-    "figure/data/axis-metrics.csv": "5f1cb305b02d42ae26ed8605e03481b5b1781d03674cb3e66177fd6bff796399",
-    "figure/data/disease-correct-coverage-paired.csv": "3eecfee5bff22a67e75d9248e95064cb17cbc3c44ff14e8964e60bc4430ae3be",
-    "figure/data/disease-correct-coverage.csv": "789aa9bdfee59dfb937ead8802e1af9f4d74afffef20f60df5c2f1f0bd9b63f3",
-    "figure/data/disease-metrics-paired.csv": "8d1a6210038ca4e2b8e1cb035f81a2dfba8ae517ea691523f8fb69dd4659242a",
-    "figure/data/disease-metrics.csv": "cf4f1e509fa13d26348e5907ed70a2bf4e5627f78d41366ccea4526069e03a4d",
-    "figure/data/learning-curves.csv": "e503bb33845105bdc68b29050eb3f69eefce7f64cff79501261613950563ab32",
+    "figure/data/learning-curve.csv": "405c559db6bcc57d3c2a12bc29d06796af213c3c741370a0e0b11e4069899a00",
+    "figure/data/metrics-paired.csv": "692142c571bdfcf3a0e9200f2105323711ae29ccae024c82f9bb6aed9d7f6571",
+    "figure/data/metrics.csv": "96018d66f1dddcf122ec68a35985865f8354f5e8415ba53e9f973c0e4549174f",
     "log/368-coordinator-resources.jsonl": "19b6ca5f7db0efdf05654e1e201dbba7c7330b8f726a4002651329188e522dac",
     "log/368-reference.json": "e2e86b309936940d609b8fda083e32d31c668a2836f470578e72f7e115456d3a",
     "log/368-resources.jsonl": "dba81c0f748b130c00ff5b11436aa40e2813f94010b4ffb4a16440efd49e3e11",
-    "log/bandwidths.csv": "3a65efa5e7f30d993495cc5b78372ce75d7668afed4435ae25abade7bf1b2d40",
+    "log/bandwidths.csv": "192722c5e569b24dd5ebb302d74a247130e4e65f1cfd27f2a13605846ff87f23",
     "log/runs.csv": "871c90b9f5be4385abfa7b705aaa956ea209d6795e85e05a9b16126f53779f95",
-    "log/summary.csv": "79fa16364b7f55e53d89c196c6711fb4574a5f4dcc470e4216101d665ae9a9cf"
+    "log/summary.csv": "5e940d53f98d547e09c6eaa62ddc39a96d25c59d253f0d7e38132010fa61ce4c"
   },
-  "report_sha256": "7ed1f80d1673f7d99a129527e8c5ab07fa5a2696852c0cba3cb9461375f5f5f0",
+  "report_sha256": "a0013e391f8903eb60c7fefe1afd7fada2fe6714b5e0165cb76af9a7552edc37",
   "resources": {
     "coordinator": {
       "gaps_over_12_seconds": 0,
@@ -615,15 +611,15 @@
     "status": "PASS"
   },
   "reuse_plan_sha256": "e2e86b309936940d609b8fda083e32d31c668a2836f470578e72f7e115456d3a",
-  "schema": "carps-vae-unimol-axis-formal-v1",
+  "schema": "carps-vae-unimol-axis-formal-v2",
   "score_process_peak_rss_kib": {
-    "independent_audit": 950316,
-    "scoring": 1613856
+    "independent_audit": 911628,
+    "scoring": 1580348
   },
   "status": "PASS",
   "step08_acceptance_sha256": "56b8983678f72adc2deb9a34613561428b3bd77507f44b0ae091b1bc7d40a6f2",
   "step08_exact_reuses": 9,
-  "ticket": 368,
+  "ticket": 371,
   "training_manifest_sha256": {
     "denoise-2k": "f36dcedcc372ae4ec3e336da77c5ee5f676a076036f120a07e7756b3b3040e94",
     "denoise-3k": "f2b695c91827bb11fd588e3ee30d746b035a473e69c1b27912dface4843f1422",

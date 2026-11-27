@@ -1,12 +1,8 @@
 {
   "csv_files_sha256": {
-    "figure/data/axis-metrics-paired.csv": "ef5bab72aeb5adb0be5d8ddcc3e594f2b8c0e96fe79f6a5baed34fa568c0a76d",
-    "figure/data/axis-metrics.csv": "5f1cb305b02d42ae26ed8605e03481b5b1781d03674cb3e66177fd6bff796399",
-    "figure/data/disease-correct-coverage-paired.csv": "3eecfee5bff22a67e75d9248e95064cb17cbc3c44ff14e8964e60bc4430ae3be",
-    "figure/data/disease-correct-coverage.csv": "789aa9bdfee59dfb937ead8802e1af9f4d74afffef20f60df5c2f1f0bd9b63f3",
-    "figure/data/disease-metrics-paired.csv": "8d1a6210038ca4e2b8e1cb035f81a2dfba8ae517ea691523f8fb69dd4659242a",
-    "figure/data/disease-metrics.csv": "cf4f1e509fa13d26348e5907ed70a2bf4e5627f78d41366ccea4526069e03a4d",
-    "figure/data/learning-curves.csv": "e503bb33845105bdc68b29050eb3f69eefce7f64cff79501261613950563ab32"
+    "figure/data/learning-curve.csv": "405c559db6bcc57d3c2a12bc29d06796af213c3c741370a0e0b11e4069899a00",
+    "figure/data/metrics-paired.csv": "692142c571bdfcf3a0e9200f2105323711ae29ccae024c82f9bb6aed9d7f6571",
+    "figure/data/metrics.csv": "96018d66f1dddcf122ec68a35985865f8354f5e8415ba53e9f973c0e4549174f"
   },
   "environment": {
     "matplotlib": "3.10.9",
@@ -16,22 +12,19 @@
   },
   "independent_renders": 2,
   "png_files_sha256": {
-    "figure/axis-metrics-paired.png": "bff0d34aba854df3f1c1c164ad62882b4b2d629d4820ca4cc22ab9f662da769c",
-    "figure/axis-metrics.png": "96428843d6f17fff29b83663f19e06acfae2584d31e07cf03950b5c6b5fc3712",
-    "figure/disease-correct-coverage-paired.png": "b3307ca6f7fceafb21423f76b1ab9e0b5c5689f90f7cac415dfa8c319e4285a5",
-    "figure/disease-correct-coverage.png": "a8fbf10848d7bd079d86412c92c3006d9709d1b86b9235e5848e6339f73c0c37",
-    "figure/disease-metrics-paired.png": "8523d2fa17b3c5173771edab24d39de49e246f06dfcc6ffad215cb09d7f6a399",
-    "figure/disease-metrics.png": "9ffbcb1d878829a8110f422562e3de0cd37b4081e258b5b1f3c8a01acbc5caca",
-    "figure/learning-curves.png": "d5db753bd7f7ade527675e45898a6efcbd186d8102cce63f0dd0f03c56f99ee4"
+    "figure/learning-curve.png": "68b07261e6f9f7c3d2d474ad95a3f39e65bd0c824c1ab69af8c0e8bc3f95f70f",
+    "figure/metrics-paired.png": "93f49fa62146e4fe67416467a5da76ec3e7114ead790ea24e61d809231b79538",
+    "figure/metrics.png": "be800103475b25957cd50c4ebe3717ca24d70fa90539914b262ec8744d20a22a"
   },
   "renderer_files_sha256": {
     "09_cpsv_axis/execution/axis_protocol.py": "1987c4d493f35260314878acd553aba2d7cf63a5f68a68bc02281b65b4968e6f",
-    "09_cpsv_axis/figure/script/render_axes.py": "172db43fb4e44079bc46893fbd807fb7737e9dee8d6627b4145a369a7df0eba6",
+    "09_cpsv_axis/figure/script/render_axes.py": "33708c74522d7fad1dd5db22dd89dcbcd9e9324b944f098ba3193653e9993ee0",
+    "util/output/api/stage2_util/comparison.py": "4b18733f177d09a3eb1b25861e18c8383f2505eb9746966fa7f75bb83f4f2572",
     "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },
   "schema": "stage2-figure-render-v1",
-  "scientific_receipt_sha256": "06d201f8bea146fa0490c0f56f07af17d0040867bf8154b3a7cff8ba2c414d4d",
+  "scientific_receipt_sha256": "b8d20c28479c49348a90ef7d6c2071d5c741451fc8f5bd3ee4568de5f09472eb",
   "status": "PASS",
   "step": "09_cpsv_axis"
 }

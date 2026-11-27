@@ -14,7 +14,12 @@ in [ADR 0100](../docs/adr/0100-carps-vae-unimol.md), and dose standardized
 on the training fold. One signed Δ decoder reconstructs measured Δ and
 decodes the predicted latent. The treated prediction is `X1 + Δ̂`.
 Both measured and predicted Δ use the same matched control on the ordered
-Denoise-DEG 5k (`denoise-5k`) axis.
+Denoise-DEG 5k (`denoise-5k`) axis selected in
+[ADR 0102](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md).
+The Step 09 full-axis comparison gave mean Δ PCC of 0.4413 ± 0.0136
+and mean Δ RMSE of 0.2386 ± 0.0037 for this axis.
+[Step 09 results](09_cpsv_axis/README.md#formal-results) ·
+[Original Step 09 publication](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/09_cpsv_axis/README.md#formal-results)
 
 `L = MSE_X1 + MSE_Δrec + MSE_Δpred + 1.75 × L1_Δpred + 0.1 × (KL(q1 ‖ N) + KL(qΔ ‖ N) + KL(qpred ‖ qΔ))`
 
@@ -49,7 +54,7 @@ exceeded the absolute mean difference on both metrics.
 | [06.4 Measured encoder targets](06_tsg_shape/06.4_round4/README.md#formal-results) | Compares measured treated-expression and signed Δ encoders and signed Δ decoder sharing across three folds and three seeds. The shared signed Δ decoder had the lowest Δ RMSE, and the independent decoder had the highest Δ PCC. CarPS-VAE selects the shared decoder as recorded in ADR 0099. |
 | [07 CarPS-VAE alpha](07_cpsv_alpha/README.md) | Freezes the shared signed Δ model and KPGT default. All nine selected checkpoints exactly replayed the validation objective and predictions and held-out predictions. |
 | [08 Chemical representation comparison](08_cpsv_chem-emb/README.md) | Completed 63 matched fold and seed coordinates across seven representations. UniMol led both Δ PCC and Δ RMSE and is selected for subsequent CarPS-VAE studies. |
-| [09 CarPS-VAE prediction axes](09_cpsv_axis/README.md#formal-results) | Completed 72 UniMol coordinates across eight axes. Denoise-DEG 5k led mean Δ PCC and Δ RMSE in both scopes. HVG-DEG 5k had the highest direction-correct disease coverage. |
+| [09 CarPS-VAE prediction axes](09_cpsv_axis/README.md#formal-results) | Completed 72 UniMol coordinates across eight axes. Denoise-DEG 5k led the full-axis mean Δ PCC (0.4413) and Δ RMSE (0.2386) and was selected. |
 
 ## Verify the current figures
 

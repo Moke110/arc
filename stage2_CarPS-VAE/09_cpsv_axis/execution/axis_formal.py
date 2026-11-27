@@ -10,25 +10,26 @@ import subprocess
 import sys
 from tempfile import TemporaryDirectory
 
-from axis_figures import FIGURES, RENDERER, replay
+from axis_figures import RENDERER, replay
 from axis_matrix import execute, verify_bounded_gate, verify_matrix
 from axis_protocol import REFERENCE_AXIS, SEEDS, STAGE, STEP, coordinates
 from axis_reference import reference_plan, verify_publication
-from axis_report import (SCHEMA as REPORT_SCHEMA, add_report_inputs, figure_data, read_reused,
-                         report_tables, write_report)
+from axis_report import (PLOT_TABLES, REPORT_TABLES, SCHEMA as REPORT_SCHEMA, add_report_inputs,
+                         figure_data, read_reused, report_tables, write_report)
+from axis_scores import REPORT_METRICS
 from axis_runs import add_inputs, axis_run
 from audit_axis_report import audit_plotted_csvs, audit_report
 from matrix import enforce_record
-from tsg_axis.metrics import METRICS
+from stage2_util.derivation.release import replace
+from stage2_util.publication import replace_release
 
-SCHEMA = "carps-vae-unimol-axis-formal-v1"
-RECEIPT = "log/368-formal.json"
+SCHEMA = "carps-vae-unimol-axis-formal-v2"
+HISTORICAL_REPORT_SHA256 = "7ed1f80d1673f7d99a129527e8c5ab07fa5a2696852c0cba3cb9461375f5f5f0"
+RECEIPT = "log/371-formal.json"
 FIGURE_RECEIPT = "log/figure-render.json"
 MATRIX_SAMPLES = "log/368-resources.jsonl"
 COORDINATOR_SAMPLES = "log/368-coordinator-resources.jsonl"
 REFERENCE_PLAN = "log/368-reference.json"
-REPORT_TABLES = {"bandwidths.csv", "condition-scores.csv", "disease-union.json", "epoch-objectives.csv",
-                 "fold-scores.csv", "runs.csv", "summary.csv"}
 PROJECTIONS = {name: f"log/{name}" for name in ("bandwidths.csv", "runs.csv", "summary.csv")}
 
 
@@ -93,10 +94,11 @@ def collect_runs(bundle, step08):
 def checked_report(report):
     """Verify that the sealed formal report contains the expected files and metrics."""
     record = axis_run.read_json(report / "manifest.json")
-    score_count = len(coordinates()) * (2 * len(METRICS) + 1)
+    score_count = len(coordinates()) * len(REPORT_METRICS)
     if (record["schema"] != REPORT_SCHEMA or record["bounded"] is not False or record["scores"] != score_count
-            or record["outputs"] != axis_run.file_hashes(report, sorted(REPORT_TABLES))):
-        raise ValueError("formal report manifest differs from the registered two-scope report")
+            or {path.name for path in report.iterdir()} != {*REPORT_TABLES, "manifest.json"}
+            or record["outputs"] != axis_run.file_hashes(report, REPORT_TABLES)):
+        raise ValueError("formal report manifest differs from the registered full-axis report")
     return record
 
 
@@ -105,7 +107,7 @@ def run_report_action(args, action, work, report, data=None):
     resources = work / f"{action}.resources"
     command = ["/usr/bin/time", "-v", "-o", str(resources), sys.executable, __file__, action,
                "--report", str(report)]
-    for field in ("bundle", "step03", "step04", "step08", "disease_release"):
+    for field in ("bundle", "step03", "step04", "step08"):
         command.extend((f"--{field.replace('_', '-')}", str(getattr(args, field).resolve())))
     if data is not None:
         command.extend(("--figure-data", str(data)))
@@ -122,7 +124,7 @@ def run_report_action(args, action, work, report, data=None):
 
 def figure_receipt(picture, scientific_hash):
     dependencies = [RENDERER, STEP / "execution/axis_protocol.py",
-                    *(STAGE / f"util/output/api/stage2_util/{name}.py" for name in ("palette", "plotting"))]
+                    *(STAGE / f"util/output/api/stage2_util/{name}.py" for name in ("comparison", "palette", "plotting"))]
     return {
         "schema": "stage2-figure-render-v1", "status": "PASS", "step": STEP.name,
         "environment": {"python": python_version(), **{name: version(name) for name in ("matplotlib", "numpy", "pandas")}},
@@ -139,7 +141,7 @@ def scientific_evidence(bundle, publication, reference, numerical, resources, sc
     """Bind complete run lineage and audit evidence to the public comparison tables."""
     expected = [
         *PROJECTIONS.values(), MATRIX_SAMPLES, COORDINATOR_SAMPLES, REFERENCE_PLAN,
-        *(f"figure/data/{name}.csv" for name in FIGURES),
+        *(f"figure/data/{name}" for name in PLOT_TABLES),
     ]
     fresh = fresh_coordinates(reference)
     preflight = axis_run.read_json(bundle / "matrix/preflight.json")
@@ -155,7 +157,7 @@ def scientific_evidence(bundle, publication, reference, numerical, resources, sc
     if axis_run.digest(publication / REFERENCE_PLAN) != reference_hash:
         raise ValueError("published reference decisions differ from the audited plan")
     return {
-        "schema": SCHEMA, "status": "PASS", "ticket": 368, "coordinates": len(coordinates()),
+        "schema": SCHEMA, "status": "PASS", "ticket": 371, "coordinates": len(coordinates()),
         "cold_drug_folds": list(range(3)), "training_seeds": list(SEEDS),
         "new_exact_replays": len(fresh), "step08_exact_reuses": len(coordinates()) - len(fresh),
         "step08_acceptance_sha256": reference["step08_acceptance_sha256"],
@@ -190,7 +192,7 @@ def finish(args):
             _, score_peak = run_report_action(args, "score", work, scoring_report, figure / "data")
             if report.exists() and checked_report(report) != checked_report(scoring_report):
                 raise ValueError("existing candidate report differs from fresh scoring")
-        print(json.dumps({"phase": "independent-two-scope-audit"}), flush=True)
+        print(json.dumps({"phase": "independent-full-axis-audit"}), flush=True)
         numerical, audit_peak = run_report_action(args, "audit", work, scoring_report, figure / "data")
         score_peaks = {"scoring": score_peak, "independent_audit": audit_peak} if build else prior["score_process_peak_rss_kib"]
         reference = axis_run.read_json(bundle / "reuse-preflight.json")
@@ -228,7 +230,7 @@ def finish(args):
 
 
 def install(bundle, publication, destination, step08):
-    """Install the verified fit bundle without replacing an existing distinct release."""
+    """Install the verified full-axis report while preserving its registered fit bundle."""
     receipt = axis_run.read_json(publication / RECEIPT)
     plots = axis_run.read_json(publication / FIGURE_RECEIPT)
     if ((receipt.get("schema"), receipt.get("status")) != (SCHEMA, "PASS")
@@ -237,23 +239,47 @@ def install(bundle, publication, destination, step08):
     files = receipt["publication_sha256"] | plots["png_files_sha256"]
     if axis_run.file_hashes(publication, files) != files:
         raise ValueError("published comparison files differ from their passed receipt")
-    bundle_files = {"reuse-preflight.json": "reuse_plan_sha256", "matrix/manifest.json": "matrix_sha256",
-                    "matrix/preflight.json": "preflight_sha256", "report/manifest.json": "report_sha256"}
+    fit_fields = {"reuse-preflight.json": "reuse_plan_sha256", "matrix/manifest.json": "matrix_sha256",
+                  "matrix/preflight.json": "preflight_sha256"}
+    fit_files = {name: receipt[field] for name, field in fit_fields.items()}
 
     with axis_run.publication_lock(destination) as output:
         candidate = output if output.exists() else bundle
-        if ({name: receipt[field] for name, field in bundle_files.items()} != axis_run.file_hashes(candidate, bundle_files)
-                or checked_report(candidate / "report")["scores"] != receipt["numerical_audit"]["score_rows"]):
-            raise ValueError("formal fit bundle differs from the passed receipt")
+        report = bundle / "report"
+        if (fit_files != axis_run.file_hashes(candidate, fit_files)
+                or checked_report(report)["scores"] != receipt["numerical_audit"]["score_rows"]
+                or axis_run.digest(report / "manifest.json") != receipt["report_sha256"]):
+            raise ValueError("formal fit bundle or full-axis report differs from the passed receipt")
         preflight = axis_run.read_json(candidate / "matrix/preflight.json")
         _, gate_hash = verify_bounded_gate(formal_preflight=preflight)
         if receipt["bounded_gate_sha256"] != gate_hash:
             raise ValueError("passed receipt does not bind the verified Step 09 bounded gate")
         fresh, reused = collect_runs(candidate, step08)
-        audit_plotted_csvs(publication / "figure/data", candidate / "report", {**fresh, **reused})
+        audit_plotted_csvs(publication / "figure/data", report, {**fresh, **reused})
         if not output.exists():
             candidate.rename(output)
+        else:
+            with axis_run.publication_lock(output / "report") as current:
+                current_hash = axis_run.digest(current / "manifest.json")
+                if current_hash == receipt["report_sha256"]:
+                    checked_report(current)
+                elif current_hash == HISTORICAL_REPORT_SHA256:
+                    replace_historical_report(current, report)
+                else:
+                    raise ValueError("existing report is neither the verified publication nor its sealed predecessor")
     return {"status": "PASS", "output": str(output), "receipt_sha256": axis_run.digest(publication / RECEIPT)}
+
+
+def replace_historical_report(current, report):
+    def verify_predecessor(directory):
+        predecessor = axis_run.read_json(directory / "manifest.json")["outputs"]
+        if axis_run.file_hashes(directory, predecessor) != predecessor:
+            raise ValueError("sealed predecessor report bytes differ from its manifest")
+
+    verify_predecessor(current)
+    with TemporaryDirectory(prefix=".report-install-", dir=current.parent) as temporary:
+        candidate = shutil.copytree(report, Path(temporary) / "replacement")
+        replace_release(candidate, current, replace, verify_existing=verify_predecessor)
 
 
 def main():
@@ -287,13 +313,13 @@ def main():
     elif args.action in ("score", "audit"):
         fresh, reused = collect_runs(args.bundle, args.step08)
         if args.action == "score":
-            tables, disease = report_tables(fresh, reused, args.step03, args.step04, args.disease_release, False)
-            result = write_report(args.report, tables, disease, False)
+            tables = report_tables(fresh, reused, args.step03, args.step04, False)
+            result = write_report(args.report, tables, False)
             figure_data(tables, args.figure_data)
         else:
             checked_report(args.report)
             runs = {**fresh, **reused}
-            result = audit_report(args.report, runs, args.step03, args.step04, args.disease_release, args.step08)
+            result = audit_report(args.report, runs, args.step03, args.step04, args.step08)
             if args.figure_data is not None:
                 audit_plotted_csvs(args.figure_data, args.report, runs)
     elif args.action == "install":
