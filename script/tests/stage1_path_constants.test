@@ -5,6 +5,11 @@ set -euo pipefail
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd -- "$repo_root"
 
+if [[ ! -e stage1 && ! -L stage1 ]]; then
+  echo 'SKIP: the local Stage 1 predecessor is absent'
+  exit 0
+fi
+
 test -f stage1/screen.ipynb
 test -f stage1/03_cm_finetune_data/output/cm_union.h5ad
 while IFS=$'\t' read -r path target; do

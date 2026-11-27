@@ -96,9 +96,8 @@ Thumbs.db
 .scratch/
 tmp/
 
-# Per-drug Biomni survey dossiers and assembled report.
-/stage1/12_drug_survey/drugs/
-/stage1/12_drug_survey/reports@20.html
+# Stage 1 is a local predecessor workflow (ADR 0106).
+/stage1/
 
 # External items (ADR 0030): source/ and local/ stay out of git; provenance
 # (script/, author_log.json, manifest.sha256) and item docs must stay tracked.
