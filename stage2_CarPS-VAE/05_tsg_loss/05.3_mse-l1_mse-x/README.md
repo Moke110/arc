@@ -60,7 +60,7 @@ Use `--training`, `--representations` and `--source` to locate the
 pinned runner inputs in another checkout. The evaluator accepts
 `--training` and `--bandwidth-training`.
 
-## Run the formal sweep
+## Reproduce the original formal sweep
 
 Use the capped runtime for a single CUDA fit at a time. The matrix registers
 all 27 coordinates before fitting and checks sealed phase files before
@@ -118,16 +118,17 @@ selected and stopping epochs, validation and test predictions, Delta
 arrays, fold scores and eligibility counts. The nine alpha-one signed
 differences are zero.
 
-The score and signed-difference plots show the same nine held-out metrics.
-Bars show means, dots show the individual [fold scores](figure/data/fold-scores.csv),
-and error bars show sample SD. Differences subtract the matching alpha-one
-score within each run. Learning-curve panels show one model per reconstruction
-weight and one training and validation line per fold/seed run.
-[Score figure](figure/delta-metrics.png) ·
-[Signed differences](figure/delta-metrics-improvement.png) ·
-[Learning curves](figure/learning-curves.png) ·
-[Metric CSV](figure/data/delta-metrics.csv) ·
-[Learning-curve CSV](figure/data/epoch-objectives.csv)
+Score bars include wJAC-2000. Bars show means, dots show individual fold scores,
+and error bars show sample SD. Paired differences subtract the matching alpha-one score within each
+fold and seed. The learning curves show one model per weight and one training and
+validation trace per run.
 
-The [current figure verification](../README.md#verify-the-current-figures)
+[Scores](figure/metrics.png) · [Signed differences](figure/metrics-paired.png) ·
+[Learning curves](figure/learning-curve.png) ·
+[Score CSV](figure/data/metrics.csv) · [Paired CSV](figure/data/metrics-paired.csv) ·
+[Curve CSV](figure/data/learning-curve.csv)
+
+The [render receipt](log/figure-render.json) binds the figures to the
+accepted release.
+[Current figure verification](../README.md#verify-the-current-figures)
 compares the refreshed PNGs with two independent CSV-only renders.

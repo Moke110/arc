@@ -59,7 +59,7 @@ Use `--training`, `--representations` and `--source` for the same
 materialized runner inputs in another checkout. The evaluator accepts
 `--training` and `--bandwidth-training`.
 
-## Run the formal sweep
+## Reproduce the original formal sweep
 
 Use the same capped runtime. The matrix registers all 27 coordinates before
 fitting, verifies the ordered conditions against the frozen folds and fits
@@ -103,26 +103,26 @@ with a maximum gap of 19.951 seconds. The
 137 GPU and WSL RAM samples across the same interval, with a maximum
 monotonic gap of 10.147 seconds. The formal receipt binds both logs.
 
-The [raw scores](figure/delta-metrics.png) and
-[signed score differences](figure/delta-metrics-improvement.png) show one
-panel per metric. The bars show means, dots show the individual
-[fold scores](figure/data/fold-scores.csv), and error bars show sample SD.
+The [raw scores](figure/metrics.png) and
+[signed score differences](figure/metrics-paired.png) show eight metrics, including wJAC-2000.
+Bars show means, dots show individual [plotted fold scores](figure/data/metrics.csv), and error bars show sample SD.
 The signed difference subtracts the matching zero-weight score within each
-run. The [learning curves](figure/learning-curves.png) show one model per
+run. The [learning curves](figure/learning-curve.png) show one model per
 alpha and a training and validation line per fold/seed run through its stopping
-epoch. The [epoch CSV](figure/data/epoch-objectives.csv) retains the objective
-components.
+epoch. The [sealed objective CSV](figure/data/epoch-objectives.csv) retains the
+objective components.
 
-The [current figure verification](../README.md#verify-the-current-figures)
+The [render receipt](log/figure-render.json) binds the figures to the
+accepted release.
+[Current figure verification](../README.md#verify-the-current-figures)
 compares the refreshed PNGs with two independent CSV-only renders.
 
 Render all three PNGs from the published CSVs alone.
 
 ```bash
 STEP="$PWD/stage2_CarPS-VAE/05_tsg_loss/05.2_mse_l1"
-WORK=$(mktemp -d "$PWD/tmp/tsg-mse-l1-figures.XXXXXX")
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/tsg-loss-figures.XXXXXX")
 export TMPDIR="$WORK" MPLCONFIGDIR="$WORK"
-for renderer in render_metrics render_learning_curves; do
-  python "$STEP/figure/script/$renderer.py" --data "$STEP/figure/data" --output "$WORK"
-done
+python "$STEP/figure/script/render_comparison.py" --data "$STEP/figure/data" --output "$WORK"
 ```

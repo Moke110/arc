@@ -69,16 +69,15 @@ inputs, the exact reference comparisons, and the scoring and resource
 evidence. [Acceptance receipt](log/339-formal.json) · [Run ledger](log/runs.csv) ·
 [Fold scores](log/fold-scores.csv) · [Frozen bandwidths](log/bandwidths.csv)
 
-Score bars show means, dots show the individual
-[fold scores](figure/data/fold-scores.csv), and error bars show sample SD.
-Differences subtract the matching fresh zero-weight score within each run.
-The learning curves show one model per weight and one training and validation
-line per fold/seed run. Dots mark the selected checkpoints.
-[Scores](figure/delta-metrics.png) ·
-[Signed differences](figure/delta-metrics-improvement.png) ·
-[Learning curves](figure/learning-curves.png) ·
-[Score CSV](figure/data/delta-metrics.csv) ·
-[Curve CSV](figure/data/epoch-objectives.csv)
+Score bars include wJAC-2000. Bars show means, dots show individual fold scores,
+and error bars show sample SD. Paired differences subtract the matching fresh zero-weight score within
+each fold and seed. The learning curves show one model per weight and one training
+and validation trace per run.
+
+[Scores](figure/metrics.png) · [Signed differences](figure/metrics-paired.png) ·
+[Learning curves](figure/learning-curve.png) ·
+[Score CSV](figure/data/metrics.csv) · [Paired CSV](figure/data/metrics-paired.csv) ·
+[Curve CSV](figure/data/learning-curve.csv)
 
 The independent coordinator recorded 172 samples with a maximum observed
 gap of 10.002 seconds. The capped fit scope recorded 170 samples with a
@@ -86,5 +85,7 @@ maximum gap of 14.421 seconds and peak RAM of 1.84 GiB.
 [Coordinator samples](log/339-coordinator-resources.jsonl) ·
 [Scope samples](log/339-resources.jsonl)
 
-The [current figure verification](../README.md#verify-the-current-figures)
+The [render receipt](log/figure-render.json) binds the figures to the
+accepted release.
+[Current figure verification](../README.md#verify-the-current-figures)
 compares the published PNGs with two independent CSV-only renders.
