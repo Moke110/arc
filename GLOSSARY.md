@@ -630,6 +630,14 @@ from tenv training and validation, while Tahoe may contain those drugs.
 One of the frozen tenv cold-drug folds paired with the shared Tahoe training
 and validation partitions. Tenv test drug blocks can appear in Tahoe.
 
+**CPST transfer cold-drug fold**:
+A tenv fold that keeps each drug parent's doses and plate-level conditions
+together. Tahoe pretraining may include tenv validation and test drug parents.
+
+**CPST Tahoe warm-start split**:
+A Tahoe train/validation split that holds out complete drug-parent–dose
+combinations. Each validation parent has training observations at another dose.
+
 **Stage 2 direction-matched hit**:
 A predicted up- or downregulated CM gene that is significant in the measured
 drug–dose contrast and has the same direction as its measured log2 fold change.
@@ -678,6 +686,10 @@ _Avoid_: combined optimization arm
 **Step 07 transfer pair**:
 Two results for the same model and seed on the shared tenv fold, one from
 the Tahoe-pretrained predictor and one from its tenv-fine-tuned descendant.
+
+**CPST module transfer**:
+Initialization of selected CarPS-Transcriptome modules from a Tahoe-pretrained
+checkpoint, followed by training the full model on tenv.
 
 **Cold-drug-capable model**:
 A model whose drug input is derived from chemical structure (fingerprint, RDKit descriptor, or a structure encoder), so it can score a drug it never saw in training. Stage 2's admission gate.
