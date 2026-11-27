@@ -1,109 +1,25 @@
-"""Render the TranSiGen axis comparison from published summary and replicate CSVs."""
+"""Render the TranSiGen prediction-axis comparison from its plotted CSVs."""
 
 import argparse
 from pathlib import Path
 import sys
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-
 FIGURE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(FIGURE.parents[1] / "util/output/api"))
 
-from stage2_util.plotting import focus_y, replicate_bar, save_figure
+from stage2_util.comparison import render_comparison
 
-LOWER_IS_BETTER = {"Δ RMSE", "Δ E-distance", "Δ MMD"}
-AXIS_HUES = {"hvg": 220, "denoise": 20}
-RANGE_NOTE = "The y-axis range may omit zero"
-
-
-def panels(summary_csv, fold_csv, category):
-    summary = pd.read_csv(summary_csv)
-    folds = pd.read_csv(fold_csv)
-    axes = summary.axis.drop_duplicates().tolist()
-    categories = summary[category].drop_duplicates().tolist()
-    groups = ["axis", category]
-    if summary.duplicated(groups).any() or len(summary) != len(axes) * len(categories):
-        raise ValueError(f"summary must contain each axis and {category}")
-    replicate_keys = [*groups, "fold"]
-    if "seed" in folds:
-        replicate_keys.append("seed")
-    if folds.duplicated(replicate_keys).any():
-        raise ValueError(f"duplicate replicate in {fold_csv}")
-
-    replicates = folds.groupby(groups)["value"]
-    means = replicates.agg(["size", "count", "mean"]).reindex(summary.set_index(groups).index)
-    if (len(replicates) != len(summary)
-            or not np.array_equal(means["size"], summary.n_folds)
-            or not np.array_equal(means["count"], summary.n_eligible_folds)
-            or not np.allclose(means["mean"], summary.value, rtol=0, atol=1e-12, equal_nan=True)):
-        raise ValueError(f"replicates in {fold_csv} disagree with {summary_csv}")
-    return axes, categories, replicates
-
-
-def render_panel(plot, axes, groups):
-    for x, (axis, values) in enumerate(zip(axes, groups, strict=True)):
-        method, *_, size = axis.split("-")
-        if np.isfinite(values).any():
-            replicate_bar(plot, x, values, hue=AXIS_HUES[method],
-                          depth=5 - int(size.removesuffix("k")), width=.66)
-        else:
-            plot.text(x, .04, "NA", ha="center", transform=plot.get_xaxis_transform())
-    plot.axhline(0, color="#777777", lw=.6)
-    plot.set_xticks(np.arange(len(axes)), axes, fontsize=8, rotation=30,
-                    ha="right", rotation_mode="anchor")
-    plot.spines[["top", "right"]].set_visible(False)
-    plot.grid(axis="y", color="#eeeeee")
-    plot.set_axisbelow(True)
-
-
-def render_metrics(csv, fold_csv, output):
-    axes, metrics, replicates = panels(csv, fold_csv, "metric")
-    if len(metrics) != 9:
-        raise ValueError("metric summary must have nine scores for every reported axis")
-    fig, plots = plt.subplots(3, 3, figsize=(13.2, 10.8), layout="constrained")
-    for plot, metric in zip(plots.flat, metrics, strict=True):
-        groups = [replicates.get_group((axis, metric)) for axis in axes]
-        render_panel(plot, axes, groups)
-        focus_y(plot, groups, reference=0 if metric == "Δ R²" else None)
-        direction = "↓" if metric in LOWER_IS_BETTER else "↑"
-        plot.set_title(f"{metric} {direction}")
-    fig.suptitle("TranSiGen Delta scores on fixed tenv axes · mean ± SD")
-    fig.supxlabel(RANGE_NOTE, fontsize=9)
-    save_figure(fig, output / "delta-metrics.png", dpi=180)
-    plt.close(fig)
-
-
-def render_disease(csv, fold_csv, output):
-    axes, diseases, replicates = panels(csv, fold_csv, "disease")
-    fig, plots = plt.subplots((len(diseases) + 1) // 2, 2, figsize=(11, 7),
-                              sharey=True, squeeze=False, layout="constrained")
-    for plot, disease in zip(plots.flat, diseases):
-        groups = [replicates.get_group((axis, disease)) for axis in axes]
-        render_panel(plot, axes, groups)
-        plot.set_title(disease.replace("_", " "))
-        plot.set_ylabel("F1")
-    for plot in list(plots.flat)[len(diseases):]:
-        plot.remove()
-    focus_y(plots.flat[0], (values for _, values in replicates))
-    fig.suptitle("Signed disease DEG F1 · mean ± SD")
-    fig.supxlabel(RANGE_NOTE, fontsize=9)
-    save_figure(fig, output / "disease-f1.png", dpi=180)
-    plt.close(fig)
+ARMS = {f"{family}-{width}k": (f"{family}-{width}k", hue, 5 - width)
+        for family, hue in (("hvg", 220), ("denoise", 20)) for width in (3, 4, 5)}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", type=Path, default=FIGURE / "data")
-    parser.add_argument("--fold-data", type=Path, help="directory with replicate CSVs, if separate")
     parser.add_argument("--output", type=Path, default=FIGURE)
     args = parser.parse_args()
-    fold_data = args.fold_data or args.data
-    render_metrics(args.data / "delta-metrics.csv", fold_data / "fold-metrics.csv", args.output)
-    render_disease(args.data / "disease-f1.csv", fold_data / "fold-disease-f1.csv", args.output)
+    render_comparison(args.data, args.output, arms=ARMS, reference="denoise-5k",
+                      title="TranSiGen prediction axes")
 
 
 if __name__ == "__main__":

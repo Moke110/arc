@@ -2,18 +2,16 @@
 import argparse
 import json
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 from tempfile import TemporaryDirectory
 import time
 
+from build_comparison import FIGURES, write_plot_data
 from matrix import SCHEMA, STAGE, STEP, file_sha256, read, run_paths, verify_run
 from tsg_axis.protocol import PROTOCOL, REPORT_SCHEMA
 
-FIGURES = ("delta-metrics.png", "disease-f1.png")
-SUMMARY_CSVS = ("delta-metrics.csv", "disease-f1.csv")
-FOLD_CSVS = ("fold-metrics.csv", "fold-disease-f1.csv")
+PLOT_CSVS = ("learning-curve.csv", "metrics.csv", "metrics-paired.csv")
 
 
 def matrix_inputs(matrix, audit):
@@ -67,11 +65,8 @@ def report(args):
         scratch = Path(scratch)
         figures = scratch / "figures"
         csvs = scratch / "csv"
-        csvs.mkdir()
-        for name in SUMMARY_CSVS:
-            shutil.copyfile(args.report / "figure/data" / name, csvs / name)
-        for name in FOLD_CSVS:
-            shutil.copyfile(args.report / name, csvs / name)
+        matrix_manifest = read(args.matrix / "manifest.json")
+        write_plot_data(args.report, args.matrix, matrix_manifest["fits"], csvs)
         command(render, ["--data", str(csvs), "--output", str(figures)], args.logs, "csv-render")
         hashes = {name: file_sha256(figures / name) for name in FIGURES}
         if args.command == "build":
@@ -84,10 +79,11 @@ def report(args):
         else:
             if any(file_sha256(args.figures / name) != digest for name, digest in hashes.items()):
                 raise ValueError("CSV-only figure replay differs from the accepted PNG")
-            for name in (*SUMMARY_CSVS, *FOLD_CSVS):
+            for name in PLOT_CSVS:
                 if file_sha256(args.figures / "data" / name) != file_sha256(csvs / name):
                     raise ValueError(f"published plot CSV differs from the accepted report: {name}")
-    scoring_code = (STEP / "output/api/tsg_axis/metrics.py", STEP / "output/api/tsg_axis/disease_reference.py")
+    scoring_code = (STEP / "output/api/tsg_axis/metrics.py",
+                    STEP / "output/api/tsg_axis/disease_reference.py", STEP / "execution/build_comparison.py")
     return {"result": "PASS", "protocol": PROTOCOL, "fits": len(paths),
             "matrix_manifest_sha256": file_sha256(args.matrix / "manifest.json"),
             "report_manifest_sha256": file_sha256(args.report / "manifest.json"),

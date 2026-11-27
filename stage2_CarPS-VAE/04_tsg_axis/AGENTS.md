@@ -12,9 +12,11 @@ the fixed-prediction boundary. Select checkpoints by the native validation
 objective with 30-epoch patience.
 
 Use `execution/evaluate.py` for released predictions and run its `verify`
-command to replay the report. Render with `figure/script/render.py` using the
-report summary and fold CSVs. Publish the matched-control PNGs in `figure/`
-and their plotted values in `figure/data/`. Keep smoke evaluations outside the formal comparison.
+command to replay the scientific report. Build the current comparison from
+sealed fits with `execution/build_comparison.py` and render with
+`figure/script/render.py` using only the plotted CSVs. Publish the three
+canonical PNGs in `figure/` and their plotted values in `figure/data/`. Keep
+smoke evaluations outside the formal comparison.
 
 The active TranSiGen adapter and training utilities live in `output/api/tsg_axis/`.
 Verify the sealed scores with the pinned evaluator in the README.

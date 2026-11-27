@@ -33,3 +33,50 @@ def vector_metrics(truth, prediction):
         "constant_truth": constant_truth,
         "constant_prediction": constant_prediction,
     }
+
+
+JACCARD_CUTOFFS = (200, 500, 1000, 2000)
+JACCARD_WEIGHTS = (0.125, 0.25, 0.5, 1.0)
+
+
+def _rank_by_sign(values, genes, sign):
+    magnitude = sign * values
+    nonzero = np.flatnonzero(magnitude > 0)
+    order = np.lexsort((genes[nonzero], -magnitude[nonzero]))
+    return genes[nonzero[order]]
+
+
+def _signed_rankings(truth, predicted, gene_indices):
+    truth, predicted, genes = map(np.asarray, (truth, predicted, gene_indices))
+    if truth.ndim != 1 or truth.shape != predicted.shape or genes.shape != truth.shape:
+        raise ValueError("Jaccard requires paired vectors on one ordered gene axis")
+    return [(_rank_by_sign(truth, genes, sign), _rank_by_sign(predicted, genes, sign))
+            for sign in (1, -1)]
+
+
+def _jaccard(hits, total):
+    return hits / total if total else math.nan
+
+
+def _direction_counts(rankings, limit):
+    for truth, predicted in rankings:
+        observed, proposed = set(truth[:limit]), set(predicted[:limit])
+        yield len(observed & proposed), len(observed | proposed)
+
+
+def signed_jaccard(truth, predicted, gene_indices, *, limit=100):
+    """Return combined, positive and negative Jaccard at one directional limit."""
+    rankings = _signed_rankings(truth, predicted, gene_indices)
+    hits, totals = zip(*_direction_counts(rankings, limit), strict=True)
+    return _jaccard(sum(hits), sum(totals)), *map(_jaccard, hits, totals)
+
+
+def signed_jaccard_scores(truth, predicted, gene_indices):
+    """Return JAC-top200 and wJAC-2000 for one matched-control Delta pair."""
+    rankings = _signed_rankings(truth, predicted, gene_indices)
+    scores = []
+    for cutoff in JACCARD_CUTOFFS:
+        hits, totals = zip(*_direction_counts(rankings, cutoff // 2), strict=True)
+        scores.append(_jaccard(sum(hits), sum(totals)))
+    weighted = math.fsum(weight * score for weight, score in zip(JACCARD_WEIGHTS, scores, strict=True))
+    return scores[0], weighted / math.fsum(JACCARD_WEIGHTS)

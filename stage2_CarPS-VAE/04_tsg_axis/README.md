@@ -73,12 +73,12 @@ capped_step04 python "$STEP/execution/report_formal.py" build \
 ```
 
 The accepted [formal receipt](log/319-formal.json) pins all 18 run
-manifests, the report and its two CSV-reproducible PNGs. The materialized
+manifests, the report and the original two figures. The materialized
 paths are `output/formal-matched-control` for checkpoints, registrations
 and predictions, `log/319-runs` for resource and process evidence, and
 `output/report-matched-control` for condition and fold metrics, eligibility,
 bandwidths and the shared disease reference. This sealed report keeps its
-original axis IDs and digests. The published summary and fold CSVs in `figure/data/` use canonical IDs.
+original axis IDs and digests. The current plotted CSVs in `figure/data/` use canonical IDs.
 
 Export the six axis-bearing condition, fold and summary CSVs with canonical
 IDs. The export verifies the sealed report's manifest and output digests
@@ -88,8 +88,6 @@ against the formal receipt and copies each row's other fields byte for byte.
 STEP=stage2_CarPS-VAE/04_tsg_axis
 WORK=$(mktemp -d "$PWD/tmp/tsg-axis-export.XXXXXX")
 python "$STEP/execution/export_canonical.py" --output "$WORK/report"
-python "$STEP/figure/script/render.py" --data "$WORK/report/figure/data" \
-  --fold-data "$WORK/report" --output "$WORK/figures"
 ```
 
 Verify the sealed scientific report with its pinned evaluator and axis IDs.
@@ -155,8 +153,6 @@ STEP=stage2_CarPS-VAE/04_tsg_axis
 REPORT=$PWD/tmp/tsg-axis/report
 python "$STEP/execution/evaluate.py" score --smoke --run "$RUN" --output "$REPORT"
 python "$STEP/execution/evaluate.py" verify --smoke --run "$RUN" --output "$REPORT"
-python "$STEP/figure/script/render.py" --data "$REPORT/figure/data" \
-  --fold-data "$REPORT" --output "$PWD/tmp/tsg-axis/figures"
 ```
 
 The report orders the metrics as JAC_top200, JAC_pos100, JAC_neg100, Δ PCC,
@@ -177,8 +173,10 @@ reference gene counts as a false negative. Two empty sets produce NA. The
 same `reference/` files supply all models' disease targets.
 
 The report retains per-condition, per-fold and summary CSVs with eligibility counts.
-The figures use the published summary and fold CSVs. It weights defined conditions
-equally within a fold and defined folds equally within each axis. These are
+The report weights defined conditions equally within a fold and defined folds
+equally within each axis. The current comparison also includes wJAC-2000, a
+weighted average of the signed Jaccard cutoffs 200, 500, 1,000 and 2,000 per
+condition. Its fold scores use the same condition aggregation. These are
 retrospective results on published fixed axes built with tenv evidence and
 measure prediction conditional on a measured matched control.
 
@@ -210,31 +208,39 @@ and every disease score was defined in all three folds.
 | genetic cardiomyopathy | 0.2136 | 0.2469 | 0.2193 | 0.1208 | 0.1057 | 0.0950 |
 | TOX | 0.3026 | 0.2587 | 0.2162 | 0.1302 | 0.1148 | 0.1036 |
 
-See the [nine-metric figure](figure/delta-metrics.png) and the
-[disease F1 figure](figure/disease-f1.png). The
-[metric CSV](figure/data/delta-metrics.csv) and
-[disease CSV](figure/data/disease-f1.csv) retain the full numerical
-precision and eligibility counts. The published
-[metric fold CSV](figure/data/fold-metrics.csv) and [disease fold CSV](figure/data/fold-disease-f1.csv) supply the replicate dots
-and sample SD for each axis. The materialized report also retains the
-per-condition values and the full CM direction reference.
-Reproduce the current figures directly from the four published CSVs.
+See the [learning curves](figure/learning-curve.png), the
+[held-out scores](figure/metrics.png) and the [paired differences](figure/metrics-paired.png).
+The paired figure subtracts Denoise-DEG 5k from each other axis in the same
+fold and seed. Every metric panel includes zero, the defined fold scores,
+their mean and sample SD. The
+[previous publication](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/04_tsg_axis/README.md#formal-results)
+contains the disease F1 figure and historical rendering receipt.
+
+Rebuild the comparison directly from the sealed Step 04 fits and report.
+The build checks all 18 registrations, rehashes the matched-control Delta
+arrays and epoch traces, and checks JAC-top200 against the sealed
+per-condition and fold scores.
 
 ```bash
 STEP=stage2_CarPS-VAE/04_tsg_axis
 mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/tsg-axis-figures.XXXXXX")
 export TMPDIR="$WORK" MPLCONFIGDIR="$WORK/mpl"
-python "$STEP/figure/script/render.py" --data "$STEP/figure/data" \
-  --output "$WORK/figures"
+python "$STEP/execution/build_comparison.py" --output "$WORK/publication"
 ```
 
-The [current rendering receipt](log/342-figure-render.json) records the CSV
-and PNG hashes. Metric panel arrows show the preferred direction. Each metric
-y-axis covers its fold scores and SD bars. The disease panels share one range
-across all four diseases, and the Δ R² panel includes the zero reference. The
-[canonical export receipt](log/322-canonical-axis-report.json) records the
-six ID mappings and sealed table hashes.
+Reproduce the three PNGs using only the plotted CSVs.
+
+```bash
+python "$STEP/figure/script/render.py" --data "$STEP/figure/data" \
+  --output "$WORK/replayed"
+```
+
+The [current rendering receipt](log/figure-render.json) pins the
+[trace CSV](figure/data/learning-curve.csv), [score CSV](figure/data/metrics.csv),
+[paired CSV](figure/data/metrics-paired.csv) and all three reproducible PNGs.
+The [canonical export receipt](log/322-canonical-axis-report.json) records the
+historical six ID mappings and sealed table hashes.
 
 ## Historical comparisons
 

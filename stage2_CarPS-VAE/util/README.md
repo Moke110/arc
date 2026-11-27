@@ -10,10 +10,30 @@ indexed gene identities, seed selection, generic metrics, CSV rendering and deri
 | `representations` | `RepresentationTable(source="tenv")` or `RepresentationTable(source="tahoe_bulk")` verifies the source manifest, reads the parent identity table, and selects vectors by ordered parent InChIKeys. `ordered_parents(observations)` and `verified_parent_keys(parents)` validate profile and accepted representation identities. |
 | `ecfp4` | `open_ecfp4(path)` verifies the accepted binary fingerprint and parent order. `publish_ecfp4(source, candidate)` preserves frozen input provenance. |
 | `seeds` | `read_seeds()` returns the accepted seed tuple. Pass a count to select a prefix. |
-| `metrics` | `vector_metrics(truth, prediction)` scores paired finite vectors, including the accepted constant-vector policy. |
+| `metrics` | `vector_metrics(truth, prediction)` scores paired finite vectors, including the accepted constant-vector policy. `signed_jaccard_scores(truth, prediction, gene_indices)` returns JAC-top200 and wJAC-2000 for one paired Delta vector. |
+| `comparison` | `write_paired_metrics(data, reference)` and `render_comparison(data, output, arms=..., reference=..., title=...)` publish the three canonical comparison figures. |
 | `plotting`, `palette` | `read_rows(path)`, `save_figure(figure, path, **kwargs)` and the drawing functions below support rendering solely from plotted CSV values. |
 | `publication` | `publication_lock(destination)` and `replace_release(...)` coordinate verified replacement of accepted releases. |
 | `derivation` | `bulk_deg`, `disease_deg`, and `deg_rank` provide common DEG, rank, and worker interfaces. `r_env` locates R resources and `release` provides derivation manifest and candidate verification. |
+
+## Comparison figures
+
+Use the four shared signed Jaccard cutoffs from [ADR 0102](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
+at the held-out condition boundary. Each study keeps its established fold
+and seed aggregation. Provide the comparison renderer with these CSVs in
+its `data` directory.
+
+| CSV | Columns |
+| --- | --- |
+| `learning-curve.csv` | `arm,fold,seed,epoch,train,validation` |
+| `metrics.csv` | `arm,fold,seed,metric,value` |
+| `metrics-paired.csv` | `arm,fold,seed,metric,reference,arm_value,reference_value,value` |
+
+Use `comparison.METRIC_NAMES` for metric IDs. Keep undefined metric values
+blank. `write_paired_metrics` derives the paired CSV from matching reference
+rows. Give the renderer an ordered mapping from arm IDs to `(label, hue, depth)`
+and the reference arm ID. It checks fit coverage, epoch order and paired
+values before producing the three PNGs.
 
 ## Plotting
 
