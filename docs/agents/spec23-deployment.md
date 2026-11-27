@@ -28,8 +28,8 @@ The existing unstaged deletion of
   09 and 10 reproduced 567, 720 and 900 scores respectively. Step 09 also
   verified 33,192 condition rows and Step 10 verified 13,830. The shared
   figure gate reproduced all 45 current PNGs from the sealed tables.
-  [TranSiGen verification](../../stage2_CarPS-VAE/util/training/verification.md) ·
-  [CarPS-VAE verification](../../stage2_CarPS-VAE/util/training/carps-vae-verification.md)
+  [TranSiGen verification](https://github.com/Moke110/carps/blob/8a6c43c2cd51e6569f28b39c44b1f83ff3e77d29/stage2_CarPS-VAE/util/training/verification.md) ·
+  [CarPS-VAE verification](https://github.com/Moke110/carps/blob/8a6c43c2cd51e6569f28b39c44b1f83ff3e77d29/stage2_CarPS-VAE/util/training/carps-vae-verification.md)
 
 The Stage 2 input smoke checks for archive absence. The installed pre-cleanup
 run temporarily moved the exact history directory within ext4 and restored

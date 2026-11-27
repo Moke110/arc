@@ -2,7 +2,7 @@
 
 **Status:** accepted (2026-11-25).
 
-Stage 2 util owns the shared chart primitives and palette. Study renderers
+[Stage 2 util](../../cpst/util/README.md#plotting) owns the shared chart primitives and palette. Study renderers
 bind plotted CSV fields to marks, axes and labels and compose the report
 panels through that API. A palette coordinate pairs one of nine HSL hues
 (`20°` through `340°` in `40°` steps) with one of four depths from dark to light. The lightness and saturation
@@ -11,7 +11,7 @@ pairs are `(0.33, 0.76)`, `(0.42, 0.72)`, `(0.52, 0.66)` and
 opacity `0.90` for edges, dots, error bars and lines and `0.40` for bar
 fills and range bands.
 
-The [Stage 2 plotting contract](../../stage2_CarPS-VAE/AGENTS.md#step-contract)
+The [Stage 2 plotting contract](../../cpst/AGENTS.md#step-contract)
 defines chart defaults, replicate presentation and canonical publication.
 Map the first grouping variable to hue and an optional second variable to
 depth, using a consistent mapping across related panels. For learning

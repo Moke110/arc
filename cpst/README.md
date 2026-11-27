@@ -1,135 +1,146 @@
-# Stage 2 perturbation prediction
+# CarPS-Transcriptome (CPST)
+
+CarPS-Transcriptome predicts the signed gene-expression response of
+cardiomyocytes to a chemical perturbation relative to a measured control.
+The accepted tenv studies establish the model architecture, objective, gene
+axis, chemical representation and dose-input policy. The [CPST guide](AGENTS.md)
+routes data preparation, fitting, report reconstruction and verification.
 
 <a name="selected-gene-axis"></a>
 <a name="transigen-delta-loss-comparison"></a>
 
 ## Selected CarPS-Transcriptome configuration
 
-CarPS-Transcriptome uses the Step 06.4 `XΔ-XΔ` architecture selected in
-[ADR 0099](../docs/adr/0099-carps-vae-alpha-and-chemical-representations.md).
-Separate 100-dimensional Gaussian encoders map measured same-plate DMSO
-(`X1`) and measured signed response (`Δ = X2 − X1`). The native Gaussian
-prediction head uses the control latent and the frozen UniMol features selected
-in [ADR 0100](../docs/adr/0100-carps-vae-unimol.md). Step 10 selects
-`no-dose` for the model input. One signed Δ decoder reconstructs measured Δ and
-decodes the predicted latent. The treated prediction is `X1 + Δ̂`.
-Both measured and predicted Δ use the same matched control on the ordered
-Denoise-DEG 5k (`denoise-5k`) axis selected in
-[ADR 0102](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md).
-The Step 09 cold-drug axis comparison used training-fold standardized log dose
-and gave mean full-axis Δ PCC of 0.4413 ± 0.0136 and Δ RMSE of 0.2386 ± 0.0037.
-[Step 09 results](09_cpst_axis/README.md#formal-results) ·
-[Original Step 09 publication](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/09_cpsv_axis/README.md#formal-results)
-
-Step 10 evaluated joint generalization to held-out drug parents and measured
-doses. The selected `no-dose` arm had mean held-out full-axis Δ PCC of
-0.3913 ± 0.0235 and Δ RMSE of 0.2472 ± 0.0046 across nine fold and seed
-coordinates. [Step 10 results](10_cpst_dose/README.md#formal-results) ·
-[ADR 0104](../docs/adr/0104-carps-vae-no-dose.md)
+The current selection uses the `XΔ-XΔ` architecture, frozen UniMol features,
+the ordered Denoise-DEG 5k axis (`denoise-5k`) and the `no-dose` prediction
+head. Separate 100-dimensional Gaussian encoders model measured same-plate
+DMSO (`X1`) and measured signed response (`Δ = X2 − X1`). The prediction
+head uses the control latent and a learned projection of the frozen UniMol
+features. One signed Δ decoder reconstructs the measured response and decodes
+the predicted response. Predicted treated expression equals `X1 + Δ̂`.
+[Architecture decision](../docs/adr/0099-carps-vae-alpha-and-chemical-representations.md) ·
+[Ordered genes](02_gene_axis/02.2_denoise-deg/output/release/gene_axis_5000.csv) ·
+[Tenv training release](03_data_train/03.7_tenv_denoise-5k/README.md) ·
+[Selected no-dose results](10_cpst_dose/README.md#formal-results)
 
 `L = MSE_X1 + MSE_Δrec + MSE_Δpred + 1.75 × L1_Δpred + 0.1 × (KL(q1 ‖ N) + KL(qΔ ‖ N) + KL(qpred ‖ qΔ))`
 
-`N` is the standard normal prior. The two Δ prediction terms compare
-the decoded prediction with measured Δ. Across the nine matched fold
-and seed coordinates, the selected arm gave the lowest mean Δ RMSE
-(0.240752) and mean Δ PCC of 0.428830. The independent measured Δ decoder
-had mean Δ PCC of 0.429835. The standard deviation of the paired differences
-exceeded the absolute mean difference on both metrics.
+The first two MSE terms measure control and measured Δ reconstruction. The
+prediction MSE and L1 compare predicted Δ with measured Δ. The KL terms
+regularize the two encoder distributions against the standard normal prior
+`N` and align the predicted Gaussian with the measured Δ Gaussian.
+[Objective lineage](05_tsg_loss/README.md#selected-objective) ·
+[Fixed model and public API](07_cpst_alpha/README.md#fixed-model-and-public-api)
 
-[Ordered genes](02_gene_axis/02.2_denoise-deg/output/release/gene_axis_5000.csv) ·
-[Tenv training release](03_data_train/03.7_tenv_denoise-5k/README.md) ·
-[Architecture evidence](06_tsg_shape/06.4_round4/README.md#formal-results)
+## Evidence in experiment order
 
-## Active experiments and releases
+1. **Steps 01–03 established the data and prediction axes.** Step 01 released
+   native integer counts, gene coverage and matched-control provenance for
+   seven datasets. Step 02 published nested HVG-DEG and Denoise-DEG axes.
+   Step 03 materialized eight axis-local, plate-pooled tenv views with measured
+   same-plate DMSO and shared frozen folds, plus a separate Tahoe well-level
+   view on HVG-DEG 5k. The formal axis comparisons used tenv.
+   [Native counts](01_data_raw/README.md#accepted-corpus) ·
+   [Axis selection evidence](02_gene_axis/README.md#axis-selection-evidence) ·
+   [Training releases](03_data_train/README.md)
+2. **Steps 04–05 established the TranSiGen reference axis and loss.** Step 04
+   chose Denoise-DEG 5k from six tenv axes because it led held-out Δ PCC,
+   Δ RMSE and Δ MMD under the matched-control protocol. HVG-DEG variants
+   led signed DEG F1 for the four disease references. The loss studies
+   selected predicted Δ MSE plus Δ L1 at weight 1.75, with unit reconstruction
+   weights. Zero added weight led both primary metrics in the PCC and cosine
+   sweeps.
+   [Step 04 selection](04_tsg_axis/README.md#gene-axis-selection) ·
+   [Step 05 results](05_tsg_loss/README.md#loss-studies)
+3. **Step 06 selected the shared signed Δ architecture.** The four rounds
+   tested network shapes, signed Δ readouts and chemical conditioning. Round 3
+   accepted normalized FiLM after non-finite prediction KL blocked the
+   unnormalized combinations. Round 4 kept the native Gaussian prediction head.
+   Its `XΔ-XΔ` arm had the lowest mean Δ RMSE (0.240752). The arm with an
+   independent Δ decoder had the highest mean Δ PCC (0.429835 versus 0.428830
+   for the shared arm). The sample SD of the paired differences
+   exceeded the absolute mean difference on both metrics. The architecture
+   decision chose the shared decoder for CarPS-Transcriptome.
+   [Four-round evidence](06_tsg_shape/README.md) ·
+   [Step 06.4 formal results](06_tsg_shape/06.4_round4/README.md#formal-results) ·
+   [Architecture decision](../docs/adr/0099-carps-vae-alpha-and-chemical-representations.md)
+4. **Step 07 released and verified the fixed alpha.** The alpha retains the
+   Step 06.4 `XΔ-XΔ` backbone, Denoise-DEG 5k, frozen KPGT features and
+   training-fold standardized log dose. Loading the nine sealed Step 06.4
+   checkpoints through the alpha interface exactly reproduced the validation
+   objective and predictions, the held-out treated-expression predictions
+   and the measured and predicted held-out Δ arrays. This parity evidence
+   applies to cold-drug folds 0–2, training seeds 17, 42 and 2026, and
+   sampling seeds 22617 for validation and 100042 for the held-out set.
+   The Step 07 release preserves those settings for replay. Steps 08–10 own
+   the evidence for subsequent changes.
+   [Alpha replay evidence](07_cpst_alpha/README.md#checkpoint-and-replay-evidence) ·
+   [Release manifest](07_cpst_alpha/output/release.json) ·
+   [Parity receipt](07_cpst_alpha/log/362-alpha.json)
+5. **Step 08 compared seven representations, then ADR 0100 adopted UniMol for
+   the successor configuration.** UniMol led Δ PCC and Δ RMSE across the
+   63 fold and seed coordinates. The prespecified rule for changing the
+   working default required the mean paired improvement to exceed its sample
+   SD on both metrics. The UniMol Δ PCC
+   gain over KPGT was 0.012432 with sample SD 0.013493, so the formal
+   comparison retained KPGT. ADR 0100 separately adopted frozen UniMol from
+   Step 09 onward.
+   [Step 08 formal results](08_cpst_chem-emb/README.md#formal-results) ·
+   [UniMol adoption](../docs/adr/0100-carps-vae-unimol.md)
+6. **Step 09 selected Denoise-DEG 5k with UniMol.** The comparison covered
+   72 coordinates across eight tenv axes using training-fold standardized log
+   dose. Denoise-DEG 5k led the mean full-axis Δ PCC (0.4413 ± 0.0136) and
+   Δ RMSE (0.2386 ± 0.0037). The selection applies to normalization on each
+   released axis. The study reused the nine Step 08 UniMol Denoise-DEG 5k fits
+   after parity checks.
+   [Step 09 formal results](09_cpst_axis/README.md#formal-results) ·
+   [Axis decision](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
+7. **Step 10 selected `no-dose` for the current configuration.** On the
+   three frozen cold-dose-drug folds, `no-dose` led all comparison arms in
+   mean full-axis Δ PCC (0.3913 ± 0.0235) and Δ RMSE (0.2472 ± 0.0046)
+   across nine fold and seed coordinates. Dose remains part of measured
+   condition identity and the holdout protocol. The Step 10 release
+   contains the accepted formal fits and audit evidence for this selection.
+   [Step 10 formal results](10_cpst_dose/README.md#formal-results) ·
+   [No-dose decision](../docs/adr/0104-carps-vae-no-dose.md)
 
-| Step | Design and result |
-| --- | --- |
-| [01 Raw data](01_data_raw/README.md) | Publishes seven source-native count datasets with gene coverage, observation roles and matched-control provenance. |
-| [02.1 HVG-DEG axes](02_gene_axis/02.1_hvg-deg/README.md) | Combines tenv variability with disease DEG1000 and publishes four nested axes and disease overlap evidence. |
-| [02.2 Denoise-DEG axes](02_gene_axis/02.2_denoise-deg/README.md) | Filters tenv genes on detection and DMSO variance. Ranks retained genes by tenv and disease DEG presence and publishes five nested axes. |
-| [03 Training data](03_data_train/README.md) | Publishes eight tenv plate-pooled releases with measured matched controls and the same frozen folds, plus the Tahoe well-level release. The tenv axes are [03.1 HVG-DEG 5k](03_data_train/03.1_tenv_hvg-5k/README.md), [03.3 HVG-DEG 3k](03_data_train/03.3_tenv_hvg-3k/README.md), [03.4 HVG-DEG 4k](03_data_train/03.4_tenv_hvg-4k/README.md), [03.5 Denoise-DEG 3k](03_data_train/03.5_tenv_denoise-3k/README.md), [03.6 Denoise-DEG 4k](03_data_train/03.6_tenv_denoise-4k/README.md) [03.7 Denoise-DEG 5k](03_data_train/03.7_tenv_denoise-5k/README.md), [03.8 HVG-DEG 2k](03_data_train/03.8_tenv_hvg-2k/README.md) and [03.9 Denoise-DEG 2k](03_data_train/03.9_tenv_denoise-2k/README.md). [03.2 Tahoe](03_data_train/03.2_tahoe_hvg-5k/README.md) uses HVG-DEG 5k. |
-| [04 Axis comparison](04_tsg_axis/README.md#formal-results) | Fits TranSiGen on six tenv axes under matched controls and the native objective. Across three cold-drug folds, Denoise-DEG 5k had the highest mean Δ PCC (0.4066) and lowest mean Δ RMSE (0.2596) and Δ MMD (0.1793). HVG-DEG variants led signed DEG F1 for the four disease references. |
-| [05.1 Delta loss forms](05_tsg_loss/05.1_loss_metrics/README.md) | Compares MSE, cosine, PCC and L1 as the Δ term at three coefficients. L1 at 1.25 led this grid on Δ PCC (0.423530) and Δ RMSE (0.254063). MSE at coefficient 1 reproduced the native Step 04 result. |
-| [05.2 Additive Delta L1](05_tsg_loss/05.2_mse_l1/README.md) | Adds a weighted Δ L1 term to the native objective. The selected 1.75 weight led Δ PCC and Δ RMSE. Weight 1.5 gave marginally lower Δ E-distance and Δ MMD. |
-| [05.3 Reconstruction MSE](05_tsg_loss/05.3_mse-l1_mse-x/README.md) | Varies the shared reconstruction MSE weight at fixed Δ L1 weight 1.75. Unit reconstruction weights led Δ PCC and Δ RMSE. Zero reconstruction weight gave lower Δ E-distance (0.020303) and Δ MMD (0.143878). |
-| [05.4 Delta PCC](05_tsg_loss/05.4_mse-l1_pcc/README.md) | Adds a bounded Δ PCC loss to the selected objective. Weight zero led Δ PCC and Δ RMSE. |
-| [05.5 Delta cosine](05_tsg_loss/05.5_mse-l1_cos/README.md) | Adds a bounded Δ cosine loss to the selected objective. Weight 0.3 increased JAC_neg100 from 0.183801 to 0.185508. Weight zero led Δ PCC and Δ RMSE. |
-| [06.1 Expression shape](06_tsg_shape/06.1_round1/README.md#formal-results) | Compares ten encoder, decoder and latent shapes at seed 42. A 4,000-unit encoder gave the highest mean Δ PCC (0.433229) and lowest mean Δ RMSE (0.248576). Deepening both sides gave the lowest Δ E-distance and Δ MMD. The original widths remained the reference for the later prediction-head study. |
-| [06.2 Prediction architecture](06_tsg_shape/06.2_round2/README.md#formal-results) | Compares eight prediction architectures on three folds at seed 42. FiLM gave the highest mean Δ PCC (0.439568). An independent signed Δ readout gave the lowest mean Δ RMSE (0.241952). The two modifications became candidates for the combination study. |
-| [06.3 Architecture combinations](06_tsg_shape/06.3_round3/README.md#formal-results) | Compares signed Δ readouts and normalized FiLM across three folds and four seeds. The independent signed Δ readout improved both primary means relative to the original. Adding normalized FiLM gave a lower mean Δ PCC and higher mean Δ RMSE than that readout alone. Step 06.4 retained the original Gaussian prediction head. |
-| [06.4 Measured encoder targets](06_tsg_shape/06.4_round4/README.md#formal-results) | Compares measured treated-expression and signed Δ encoders and signed Δ decoder sharing across three folds and three seeds. The shared signed Δ decoder had the lowest Δ RMSE, and the independent decoder had the highest Δ PCC. CarPS-Transcriptome selects the shared decoder as recorded in ADR 0099. |
-| [07 CarPS-Transcriptome alpha](07_cpst_alpha/README.md) | Freezes the shared signed Δ model and KPGT default. All nine selected checkpoints exactly replayed the validation objective and predictions and held-out predictions. |
-| [08 Chemical representation comparison](08_cpst_chem-emb/README.md) | Completed 63 matched fold and seed coordinates across seven representations. UniMol led both Δ PCC and Δ RMSE and is selected for subsequent CarPS-Transcriptome studies. |
-| [09 CarPS-Transcriptome prediction axes](09_cpst_axis/README.md#formal-results) | Completed 72 UniMol coordinates across eight axes. Denoise-DEG 5k led the full-axis mean Δ PCC (0.4413) and Δ RMSE (0.2386) and was selected. |
-| [10 CarPS-Transcriptome dose inputs](10_cpst_dose/README.md) | Completed 90 cold-dose-drug coordinates across nine CarPS-Transcriptome configurations and a separate TranSiGen reference. Selected `no-dose` for its highest mean Δ PCC and lowest mean Δ RMSE. |
+## Prospective use in CarPS-Phenotype
+
+The planned phenotype predictor would take ordered signed CarPS-Transcriptome
+Δ and assay dose as separate inputs. The completed Morgan benchmark uses
+fingerprints and assay dose. Selecting and documenting a Heliste prediction
+release, checking coverage by parent and dose, and integrating it with the
+frozen phenotype benchmark remain pending.
+[Prospective CPSP interface](../cpsp/README.md#prospective-carps-transcriptome-interface)
 
 ## Verify the current figures
 
-Each of the 13 comparisons publishes `learning-curve.png`, `metrics.png`
-and `metrics-paired.png`. The two metrics figures use eight panels in
-the same order. They show every defined fold–seed replicate, the mean,
-the sample SD for groups with at least two scores, and zero. Paired
-figures show the arm score minus its reference within each fold and seed.
-[Comparison figure standard](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
-
-The verifier checks the current receipts and independently redraws each
-of the 45 PNGs twice from its published plot data using the `arc` environment.
-This covers the 39 comparison PNGs, five Step 02 figures and the palette preview.
-For byte-identical replay, use the exact Python, Matplotlib, NumPy and,
-where listed, pandas versions in the receipts’ `environment` fields.
-
-```bash
-mkdir -p "$PWD/tmp"
-WORK=$(mktemp -d "$PWD/tmp/stage2-figure-check.XXXXXX")
-python cpst/util/figure/script/verify_report_figures.py --work "$WORK/replay"
-```
-
-[Step 02 receipt](02_gene_axis/log/342-figure-render.json) ·
-[Step 04 receipt](04_tsg_axis/log/figure-render.json) ·
-[Step 05.1 receipt](05_tsg_loss/05.1_loss_metrics/log/figure-render.json) ·
-[Step 05.2 receipt](05_tsg_loss/05.2_mse_l1/log/figure-render.json) ·
-[Step 05.3 receipt](05_tsg_loss/05.3_mse-l1_mse-x/log/figure-render.json) ·
-[Step 05.4 receipt](05_tsg_loss/05.4_mse-l1_pcc/log/figure-render.json) ·
-[Step 05.5 receipt](05_tsg_loss/05.5_mse-l1_cos/log/figure-render.json) ·
-[Step 06.1 receipt](06_tsg_shape/06.1_round1/log/figure-render.json) ·
-[Step 06.2 receipt](06_tsg_shape/06.2_round2/log/figure-render.json) ·
-[Step 06.3 receipt](06_tsg_shape/06.3_round3/log/figure-render.json) ·
-[Step 06.4 receipt](06_tsg_shape/06.4_round4/log/figure-render.json) ·
-[Step 08 receipt](08_cpst_chem-emb/log/figure-render.json) ·
-[Step 09 receipt](09_cpst_axis/log/figure-render.json) ·
-[Step 10 receipt](10_cpst_dose/log/figure-render.json) ·
-[ADR 0093](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
-
-The comparison tests inspect the rendered panels against their CSV
-values, including panel order, replicate points and sample SD endpoints.
-
-```bash
-TMPDIR="$WORK" MPLCONFIGDIR="$WORK/replay/matplotlib" \
-PYTHONPATH=cpst/util/output/api \
-  python -m unittest discover -s cpst/util/execution/tests -p test_comparison.py
-```
-
-Step 07 links the Step 06.4 figures for its fixed alpha. Step 09 verifies
-its installed full-axis report with the sealed fits and full-axis inputs.
-[Step 07 evidence](07_cpst_alpha/README.md) ·
-[Step 09 reproduction](09_cpst_axis/README.md#reproduce-and-verify) ·
-[Original comparison publication](https://github.com/Moke110/carps/tree/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE)
+The current verifier checks the render receipts and independently redraws all
+45 published PNGs twice from their plot data. The inventory includes 13
+comparison sets, five Step 02 figures and the palette preview. Each comparison
+publishes learning curves, held-out metrics and same-fold, same-seed
+differences from its reference. The metric panels show defined replicates,
+means, sample SD when at least two values are defined, and zero.
+[Current figure verification guide](AGENTS.md#verify-the-current-figures) ·
+[Shared figure verifier](util/figure/script/verify_report_figures.py) ·
+[Figure standard](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
 
 ## Historical evidence and active-input checks
 
-The [CarPS-Transcriptome verification](util/training/cpst-verification.md) and
-[TranSiGen verification](util/training/verification.md) inventory the installed
-formal results and give the acceptance commands.
+The acceptance records document how the active-input verifier checked native
+corpus windows, ordered projections, frozen folds and both tenv and Tahoe
+readers in a checkout without the retired archive. The verification inventories
+bind current formal releases to their tracked receipts. For Step 06.4
+registrations with original `stage2/` source keys, follow the pinned replay
+route.
+[Active-input verification guide](AGENTS.md#verify-the-active-inputs) ·
+[CarPS-Transcriptome acceptance](util/training/cpst-verification.md) ·
+[TranSiGen acceptance](util/training/verification.md) ·
+[Pinned Step 06.4 replay](06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit)
 
-[ADR 0105](../docs/adr/0105-stage-cleanup.md) retires the local Stage 2 archive.
-Use the original Git revisions for tracked historical code, figures and receipts.
-The [pinned ADR 0087 cutover](https://github.com/Moke110/carps/blob/99078e6f/stage2/README.md#deploy-the-adr-0087-cutover)
-and [original CarPS path migration](https://github.com/Moke110/carps/blob/ac62a177a54aa99e6ac626728af12394f3e0d940/stage2_CarPS-VAE/README.md#deploy-the-carps-stage-2-path)
-document their original deployments.
-
-With Steps 01–03 materialized, run
-`python cpst/04_tsg_axis/execution/verify_active_inputs.py`
-from a checkout without the local archive. It checks active corpus windows,
-ordered projections, training folds and both tenv and Tahoe training readers.
-Use the [pinned Step 06.4 replay](06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit)
-for registrations whose source keys start with `stage2/`.
+The public boundary retires the local Stage 2 archive. The original tracked
+code, figures and receipts are available at their pinned Git revisions.
+[Archive retirement](../docs/adr/0105-stage-cleanup.md) ·
+[Public release boundary](../docs/adr/0106-cpst-and-cpsp-public-release-boundaries.md) ·
+[Original ADR 0087 cutover](https://github.com/Moke110/carps/blob/99078e6f/stage2/README.md#deploy-the-adr-0087-cutover) ·
+[Original CarPS path migration](https://github.com/Moke110/carps/blob/ac62a177a54aa99e6ac626728af12394f3e0d940/stage2_CarPS-VAE/README.md#deploy-the-carps-stage-2-path)

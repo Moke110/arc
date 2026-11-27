@@ -25,14 +25,14 @@ of them invalidates comparability with the frozen Morgan floor.
 
 | # | Fixed item | What is frozen | Source |
 |---|---|---|---|
-| 1 | Source and assay | Heliste 2021 Dataset S1, HL-1 mouse atrial cardiomyocytes, normalized CTG ATP-luminescence `cell_viability`; 24 h pretreatment + 48 h hypoxia + 24 h reoxygenation, duration-matched normoxia arm, ~96 h elapsed, 0.01% DMSO controls. Persistence and the exact normalization denominator are unresolved. | `docs/adr/0044-stage3-source-first-corpora.md`; `stage3/01_corpus/README.md`; `docs/research/stage3-heliste-normalization-label-audit.md` |
-| 2 | Corpus shape | 689 source-label rows, 3 unresolved identities, 686 resolved labels, 663 unique desalted parents, 4 doses (0.04/0.2/1/5 µM), 2,756 cells per condition, 2,744 admitted per condition, 92 extra rows from 22 multi-alias compounds (21 with 8 rows, 1 with 12). One record = one supplied numerical cell; `rep: null`. | `stage3/01_corpus/README.md`; `stage3/01_corpus/output/{baseline,H-R}/corpus.csv` **[verified]** |
+| 1 | Source and assay | Heliste 2021 Dataset S1, HL-1 mouse atrial cardiomyocytes, normalized CTG ATP-luminescence `cell_viability`; 24 h pretreatment + 48 h hypoxia + 24 h reoxygenation, duration-matched normoxia arm, ~96 h elapsed, 0.01% DMSO controls. Persistence and the exact normalization denominator are unresolved. | `docs/adr/0044-stage3-source-first-corpora.md`; `cpsp/01_corpus/README.md`; `docs/research/stage3-heliste-normalization-label-audit.md` |
+| 2 | Corpus shape | 689 source-label rows, 3 unresolved identities, 686 resolved labels, 663 unique desalted parents, 4 doses (0.04/0.2/1/5 µM), 2,756 cells per condition, 2,744 admitted per condition, 92 extra rows from 22 multi-alias compounds (21 with 8 rows, 1 with 12). One record = one supplied numerical cell; `rep: null`. | `cpsp/01_corpus/README.md`; `cpsp/01_corpus/output/{baseline,H-R}/corpus.csv` **[verified]** |
 | 3 | Label rule | `direction ∈ {−1,0,+1}`: <80 → −1, 80–120 inclusive → 0, >120 → +1. Magnitude-only, under the unconfirmed assumption that each arm's own 0.01% DMSO vehicle = 100. Class 0 is within-band, **not** demonstrated equivalence; no significance test. | ADR 0044 "Magnitude direction labels amendment"; corpus README |
 | 4 | Model interface | One model per `(condition, phenotype)`; three-class softmax over [−1,0,+1]; no shared multi-phenotype output; target is magnitude direction, not therapeutic benefit. | `docs/adr/0045-stage3-morgan-direction-baseline.md` |
-| 5 | Splits and seeds | Split seed `20261105`; cold-drug 3 outer folds (test parents never in training, doses may overlap); cold-dose 4 global held-dose folds (0.04 and 5 µM = extrapolation, 0.2 and 1 µM = interpolation); warm-start 3 folds; seeds 17/42/2026; all aliases and doses of a parent share one role across conditions; 60 fits for 2 conditions. | ADR 0045; `stage3/02_base_morgan/execution/split_manifest.json`; `stage3/02_base_morgan/output/formal/summary.json` |
+| 5 | Splits and seeds | Split seed `20261105`; cold-drug 3 outer folds (test parents never in training, doses may overlap); cold-dose 4 global held-dose folds (0.04 and 5 µM = extrapolation, 0.2 and 1 µM = interpolation); warm-start 3 folds; seeds 17/42/2026; all aliases and doses of a parent share one role across conditions; 60 fits for 2 conditions. | ADR 0045; `cpsp/02_base_morgan/execution/split_manifest.json`; `cpsp/02_base_morgan/output/formal/summary.json` |
 | 6 | Baseline envelope and schedule | Morgan radius 2 / 2048 binary bits / chirality + `log10(dose_um)` standardized on training-partition statistics → `Linear(input,128) → ReLU → Linear(128,3)`; unweighted cross-entropy; AdamW; lr 1e-3, wd 1e-4, batch 64, ≤300 epochs, patience 30, restore best validation macro-F1. | ADR 0045 |
-| 7 | Metric convention | Macro-F1 primary; per-class precision/recall, 3×3 confusion, log loss; each held dose reported before its average; cold-drug additionally reports pooled out-of-fold; `class_order [−1,0,1]`, argmax ties first in class order, `zero_division 0`, log-loss clip to `[eps, 1−eps]` then row-normalize. | `summary.json` `metric_convention`; `stage3/02_base_morgan/execution/metrics.py` |
-| 8 | Frozen floor numbers | H-R cold-dose macro-F1 0.5991 / 0.5881 / 0.5710 / 0.4910 at 0.04 / 0.2 / 1 / 5 µM; H-R cold-drug pooled 0.4123 ± 0.0230; H-R warm-start 0.5301 ± 0.0149. Baseline cold-dose 0.5687 / 0.5782 / 0.5693 / 0.5377; cold-drug pooled 0.4081 ± 0.0044; warm-start 0.5504 ± 0.0448. Class +1 F1 = 0 in every cold-dose and cold-drug aggregate. | `stage3/02_base_morgan/output/formal/report.md`, `summary.json` **[verified]** |
+| 7 | Metric convention | Macro-F1 primary; per-class precision/recall, 3×3 confusion, log loss; each held dose reported before its average; cold-drug additionally reports pooled out-of-fold; `class_order [−1,0,1]`, argmax ties first in class order, `zero_division 0`, log-loss clip to `[eps, 1−eps]` then row-normalize. | `summary.json` `metric_convention`; `cpsp/02_base_morgan/execution/metrics.py` |
+| 8 | Frozen floor numbers | H-R cold-dose macro-F1 0.5991 / 0.5881 / 0.5710 / 0.4910 at 0.04 / 0.2 / 1 / 5 µM; H-R cold-drug pooled 0.4123 ± 0.0230; H-R warm-start 0.5301 ± 0.0149. Baseline cold-dose 0.5687 / 0.5782 / 0.5693 / 0.5377; cold-drug pooled 0.4081 ± 0.0044; warm-start 0.5504 ± 0.0448. Class +1 F1 = 0 in every cold-dose and cold-drug aggregate. | `cpsp/02_base_morgan/output/formal/report.md`, `summary.json` **[verified]** |
 | 9 | Delivery boundary | Stage 3 Δ work is a later design step; the comparison to the Morgan baseline must be paired on jointly covered samples if Δ coverage is incomplete, so that model comparison does not depend on different evaluation populations. | ADR 0045 "Delivery boundary" |
 
 ### What is genuinely open
@@ -290,7 +290,7 @@ regularisation and a declared validation-selected penalty.
 
 ### Fair-comparison rules
 
-1. Reuse the split manifests and metric module; do not re-split. `stage3/02_base_morgan/execution/split_manifest.json`, `metrics.py`.
+1. Reuse the split manifests and metric module; do not re-split. `cpsp/02_base_morgan/execution/split_manifest.json`, `metrics.py`.
 2. Compare on the **jointly covered population** (ADR 0045 delivery boundary). If the Δ
    release covers 663×4, that is the full 2,744 rows; if it covers only the published
    artifacts, it is only 72 rows (35 Stage-3 compounds at the two dose-matched levels; 36
@@ -570,11 +570,11 @@ starts. Every step is label-free until the Stage 3 head.
 - `docs/adr/0045-stage3-morgan-direction-baseline.md` — three-class interface, splits/seed, training schedule, delivery boundary and the "exactly one model per (condition, phenotype)" rule.
 - `docs/adr/0043-stage3-source-measurement-corpus.md` — measurement-preserving corpus and `rep` semantics.
 - `docs/adr/0039-condition-corpus-and-model-view-separation.md` — condition/phenotype partition and alias handling context.
-- `stage3/README.md`, `stage3/01_corpus/README.md`, `stage3/02_base_morgan/README.md` — current public contracts.
-- `stage3/01_corpus/output/baseline/corpus.csv`, `stage3/01_corpus/output/H-R/corpus.csv` — the 2,744-row corpora; all class, dose and boundary statistics recomputed here.
-- `stage3/02_base_morgan/output/formal/summary.json`, `report.md`, `benchmark.json` — frozen 60-fit benchmark, per-class metrics, split role counts.
-- `stage3/02_base_morgan/execution/metrics.py` — fixed metric convention.
-- `stage3/02_base_morgan/execution/split_manifest.json` — persisted partitions.
+- [`cpsp/README.md`](../../cpsp/README.md), [`cpsp/01_corpus/README.md`](../../cpsp/01_corpus/README.md), [`cpsp/02_base_morgan/README.md`](../../cpsp/02_base_morgan/README.md) — current public contracts.
+- [`cpsp/01_corpus/output/baseline/corpus.csv`](../../cpsp/01_corpus/output/baseline/corpus.csv), [`cpsp/01_corpus/output/H-R/corpus.csv`](../../cpsp/01_corpus/output/H-R/corpus.csv) — the 2,744-row corpora; all class, dose and boundary statistics recomputed here.
+- `cpsp/02_base_morgan/output/formal/summary.json`, `report.md`, `benchmark.json` — frozen 60-fit benchmark, per-class metrics, split role counts. [Release record](../../cpsp/02_base_morgan/execution/release_record.json)
+- [`cpsp/02_base_morgan/execution/metrics.py`](../../cpsp/02_base_morgan/execution/metrics.py) — fixed metric convention.
+- [`cpsp/02_base_morgan/execution/split_manifest.json`](../../cpsp/02_base_morgan/execution/split_manifest.json) — persisted partitions.
 - `docs/research/stage3-heliste-normalization-label-audit.md` — why the vehicle=100 denominator is an assumption, and the missing replicate/variance evidence.
 
 **Stage 2 artifacts that define the Δ**
