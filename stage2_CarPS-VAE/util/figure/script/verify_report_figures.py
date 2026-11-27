@@ -12,19 +12,20 @@ import subprocess
 import sys
 
 STAGE = Path(__file__).resolve().parents[3]
-REPORTS = {
-    "02_gene_axis": ("342-figure-render.json", (
-        ("02.1_hvg-deg/figure", "02.1_hvg-deg/figure/script/render_coverage.py"),
-        ("02.2_denoise-deg/figure", "02.2_denoise-deg/figure/script/render.py"),
-    )),
-    "04_tsg_axis": ("342-figure-render.json", (("figure", "figure/script/render.py"),)),
-    "06_tsg_shape/06.1_round1": ("figure-render.json", (("figure", "figure/script/render_shape.py"),)),
-    "06_tsg_shape/06.2_round2": ("figure-render.json", (("figure", "figure/script/render_architecture.py"),)),
-    "06_tsg_shape/06.3_round3": ("figure-render.json", (("figure", "figure/script/render_composition.py"),)),
-    "06_tsg_shape/06.4_round4": ("figure-render.json", (("figure", "figure/script/render_measured.py"),)),
-    "08_cpsv_chem-emb": ("figure-render.json", (("figure", "figure/script/render_chem.py"),)),
-    "09_cpsv_axis": ("figure-render.json", (("figure", "figure/script/render_axes.py"),)),
+AXIS_RENDERERS = (
+    ("02.1_hvg-deg/figure", "02.1_hvg-deg/figure/script/render_coverage.py"),
+    ("02.2_denoise-deg/figure", "02.2_denoise-deg/figure/script/render.py"),
+)
+COMPARISON_RENDERERS = {
+    "04_tsg_axis": "render.py",
+    "06_tsg_shape/06.1_round1": "render_comparison.py",
+    "06_tsg_shape/06.2_round2": "render_comparison.py",
+    "06_tsg_shape/06.3_round3": "render_comparison.py",
+    "06_tsg_shape/06.4_round4": "render_comparison.py",
+    "08_cpsv_chem-emb": "render_comparison.py",
+    "09_cpsv_axis": "render_axes.py",
 }
+COMPARISON_NAMES = ("learning-curve", "metrics", "metrics-paired")
 
 
 def digest(path):
@@ -37,7 +38,7 @@ def check_hashes(root, hashes):
             raise ValueError(f"render receipt hash differs for {root / path}")
 
 
-def verify_report(step, receipt_name, renderers, work, env):
+def verify_report(step, receipt_name, renderers, work, env, *, comparison=False):
     receipt = json.loads((step / "log" / receipt_name).read_text())
     if (receipt["schema"], receipt["status"], receipt["independent_renders"]) != (
         "stage2-figure-render-v1", "PASS", 2,
@@ -49,6 +50,11 @@ def verify_report(step, receipt_name, renderers, work, env):
 
     csvs = receipt["csv_files_sha256"]
     pngs = receipt["png_files_sha256"]
+    if comparison and (
+        set(pngs) != {f"figure/{name}.png" for name in COMPARISON_NAMES}
+        or set(csvs) != {f"figure/data/{name}.csv" for name in COMPARISON_NAMES}
+    ):
+        raise ValueError(f"canonical comparison files differ for {step}")
     scripts = receipt["renderer_files_sha256"]
     script_root = step if receipt_name == "342-figure-render.json" else STAGE
     paths = {(step / script).relative_to(script_root).as_posix() for _, script in renderers}
@@ -104,10 +110,14 @@ def main():
     if inherited := env.get("PYTHONPATH"):
         paths.append(inherited)
     env["PYTHONPATH"] = os.pathsep.join(paths)
-    count = sum(verify_report(STAGE / step, receipt, renderers, work / step, env)
-                for step, (receipt, renderers) in REPORTS.items())
-    if count != 30:
-        raise ValueError(f"expected 30 Step 02, Step 04, Step 06, Step 08 and Step 09 figures, verified {count}")
+    axis_count = verify_report(STAGE / "02_gene_axis", "342-figure-render.json",
+                               AXIS_RENDERERS, work / "02_gene_axis", env)
+    if axis_count != 5:
+        raise ValueError(f"expected five Step 02 figures, verified {axis_count}")
+    for step, script in COMPARISON_RENDERERS.items():
+        renderers = (("figure", f"figure/script/{script}"),)
+        verify_report(STAGE / step, "figure-render.json", renderers, work / step, env,
+                      comparison=True)
     loss_verifier = STAGE / "05_tsg_loss/figure/script/verify_figures.py"
     subprocess.run([sys.executable, str(loss_verifier), "--work", str(work / "loss")],
                    cwd=work, env=env, check=True)
@@ -119,11 +129,13 @@ def main():
         if digest(output) != digest(palette):
             raise ValueError("published palette differs from its render")
 
-    for directory in STAGE.glob("*/figure"):
+    directories = [*STAGE.glob("*/figure"), *STAGE.glob("*/*/figure")]
+    for directory in directories:
         check_layout(directory)
-    for directory in STAGE.glob("*/*/figure"):
-        check_layout(directory)
-    print("Verified all 46 current Stage 2 PNGs")
+    published_count = sum(1 for directory in directories for _ in directory.glob("*.png"))
+    if published_count != 42:
+        raise ValueError(f"expected 42 published Stage 2 PNGs, found {published_count}")
+    print("Verified all 42 current Stage 2 PNGs, including 12 comparison sets")
 
 
 if __name__ == "__main__":

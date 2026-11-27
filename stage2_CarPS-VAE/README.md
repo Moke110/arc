@@ -58,9 +58,16 @@ exceeded the absolute mean difference on both metrics.
 
 ## Verify the current figures
 
-All 45 active report figures and the palette preview use the [Stage 2 palette and drawing API](util/README.md#plotting).
-The verifier checks the current render receipts and reproduces each PNG
-twice from its published plot data using the `arc` rendering environment.
+Each of the 12 comparisons publishes `learning-curve.png`, `metrics.png`
+and `metrics-paired.png`. The two metrics figures use eight panels in
+the same order. They show every defined fold–seed replicate, the mean,
+the sample SD for groups with at least two scores, and zero. Paired
+figures show the arm score minus its reference within each fold and seed.
+[Comparison figure standard](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
+
+The verifier checks the current receipts and independently redraws each
+of the 42 PNGs twice from its published plot data using the `arc` environment.
+This covers the 36 comparison PNGs, five Step 02 figures and the palette preview.
 For byte-identical replay, use the exact Python, Matplotlib, NumPy and,
 where listed, pandas versions in the receipts’ `environment` fields.
 
@@ -71,8 +78,12 @@ python stage2_CarPS-VAE/util/figure/script/verify_report_figures.py --work "$WOR
 ```
 
 [Step 02 receipt](02_gene_axis/log/342-figure-render.json) ·
-[Step 04 receipt](04_tsg_axis/log/342-figure-render.json) ·
-[Step 05 receipt](05_tsg_loss/log/343-figure-render.json) ·
+[Step 04 receipt](04_tsg_axis/log/figure-render.json) ·
+[Step 05.1 receipt](05_tsg_loss/05.1_loss_metrics/log/figure-render.json) ·
+[Step 05.2 receipt](05_tsg_loss/05.2_mse_l1/log/figure-render.json) ·
+[Step 05.3 receipt](05_tsg_loss/05.3_mse-l1_mse-x/log/figure-render.json) ·
+[Step 05.4 receipt](05_tsg_loss/05.4_mse-l1_pcc/log/figure-render.json) ·
+[Step 05.5 receipt](05_tsg_loss/05.5_mse-l1_cos/log/figure-render.json) ·
 [Step 06.1 receipt](06_tsg_shape/06.1_round1/log/figure-render.json) ·
 [Step 06.2 receipt](06_tsg_shape/06.2_round2/log/figure-render.json) ·
 [Step 06.3 receipt](06_tsg_shape/06.3_round3/log/figure-render.json) ·
@@ -80,6 +91,21 @@ python stage2_CarPS-VAE/util/figure/script/verify_report_figures.py --work "$WOR
 [Step 08 receipt](08_cpsv_chem-emb/log/figure-render.json) ·
 [Step 09 receipt](09_cpsv_axis/log/figure-render.json) ·
 [ADR 0093](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md)
+
+The comparison tests inspect the rendered panels against their CSV
+values, including panel order, replicate points and sample SD endpoints.
+
+```bash
+TMPDIR="$WORK" MPLCONFIGDIR="$WORK/replay/matplotlib" \
+PYTHONPATH=stage2_CarPS-VAE/util/output/api \
+  python -m unittest discover -s stage2_CarPS-VAE/util/execution/tests -p test_comparison.py
+```
+
+Step 07 links the Step 06.4 figures for its fixed alpha. Step 09 verifies
+its installed full-axis report with the sealed fits and full-axis inputs.
+[Step 07 evidence](07_cpsv_alpha/README.md) ·
+[Step 09 reproduction](09_cpsv_axis/README.md#reproduce-and-verify) ·
+[Original comparison publication](https://github.com/Moke110/carps/tree/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE)
 
 ## Local history
 
@@ -127,7 +153,7 @@ Use the same arguments with `resume` if interrupted after a plan has been
 recorded. Run `verify` to compare the just-installed checkout against that
 plan. Use `resume` and `verify` before installing the new Step 08
 `output/formal` bundle. After installing the bundle, run the
-[Step 08 scientific verifier](08_cpsv_chem-emb/README.md#formal-reproduction).
+[Step 08 scientific verifier](08_cpsv_chem-emb/README.md#formal-scientific-reproduction).
 For a later checkout-root move, repair the Git metadata for each
 relocated linked worktree with `git worktree repair <linked-worktree-path>`
 from the moved primary checkout. Working-tree payload locations and Git

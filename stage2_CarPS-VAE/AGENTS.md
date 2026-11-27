@@ -57,10 +57,11 @@ points with history unavailable before completing a cutover.
   another chart type. Use each `(fold, seed)` as a within-group replicate.
   Draw defined replicate values as dots, bar heights as means and error
   bars as sample SD when at least two values are defined.
-  Set y-axis limits near the plotted values when this makes between-group
-  differences easier to see. The range may omit zero. Keep the plotted dots,
-  complete error bars and relevant references visible. Indicate when a bar
-  chart omits zero, and use common limits for directly comparable panels.
+  Follow [ADR 0102](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
+  for comparison figures. Include zero in every comparison metrics panel.
+  Keep all dots, complete error bars and relevant references visible, and
+  use common limits for directly comparable panels. Label any other bar
+  chart that uses a range away from zero.
   Encode each grouping variable on its own hue or depth axis, up to two
   grouping variables. Replace figures at their canonical paths and discard
   superseded render bundles.

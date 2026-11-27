@@ -30,7 +30,10 @@ def verify_figures(work):
                 or evidence["fits"] != len(study.arms) * 3
                 or evidence["acceptance_receipt_sha256"] != digest(step / "log" / study.receipt)):
             raise ValueError(f"current figure receipt does not match the accepted study {name}")
-        count += verify_report(step, receipt_name, (("figure", RENDERER),), work / name, env)
+        count += verify_report(step, receipt_name, (("figure", RENDERER),), work / name, env,
+                               comparison=True)
+    if count != 15:
+        raise ValueError(f"expected 15 Step 05 comparison figures, verified {count}")
     return count
 
 
