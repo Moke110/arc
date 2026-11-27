@@ -65,7 +65,63 @@ def _write_receipt(path, value):
         candidate.unlink(missing_ok=True)
 
 
-def dispose_checkpoints(root, *, receipt, acceptance, acceptance_sha256, runs, verify_full, verify_retained):
+def _recover_batch(root, path, record, acceptance_pin, runs, prior_entries, predecessor, verify_retained):
+    status = record.get('status')
+    if ((record.get('schema'), record.get('acceptance_sha256'), record.get('previous'))
+            != (SCHEMA, acceptance_pin, predecessor) or status not in ('pending', 'complete')):
+        raise ReleaseError('disposition requires an unused receipt path or the same pending transaction')
+    quarantine = _inside(root, record['quarantine'])
+    if (quarantine.parent != path.parent or not quarantine.name.startswith(f'.{path.name}-weights-')
+            or (quarantine.exists() and not quarantine.is_dir())):
+        raise ReleaseError('invalid pending checkpoint quarantine')
+    prior = {entry['manifest']: entry for entry in prior_entries}
+    recorded = {entry['manifest']: entry for entry in record['weights']}
+    if len(recorded) != len(record['weights']) or recorded.keys() != prior.keys() | runs.keys():
+        raise ReleaseError('pending checkpoint disposition roster differs')
+    if any(recorded[name] != entry for name, entry in prior.items()):
+        raise ReleaseError('pending checkpoint disposition predecessor differs')
+    moves = []
+    stage_names = set()
+    for index, (_, checkpoint, expected) in enumerate(_records(root, runs)):
+        entry = recorded[expected['manifest']]
+        if (type(entry.get('size')) is not int or entry['size'] <= 0
+                or entry != {**expected, 'size': entry['size']}):
+            raise ReleaseError('pending checkpoint disposition entry differs')
+        staged = quarantine / str(index)
+        if staged.is_symlink() or (status == 'pending' and checkpoint.exists() == staged.exists()):
+            raise ReleaseError('expected one intact copy of a pending checkpoint')
+        if status == 'complete':
+            if checkpoint.exists():
+                raise ReleaseError('completed disposition still has a checkpoint')
+            if not staged.exists():
+                continue
+        copy = staged if staged.exists() else checkpoint
+        _check_pin(copy, entry['sha256'], 'pending checkpoint')
+        if copy.stat().st_size != entry['size']:
+            raise ReleaseError('pending checkpoint size differs')
+        if copy == staged:
+            moves.append((staged, checkpoint))
+            stage_names.add(staged.name)
+    if quarantine.is_dir() and {item.name for item in quarantine.iterdir()} != stage_names:
+        raise ReleaseError('unrecognized files in pending checkpoint quarantine')
+    if status == 'complete':
+        all_runs = {entry['manifest']: entry['manifest_sha256'] for entry in prior_entries} | runs
+        _check_archived_outputs(root, all_runs, record['weights'])
+        verify_retained(tuple(entry.copy() for entry in record['weights']))
+        for staged, _ in moves:
+            staged.unlink()
+    else:
+        for staged, checkpoint in moves:
+            staged.rename(checkpoint)
+    if quarantine.is_dir():
+        quarantine.rmdir()
+    if status == 'pending':
+        path.unlink()
+    return status == 'complete'
+
+
+def dispose_checkpoints(root, *, receipt, acceptance, acceptance_sha256, runs, verify_full, verify_retained,
+                        previous=None):
     """Dispose of an authorized subset of a newly accepted study's checkpoint weights.
 
     The caller supplies an authenticated acceptance receipt, a mapping of eligible
@@ -74,14 +130,37 @@ def dispose_checkpoints(root, *, receipt, acceptance, acceptance_sha256, runs, v
     verifier independently rescores predictions and replays figures before completion.
     Receive the prospective weight list as its only argument. Use a new receipt
     path distinct from all study artifacts. A pending receipt never authorizes
-    prediction-archive verification.
+    prediction-archive verification. Repeat the same request after an
+    interruption to restore a pending batch and retry it, or finish a completed
+    batch's quarantine cleanup. For additional batches, pass the previous
+    receipt path, pinned digest and accepted prior run roster as `previous`.
+    The before-disposal verifier must allow exactly those previously disposed
+    weights to be absent and the retained verifier must check the cumulative
+    roster.
     """
     with publication_lock(root) as root:
         path = _inside(root, receipt)
-        if path.exists() or not path.parent.is_dir():
+        if not path.parent.is_dir():
             raise ReleaseError('disposition requires an unused receipt path')
         acceptance = Path(acceptance)
         _check_pin(acceptance, acceptance_sha256, 'full acceptance receipt')
+        prior_entries = []
+        all_runs = runs
+        predecessor = None
+        if previous is not None:
+            previous_path, previous_pin, previous_runs = previous
+            record = verify_prediction_archive(root, receipt=previous_path, receipt_sha256=previous_pin,
+                                               acceptance=acceptance, acceptance_sha256=acceptance_sha256,
+                                               runs=previous_runs)
+            if set(runs) & set(previous_runs):
+                raise ReleaseError('new batch overlaps a previously disposed checkpoint')
+            prior_entries = record['weights']
+            all_runs = previous_runs | runs
+            predecessor = {'receipt': previous_path, 'sha256': previous_pin}
+        if path.exists() and _recover_batch(
+            root, path, read_json(path), acceptance_sha256, runs, prior_entries, predecessor, verify_retained,
+        ):
+            return sha256(path)
         verify_full()
         _check_pin(acceptance, acceptance_sha256, 'full acceptance receipt')
         entries = []
@@ -97,16 +176,18 @@ def dispose_checkpoints(root, *, receipt, acceptance, acceptance_sha256, runs, v
         if path in protected:
             raise ReleaseError('disposition receipt overlaps an accepted artifact')
         quarantine = Path(mkdtemp(prefix=f'.{path.name}-weights-', dir=path.parent))
+        all_entries = sorted(prior_entries + entries, key=lambda entry: entry['manifest'])
         record = dict(schema=SCHEMA, status='pending', acceptance_sha256=acceptance_sha256,
-                      weights=entries, quarantine=quarantine.relative_to(root).as_posix())
+                      weights=all_entries, previous=predecessor,
+                      quarantine=quarantine.relative_to(root).as_posix())
         try:
             _write_receipt(path, record)
             for index, entry in enumerate(entries):
                 _inside(root, entry['path']).rename(quarantine / str(index))
-            _check_archived_outputs(root, runs, entries)
-            verify_retained(tuple(entry.copy() for entry in entries))
+            _check_archived_outputs(root, all_runs, all_entries)
+            verify_retained(tuple(entry.copy() for entry in all_entries))
             _check_pin(acceptance, acceptance_sha256, 'full acceptance receipt')
-            _check_archived_outputs(root, runs, entries)
+            _check_archived_outputs(root, all_runs, all_entries)
             _write_receipt(path, {**record, 'status': 'complete'})
         except BaseException:
             # Keep staged bytes until verification and receipt publication succeed.

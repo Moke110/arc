@@ -61,12 +61,24 @@ def _verified_report(args, accepted, *, output_check=None):
     return verified
 
 
+def _dispose_roster(args, accepted, receipt, pin):
+    leaf = Path(receipt)
+    if not leaf.name or leaf.name != receipt or leaf.name == '..':
+        raise ValueError('disposition receipt must be a file at the matrix root')
+    path = args.matrix / leaf
+    if path.is_symlink() or sha256(path) != pin:
+        raise ValueError('disposition receipt digest differs')
+    record = read_json(path)
+    runs = _authorized_runs(args.matrix, accepted, [item['manifest'] for item in record['weights']])
+    verify_prediction_archive(args.matrix, receipt=receipt, receipt_sha256=pin, acceptance=ACCEPTED,
+                              acceptance_sha256=ACCEPTED_SHA256, runs=runs)
+    return runs
+
+
 def verify(args):
     accepted = _accepted(args)
-    disposition = read_json(args.matrix / DISPOSITION)
-    runs = _authorized_runs(args.matrix, accepted, [item['manifest'] for item in disposition['weights']])
-    verify_prediction_archive(args.matrix, receipt=DISPOSITION, receipt_sha256=args.disposition_sha256,
-                              acceptance=ACCEPTED, acceptance_sha256=ACCEPTED_SHA256, runs=runs)
+    receipt = getattr(args, 'receipt', DISPOSITION)
+    runs = _dispose_roster(args, accepted, receipt, args.disposition_sha256)
     verified = _verified_report(args, accepted, output_check=_retained_output_check(args.matrix, runs))
     return {**verified, 'verification': 'predictions-and-figures',
             'disposition_sha256': args.disposition_sha256, 'disposed_weights': len(runs)}
@@ -75,13 +87,29 @@ def verify(args):
 def dispose(args):
     accepted = _accepted(args)
     runs = _authorized_runs(args.matrix, accepted, args.run_manifest)
+    receipt = getattr(args, 'receipt', DISPOSITION)
+    if Path(receipt).name != receipt or not receipt or receipt == '..':
+        raise ValueError('disposition receipt must be a file at the matrix root')
+    previous_receipt = getattr(args, 'previous_receipt', None)
+    previous_pin = getattr(args, 'previous_disposition_sha256', None)
+    if bool(previous_receipt) != bool(previous_pin):
+        raise ValueError('previous disposition requires both its receipt and digest')
+    previous = None
+    prior_runs = {}
+    if previous_receipt:
+        prior_runs = _dispose_roster(args, accepted, previous_receipt, previous_pin)
+        previous = previous_receipt, previous_pin, prior_runs
+
+    def verify_before():
+        checker = _retained_output_check(args.matrix, prior_runs) if prior_runs else None
+        _verified_report(args, accepted, output_check=checker)
 
     def verify_retained(_entries):
-        _verified_report(args, accepted, output_check=_retained_output_check(args.matrix, runs))
+        _verified_report(args, accepted, output_check=_retained_output_check(args.matrix, prior_runs | runs))
 
-    pin = dispose_checkpoints(args.matrix, receipt=DISPOSITION, acceptance=ACCEPTED,
-                              acceptance_sha256=ACCEPTED_SHA256, runs=runs,
-                              verify_full=lambda: _verified_report(args, accepted), verify_retained=verify_retained)
+    pin = dispose_checkpoints(args.matrix, receipt=receipt, acceptance=ACCEPTED,
+                              acceptance_sha256=ACCEPTED_SHA256, runs=runs, previous=previous,
+                              verify_full=verify_before, verify_retained=verify_retained)
     return {'result': 'PASS', 'verification': 'predictions-and-figures',
             'disposition_sha256': pin, 'disposed_weights': len(runs)}
 
@@ -92,6 +120,7 @@ def main():
     for action in (dispose, verify):
         command = commands.add_parser(action.__name__)
         command.add_argument('--matrix', type=Path, required=True)
+        command.add_argument('--receipt', default=DISPOSITION)
         command.add_argument('--matrix-audit', type=Path, required=True)
         command.add_argument('--report', type=Path, required=True)
         command.add_argument('--figures', type=Path, required=True)
@@ -100,6 +129,8 @@ def main():
         command.add_argument('--raw', type=Path, default=STAGE / '01_data_raw/output')
         command.set_defaults(handler=action, command='verify')
     commands.choices['dispose'].add_argument('--run-manifest', action='append', required=True)
+    commands.choices['dispose'].add_argument('--previous-receipt')
+    commands.choices['dispose'].add_argument('--previous-disposition-sha256')
     commands.choices['verify'].add_argument('--disposition-sha256', required=True)
     args = parser.parse_args()
     args.matrix = args.matrix.resolve(strict=True)

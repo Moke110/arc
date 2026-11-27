@@ -79,5 +79,5 @@ class PredictionArchiveTests(unittest.TestCase):
                 self.assertEqual(verified['verification'], 'predictions-and-figures')
                 self.assertEqual(verified['disposed_weights'], 1)
                 args.disposition_sha256 = '0' * 64
-                with self.assertRaisesRegex(ReleaseError, 'receipt digest'):
+                with self.assertRaisesRegex(ValueError, 'receipt digest'):
                     archive.verify(args)

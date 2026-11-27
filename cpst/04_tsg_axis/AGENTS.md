@@ -113,7 +113,12 @@ the list. The command runs full report verification first and verifies the
 predictions and figures with the selected weights staged on the same
 filesystem. Only after both checks pass does it commit the disposition and
 remove the staged weights. Record the returned disposition SHA-256 separately
-and retain the original full acceptance and run manifests.
+and retain the original full acceptance and run manifests. For a later batch,
+use a new `--receipt` filename and supply `--previous-receipt` and
+`--previous-disposition-sha256` from the pinned prior batch. Use the latest
+`--receipt` with `verify` to check the cumulative archive. Rerun the same
+`dispose` arguments after an interruption to recover the quarantine and
+complete verification.
 
 ## Register and replay one fit
 
