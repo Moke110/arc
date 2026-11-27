@@ -16,7 +16,7 @@ from dose_model import DoseAdapter, configuration, epoch_streams, initialization
 from dose_protocol import (ARMS, AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_STEP03,
                            SCENARIO, SEEDS, coordinates, representation)
 from chem_runs import ALPHA_MANIFEST, axis_run, verify_release
-from tsg_axis.learning import fixed_rng
+from tsg_axis.learning import EarlyStopping, fixed_rng
 from tsg_axis.protocol import MAX_EPOCHS, PATIENCE
 from util.training import registered
 from util.training.provenance import verify_replay_configuration, verify_sealed_code

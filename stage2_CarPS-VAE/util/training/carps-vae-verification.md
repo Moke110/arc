@@ -117,3 +117,9 @@ Zmol-FiLM CUDA checkpoint replays passed. A fresh two-epoch Step 08 UniMol
 fit matched all 51 tensors, initialization, traces, KL diagnostics, predictions,
 Delta arrays and row identities. The replay and fit scope peaked at
 1,800,656 KiB process RSS.
+
+The installed Step 10 report gate caught a missing early-stopping import in
+the sealed-run reader. After restoring the import, the complete verifier
+passed in a checkout without history. It matched the original receipt, all
+90 coordinates and 900 scores, 13,830 condition rows, three fold bandwidths
+and the associated figures. The verification peaked at 799,464 KiB process RSS.
