@@ -1,7 +1,7 @@
 {
   "build_resources": {
-    "peak_rss_kib": 202416,
-    "wall_seconds": 11.24
+    "peak_rss_kib": 203024,
+    "wall_seconds": 14.11
   },
   "csv_files_sha256": {
     "figure/data/learning-curve.csv": "3dd4e3e7b18df243d18da77ad4f5f97ac57210e6868f8fb0bce818ef3e5b98e0",
@@ -15,7 +15,7 @@
     "python": "3.13.13"
   },
   "evidence": {
-    "build_sha256": "e1ba43f161e4487f045b14fb1e00ba038f4f94c4ba222c716659d261175eb894",
+    "build_sha256": "0307b868cc7964b99870b77f1f69713ed8c9b40112647e09023ec5b29aeac5a7",
     "fits": 18,
     "matrix_manifest_sha256": "9e2c01145387794e36336734efd261aa7c80132208d5a51f8eb4074f55830b5e",
     "report_manifest_sha256": "9627a97200a7276298063a6e8b698372287fc63592bcceb2d4dc622209135a26",

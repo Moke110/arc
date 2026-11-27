@@ -22,7 +22,7 @@ from run_composition import AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAU
 from training_data import TENV_DEFAULT
 
 STAGE = STEP.parents[1]
-RENDERER = STEP / "figure/script/render_composition.py"
+RENDERER = STEP / "execution/render_composition.py"
 EVALUATOR = STEP / "execution/evaluate_composition.py"
 FIGURE_TABLES = ("delta-metrics.csv", "fold-scores.csv", "epoch-objectives.csv",
                  "primary-contrasts.csv", "primary-contrast-summary.csv")

@@ -12,7 +12,7 @@ from tempfile import TemporaryDirectory
 from chem_runs import STEP, axis_run
 from stage2_util.comparison import FIGURES as COMPARISON_FIGURES
 
-RENDERER = STEP / "figure/script/render_chem.py"
+RENDERER = STEP / "execution/render_chem.py"
 FIGURES = ("delta-metrics.png", "delta-metrics-paired-difference.png")
 COMPARISON_RENDERER = STEP / "figure/script/render_comparison.py"
 COMPARISON_TABLES = ("learning-curve.csv", "metrics.csv", "metrics-paired.csv")

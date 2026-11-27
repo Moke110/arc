@@ -200,7 +200,7 @@ def coordinator_resource_summary(data):
 def render(data, figures, activity, attempt):
     args = ["--data", str(data), "--output", str(figures)]
     for filename in ("render_metrics", "render_learning_curves"):
-        command(STEP / f"figure/script/{filename}.py", args, activity, f"{attempt}-{filename}")
+        command(STEP / f"execution/{filename}.py", args, activity, f"{attempt}-{filename}")
 
 
 def publish(args):
@@ -251,7 +251,7 @@ def publish(args):
         )
         code = ("execution/additive_objective.py", "execution/evaluate_sweep.py", "execution/run_sweep.py",
                 "execution/matrix_sweep.py", "execution/report_sweep.py",
-                "figure/script/render_metrics.py", "figure/script/render_learning_curves.py")
+                "execution/render_metrics.py", "execution/render_learning_curves.py")
         axis_run.write_json(candidate / RECEIPT, {
             "status": "PASS", "ticket": 333, "matrix_code_revision": matrix_revision,
             "fits": len(fits), "fold_scores": len(fits) * len(METRICS),

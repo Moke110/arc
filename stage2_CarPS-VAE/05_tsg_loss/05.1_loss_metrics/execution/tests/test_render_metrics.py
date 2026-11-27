@@ -8,7 +8,7 @@ import sys
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-RENDER = Path(__file__).resolve().parents[2] / "figure/script/render_metrics.py"
+RENDER = Path(__file__).resolve().parents[2] / "execution/render_metrics.py"
 METRICS = ("JAC_top200", "JAC_pos100", "JAC_neg100", "Δ PCC", "Δ Spearman",
            "Δ RMSE", "Δ E-distance", "Δ MMD", "Δ R²")
 

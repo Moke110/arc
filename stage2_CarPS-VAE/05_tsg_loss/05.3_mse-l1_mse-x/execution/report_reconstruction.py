@@ -205,7 +205,7 @@ def audit_resources(audit):
 def render(data, figures, activity, attempt):
     args = ["--data", str(data), "--output", str(figures)]
     for filename in ("render_metrics", "render_learning_curves"):
-        command(STEP / f"figure/script/{filename}.py", args, activity, f"{attempt}-{filename}")
+        command(STEP / f"execution/{filename}.py", args, activity, f"{attempt}-{filename}")
 
 
 def publish(args):
@@ -259,7 +259,7 @@ def publish(args):
         code = ("execution/reconstruction_objective.py", "execution/evaluate_reconstruction.py",
                 "execution/run_reconstruction.py", "execution/sweep_protocol.py",
                 "execution/matrix_reconstruction.py", "execution/report_reconstruction.py",
-                "figure/script/render_metrics.py", "figure/script/render_learning_curves.py")
+                "execution/render_metrics.py", "execution/render_learning_curves.py")
         axis_run.write_json(candidate / RECEIPT, {
             "status": "PASS", "ticket": 336, "matrix_code_revision": matrix_revision,
             "fits": len(fits), "fold_scores": len(fits) * len(METRICS),

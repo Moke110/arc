@@ -149,7 +149,7 @@ for phase in score verify; do
 done
 cp "$WORK/report/"{delta-metrics,fold-scores,epoch-objectives,primary-contrasts,primary-contrast-summary}.csv "$WORK/plot-csv"
 for output in figures figures-replay; do
-  python "$STEP/figure/script/render_composition.py" --smoke \
+  python "$STEP/execution/render_composition.py" --smoke \
     --data "$WORK/plot-csv" --output "$WORK/$output"
 done
 diff -r "$WORK/figures" "$WORK/figures-replay"

@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 import numpy as np
 
-LOSS = Path(__file__).resolve().parents[3]
-sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script")]
+LOSS = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "execution")]
 
 from loss_plot_style import (FOCUSED_Y_NOTE, FOLD_SCORES, metric_direction, read_replicates,
                              score_bar, setup_score_axis)

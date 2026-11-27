@@ -3,7 +3,7 @@
 from pathlib import Path
 import sys
 
-SHARED = Path(__file__).resolve().parents[3] / "similarity"
+SHARED = Path(__file__).resolve().parents[2] / "similarity"
 sys.path.insert(0, str(SHARED))
 
 from render_similarity import main

@@ -12,7 +12,7 @@
   },
   "evidence": {
     "acceptance_receipt_sha256": "ccfd0c4220be5d7b4835ab2aa1ae625f82c31c2cd4b7e956591adb0e3bf25706",
-    "build_sha256": "f7ee8defcfb530e748ab901e057936605ec865ea2038b55fe2c76ab8fdea3503",
+    "build_sha256": "59697b2a12418d9cf077b6565fe0e5bcac9c273e139a53003bf0116756829c11",
     "fits": 27,
     "fixed_jaccard_code_sha256": "66011526374d4405c137ba5f07f291ebad8a86c3bd8e97b8aba8ff9c540eb062",
     "matched_controls_sha256": "97bb9f1b792efd81eeeca65a0318324680f509ecac74bb04acd22ba4523c109e",

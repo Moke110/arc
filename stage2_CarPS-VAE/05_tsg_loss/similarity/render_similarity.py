@@ -12,8 +12,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 LOSS = Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script"),
-                str(LOSS / "05.3_mse-l1_mse-x/figure/script")]
+sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "execution"),
+                str(LOSS / "05.3_mse-l1_mse-x/execution")]
 
 from loss_plot_style import FOLD_SCORES, read_replicates, render_weight_panels
 from render_metrics import FIGURES, LABELS

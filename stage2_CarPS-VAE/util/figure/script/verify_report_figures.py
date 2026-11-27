@@ -55,6 +55,11 @@ def verify_report(step, receipt_name, renderers, work, env, *, comparison=False)
         or set(csvs) != {f"figure/data/{name}.csv" for name in COMPARISON_NAMES}
     ):
         raise ValueError(f"canonical comparison files differ for {step}")
+    if comparison:
+        expected_renderers = {Path(script).name for _, script in renderers}
+        actual_renderers = {path.name for path in (step / "figure/script").glob("*.py")}
+        if actual_renderers != expected_renderers:
+            raise ValueError(f"unexpected comparison renderer in {step}: {sorted(actual_renderers - expected_renderers)}")
     scripts = receipt["renderer_files_sha256"]
     script_root = step if receipt_name == "342-figure-render.json" else STAGE
     paths = {(step / script).relative_to(script_root).as_posix() for _, script in renderers}

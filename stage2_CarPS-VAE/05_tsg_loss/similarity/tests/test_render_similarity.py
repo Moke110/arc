@@ -23,7 +23,7 @@ class SimilarityFigureTests(TestCase):
 
             output = root / "figures"
             result = subprocess.run(
-                [sys.executable, str(PCC_FIGURE / "script/render.py"), "--data", str(data),
+                [sys.executable, str(PCC_FIGURE.parent / "execution/render.py"), "--data", str(data),
                  "--output", str(output)],
                 env={**os.environ, "PYTHONPATH": str(root)},
                 capture_output=True, text=True,

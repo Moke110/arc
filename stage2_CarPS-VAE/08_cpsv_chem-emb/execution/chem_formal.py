@@ -229,7 +229,9 @@ def publish(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=("score", "build", "verify"))
+    parser.add_argument("mode", choices=("score", "build", "verify"),
+                        help="build reproduces the historical scientific publication. "
+                             "Use build_comparison.py for the current figures.")
     add_inputs(parser)
     parser.add_argument("--round-four", type=Path, default=ROUND_FOUR)
     parser.add_argument("--bandwidth-training", type=Path, default=TENV_DEFAULT)

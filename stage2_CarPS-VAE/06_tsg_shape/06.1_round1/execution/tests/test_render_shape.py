@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 STEP = Path(__file__).resolve().parents[2]
-RENDERER = STEP / "figure/script/render_shape.py"
+RENDERER = STEP / "execution/render_shape.py"
 SHAPES = ("original", "widen_z-110", "widen_z-120", "widen_z-130",
           "widen_enc-2k", "widen_enc-4k", "widen_enc-6k", "deepen_enc", "deepen_dec", "deepen_both")
 METRICS = ("JAC_top200", "JAC_pos100", "JAC_neg100", "Δ PCC", "Δ Spearman",

@@ -46,7 +46,7 @@ for phase in score verify; do
 done
 for attempt in first second; do
   for renderer in render_metrics render_learning_curves; do
-    capped_step04 python "$STEP/figure/script/$renderer.py" --smoke \
+    capped_step04 python "$STEP/execution/$renderer.py" --smoke \
       --data "$WORK/report" --output "$WORK/$attempt"
   done
 done

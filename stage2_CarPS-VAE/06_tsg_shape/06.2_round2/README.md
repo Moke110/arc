@@ -105,7 +105,7 @@ for phase in score verify; do
 done
 cp "$WORK/report/"{delta-metrics,fold-scores,epoch-objectives}.csv "$WORK/plot-csv"
 for output in figures figures-replay; do
-  python "$STEP/figure/script/render_architecture.py" --smoke \
+  python "$STEP/execution/render_architecture.py" --smoke \
     --data "$WORK/plot-csv" --output "$WORK/$output"
 done
 diff -r "$WORK/figures" "$WORK/figures-replay"

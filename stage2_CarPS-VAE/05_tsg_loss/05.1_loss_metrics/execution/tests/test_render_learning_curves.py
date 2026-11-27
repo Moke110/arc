@@ -8,7 +8,7 @@ import sys
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-RENDER = Path(__file__).resolve().parents[2] / "figure/script/render_learning_curves.py"
+RENDER = Path(__file__).resolve().parents[2] / "execution/render_learning_curves.py"
 FIELDS = ("loss", "alpha", "fold", "seed", "run_sha256", "best_epoch", "stopping_epoch", "epoch",
           "train_loss", "validation_loss", "validation_mse")
 

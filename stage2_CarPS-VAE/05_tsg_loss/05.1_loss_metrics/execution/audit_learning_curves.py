@@ -8,7 +8,7 @@ import sys
 from tempfile import TemporaryDirectory
 
 STEP = Path(__file__).resolve().parents[1]
-SCRIPT_DIR = STEP / "figure/script"
+SCRIPT_DIR = STEP / "execution"
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from render_learning_curves import EPOCH_SOURCE, FIGURE_NAME, read_curves

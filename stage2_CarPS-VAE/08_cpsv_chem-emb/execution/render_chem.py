@@ -11,7 +11,7 @@ import matplotlib
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 
-STAGE = Path(__file__).resolve().parents[3]
+STAGE = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(STAGE / "util/output/api"))
 from stage2_util import palette, plotting
 

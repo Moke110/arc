@@ -13,7 +13,7 @@ from tempfile import TemporaryDirectory
 
 STEP = Path(__file__).resolve().parents[1]
 STAGE = STEP.parents[1]
-RENDERER = STEP / "figure/script/render_measured.py"
+RENDERER = STEP / "execution/render_measured.py"
 CSV_NAMES = ("delta-metrics.csv", "fold-scores.csv", "epoch-objectives.csv", "primary-contrasts.csv",
              "primary-contrast-by-fold.csv", "primary-contrast-summary.csv")
 PNG_NAMES = ("delta-metrics.png", "delta-metrics-paired-difference.png", "learning-curves.png",

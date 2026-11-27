@@ -12,6 +12,7 @@ indexed gene identities, seed selection, generic metrics, CSV rendering and deri
 | `seeds` | `read_seeds()` returns the accepted seed tuple. Pass a count to select a prefix. |
 | `metrics` | `vector_metrics(truth, prediction)` scores paired finite vectors, including the accepted constant-vector policy. `signed_jaccard_scores(truth, prediction, gene_indices)` returns JAC-top200 and wJAC-2000 for one paired Delta vector. |
 | `comparison` | `write_paired_metrics(data, reference)` and `render_comparison(data, output, arms=..., reference=..., title=...)` publish the three canonical comparison figures. |
+| `comparison_publication` | `render_receipt(stage, step, output, renderer, dependencies=...)` replays the figures twice and records the plotted CSV, PNG and renderer hashes. |
 | `plotting`, `palette` | `read_rows(path)`, `save_figure(figure, path, **kwargs)` and the drawing functions below support rendering solely from plotted CSV values. |
 | `publication` | `publication_lock(destination)` and `replace_release(...)` coordinate verified replacement of accepted releases. |
 | `derivation` | `bulk_deg`, `disease_deg`, and `deg_rank` provide common DEG, rank, and worker interfaces. `r_env` locates R resources and `release` provides derivation manifest and candidate verification. |

@@ -45,7 +45,7 @@ done
 mkdir "$WORK/csv-only"
 cp "$WORK/report/"{delta-metrics,epoch-objectives}.csv "$WORK/csv-only/"
 for attempt in first second; do
-  capped_step04 python "$LOSS/05.4_mse-l1_pcc/figure/script/render.py" --smoke \
+  capped_step04 python "$LOSS/05.4_mse-l1_pcc/execution/render.py" --smoke \
     --data "$WORK/csv-only" --output "$WORK/$attempt"
 done
 for figure in delta-metrics.png delta-metrics-improvement.png learning-curves.png; do

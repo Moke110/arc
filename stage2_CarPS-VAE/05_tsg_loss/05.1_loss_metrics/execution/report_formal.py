@@ -126,8 +126,8 @@ def publish(args):
     paths, fits = matrix_inputs(args.matrix)
     args.activity.mkdir(parents=True, exist_ok=True)
     evaluate = STEP / "execution/evaluate_loss.py"
-    render_metrics = STEP / "figure/script/render_metrics.py"
-    render_curves = STEP / "figure/script/render_learning_curves.py"
+    render_metrics = STEP / "execution/render_metrics.py"
+    render_curves = STEP / "execution/render_learning_curves.py"
     options = ["--training", str(args.training), "--bandwidth-training", str(args.bandwidth_training),
                "--output", str(args.report), "--scratch", str(args.scratch)]
     for path in paths.values():

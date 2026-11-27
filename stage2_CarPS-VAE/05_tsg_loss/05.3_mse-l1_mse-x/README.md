@@ -47,7 +47,7 @@ mkdir "$WORK/csv-only"
 cp "$WORK/report/"{delta-metrics,epoch-objectives}.csv "$WORK/csv-only/"
 for attempt in first second; do
   for renderer in render_metrics render_learning_curves; do
-    capped_step04 python "$STEP/figure/script/$renderer.py" --smoke \
+    capped_step04 python "$STEP/execution/$renderer.py" --smoke \
       --data "$WORK/csv-only" --output "$WORK/$attempt"
   done
 done

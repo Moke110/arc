@@ -10,8 +10,8 @@ import matplotlib
 
 matplotlib.use("Agg")
 
-LOSS = Path(__file__).resolve().parents[3]
-sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script")]
+LOSS = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "execution")]
 
 from loss_plot_style import FOLD_SCORES, read_replicates, render_weight_panels
 from stage2_util import plotting

@@ -88,38 +88,14 @@ python "$STEP/execution/chem_figures.py" verify --comparison \
 The second command independently renders twice using only the
 [learning curve CSV](figure/data/learning-curve.csv),
 [metric CSV](figure/data/metrics.csv) and [paired metric CSV](figure/data/metrics-paired.csv).
-The original plots and replay instructions remain available at the
-[fixed publication revision](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/08_cpsv_chem-emb/README.md#formal-reproduction).
 
 ## Formal scientific reproduction
 
-Run the formal comparison under the same resource limits and environment as
-the bounded gate. The formal runner checks each KPGT reference separately
-against the frozen Step 07 release, the Step 06.4 ledgers, a fresh exact
-checkpoint replay and independently rescored held-out metrics. It checks
-the inherited loss and fit modules against the original code hashes in the
-alpha release. It registers a new fit for any rejected coordinate.
-Each new fit has separate training,
-prediction and exact replay processes.
-
-Use the `capped` function and `STEP` defined above. Set `COORDINATOR` to the
-location of the running ten-second sampler’s JSONL file. Start the sampler
-before the matrix and keep it running until at least one sample after the
-matrix completes.
-
-```bash
-mkdir -p "$PWD/tmp"
-WORK=$(mktemp -d "$PWD/tmp/carps-chemical-formal.XXXXXX")
-mkdir "$WORK/scratch" "$WORK/formal" "$WORK/matplotlib"
-export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib" PYTHONDONTWRITEBYTECODE=1
-capped python "$STEP/execution/chem_reference.py" \
-  --matrix "$WORK/formal/matrix" --logs "$WORK/formal/matrix-audit" \
-  --evidence "$WORK/formal/reuse-preflight.json"
-sleep 10
-capped python "$STEP/execution/chem_formal.py" build \
-  --bundle "$WORK/formal" --coordinator "$COORDINATOR" \
-  --scratch "$WORK/scratch" --publication "$WORK/publication"
-```
+Use the [fixed publication revision](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/08_cpsv_chem-emb/README.md#formal-reproduction)
+for the original plots and to reproduce the training, exact checkpoint replay
+and scientific publication with `chem_formal.py build`. Use the
+[current comparison exporter](#reproduce-the-comparison-figures) to publish
+the three canonical figures from the accepted fits and registered KPGT reuses.
 
 The comparison publishes one score per metric, arm, fold and training
 seed. The paired differences subtract the matching KPGT score. Higher

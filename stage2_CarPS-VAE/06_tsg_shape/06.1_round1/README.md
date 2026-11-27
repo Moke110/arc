@@ -172,7 +172,7 @@ for phase in score verify; do
     --smoke "${RUNS[@]}" --output "$WORK/report" --scratch "$WORK/tmp"
 done
 for target in figures figures-replay; do
-  python "$STEP/figure/script/render_shape.py" --smoke --data "$WORK/report" --output "$WORK/$target"
+  python "$STEP/execution/render_shape.py" --smoke --data "$WORK/report" --output "$WORK/$target"
 done
 diff -r "$WORK/figures" "$WORK/figures-replay"
 ```

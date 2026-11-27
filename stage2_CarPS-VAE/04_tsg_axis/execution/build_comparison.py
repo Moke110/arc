@@ -1,13 +1,9 @@
 """Build the Step 04 comparison publication from its accepted matched-control evidence."""
 
 import argparse
-from importlib.metadata import version
 import json
 from pathlib import Path
-from platform import python_version
-import subprocess
 import sys
-from tempfile import TemporaryDirectory
 
 import numpy as np
 import pandas as pd
@@ -17,6 +13,7 @@ STAGE = STEP.parent
 sys.path[:0] = [str(STEP / "output/api"), str(STAGE / "util/output/api")]
 
 from stage2_util.comparison import CURVE_FIELDS, FIGURES, METRIC_FIELDS, METRIC_NAMES, write_paired_metrics
+from stage2_util.comparison_publication import render_receipt
 from stage2_util.derivation.release import check_outputs, read_json, sha256, write_json
 from stage2_util.metrics import signed_jaccard_scores
 from tsg_axis.metrics import summarize_conditions
@@ -127,27 +124,8 @@ def build_accepted(matrix, report, output):
     data = figure / "data"
     write_plot_data(report, matrix, matrix_records["fits"], data)
     renderer = STEP / "figure/script/render.py"
-    with TemporaryDirectory(prefix="figure-replay-", dir=output) as replay:
-        replay = Path(replay)
-        for destination in (figure, replay):
-            subprocess.run([sys.executable, str(renderer), "--data", str(data), "--output", str(destination)],
-                           check=True)
-        if any(sha256(figure / name) != sha256(replay / name) for name in FIGURES):
-            raise ValueError("independent CSV-only figure renders differ")
-
     receipt = {
-        "schema": "stage2-figure-render-v1",
-        "status": "PASS",
-        "step": STEP.name,
-        "independent_renders": 2,
-        "environment": {name: version(name) for name in ("matplotlib", "numpy", "pandas")}
-        | {"python": python_version()},
-        "csv_files_sha256": {path.relative_to(output).as_posix(): sha256(path) for path in sorted(data.glob("*.csv"))},
-        "png_files_sha256": {f"figure/{name}": sha256(figure / name) for name in FIGURES},
-        "renderer_files_sha256": {path.relative_to(STAGE).as_posix(): sha256(path) for path in (
-            renderer, *(STAGE / f"util/output/api/stage2_util/{name}.py"
-                        for name in ("comparison", "palette", "plotting")),
-        )},
+        **render_receipt(STAGE, STEP.name, output, renderer),
         "evidence": {"matrix_manifest_sha256": sha256(matrix_manifest),
                      "report_manifest_sha256": sha256(report_manifest),
                      "build_sha256": sha256(Path(__file__)),

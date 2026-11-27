@@ -13,9 +13,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-LOSS = Path(__file__).resolve().parents[3]
-sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "figure/script"),
-               str(Path(__file__).resolve().parents[2] / "execution")]
+LOSS = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(LOSS.parent / "util/output/api"), str(LOSS / "execution")]
 
 from stage2_util import plotting
 

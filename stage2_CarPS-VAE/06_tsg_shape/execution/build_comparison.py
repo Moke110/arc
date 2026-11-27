@@ -1,14 +1,10 @@
 """Build the four canonical Step 06 figure sets from accepted fit and report evidence."""
 
 import argparse
-from importlib.metadata import version
 from itertools import product
 import json
 from pathlib import Path
-from platform import python_version
-import subprocess
 import sys
-from tempfile import TemporaryDirectory
 
 import numpy as np
 import pandas as pd
@@ -20,7 +16,8 @@ sys.path[:0] = [str(SHAPE / "figure/script"), *(str(STAGE / path) for path in (
 ))]
 
 from architecture_comparison import RENDERER, STUDIES
-from stage2_util.comparison import CURVE_FIELDS, FIGURES, METRIC_FIELDS, METRIC_NAMES, write_paired_metrics
+from stage2_util.comparison import CURVE_FIELDS, METRIC_FIELDS, METRIC_NAMES, write_paired_metrics
+from stage2_util.comparison_publication import render_receipt
 from stage2_util.derivation.release import check_outputs, read_json, sha256, write_json
 from training_data import open_tenv_training, tenv_axis_output
 from tsg_axis.comparison_evidence import read_fixed_jaccard
@@ -170,25 +167,9 @@ def build_study(source, output, fits, data):
     plotted = figure / "data"
     count = _write_plot_data(report, fits, study, data, plotted)
     renderer = step / RENDERER
-    with TemporaryDirectory(prefix="figure-replay-", dir=output) as replay:
-        replay = Path(replay)
-        for candidate in (figure, replay):
-            subprocess.run([sys.executable, str(renderer), "--data", str(plotted),
-                            "--output", str(candidate)], check=True)
-        if any(sha256(figure / name) != sha256(replay / name) for name in FIGURES):
-            raise ValueError(f"independent figure renders differ for {step.name}")
-
-    deps = (renderer, SHAPE / "figure/script/architecture_comparison.py",
-            *(STAGE / f"util/output/api/stage2_util/{name}.py" for name in ("comparison", "palette", "plotting")))
+    dependencies = (SHAPE / "figure/script/architecture_comparison.py",)
     write_json(output / "log/figure-render.json", {
-        "schema": "stage2-figure-render-v1",
-        "status": "PASS",
-        "step": step.name,
-        "independent_renders": 2,
-        "environment": {"python": python_version(), **{name: version(name) for name in ("matplotlib", "numpy", "pandas")}},
-        "csv_files_sha256": {path.relative_to(output).as_posix(): sha256(path) for path in sorted(plotted.glob("*.csv"))},
-        "png_files_sha256": {f"figure/{name}": sha256(figure / name) for name in FIGURES},
-        "renderer_files_sha256": {path.relative_to(STAGE).as_posix(): sha256(path) for path in deps},
+        **render_receipt(STAGE, step.name, output, renderer, dependencies=dependencies),
         "evidence": {
             "acceptance_receipt_sha256": sha256(receipt_path),
             "matrix_manifest_sha256": accepted["matrix_manifest_sha256"],
