@@ -5,7 +5,7 @@ from matrix_measured import GIB, MEMORY_CAP, SWAP_CAP
 from report_shape import gaps_summary, read_samples
 
 
-def audit_resources(activity, coordinator, fresh, *, bracket=False):
+def audit_resources(activity, coordinator, fresh, *, bracket=False, interrupted=None):
     sample_path = activity / "resource-samples.jsonl"
     matrix = read_samples(sample_path)
     scope_files = sorted(activity.glob("scope-*.json"))
@@ -20,15 +20,20 @@ def audit_resources(activity, coordinator, fresh, *, bracket=False):
     completed = int(scope_files[-1].stem.removeprefix("scope-")) / 1e9
     end = latest["monotonic_seconds"] + max(0, completed - latest["unix_seconds"])
     coverage = read_samples(coordinator)
-    before = [row for row in coverage if row["monotonic_seconds"] <= start]
-    running = [row for row in coverage if start < row["monotonic_seconds"] < end]
-    after = [row for row in coverage if row["monotonic_seconds"] >= end]
-    if not before or not after:
-        raise ValueError("coordinator readings must bracket the entire formal matrix")
-    selected = [before[-1], *running, after[0]]
-    if not bracket and coverage != selected:
-        raise ValueError("sealed coordinator record must contain only the formal window")
-    coverage_gaps = gaps_summary(selected)
+    if interrupted is None:
+        before = [row for row in coverage if row["monotonic_seconds"] <= start]
+        running = [row for row in coverage if start < row["monotonic_seconds"] < end]
+        after = [row for row in coverage if row["monotonic_seconds"] >= end]
+        if not before or not after:
+            raise ValueError("coordinator readings must bracket the entire formal matrix")
+        selected = [before[-1], *running, after[0]]
+        if not bracket and coverage != selected:
+            raise ValueError("sealed coordinator record must contain only the formal window")
+        coverage_gaps = gaps_summary(selected)
+    else:
+        selected, coverage_gaps = interrupted.coverage(matrix, completed)
+        if not bracket and coverage != selected:
+            raise ValueError("sealed coordinator record differs from the evidenced active windows")
     windows = [row["windows_host_total_and_available_kib"] for row in selected]
     if coverage_gaps["gaps_over_12_seconds"] or any(not isinstance(value, str) for value in windows):
         raise ValueError("ten-second GPU, Windows and WSL sampling is required for the formal matrix")
@@ -53,6 +58,8 @@ def audit_resources(activity, coordinator, fresh, *, bracket=False):
             for record in records:
                 output = record.with_suffix(".log")
                 lines = record.read_text().splitlines()
+                if interrupted is not None:
+                    interrupted.check_phase(directory, phase, record, lines)
                 successful |= any(line.strip() == "Exit status: 0" for line in lines)
                 measure = next((line.rsplit(": ", 1)[1] for line in lines
                                 if "Maximum resident set size (kbytes):" in line), None)

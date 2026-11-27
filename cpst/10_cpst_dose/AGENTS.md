@@ -166,3 +166,23 @@ The original 90-coordinate comparison uses the materialized `output/formal`
 bundle with its pinned source revision and tracked receipts. The pinned guide
 provides the full scientific verification command.
 [Historical verification](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/10_cpst_dose/AGENTS.md#verify-the-installed-release)
+
+## Verify a resource-monitored interruption
+
+The formal build defaults to continuous coordinator coverage. For the
+evidenced two-scope recovery of the crossed-dose matrix, only the build
+accepts `--recovery-sha256`. Pin `matrix-audit/interruption/receipt.json`
+after independently checking the two systemd scope journals, original
+launcher, resumed scope settings, coordinator observations and matrix
+preflight. Preserve both raw coordinator logs separately. Seal the last
+coordinator copy through its first observed sample after scope completion.
+
+The recovery receipt binds each journal to the matrix monitor session that
+ran in that scope. The audit checks ten-second coordinator cadence inside
+each scope, measures the idle period from the journal endpoints, and requires
+every measured phase interval to fit wholly inside one active scope. The
+interrupted scope provides observed maximum memory and the pinned launcher
+and pre-observation cgroup guard. The completed scope additionally provides a
+kernel peak. Installation retains the raw evidence under `matrix-audit/`.
+Later verification checks the recovery pin in the accepted scientific
+receipt and revalidates its evidence.
