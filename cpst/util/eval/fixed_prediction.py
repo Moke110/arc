@@ -33,6 +33,8 @@ def verify_inputs(path, config, data, base, axis, fold, smoke):
             or config["raw_sha256"] != stage03["raw_sha256"]
             or config["raw_sha256"] != baseline["raw_sha256"]
             or config["folds"] != stage03["folds"] or config["folds"] != baseline["folds"]
+            or config.get("fold_release_sha256") != data.fold_release_sha256
+            or config.get("fold_release_sha256") != base.fold_release_sha256
             or not read_table(path / "genes.csv").equals(data.genes)):
         raise ValueError(f"axis, training, raw or frozen fold identity differs: {path}")
     for phase, limit in PARTITIONS.items():
@@ -64,6 +66,8 @@ def fixed_bandwidth(base, fold):
               "training_manifest_sha256": data.manifest_sha256,
               "training_delta_values_sha256": hash_bytes(measured.tobytes()).hexdigest(),
               "training_conditions_sha256": hash_bytes(base.condition_table(rows).to_csv(index=False).encode()).hexdigest()}
+    if base.fold_release_sha256 is not None:
+        record["fold_release_sha256"] = base.fold_release_sha256
     return record
 
 

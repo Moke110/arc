@@ -18,15 +18,15 @@ def matrix_inputs(matrix, audit):
     """Verify the full matrix receipt before providing runs to the evaluator."""
     receipt = read(matrix / "manifest.json")
     paths = run_paths(matrix)
-    records = {(item["axis"], item["fold"]): item for item in receipt["fits"]}
+    records = {(item["axis"], item["fold"], item["seed"]): item for item in receipt["fits"]}
     if (receipt["schema"] != SCHEMA or receipt.get("protocol") != PROTOCOL or set(records) != set(paths)
             or len(receipt["fits"]) != len(paths)
             or receipt["preflight_sha256"] != file_sha256(matrix / "preflight.json")
-            or set(paths.values()) != {path for path in (matrix / "runs").glob("*/*") if path.is_dir()}):
-        raise ValueError("formal matrix manifest must bind the exact 18-fit inventory")
-    for (axis, fold), path in paths.items():
+            or set(paths.values()) != {path for path in (matrix / "runs").glob("*/*/*") if path.is_dir()}):
+        raise ValueError("formal matrix manifest must bind the exact 150-fit inventory")
+    for (axis, fold, seed), path in paths.items():
         registration = file_sha256(path / "registration.json")
-        if records[axis, fold] != verify_run(path, axis, fold, registration):
+        if records[axis, fold, seed] != verify_run(path, axis, fold, seed, registration):
             raise ValueError(f"formal matrix fit identity differs: {axis}, fold {fold}")
     logs = {path.relative_to(audit).as_posix(): file_sha256(path)
             for path in sorted((audit / "logs").rglob("*")) if path.is_file()}
