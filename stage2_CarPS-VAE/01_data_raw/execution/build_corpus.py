@@ -234,7 +234,7 @@ def verify_downstream(candidate, output):
                     for directory in (AXES, TRAINING, TAHOE_VIEW)]
     from prediction_axis import open_axes
     from tahoe_expression import open_tahoe
-    from training_data import TENV_AXIS_STEPS, open_tenv_axis_training
+    from tenv_axes import TENV_AXIS_STEPS, open_tenv_axis_training
 
     with open_corpus(candidate) as corpus:
         for axis_id in TENV_AXIS_STEPS:

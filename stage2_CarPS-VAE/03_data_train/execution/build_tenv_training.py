@@ -10,8 +10,8 @@ from build_training import (FOLD_RECEIPT, FOLD_ROOT, STAGE, TENV_RECIPE, _build_
                             _verify_dataset, load_folds, open_corpus,
                             publication_lock, publish_candidate, release)
 from prediction_axis import open_axis
-from training_data import (TENV_AXIS_STEPS, TENV_BASELINE_AXIS, TENV_DEFAULT,
-                           open_tenv_training, sha256, tenv_axis_output)
+from tenv_axes import TENV_AXIS_STEPS, tenv_axis_output
+from training_data import TENV_BASELINE_AXIS, TENV_DEFAULT, open_tenv_training, sha256
 
 STAGING = STAGE.parent / "tmp/stage2-tenv-training-staging"
 

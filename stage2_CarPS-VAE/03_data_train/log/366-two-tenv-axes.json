@@ -1,0 +1,169 @@
+{
+  "established_reader_checks": {
+    "denoise-3k": {
+      "axis_sha256": "fccdb1e8290cc93e7e7af97f3b2076626fc678f59e38c4ff56aacf48efa9a94b",
+      "manifest_sha256": "f2b695c91827bb11fd588e3ee30d746b035a473e69c1b27912dface4843f1422"
+    },
+    "denoise-4k": {
+      "axis_sha256": "c6c1585ff8c619bc6f083e355ab28d81bcaf28c4320634ce70b000338cc9744a",
+      "manifest_sha256": "73b43419a5e5f99ade186bb47eb8716485109fa34e04407fe6c061a3cbef3e79"
+    },
+    "denoise-5k": {
+      "axis_sha256": "1c23ae7db2df90bb6d82d2f64a77c7e83b39933ceaf55d33ceffcaed3d51279d",
+      "manifest_sha256": "97bb9f1b792efd81eeeca65a0318324680f509ecac74bb04acd22ba4523c109e"
+    },
+    "hvg-3k": {
+      "axis_sha256": "105b7c40b8d19a7f361bfef4d36745fd3c9122c8a62af0a240d8ff8efadc7245",
+      "manifest_sha256": "fb565ef2fc79a07fba924162b3f08dcf74c0904d24d9455aeb23cc41eab48a64"
+    },
+    "hvg-4k": {
+      "axis_sha256": "26c5bd988e87ed7d516133df91eebd0ee285a038be89ec006f876efdf3d23680",
+      "manifest_sha256": "b397f926606fc824e329d174642b0c1e1ce8856c4a45decb950e1f79778707ed"
+    },
+    "hvg-5k": {
+      "axis_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+      "manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37"
+    }
+  },
+  "independent_audit_resources": {
+    "peak_rss_kib": 263996,
+    "wall_seconds": 2.89
+  },
+  "independent_count_check": "all retained raw counts pooled in 64-row windows, with exact ordered genes, library totals, axis-local CP10K/log1p, matched Delta and overall control vector",
+  "population_check": "ordered keys, matched control row IDs, membership, exclusions, frozen fold labels and strip reasons equal to HVG-DEG 5k",
+  "published": {
+    "denoise-2k": {
+      "axis_sha256": "485d1d32779b8525e1a7566b426fcf383e6112c0dbec4630642ff856a12e4011",
+      "byte_exact_replay": "PASS",
+      "counts": {
+        "candidate_controls": 16,
+        "candidate_treatments": 1383,
+        "controls": 16,
+        "excluded_raw_rows": 112,
+        "raw_rows": 4510,
+        "treatments": 1383
+      },
+      "independently_audited_rows": {
+        "controls": 16,
+        "treatments": 1383
+      },
+      "inputs": {
+        "axis_sha256": "485d1d32779b8525e1a7566b426fcf383e6112c0dbec4630642ff856a12e4011",
+        "folds": {
+          "axis_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "held_dose_um": [
+            0.2,
+            1.0,
+            10.0
+          ],
+          "pair_sha256": "eab35931bfc4dd56837647eaf932a0d6c07bf5ebf8bd97f168ad296a2027e2bc",
+          "receipt_sha256": "a50625709c9b96f836bc56bbeab791b30863eba15a39e754394df5ddc207e999",
+          "schema": "tsg-dose-round1-axis-local-pair-v1",
+          "source_manifest_sha256": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e",
+          "split_seed": 226,
+          "splits_sha256": "0fa5ea4b4edd36a6a00b229afb3ffd5257d5f088bf0dd964ff521a14016dd17b"
+        },
+        "raw_counts_sha256": "5f664f4c67b9ebdf816a08355ee024a5bd6f51b2a71926e17a446ce221691815",
+        "raw_dataset_sha256": "db0a9be8cac74c12b56f6a67ff5946f2ac6fd4070f5c85ba30bd32a0d3c8a703",
+        "raw_sha256": "91a54af534bb34df97619814c38ea676a074e1ec826753095c6f55b068165a90",
+        "raw_source": "tenv"
+      },
+      "manifest_sha256": "f36dcedcc372ae4ec3e336da77c5ee5f676a076036f120a07e7756b3b3040e94",
+      "output": "03.9_tenv_denoise-2k/output",
+      "reference_manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+      "resources": {
+        "promote": {
+          "peak_rss_kib": 286880,
+          "wall_seconds": 2.15
+        },
+        "publish": {
+          "peak_rss_kib": 287068,
+          "wall_seconds": 2.19
+        },
+        "verify": {
+          "peak_rss_kib": 296712,
+          "wall_seconds": 2.36
+        }
+      }
+    },
+    "hvg-2k": {
+      "axis_sha256": "cdbac4a64dfd2d4faa1fd353a479a54775a51bfbb8dd312ed41d8b22233dce57",
+      "byte_exact_replay": "PASS",
+      "counts": {
+        "candidate_controls": 16,
+        "candidate_treatments": 1383,
+        "controls": 16,
+        "excluded_raw_rows": 112,
+        "raw_rows": 4510,
+        "treatments": 1383
+      },
+      "independently_audited_rows": {
+        "controls": 16,
+        "treatments": 1383
+      },
+      "inputs": {
+        "axis_sha256": "cdbac4a64dfd2d4faa1fd353a479a54775a51bfbb8dd312ed41d8b22233dce57",
+        "folds": {
+          "axis_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "held_dose_um": [
+            0.2,
+            1.0,
+            10.0
+          ],
+          "pair_sha256": "eab35931bfc4dd56837647eaf932a0d6c07bf5ebf8bd97f168ad296a2027e2bc",
+          "receipt_sha256": "a50625709c9b96f836bc56bbeab791b30863eba15a39e754394df5ddc207e999",
+          "schema": "tsg-dose-round1-axis-local-pair-v1",
+          "source_manifest_sha256": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e",
+          "split_seed": 226,
+          "splits_sha256": "0fa5ea4b4edd36a6a00b229afb3ffd5257d5f088bf0dd964ff521a14016dd17b"
+        },
+        "raw_counts_sha256": "5f664f4c67b9ebdf816a08355ee024a5bd6f51b2a71926e17a446ce221691815",
+        "raw_dataset_sha256": "db0a9be8cac74c12b56f6a67ff5946f2ac6fd4070f5c85ba30bd32a0d3c8a703",
+        "raw_sha256": "91a54af534bb34df97619814c38ea676a074e1ec826753095c6f55b068165a90",
+        "raw_source": "tenv"
+      },
+      "manifest_sha256": "b00e51dc03fdaefc596fd136c69bcbe022a8d26de4e93d6a0bcaf6ab4ce17a96",
+      "output": "03.8_tenv_hvg-2k/output",
+      "reference_manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+      "resources": {
+        "promote": {
+          "peak_rss_kib": 287632,
+          "wall_seconds": 2.13
+        },
+        "publish": {
+          "peak_rss_kib": 286656,
+          "wall_seconds": 2.24
+        },
+        "verify": {
+          "peak_rss_kib": 297020,
+          "wall_seconds": 2.35
+        }
+      }
+    }
+  },
+  "resource_envelope": {
+    "cpu_threads_per_library": 1,
+    "processes": 1,
+    "virtual_memory_limit_kib": 10485760,
+    "wsl_available_before_run_gib": 20
+  },
+  "specification": 365,
+  "status": "PASS",
+  "step_04_sealed_canonical_export": {
+    "axes": 6,
+    "outputs": {
+      "condition-disease-f1.csv": "07901f83b00ae893f6f4b14f857cba539a951ece6887d3e71c680336c4246710",
+      "condition-metrics.csv": "429d5e7498d49cb5dbf313c89a33ef7567d020f50ee519cc652ded9b55c68d0b",
+      "figure/data/delta-metrics.csv": "1b2e7af6df8a1495588e5b228d49a94d14c1b51e63025c5177cd4eb25d341c0d",
+      "figure/data/disease-f1.csv": "9a6f3d51eba3a1195e57314c66985843c189d84557f26e1b8d6d8f6705c27dee",
+      "fold-disease-f1.csv": "e224f4d81c5b8595953369d4ca93aaa3044e7aadb3cb50175847d0f9c457a093",
+      "fold-metrics.csv": "51c4317077ff02a8ebe55cff6e740bd173e1bbbe00a37aa08a2193fc909d40c5"
+    },
+    "status": "PASS"
+  },
+  "step_07_step_08_runtime_pin": {
+    "entry_point": "chem_runs.verify_release",
+    "status": "PASS"
+  },
+  "ticket": 366
+}

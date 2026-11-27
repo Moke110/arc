@@ -15,7 +15,7 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   and match status.
 - [02_gene_axis](02_gene_axis/AGENTS.md) owns the ordered HVG-DEG and Denoise-DEG
   prediction axes and their selection evidence.
-- [03_data_train](03_data_train/AGENTS.md) publishes six plate-pooled tenv axes
+- [03_data_train](03_data_train/AGENTS.md) publishes eight plate-pooled tenv axes
   and the Tahoe well-level HVG-DEG 5k release.
 - [04_tsg_axis](04_tsg_axis/AGENTS.md) compares fixed tenv prediction axes with TranSiGen.
 - [05_tsg_loss](05_tsg_loss/AGENTS.md) compares TranSiGen Delta losses and reconstruction weights on the fixed denoise-5k axis.

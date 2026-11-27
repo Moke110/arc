@@ -21,7 +21,8 @@ from native_corpus import open_corpus
 from prediction_axis import open_axis, open_axes
 from publish_tahoe import verify_release
 from tahoe_expression import open_tahoe
-from training_data import TENV_AXIS_STEPS, TENV_BASELINE_AXIS, open_tenv_axis_training, tenv_axis_output
+from tenv_axes import TENV_AXIS_STEPS, open_tenv_axis_training, tenv_axis_output
+from training_data import TENV_BASELINE_AXIS
 
 
 def verify_active_inputs():

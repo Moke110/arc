@@ -7,27 +7,34 @@ routes implement [Spec 5](https://github.com/Moke110/carps/issues/310).
 The [acceptance receipt](log/312-source-specific-releases.json) records the
 real tenv replay, Tahoe asset equality and sealed combined-view replay.
 
-## Six tenv training axes
+## Tenv training axes
 
 Each release follows the [03.1 contract](03.1_tenv_hvg-5k/README.md) and
 uses the same native tenv counts and [frozen folds](output/frozen-folds/). Each pools integer
 counts on its selected axis before normalizing on that axis. The
 [six-axis acceptance receipt](log/313-six-tenv-axes.json) records exact replay
 and equality of the plate–parent–dose keys, raw membership and exclusions,
-and all six fold assignments and strip reasons against HVG-DEG 5k.
+and all six fold assignments and strip reasons against HVG-DEG 5k. The
+[2k acceptance receipt](log/366-two-tenv-axes.json) records the same checks,
+plus an independent count-pooling and normalization audit for the 2k views.
 
 | tenv axis key | Release |
 | --- | --- |
+| `hvg-2k` | [03.8 HVG-DEG 2k](03.8_tenv_hvg-2k/README.md) |
 | `hvg-3k` | [03.3 HVG-DEG 3k](03.3_tenv_hvg-3k/README.md) |
 | `hvg-4k` | [03.4 HVG-DEG 4k](03.4_tenv_hvg-4k/README.md) |
 | `hvg-5k` | [03.1 HVG-DEG 5k](03.1_tenv_hvg-5k/README.md) |
+| `denoise-2k` | [03.9 Denoise-DEG 2k](03.9_tenv_denoise-2k/README.md) |
 | `denoise-3k` | [03.5 Denoise-DEG 3k](03.5_tenv_denoise-3k/README.md) |
 | `denoise-4k` | [03.6 Denoise-DEG 4k](03.6_tenv_denoise-4k/README.md) |
 | `denoise-5k` | [03.7 Denoise-DEG 5k](03.7_tenv_denoise-5k/README.md) |
 
 With `stage2_CarPS-VAE/03_data_train/output/api` on `PYTHONPATH`, call
-`open_tenv_axis_training("denoise-3k")` in `training_data`. Pass a Step 03
+`open_tenv_axis_training("denoise-2k")` from `tenv_axes`. Pass a Step 03
 root as the second argument to read releases materialized in another checkout.
+Both interfaces use `training_data.open_tenv_training` to verify and read the
+release at its output path. The original six-axis lookup in `training_data`
+retains the sealed Step 04 roster and runtime hashes for Steps 07 and 08.
 
 Build and verify a candidate using the family and width documented for its
 release. This example rebuilds Denoise-DEG 3k from the original folds and raw
@@ -50,7 +57,16 @@ python "$D/execution/build_tenv_training.py" publish --axis denoise-3k \
 
 Use the digest printed by verification for `VERIFIED_SHA256`. In a linked
 worktree, `--raw` and `--reference` can point to the materialized native corpus
-and HVG-DEG 5k output in another checkout.
+and HVG-DEG 5k output in another checkout. For the two 2k releases, substitute
+the axis ID and stable output path from the table. After publishing both
+2k releases, audit all their pooled rows from native counts and verify that
+the six established releases still load.
+
+```bash
+python "$D/execution/audit_tenv_2k.py"
+```
+
+Use `--raw` and `--established` for materialized inputs in another checkout.
 
 ## Frozen inputs
 
