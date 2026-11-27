@@ -134,3 +134,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0099](0099-carps-vae-alpha-and-chemical-representations.md) | Freeze CarPS-VAE alpha in Step 07 and compare chemical representations in Step 08 |
 | [0100](0100-carps-vae-unimol.md) | Select UniMol for subsequent CarPS-VAE studies |
 | [0101](0101-carps-vae-prediction-axes.md) | Compare CarPS-VAE on eight gene axes with UniMol |
+| [0102](0102-stage2-axis-selection-and-comparison-figures.md) | Select Denoise-DEG 5k and standardize Stage 2 comparison figures |
