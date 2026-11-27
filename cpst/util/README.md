@@ -29,6 +29,29 @@ pin unless `manifest_sha256` is supplied. The manifest pins the input generation
 parent identities, conformer ledger and seven sets of frozen vectors.
 [Representation readers and manifest pins](output/api/cpst_util/representations.py) · [Step 08 release evidence](../08_cpst_chem-emb/log/364-formal.json)
 
+## Checkpoint disposition after acceptance
+
+The `cpst_util.checkpoint_disposition` API is for a numbered study with a
+completed full acceptance, a pinned acceptance receipt and an independently
+verified list of this rerun's eligible run manifests. Keep every weight
+required by downstream readers or remaining exact replay out of that list.
+Use the numbered study's full verifier as `verify_full`, its numerical and
+figure verifier as `verify_retained`, and its accepted
+manifest digests as `runs`. `dispose_checkpoints` checks those original
+manifests, hashes every declared output of the selected runs and removes only
+their `checkpoint.pt` files after the retained verification passes. It stages
+weights on the same filesystem during verification and records file sizes and
+digests in a versioned receipt without changing the manifests. Preserve an independently trusted
+pin for the completed disposition receipt.
+
+`verify_prediction_archive` checks all remaining declared output bytes for the
+disposed runs against their original manifests and the pinned completed
+receipt. A numbered archive verifier must also verify unaffected runs and
+independently rescore predictions and replay figures. The existing full
+verifiers still require checkpoints. If disposal stops with a pending receipt,
+archive verification fails. Preserve the pending record for investigation.
+[Checkpoint disposition API](output/api/cpst_util/checkpoint_disposition.py)
+
 ## Shared tenv evaluation
 
 Use `open_tenv_folds().protocol(COLD_DRUG)` for Steps 04–09 and Step 11.
