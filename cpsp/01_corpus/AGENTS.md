@@ -1,4 +1,4 @@
-# AGENTS.md — stage3/01_corpus
+# AGENTS.md — cpsp/01_corpus
 
 - Read `README.md` for the public offline build/verify command and source contract.
 - `execution/corpus.py` builds Heliste baseline and H-R; `execution/tests/` tests that public seam.

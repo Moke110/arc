@@ -15,7 +15,7 @@ with `bash pheno_data/Sirenko-2013/script/verify.sh`. The public workbook has
 classification, not vehicle measurements. Article rights are reserved; these
 locally downloaded bytes are not redistributed in git.
 
-The current consumer is `stage3/01_corpus/` under [ADR 0044](../docs/adr/0044-stage3-source-first-corpora.md).
+The current consumer is `cpsp/01_corpus/` under [ADR 0044](../docs/adr/0044-stage3-source-first-corpora.md).
 
 Heliste is archived with `python pheno_data/Heliste-2021/script/download.py` and
 verified offline by `bash pheno_data/Heliste-2021/script/verify.sh`. Dataset S1
@@ -30,7 +30,7 @@ HR timing is 24 h pretreatment, 48 h hypoxia and 24 h reoxygenation, with drug
 persistence unknown; parallel normoxia is duration matched, about 96 h elapsed.
 Frozen original chemical references remain in `local/chemical_resolution_v1.json`;
 current desalted-parent resolution is declared in `local/chemical_resolution_v2.json`;
-acquisition is separate from the offline `stage3/01_corpus/execution/corpus.py` build.
+acquisition is separate from the offline `cpsp/01_corpus/execution/corpus.py` build.
 
 | Active item | Source evidence | Corpus limitation |
 | --- | --- | --- |

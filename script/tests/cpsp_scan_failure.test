@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Public dependency boundary: an unavailable/failing search must never mean no stale paths.
+set -euo pipefail
+root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
+tmp="$(mktemp -d)"
+trap 'rm -rf -- "$tmp"' EXIT
+mkdir -p "$tmp/repo/script" "$tmp/repo/cpsp/01_corpus/execution" "$tmp/repo/cpsp/02_base_morgan/execution" "$tmp/repo/pheno_data" "$tmp/repo/docs" "$tmp/bin"
+cp "$root/script/check_cpsp_paths.sh" "$tmp/repo/script/"
+for path in cpsp/AGENTS.md cpsp/README.md cpsp/01_corpus/AGENTS.md cpsp/01_corpus/README.md cpsp/02_base_morgan/AGENTS.md cpsp/02_base_morgan/README.md pheno_data/AGENTS.md pheno_data/README.md docs/roadmap.md docs/data-inventory.md; do
+  printf 'current\n' > "$tmp/repo/$path"
+done
+printf 'x = 1\n' > "$tmp/repo/cpsp/01_corpus/execution/corpus.py"
+printf 'x = 1\n' > "$tmp/repo/cpsp/02_base_morgan/execution/workflow.py"
+git -C "$tmp/repo" init -q
+cat > "$tmp/bin/rg" <<'RG'
+#!/bin/bash
+echo 'injected search dependency failure' >&2
+exit 2
+RG
+chmod +x "$tmp/bin/rg"
+if out="$(cd "$tmp/repo" && PATH="$tmp/bin:/usr/bin:/bin" bash script/check_cpsp_paths.sh 2>&1)"; then
+  echo 'FAIL: a failed search dependency returned success' >&2
+  printf '%s\n' "$out" >&2
+  exit 1
+fi
+if printf '%s\n' "$out" | grep -q 'audit: PASS'; then
+  echo 'FAIL: a failed search must not print PASS' >&2; exit 1
+fi
+echo 'PASS: CPSP path dependency fails closed'
+printf '#!/bin/bash\nexit 1\n' > "$tmp/bin/rg"
+out="$(cd "$tmp/repo" && PATH="$tmp/bin:/usr/bin:/bin" bash script/check_cpsp_paths.sh)"
+printf '%s\n' "$out" | grep -q 'audit: PASS' || {
+  echo 'FAIL: successful searches without matches must pass' >&2; exit 1;
+}
+printf '#!/bin/bash\nexit 0\n' > "$tmp/bin/rg"
+if (cd "$tmp/repo" && PATH="$tmp/bin:/usr/bin:/bin" bash script/check_cpsp_paths.sh >/dev/null 2>&1); then
+  echo 'FAIL: a matched retired path must fail' >&2; exit 1
+fi
+echo 'PASS: CPSP distinguishes no matches from stale matches'

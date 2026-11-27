@@ -6,10 +6,10 @@ and individual or complete matrix training, evaluation and verification.
 Smoke runs are explicitly marked.
 
 ```bash
-python stage3/02_base_morgan/execution/workflow.py prepare --input stage3/01_corpus/output --output /tmp/morgan-prepared
-python stage3/02_base_morgan/execution/workflow.py train --prepared /tmp/morgan-prepared/prepared.json --output /tmp/morgan-run --condition baseline --phenotype cell_viability --setting cold_drug --fold 0 --seed 17 --smoke-epochs 2
-python stage3/02_base_morgan/execution/workflow.py evaluate --run /tmp/morgan-run
-python stage3/02_base_morgan/execution/workflow.py verify --run /tmp/morgan-run --prepared /tmp/morgan-prepared/prepared.json
+python cpsp/02_base_morgan/execution/workflow.py prepare --input cpsp/01_corpus/output --output /tmp/morgan-prepared
+python cpsp/02_base_morgan/execution/workflow.py train --prepared /tmp/morgan-prepared/prepared.json --output /tmp/morgan-run --condition baseline --phenotype cell_viability --setting cold_drug --fold 0 --seed 17 --smoke-epochs 2
+python cpsp/02_base_morgan/execution/workflow.py evaluate --run /tmp/morgan-run
+python cpsp/02_base_morgan/execution/workflow.py verify --run /tmp/morgan-run --prepared /tmp/morgan-prepared/prepared.json
 ```
 
 Use the `arc` environment. Before training, read the repository
@@ -64,16 +64,16 @@ The public subprocess acceptance tests use small synthetic data with aliases,
 both conditions, four doses and all three classes:
 
 ```bash
-OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python -m unittest discover -s stage3/02_base_morgan/execution/tests -p test_workflow.py -v
+OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python -m unittest discover -s cpsp/02_base_morgan/execution/tests -p test_workflow.py -v
 ```
 
 Run the complete frozen matrix sequentially (60 fits for the current two targets):
 
 ```bash
-python stage3/02_base_morgan/execution/workflow.py prepare --input stage3/01_corpus/output --output /tmp/morgan-all --settings cold_drug cold_dose warm_start
-python stage3/02_base_morgan/execution/workflow.py benchmark --prepared /tmp/morgan-all/prepared.json --output /tmp/morgan-benchmark
-python stage3/02_base_morgan/execution/workflow.py evaluate --benchmark /tmp/morgan-benchmark --require-complete
-python stage3/02_base_morgan/execution/workflow.py verify --benchmark /tmp/morgan-benchmark --prepared /tmp/morgan-all/prepared.json --require-complete
+python cpsp/02_base_morgan/execution/workflow.py prepare --input cpsp/01_corpus/output --output /tmp/morgan-all --settings cold_drug cold_dose warm_start
+python cpsp/02_base_morgan/execution/workflow.py benchmark --prepared /tmp/morgan-all/prepared.json --output /tmp/morgan-benchmark
+python cpsp/02_base_morgan/execution/workflow.py evaluate --benchmark /tmp/morgan-benchmark --require-complete
+python cpsp/02_base_morgan/execution/workflow.py verify --benchmark /tmp/morgan-benchmark --prepared /tmp/morgan-all/prepared.json --require-complete
 ```
 
 `benchmark.json` records every expected identity and its pending, running,
@@ -105,7 +105,7 @@ models, and labels resource measurements as simulated. Production CLI commands
 have no telemetry bypass. Run the narrow acceptance test with:
 
 ```bash
-OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python -m unittest discover -s stage3/02_base_morgan/execution/tests -p test_benchmark.py -v
+OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python -m unittest discover -s cpsp/02_base_morgan/execution/tests -p test_benchmark.py -v
 ```
 
 The recorded Heliste release completed all 60 formal fits. See the local

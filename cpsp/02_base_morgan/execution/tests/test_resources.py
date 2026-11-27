@@ -34,7 +34,7 @@ class ResourceTest(unittest.TestCase):
             ('accelerate\0launch\0/other/job.py', True),
             ('deepspeed\0/other/job.py', True),
             ('python\0/other/monitor.py\0--label\0train\0--token\0SECRET', False),
-            ('python\0-c\0print("SECRET stage3/train.py")', False),
+            ('python\0-c\0print("SECRET cpsp/train.py")', False),
             ('bash\0-c\0python /other/train.py SECRET', False),
             ('python\0/other/monitor.py\0--input\0/other/train.py', False),
         ]
@@ -75,7 +75,7 @@ class ResourceTest(unittest.TestCase):
             result = subprocess.CompletedProcess([], 0, '0, 100, 16000, 4\n', '')
             cases = [
                 ('python\0/home/arc/stage2/joint_v2_migration.py', 40 * 1024, False),
-                ('python\0/home/arc/stage3/joint_v2_apply.py', 40 * 1024, False),
+                ('python\0/home/arc/cpsp/joint_v2_apply.py', 40 * 1024, False),
                 ('python\0/other/job.py', 1024 * 1024 - 1, False),
                 ('python\0/other/job.py', 1024 * 1024, True),
                 ('python\0-c\0print("SECRET")', 1024 * 1024 + 1, True),

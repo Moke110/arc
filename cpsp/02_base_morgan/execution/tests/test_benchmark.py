@@ -72,6 +72,21 @@ class BenchmarkAcceptance(unittest.TestCase):
                 self.invoke('evaluate', '--benchmark', output)
                 self.invoke('verify', '--benchmark', output, '--prepared', prepared)
             self.assertEqual(summary, summary_path.read_bytes())
+            # A sealed ledger remains valid after the containing release is moved.
+            ledger = json.loads(original)
+            ledger['prepared_path'] = '../prepared/prepared.json'
+            for entry in ledger['runs']:
+                entry['run_path'] = 'runs/' + Path(entry['run_path']).name
+            ledger_path.write_bytes(workflow.encoded(ledger) + b'\n')
+            relocated = root/'relocated'
+            output.rename(relocated)
+            with patch.object(training, 'train', side_effect=AssertionError('evaluation must not fit')):
+                self.invoke('evaluate', '--benchmark', relocated)
+                self.invoke('verify', '--benchmark', relocated, '--prepared', prepared)
+            self.assertEqual(summary, (relocated/'summary.json').read_bytes())
+            self.assertEqual(workflow.encoded(ledger) + b'\n', (relocated/'benchmark.json').read_bytes())
+            relocated.rename(output)
+            ledger_path.write_bytes(original)
             for mutate in [lambda v: v['runs'].pop(), lambda v: v['runs'].append(v['runs'][0]),
                            lambda v: v['runs'][0]['identity'].update(seed=999),
                            lambda v: v.update(input_fingerprint='corrupt')]:
