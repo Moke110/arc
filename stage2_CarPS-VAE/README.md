@@ -9,17 +9,23 @@ CarPS-VAE uses the Step 06.4 `XΔ-XΔ` architecture selected in
 [ADR 0099](../docs/adr/0099-carps-vae-alpha-and-chemical-representations.md).
 Separate 100-dimensional Gaussian encoders map measured same-plate DMSO
 (`X1`) and measured signed response (`Δ = X2 − X1`). The native Gaussian
-prediction head uses the control latent, the frozen UniMol features selected
-in [ADR 0100](../docs/adr/0100-carps-vae-unimol.md), and dose standardized
-on the training fold. One signed Δ decoder reconstructs measured Δ and
+prediction head uses the control latent and the frozen UniMol features selected
+in [ADR 0100](../docs/adr/0100-carps-vae-unimol.md). Step 10 selects
+`no-dose` for the model input. One signed Δ decoder reconstructs measured Δ and
 decodes the predicted latent. The treated prediction is `X1 + Δ̂`.
 Both measured and predicted Δ use the same matched control on the ordered
 Denoise-DEG 5k (`denoise-5k`) axis selected in
 [ADR 0102](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md).
-The Step 09 full-axis comparison gave mean Δ PCC of 0.4413 ± 0.0136
-and mean Δ RMSE of 0.2386 ± 0.0037 for this axis.
+The Step 09 cold-drug axis comparison used training-fold standardized log dose
+and gave mean full-axis Δ PCC of 0.4413 ± 0.0136 and Δ RMSE of 0.2386 ± 0.0037.
 [Step 09 results](09_cpsv_axis/README.md#formal-results) ·
 [Original Step 09 publication](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/09_cpsv_axis/README.md#formal-results)
+
+Step 10 evaluated joint generalization to held-out drug parents and measured
+doses. The selected `no-dose` arm had mean held-out full-axis Δ PCC of
+0.3913 ± 0.0235 and Δ RMSE of 0.2472 ± 0.0046 across nine fold and seed
+coordinates. [Step 10 results](10_cpsv_dose/README.md#formal-results) ·
+[ADR 0104](../docs/adr/0104-carps-vae-no-dose.md)
 
 `L = MSE_X1 + MSE_Δrec + MSE_Δpred + 1.75 × L1_Δpred + 0.1 × (KL(q1 ‖ N) + KL(qΔ ‖ N) + KL(qpred ‖ qΔ))`
 
@@ -55,7 +61,7 @@ exceeded the absolute mean difference on both metrics.
 | [07 CarPS-VAE alpha](07_cpsv_alpha/README.md) | Freezes the shared signed Δ model and KPGT default. All nine selected checkpoints exactly replayed the validation objective and predictions and held-out predictions. |
 | [08 Chemical representation comparison](08_cpsv_chem-emb/README.md) | Completed 63 matched fold and seed coordinates across seven representations. UniMol led both Δ PCC and Δ RMSE and is selected for subsequent CarPS-VAE studies. |
 | [09 CarPS-VAE prediction axes](09_cpsv_axis/README.md#formal-results) | Completed 72 UniMol coordinates across eight axes. Denoise-DEG 5k led the full-axis mean Δ PCC (0.4413) and Δ RMSE (0.2386) and was selected. |
-| [10 CarPS-VAE dose inputs](10_cpsv_dose/README.md) | Compares nine dose configurations and a separate TranSiGen reference on cold-dose-drug folds. |
+| [10 CarPS-VAE dose inputs](10_cpsv_dose/README.md) | Completed 90 cold-dose-drug coordinates across nine CarPS-VAE configurations and a separate TranSiGen reference. Selected `no-dose` for its highest mean Δ PCC and lowest mean Δ RMSE. |
 
 ## Verify the current figures
 

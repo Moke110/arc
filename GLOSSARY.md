@@ -20,7 +20,7 @@ The stage that develops and evaluates transcriptome prediction for chemical pert
 The `stage2_CarPS-VAE/` tree that owns Stage 2 data releases, the CarPS-VAE initial release, and subsequent perturbation prediction studies.
 
 **CarPS-VAE**:
-The selected Stage 2 variational autoencoder for predicting the signed transcriptomic response of cardiomyocytes to a chemical perturbation from matched control expression, chemical representation, and dose.
+The selected Stage 2 variational autoencoder for predicting the signed transcriptomic response of cardiomyocytes to a chemical perturbation from matched control expression and chemical representation.
 
 **CarPS-VAE alpha**:
 The initial fixed release of CarPS-VAE, derived from the Step 06.4 `XΔ-XΔ` arm and released in Step 07. It is the reference against which subsequent model experiments are evaluated.

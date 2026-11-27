@@ -42,8 +42,8 @@ Select each checkpoint by minimum validation objective for its model. Publish
 full-axis held-out results with Δ PCC and Δ RMSE as the primary metrics for the
 CarPS-VAE dose comparison. Report the individual folds and pair CarPS-VAE
 methods within fold and training seed against `no-dose`. Report the reference
-as `TranSiGen` in the figures. The study publishes comparison evidence. A
-downstream default requires its own decision.
+as `TranSiGen` in the figures. The study publishes comparison evidence.
+[ADR 0104](0104-carps-vae-no-dose.md) records the downstream default.
 
 ## See
 

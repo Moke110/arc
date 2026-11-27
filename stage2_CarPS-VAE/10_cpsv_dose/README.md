@@ -1,6 +1,10 @@
 # Step 10 CarPS-VAE dose inputs
 
-Compare nine CarPS-VAE dose inputs and a separate TranSiGen reference on the
+**Decision.** Use `no-dose` in the selected CarPS-VAE configuration.
+It led both primary metrics across the nine cold-dose-drug fold and seed
+coordinates. [ADR 0104](../../docs/adr/0104-carps-vae-no-dose.md)
+
+Step 10 compared nine CarPS-VAE configurations and a separate TranSiGen reference on the
 [frozen Denoise-DEG 5k release](../03_data_train/03.7_tenv_denoise-5k/README.md).
 The [experiment design](../../docs/adr/0103-carps-vae-dose-inputs.md) fixes the
 conditions, model interfaces, objectives and primary metrics.
