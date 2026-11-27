@@ -21,14 +21,14 @@
   },
   "independent_renders": 2,
   "png_files_sha256": {
-    "figure/learning-curve.png": "72e1534a7db70b0061b629262241e683f9b69c6ccf5eb7848210556530f980c9",
+    "figure/learning-curve.png": "8ef0b55588dbf0f5a921028c3110c0b12d8e2a112bb609813b3d94e540cfeae7",
     "figure/metrics-paired.png": "5a0a2567f49f13da2635a7af290db44dd05d1da04df7158cb9f7fc12eb74022e",
     "figure/metrics.png": "dfd60c651554ce0ce6750b3c5aad86db6c5832062d0436c48e4e3aad49001222"
   },
   "renderer_files_sha256": {
     "10_cpst_dose/execution/dose_protocol.py": "0a470e4e1c42ee38d7ef3add56f82b80cf08202691fec4a709e526859fe61642",
-    "10_cpst_dose/figure/script/render_doses.py": "414795d7db38943eb12ff123fd9f798f98395799140b0836f5fcc140fda45919",
-    "util/output/api/cpst_util/comparison.py": "4806e7c3d331637ba2d0d9310fd833ed9d2135c40bf62a2034cba38773eae65c",
+    "10_cpst_dose/figure/script/render_doses.py": "1d4ec96bd9214f535f195429e481af547ded8a3c5943e23b1c57facf34faad7d",
+    "util/output/api/cpst_util/comparison.py": "78bb29a6621e1ad4565c3201b2618f630355cf49653afe70b5688372362ad3b7",
     "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },

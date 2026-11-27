@@ -8,7 +8,7 @@ from unittest import TestCase
 import torch
 
 REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-sys.path.insert(0, str(REPO / "cpst/06_tsg_shape/06.4_round4/execution"))
+sys.path.insert(0, str(REPO / "cpst/06_tsg_module/06.4_round4/execution"))
 
 from measured_model import MeasuredAdapter, configure_objective
 from measured_roster import (CONTROL_ONLY, MEASURED_SHARED, MEASURED_SEPARATE, SOURCE_SHAPES,

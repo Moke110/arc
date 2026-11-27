@@ -70,7 +70,7 @@ bind the study configuration and execute each phase in a separate process.
 | Studies | Shared runtime and accepted evidence |
 | --- | --- |
 | 04–06 | [`eval/fixed_prediction.py`](eval/fixed_prediction.py) verifies held-out condition and gene order, paired predictions and signed Δ arrays before scoring. [`eval/shape.py`](eval/shape.py) pairs architecture scores with the registered control on the same fold. The consolidation checked 285 installed registrations against the original Git blobs and matched 343 smoke and formal configurations between the original and shared entry points. Representative CUDA fits matched the original checkpoints, predictions and metrics. [TranSiGen verification](training/verification.md) · [Formal receipt checksums](training/formal-receipts.sha256) |
-| 07 | [`training/cpst_model.py`](training/cpst_model.py) implements the fixed `XΔ-XΔ` CarPS-Transcriptome alpha. The KPGT default preserves the Step 06.4 initialization and forward path. The alpha release verified its source pins and nine Step 06.4 checkpoint replays. [Alpha release](../07_cpst_alpha/README.md) · [Tracked release manifest](../07_cpst_alpha/output/release.json) |
+| 07 | [`training/cpst_model.py`](training/cpst_model.py) exposes `CPSTAdapter` for the fixed `XΔ-XΔ` architecture used by current studies. The KPGT default preserves the Step 06.4 initialization and forward path. The alpha release verified its source pins and nine Step 06.4 checkpoint replays. [Alpha release](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/README.md) · [Pinned alpha release manifest](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/output/release.json) |
 | 08–10 | [`training/chemical.py`](training/chemical.py) aligns frozen chemical vectors to pooled conditions. [`training/registered.py`](training/registered.py) locks runs and validates their phase receipts. [`eval/axis_delta.py`](eval/axis_delta.py) scores the full-axis comparisons in Steps 09 and 10. The acceptance checked the original source and scientific configuration of 207 fresh registrations across Steps 08–10, with reused fits bound to predecessor receipts. [Shared runtime verification](training/cpst-verification.md) · [Receipt checksums](training/cpst-receipts.sha256) |
 
 Step 08’s formal rule retained KPGT as the working default. Changing it required
@@ -88,7 +88,7 @@ Current registrations and receipts use `cpst` paths. The release migration maps
 reissued registration digests to the originals embedded in unchanged checkpoints.
 The [runtime lookup](output/api/cpst_util/registration-hashes.json) holds that
 projection and the accepted Denoise-DEG manifest reissue. The provenance reader
-checks historical source digests at each experiment’s pinned Git revision. [Migration inventory](log/385-release-migration.json) · [Pinned Step 06.4 replay](../06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit)
+checks historical source digests at each experiment’s pinned Git revision. [Migration inventory](log/385-release-migration.json) · [Pinned Step 06.4 replay](../06_tsg_module/06.4_round4/README.md#replay-a-sealed-step-064-fit)
 
 ## Comparison figures
 

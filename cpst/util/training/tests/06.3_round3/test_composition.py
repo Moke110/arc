@@ -9,7 +9,7 @@ from torch import nn
 from torch.nn import functional as F
 
 REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-sys.path.insert(0, str(REPO / "cpst/06_tsg_shape/06.3_round3/execution"))
+sys.path.insert(0, str(REPO / "cpst/06_tsg_module/06.3_round3/execution"))
 
 from composition_model import CompositionAdapter, axis_run, configure_objective
 from composition_roster import ROUND_TWO_SHAPES, coordinates, fit_coordinates

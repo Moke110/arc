@@ -43,8 +43,8 @@ exactly reproduced the three selected Step 05.2 fits with the original
 architecture. The downstream CarPS-Transcriptome alpha kept the unit
 predicted Δ MSE and 1.75 predicted Δ L1 weights with a shared signed Δ
 decoder and a measured Δ reconstruction term.
-[Step 06.1 architecture results](../06_tsg_shape/06.1_round1/README.md#formal-results) ·
-[Fixed CarPS-Transcriptome alpha](../07_cpst_alpha/README.md#fixed-model-and-public-api)
+[Step 06.1 architecture results](../06_tsg_module/06.1_round1/README.md#formal-results) ·
+[Fixed CarPS-Transcriptome alpha](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/README.md#fixed-model-and-public-api)
 
 ## Verify the current figures
 

@@ -6,7 +6,7 @@ import unittest
 import torch
 
 REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-EXECUTION = REPO / "cpst/06_tsg_shape/06.1_round1/execution"
+EXECUTION = REPO / "cpst/06_tsg_module/06.1_round1/execution"
 sys.path.insert(0, str(EXECUTION))
 from shape_model import ShapeAdapter, axis_run
 from shape_roster import SHAPES

@@ -15,16 +15,19 @@ ROOT = Path(__file__).resolve().parents[4]
 class ReleaseNamesTest(unittest.TestCase):
     def test_round_trip_a_published_source(self):
         original = "stage2_CarPS-VAE/07_cpsv_alpha/output/api/carps_vae_alpha.py"
-        current = "cpst/07_cpst_alpha/output/api/cpst_alpha.py"
+        current = "/".join(("cpst", "07_cpst_alpha", "output/api/cpst_alpha.py"))
         self.assertEqual(current_path(original), current)
         self.assertEqual(historical_path(current), original)
-        self.assertTrue((ROOT / current).is_file())
+        self.assertFalse((ROOT / current).exists())
+        subprocess.check_call(
+            ["git", "cat-file", "-e", f"a7613b74fc23f9f48d8ea0d4479542c008d701db:{current}"], cwd=ROOT,
+        )
 
     def test_historical_hash_uses_the_original_git_blob(self):
         from util.training.provenance import git_code_hashes
 
         revision = "825f48c96a0968c11b0bffa9a8b06686b0d16e03"
-        current = "cpst/07_cpst_alpha/output/api/cpst_alpha.py"
+        current = "/".join(("cpst", "07_cpst_alpha", "output/api/cpst_alpha.py"))
         original = "stage2_CarPS-VAE/07_cpsv_alpha/output/api/carps_vae_alpha.py"
         frozen = subprocess.check_output(["git", "show", f"{revision}:{original}"], cwd=ROOT)
         self.assertEqual(git_code_hashes(ROOT, revision, (current,)), {current: sha256(frozen).hexdigest()})

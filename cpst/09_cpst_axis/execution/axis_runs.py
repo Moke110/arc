@@ -123,7 +123,7 @@ def read_run(path, bounded):
     key = args["axis"], args["fold"], args["seed"]
     registration_sha = axis_run.digest(registration)
     if (args != arguments(key, bounded) or config["schema"] != SCHEMA or config["protocol"] != PROTOCOL
-            or config["seed"] != key[2] or config["alpha_release_sha256"] != axis_run.digest(chem_runs.ALPHA_MANIFEST)
+            or config["seed"] != key[2] or config["alpha_release_sha256"] != chem_runs.alpha_release_digest()
             or config["model"]["n_genes"] != int(key[0].split("-")[1][0]) * 1000):
         raise ValueError(f"invalid sealed Step 09 registration: {path}")
     training, prediction, replay = (

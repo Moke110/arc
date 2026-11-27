@@ -5,11 +5,11 @@ import unittest
 import pandas as pd
 
 REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-EXECUTION = REPO / "cpst/06_tsg_shape/06.2_round2/execution"
+EXECUTION = REPO / "cpst/06_tsg_module/06.2_round2/execution"
 sys.path.insert(0, str(EXECUTION))
 from prior_architecture import verify_original_scores
 
-PUBLISHED = REPO / "cpst/06_tsg_shape/06.1_round1/figure/data/fold-scores.csv"
+PUBLISHED = REPO / "cpst/06_tsg_module/06.1_round1/figure/data/fold-scores.csv"
 
 
 class FormalArchitectureTest(unittest.TestCase):

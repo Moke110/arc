@@ -15,7 +15,7 @@ from dose_inputs import features_for, open_inputs
 from dose_model import DoseAdapter, configuration, epoch_streams, initialization, objective
 from dose_protocol import (ARMS, AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_STEP03,
                            SCENARIO, SEEDS, coordinates, representation)
-from chem_runs import ALPHA_MANIFEST, axis_run, verify_release
+from chem_runs import alpha_release_digest, axis_run, verify_release
 from tsg_axis.learning import EarlyStopping, fixed_rng
 from tsg_axis.protocol import MAX_EPOCHS, PATIENCE
 from util.training import registered
@@ -61,8 +61,8 @@ def code_hashes():
     """Bind the dose runner, its shared runtime and the alpha input adapters."""
     extra = (
         *DOSE_CODE,
-        "cpst/07_cpst_alpha/output/api/cpst_alpha.py",
-        "cpst/07_cpst_alpha/execution/verify_alpha.py",
+        "cpst/util/training/cpst_model.py",
+        "cpst/util/training/cpst_reference.py",
         "cpst/08_cpst_chem-emb/execution/chem_runs.py",
         "cpst/03_data_train/output/api/fold_ledger.py",
         "cpst/03_data_train/output/api/tenv_axes.py",
@@ -83,7 +83,7 @@ def bind(key, data, vectors, source, bounded):
     config = {
         **input_identity(data, fold, bounded),
         "schema": SCHEMA, "scenario": SCENARIO, "seed": seed,
-        "alpha_release_sha256": axis_run.digest(ALPHA_MANIFEST),
+        "alpha_release_sha256": alpha_release_digest(),
         "native_sha256": native,
         "code_sha256": code_hashes(),
         "representation": {"name": chemistry, "width": vectors.width(chemistry),

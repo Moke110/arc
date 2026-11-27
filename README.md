@@ -21,11 +21,11 @@ evaluation partitions.
 [Selected configuration](cpst/README.md#selected-carps-transcriptome-configuration) ·
 [Dose comparison](cpst/10_cpst_dose/README.md#formal-results)
 
-The fixed Step 07 alpha release preserves KPGT and training-fold standardized
+The historical alpha release preserves KPGT and training-fold standardized
 log dose. Its parity check reproduced the predictions and validation objective
 from all nine sealed Step 06.4 checkpoints. The CPST report traces that
 reference release through the later representation, gene-axis and dose
-studies. [Alpha replay evidence](cpst/07_cpst_alpha/README.md#checkpoint-and-replay-evidence) ·
+studies. [Alpha replay evidence](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/README.md#checkpoint-and-replay-evidence) ·
 [Experiment sequence](cpst/README.md#evidence-in-experiment-order)
 
 ## CarPS-Phenotype (CPSP)

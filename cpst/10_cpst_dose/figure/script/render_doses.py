@@ -14,7 +14,7 @@ import pandas as pd
 STEP = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(STEP / "execution"), str(STEP.parent / "util/output/api")]
 from dose_protocol import ARMS, REFERENCE, TRANSIGEN
-from cpst_util.comparison import METRIC_PANELS
+from cpst_util.comparison import LOSS_LABEL, METRIC_PANELS
 from cpst_util.plotting import focus_y, learning_curve, replicate_bar, save_figure
 
 COORDINATE = ["arm", "fold", "seed"]
@@ -71,7 +71,7 @@ def draw_curves(curves):
         traces = [(trace.epoch, trace.train, trace.validation)
                   for _, trace in selected.groupby(["fold", "seed"])]
         learning_curve(axis, traces)
-        axis.set(title=arm, xlabel="Epoch", ylabel="Objective")
+        axis.set(title=arm, xlabel="Epoch", ylabel=LOSS_LABEL)
         axis.xaxis.set_major_locator(MaxNLocator(integer=True))
         format_axis(axis)
     for axis in list(axes.flat)[len(ARMS):]:

@@ -1,7 +1,7 @@
 # Steps 07–10 shared-runtime verification
 
 The [receipt inventory](cpst-receipts.sha256) binds the installed
-Step 07 release and the formal rosters, checkpoint ledgers, report tables,
+formal rosters, checkpoint ledgers, report tables,
 lineage and figure evidence for Steps 08–10. The matrix manifests bind each
 fresh registration, phase manifest and checkpoint through its recorded
 path and digest. The reuse plans bind the exact predecessor registrations
@@ -11,7 +11,7 @@ rendering environment.
 
 | Study | Accepted result | Original registration code | Fresh and reused coordinates |
 | --- | --- | --- | --- |
-| [07 alpha](../../07_cpst_alpha/README.md) | `output/release.json`, `log/362-alpha.json`, Step 06.4 formal matrix and report | `825f48c96a0968c11b0bffa9a8b06686b0d16e03` and Step 06.4 `f387f2c370eb87cd27c02502aa98f165851491a7` | 9 Step 06.4 replays |
+| [07 alpha](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/README.md) | `output/release.json`, `log/362-alpha.json`, Step 06.4 formal matrix and report | `825f48c96a0968c11b0bffa9a8b06686b0d16e03` and Step 06.4 `f387f2c370eb87cd27c02502aa98f165851491a7` | 9 Step 06.4 replays |
 | [08 chemical representations](../../08_cpst_chem-emb/README.md) | `output/formal/{matrix,report,reuse-preflight.json}`, `log/364-formal.json`, `figure/` | `ac62a177a54aa99e6ac626728af12394f3e0d940` | 54 fresh, 9 Step 06.4 reuses |
 | [09 prediction axes](../../09_cpst_axis/README.md) | `output/formal/{matrix,report,reuse-preflight.json}`, `log/371-formal.json`, `figure/` | `d3395ca0e0a055dc28e8e431740f5ec640ee4247` | 63 fresh, 9 Step 08 reuses |
 | [10 dose inputs](../../10_cpst_dose/README.md) | `output/formal/{matrix,matrix-audit,report}`, `log/378-formal.json`, `figure/` | `b8be1ad9244c9a3e03eba3e0c77ec64a59ed695d` | 90 fresh across CarPS-Transcriptome and native TranSiGen |
@@ -66,7 +66,7 @@ and run the commands serially.
 stage=cpst
 sha256sum -c "$stage/util/training/cpst-receipts.sha256"
 python "$stage/04_tsg_axis/execution/verify_active_inputs.py"
-python "$stage/07_cpst_alpha/execution/verify_alpha.py"
+PYTHONPATH="$stage" python -m util.training.cpst_reference
 python "$stage/08_cpst_chem-emb/execution/chem_formal.py" verify --scratch "$WORK"
 python "$stage/09_cpst_axis/execution/axis_formal.py" verify --scratch "$WORK"
 python "$stage/10_cpst_dose/execution/dose_formal.py" verify --scratch "$WORK"

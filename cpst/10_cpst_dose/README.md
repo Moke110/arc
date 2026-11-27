@@ -8,7 +8,7 @@ Step 10 tested whether supplying measured dose improved prediction for drug pare
 | 1 | 1 | 554 | 62 | 153 | 614 |
 | 2 | 10 | 552 | 62 | 154 | 615 |
 
-All nine CarPS-Transcriptome arms used frozen UniMol, the `XΔ-XΔ` backbone with a shared signed Δ decoder, and the same objective. The eight dose-input arms applied scaling, FiLM or concatenation on either side of the chemical projection. The TranSiGen reference used frozen KPGT and the author's `XX-XX` architecture and objective without a dose input. Its absolute scores reflect the combined architecture, representation and objective differences. [Alpha backbone](../07_cpst_alpha/README.md) · [UniMol decision](../../docs/adr/0100-carps-vae-unimol.md)
+All nine CarPS-Transcriptome arms used frozen UniMol, the `XΔ-XΔ` backbone with a shared signed Δ decoder, and the same objective. The eight dose-input arms applied scaling, FiLM or concatenation on either side of the chemical projection. The TranSiGen reference used frozen KPGT and the author's `XX-XX` architecture and objective without a dose input. Its absolute scores reflect the combined architecture, representation and objective differences. [Alpha backbone](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/README.md) · [UniMol decision](../../docs/adr/0100-carps-vae-unimol.md)
 
 The study selected checkpoints by minimum validation objective. It computed measured and predicted Δ by subtracting the measured same-plate DMSO profile from both treated profiles and used full-axis Δ PCC and Δ RMSE as primary metrics. Each fold's MMD bandwidth was calibrated on its complete training partition and shared across arms and seeds. [MMD calibration](log/bandwidths.csv)
 

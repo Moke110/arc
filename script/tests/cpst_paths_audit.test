@@ -74,14 +74,14 @@ for old in 01_bases 01_corpus 03_tsg_dose 04_tsg_transfer 02_models_tenv 02_data
   printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
   if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
 done
-printf 'p = "cpst/01_data_raw/output/x"\nq = "cpst/04_tsg_axis/output/x"\nr = "cpst/03_data_train/03.7_tenv_denoise-5k/output/x"\ns = "cpst/05_tsg_loss/05.1_loss_metrics/output/x"\nt = "cpst/05_tsg_loss/05.2_mse_l1/output/x"\nu = "cpst/05_tsg_loss/05.3_mse-l1_mse-x/output/x"\nv = "cpst/05_tsg_loss/05.4_mse-l1_pcc/output/x"\nw = "cpst/05_tsg_loss/05.5_mse-l1_cos/output/x"\ny = "cpst/06_tsg_shape/06.1_round1/output/x"\nz = "cpst/06_tsg_shape/06.2_round2/output/x"\naa = "cpst/06_tsg_shape/06.3_round3/output/x"\nab = "cpst/06_tsg_shape/06.4_round4/output/x"\n' >"$tmp/current.py"
+printf 'p = "cpst/01_data_raw/output/x"\nq = "cpst/04_tsg_axis/output/x"\nr = "cpst/03_data_train/03.7_tenv_denoise-5k/output/x"\ns = "cpst/05_tsg_loss/05.1_loss_metrics/output/x"\nt = "cpst/05_tsg_loss/05.2_mse_l1/output/x"\nu = "cpst/05_tsg_loss/05.3_mse-l1_mse-x/output/x"\nv = "cpst/05_tsg_loss/05.4_mse-l1_pcc/output/x"\nw = "cpst/05_tsg_loss/05.5_mse-l1_cos/output/x"\ny = "cpst/06_tsg_module/06.1_round1/output/x"\nz = "cpst/06_tsg_module/06.2_round2/output/x"\naa = "cpst/06_tsg_module/06.3_round3/output/x"\nab = "cpst/06_tsg_module/06.4_round4/output/x"\n' >"$tmp/current.py"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "active roots/external source must pass"
 printf 'p = "cpst/05_tsg_loss/output/x"\n' >"$tmp/old-loss.py"
 printf '%s\n' "$tmp/old-loss.py" >"$tmp/list_old_loss"
 if run "$tmp/list_old_loss" >/dev/null; then fail "old loss study paths must fail"; fi
 # An active-root prefix must not exempt a longer retired-looking sibling name.
-for sibling in 02_models_tenv_extra 02_models_tenv-5k_extra 04_tsg_dose_extra 06_tsg_transfer_extra 06_tsg_shape_extra 05_tsg_width_dose_extra 05_tsg_transfer; do
+for sibling in 02_models_tenv_extra 02_models_tenv-5k_extra 04_tsg_dose_extra 06_tsg_transfer_extra 06_tsg_module_extra 05_tsg_width_dose_extra 05_tsg_transfer; do
   printf 'p = "cpst/%s/output/x"\n' "$sibling" >"$tmp/prefix.py"
   printf '%s\n' "$tmp/prefix.py" >"$tmp/list_prefix"
   if run "$tmp/list_prefix" >/dev/null; then
@@ -97,7 +97,7 @@ run_root() {
   CPST_PATH_AUDIT_ROOT="$1" CPST_PATH_AUDIT_FILES="$2" bash "$audit"
 }
 fixture_root="$tmp/layout/cpst"
-for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} 06_tsg_shape 06_tsg_shape/{06.1_round1,06.2_round2,06.3_round3,06.4_round4} 07_cpst_alpha 08_cpst_chem-emb 09_cpst_axis 10_cpst_dose; do
+for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} 06_tsg_module 06_tsg_module/{06.1_round1,06.2_round2,06.3_round3,06.4_round4} 07_cpst_loss 08_cpst_chem-emb 09_cpst_axis 10_cpst_dose; do
   mkdir -p "$fixture_root/$step"
   printf '%s\n' "$step" >"$fixture_root/$step/AGENTS.md"
   printf '%s\n' "$step" >"$fixture_root/$step/README.md"
@@ -143,21 +143,21 @@ for substep in 05.1_loss_metrics 05.2_mse_l1 05.3_mse-l1_mse-x 05.4_mse-l1_pcc 0
 done
 for round in 06.1_round1 06.2_round2 06.3_round3 06.4_round4; do
   for routing in AGENTS.md README.md; do
-    mv "$fixture_root/06_tsg_shape/$round/$routing" "$tmp/shape-routing.off"
+    mv "$fixture_root/06_tsg_module/$round/$routing" "$tmp/shape-routing.off"
     if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
       fail "the shape round without $routing must fail the layout guard"
     fi
-    printf '%s\n' "$out" | grep -Fq "06_tsg_shape/$round/$routing" \
+    printf '%s\n' "$out" | grep -Fq "06_tsg_module/$round/$routing" \
       || fail "the missing shape round routing file must be named in the failure"
-    mv "$tmp/shape-routing.off" "$fixture_root/06_tsg_shape/$round/$routing"
+    mv "$tmp/shape-routing.off" "$fixture_root/06_tsg_module/$round/$routing"
   done
 done
-mkdir -p "$fixture_root/06_tsg_shape/06.2_unknown"
+mkdir -p "$fixture_root/06_tsg_module/06.2_unknown"
 if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
   fail "an unregistered shape round must fail the layout guard"
 fi
-rmdir "$fixture_root/06_tsg_shape/06.2_unknown"
-printf 'p = "cpst/06_tsg_shape/06.2_unknown/output/x"\n' >"$tmp/unknown-round.py"
+rmdir "$fixture_root/06_tsg_module/06.2_unknown"
+printf 'p = "cpst/06_tsg_module/06.2_unknown/output/x"\n' >"$tmp/unknown-round.py"
 printf '%s\n' "$tmp/unknown-round.py" >"$tmp/list_unknown_round"
 if run_root "$fixture_root" "$tmp/list_unknown_round" >/dev/null; then
   fail "an unregistered shape round literal must fail the runtime audit"

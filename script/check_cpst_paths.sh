@@ -88,8 +88,8 @@ main() {
 
   local old_alias='03[.][1-7]_(tenv|tahoe)_(hvg|denoise)-deg-[345]k'
   local step_pattern="(cpst|stage2_CarPS-VAE|stage2)/[[:alnum:]_./+@-]+|(07_cpsv_alpha|08_cpsv_chem-emb|09_cpsv_axis|10_cpsv_dose)/[[:alnum:]_./+@-]+|(06_tsg_drug_emb|07_tsg_dose|08_tsg_width_dose|09_tsg_transfer|03[.]1_hvg-deg-5k|$old_alias|log/316-runs)(/[[:alnum:]_./+@-]*)?"
-  local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 06_tsg_shape 07_cpst_alpha 08_cpst_chem-emb 09_cpst_axis 10_cpst_dose)
-  local shape_rounds=(06_tsg_shape/06.1_round1 06_tsg_shape/06.2_round2 06_tsg_shape/06.3_round3 06_tsg_shape/06.4_round4)
+  local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 06_tsg_module 07_cpst_loss 08_cpst_chem-emb 09_cpst_axis 10_cpst_dose)
+  local shape_rounds=(06_tsg_module/06.1_round1 06_tsg_module/06.2_round2 06_tsg_module/06.3_round3 06_tsg_module/06.4_round4)
   local stage2_root="${CPST_PATH_AUDIT_ROOT:-cpst}"
   if [ -z "${CPST_PATH_AUDIT_ROOT:-}" ]; then
     local previous
@@ -118,7 +118,7 @@ main() {
     echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
     return 1
   done
-  for entry in "$stage2_root"/06_tsg_shape/06.*; do
+  for entry in "$stage2_root"/06_tsg_module/06.*; do
     [ -e "$entry" ] || [ -L "$entry" ] || continue
     for root in "${shape_rounds[@]}"; do
       if [ "$entry" = "$stage2_root/$root" ] && [ -d "$entry" ] && [ ! -L "$entry" ]; then
@@ -189,8 +189,8 @@ main() {
         case "$literal" in "cpst/$root" | "cpst/$root"/*) active_literal=1 ;; esac
       done
       case "$literal" in
-        cpst/06_tsg_shape/AGENTS.md | cpst/06_tsg_shape/README.md) ;;
-        cpst/06_tsg_shape/?*)
+        cpst/06_tsg_module/AGENTS.md | cpst/06_tsg_module/README.md) ;;
+        cpst/06_tsg_module/?*)
           active_literal=0
           for root in "${shape_rounds[@]}"; do
             case "$literal" in "cpst/$root" | "cpst/$root"/*) active_literal=1 ;; esac
