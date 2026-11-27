@@ -55,6 +55,7 @@ exceeded the absolute mean difference on both metrics.
 | [07 CarPS-VAE alpha](07_cpsv_alpha/README.md) | Freezes the shared signed Δ model and KPGT default. All nine selected checkpoints exactly replayed the validation objective and predictions and held-out predictions. |
 | [08 Chemical representation comparison](08_cpsv_chem-emb/README.md) | Completed 63 matched fold and seed coordinates across seven representations. UniMol led both Δ PCC and Δ RMSE and is selected for subsequent CarPS-VAE studies. |
 | [09 CarPS-VAE prediction axes](09_cpsv_axis/README.md#formal-results) | Completed 72 UniMol coordinates across eight axes. Denoise-DEG 5k led the full-axis mean Δ PCC (0.4413) and Δ RMSE (0.2386) and was selected. |
+| [10 CarPS-VAE dose inputs](10_cpsv_dose/README.md) | Compares nine dose configurations and a separate TranSiGen reference on cold-dose-drug folds. |
 
 ## Verify the current figures
 
