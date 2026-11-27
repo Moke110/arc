@@ -102,3 +102,18 @@ run took 139.64 seconds with peak process RSS of 1,802,480 KiB.
 All 32 focused Python tests, both path fixtures, the tracked-file check,
 and the Stage 2 path audit passed. The isolated checks leave materialized
 storage retirement to the deployment gate.
+
+## Integration review verification
+
+After moving the KL diagnostics, paired architecture scores and chemical
+alignment into shared modules, 114 targeted tests passed. The configuration
+gate rebound all 225 formal and 25 bounded coordinates and verified all 207
+sealed fresh registrations. New Step 10 identities include the current
+early-stopping, RNG and input runtime. The historical Step 10 gate reads its
+original four-file identity from Git.
+
+Both receipt checksum ledgers and the original Step 08 UniMol and Step 10
+Zmol-FiLM CUDA checkpoint replays passed. A fresh two-epoch Step 08 UniMol
+fit matched all 51 tensors, initialization, traces, KL diagnostics, predictions,
+Delta arrays and row identities. The replay and fit scope peaked at
+1,800,656 KiB process RSS.

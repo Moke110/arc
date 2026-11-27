@@ -8,7 +8,8 @@ import numpy as np
 import pandas as pd
 import torch
 
-STEP = (Path(__file__).resolve().parents[4] / "04_tsg_axis/execution/tests" / Path(__file__).name).parents[2]
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+STEP = REPO / "stage2_CarPS-VAE/04_tsg_axis"
 sys.path.insert(0, str(STEP / "execution"))
 
 from run import PATIENCE, fit

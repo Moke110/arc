@@ -10,7 +10,8 @@ import unittest
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, str((Path(__file__).resolve().parents[4] / "04_tsg_axis/execution/tests" / Path(__file__).name).parents[2] / "output/api"))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str((REPO / "stage2_CarPS-VAE/04_tsg_axis") / "output/api"))
 
 from tsg_axis.inputs import AxisInputs
 from tsg_axis.comparison_evidence import read_fixed_jaccard

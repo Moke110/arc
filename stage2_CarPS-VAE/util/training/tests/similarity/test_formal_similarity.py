@@ -4,7 +4,8 @@ import unittest
 
 import pandas as pd
 
-sys.path.insert(0, str((Path(__file__).resolve().parents[4] / "05_tsg_loss/similarity/tests" / Path(__file__).name).parents[1]))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str(REPO / "stage2_CarPS-VAE/05_tsg_loss/similarity"))
 
 from report_similarity import METRICS, verify_reference_scores
 

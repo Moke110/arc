@@ -98,16 +98,16 @@ Steps 07–10 use the same runtime. `util/training/alpha_model.py` implements th
 CarPS-VAE alpha. `util/training/transigen.py` owns shared epoch selection,
 minimum-validation checkpointing and exact replay. Compare the study-owned rows,
 dose transforms, evaluation seeds and metric definitions when using these APIs.
+`util/training/chemical.py` aligns frozen chemical vectors to condition order.
 `util/training/registered.py` handles locked phase receipts for Steps 08–10.
 `util/eval/axis_delta.py` adds the weighted signed Jaccard to the shared scoring
 kernels for the Step 09 and 10 full-axis comparisons. Step 09 retains its
 tracked historical common-axis evidence and the accepted full-axis report.
 Step 10 scores the held-out drug-and-dose intersection with its own fold calibration.
 
-
-`training/transigen.py` owns registration, fit, checkpoint validation, prediction
-and independent replay for Steps 04–06. Each study supplies its roster, model
-builder and objective. New registrations explicitly identify architecture,
+`training/transigen.py` owns registration, fit, checkpoint validation,
+prediction, independent replay and architecture KL diagnostics for Steps 04–06.
+Each study supplies its roster, model builder and objective. New registrations explicitly identify architecture,
 objective and weights, chemical representation, fitted dose transform and
 conditioning, ordered axis digest, split, fold and training seed. The native
 study records the author MSE and KL coefficients. The numbered run commands
@@ -115,6 +115,7 @@ retain their arguments and continue to require separate processes for each phase
 
 `eval/fixed_prediction.py` checks ordered held-out conditions, paired predictions
 and their signed Delta arrays before computing condition and fold metrics.
+`eval/shape.py` pairs architecture fold scores with their registered control.
 Step 04 adds its disease-direction score and each study owns its aggregation,
 training calibration, reused coordinates and publication.
 

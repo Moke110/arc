@@ -20,6 +20,7 @@ from tsg_axis.learning import EarlyStopping, fixed_rng
 from tsg_axis.model import DoseView
 
 from . import experiment_configuration
+from .additive_objective import ComponentTrace
 
 PROCESS = secrets.token_hex(16)
 INPUT_PATHS = ("training", "representations", "source")
@@ -131,6 +132,24 @@ def replay_validation(root, model, registration_sha, training, validate_checkpoi
         raise ValueError("fresh process did not exactly replay the validation objective")
     if not np.array_equal(validation, np.load(root / "validation_prediction.npy", allow_pickle=False)):
         raise ValueError("fresh process did not exactly replay validation predictions")
+
+
+def kl_diagnostics(trace, latent):
+    diagnostics = {"epoch": trace.epoch}
+    for partition in ("train", "validation"):
+        total = (trace[f"{partition}_control_kl"]
+                 + trace[f"{partition}_treatment_kl"]
+                 + trace[f"{partition}_prediction_kl"])
+        diagnostics[f"{partition}_total_kl"] = total
+        diagnostics[f"{partition}_kl_per_latent_dimension"] = total / latent
+    return pd.DataFrame(diagnostics)
+
+
+def fit_with_diagnostics(root, native, model, data, config, registration_sha):
+    details = fit(root, native, model, data, config, registration_sha, trace_factory=ComponentTrace)
+    trace = pd.read_csv(root / "learning_curve.csv", float_precision="round_trip")
+    kl_diagnostics(trace, config["model"]["n_latent"]).to_csv(root / "kl-diagnostics.csv", index=False)
+    return details
 
 
 def predict_test(root, native, model, data, config, registration_sha, training):

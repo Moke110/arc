@@ -5,7 +5,8 @@ import subprocess
 import sys
 from unittest import TestCase
 
-RUN = (Path(__file__).resolve().parents[4] / "05_tsg_loss/05.1_loss_metrics/execution/tests" / Path(__file__).name).parents[1] / "run_loss.py"
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+RUN = REPO / "stage2_CarPS-VAE/05_tsg_loss/05.1_loss_metrics/execution" / "run_loss.py"
 
 
 class RegistrationCommandTests(TestCase):

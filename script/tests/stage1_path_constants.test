@@ -15,7 +15,7 @@ while IFS=$'\t' read -r path target; do
 done <stage1/pre_cutover_weights.tsv
 
 (cd stage1/input/references && sha256sum -c manifest.sha256)
-(cd pert_data/Annotation/local && sha256sum -c ../script/audit_seed.sha256)
+bash pert_data/Annotation/script/verify_audit_seed.sh
 
 for version in v0 v1 v1.1 v2 v3; do
   if [[ -e "stage1/xpert-fda-miri-$version" || -L "stage1/xpert-fda-miri-$version" ]]; then

@@ -15,7 +15,7 @@ from chem_runs import ChemicalInputs, PHASES, PHASE_FILES, SEALED_FILES, axis_ru
 from evaluate_loss import axis_evaluate, check_trace
 from evaluate_sweep import TRACE_COLUMNS
 from run_measured import DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE
-from run_shape import fit_with_diagnostics, kl_diagnostics
+from util.training.transigen import fit_with_diagnostics, kl_diagnostics
 import tenv_axes
 from util.training import registered
 from util.training.provenance import verify_replay_configuration, verify_sealed_code

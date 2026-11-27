@@ -2,21 +2,14 @@
 
 import argparse
 import json
-import os
 from pathlib import Path
-import resource
-from tempfile import TemporaryDirectory
-import time
-
-import pandas as pd
-import torch
 
 from architecture_model import ArchitectureAdapter, axis_run, configure_objective, objective_identity
 from architecture_roster import CONTROL, HEAD_PARAMETERS, NO_X2, SHAPES, objective_label
-from run_shape import fit_with_diagnostics
 from shape_roster import dimensions
 from run_sweep import (AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING,
-                       INPUT_PATHS, PHASES, bind as bind_loss, fit as fit_loss)
+                       INPUT_PATHS, PHASES, bind as bind_loss)
+from util.training.transigen import fit_with_diagnostics
 
 SCHEMA = "stage2-tenv-transigen-prediction-architecture-run-v1"
 PROTOCOL = "matched-plate-control-transigen-prediction-architecture-v1"

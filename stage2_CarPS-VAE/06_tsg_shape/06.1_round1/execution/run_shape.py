@@ -4,19 +4,13 @@ import argparse
 from fractions import Fraction
 from functools import partial
 import json
-import os
 from pathlib import Path
-import resource
-from tempfile import TemporaryDirectory
-import time
-
-import pandas as pd
-import torch
 
 from shape_model import ShapeAdapter, axis_run
 from shape_roster import SHAPES, SMOKE_SHAPES, dimensions
 from run_sweep import (AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING,
-                       INPUT_PATHS, PHASES, AdditiveObjective, bind as bind_loss, fit as fit_loss)
+                       INPUT_PATHS, PHASES, AdditiveObjective, bind as bind_loss)
+from util.training.transigen import fit_with_diagnostics, kl_diagnostics
 
 SCHEMA = "stage2-tenv-transigen-shape-width-extension-run-v1"
 PROTOCOL = "matched-plate-control-transigen-shape-width-extension-v1"
@@ -26,15 +20,6 @@ TRAINING_FILES = (*axis_run.TRAINING_FILES, "kl-diagnostics.csv")
 PREDICTION_FILES = axis_run.PREDICTION_FILES
 SEALED_FILES = (*TRAINING_FILES, *PREDICTION_FILES, PHASES["train"], PHASES["predict"])
 PHASE_FILES = {"train": TRAINING_FILES, "predict": PREDICTION_FILES, "replay": SEALED_FILES}
-
-
-def kl_diagnostics(trace, latent):
-    diagnostics = {"epoch": trace.epoch}
-    for partition in ("train", "validation"):
-        total = trace[f"{partition}_control_kl"] + trace[f"{partition}_treatment_kl"] + trace[f"{partition}_prediction_kl"]
-        diagnostics[f"{partition}_total_kl"] = total
-        diagnostics[f"{partition}_kl_per_latent_dimension"] = total / latent
-    return pd.DataFrame(diagnostics)
 
 
 def bind(args, data, vectors):
@@ -53,13 +38,6 @@ def bind(args, data, vectors):
 
 def register(output, args):
     return axis_run.transigen.register_run(output, args, bind)
-
-
-def fit_with_diagnostics(root, native, model, data, config, registration_sha):
-    details = fit_loss(root, native, model, data, config, registration_sha)
-    trace = pd.read_csv(root / "learning_curve.csv", float_precision="round_trip")
-    kl_diagnostics(trace, config["model"]["n_latent"]).to_csv(root / "kl-diagnostics.csv", index=False)
-    return details
 
 
 def build_model(args, config, data):

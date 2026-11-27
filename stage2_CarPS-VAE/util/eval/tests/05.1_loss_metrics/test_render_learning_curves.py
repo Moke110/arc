@@ -8,7 +8,8 @@ import sys
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-RENDER = (Path(__file__).resolve().parents[4] / "05_tsg_loss/05.1_loss_metrics/execution/tests" / Path(__file__).name).parents[2] / "execution/render_learning_curves.py"
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+RENDER = REPO / "stage2_CarPS-VAE/05_tsg_loss/05.1_loss_metrics" / "execution/render_learning_curves.py"
 FIELDS = ("loss", "alpha", "fold", "seed", "run_sha256", "best_epoch", "stopping_epoch", "epoch",
           "train_loss", "validation_loss", "validation_mse")
 

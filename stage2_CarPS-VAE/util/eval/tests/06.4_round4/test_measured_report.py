@@ -8,7 +8,8 @@ import unittest
 
 import pandas as pd
 
-sys.path.insert(0, str((Path(__file__).resolve().parents[4] / "06_tsg_shape/06.4_round4/execution/tests" / Path(__file__).name).parents[1]))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str(REPO / "stage2_CarPS-VAE/06_tsg_shape/06.4_round4/execution"))
 
 from measured_scores import paired_report
 from prior_measured import RECEIPT, ROUND_THREE, verify_release, verify_source_scores
@@ -70,7 +71,7 @@ class PairedReportTest(unittest.TestCase):
 
 class SourceReportTest(unittest.TestCase):
     def test_source_manifest_must_match_accepted_receipt(self):
-        scratch = (Path(__file__).resolve().parents[4] / "06_tsg_shape/06.4_round4/execution/tests" / Path(__file__).name).parents[5] / "tmp"
+        scratch = REPO / "tmp"
         scratch.mkdir(exist_ok=True)
         with TemporaryDirectory(prefix="step064-source-test-", dir=scratch) as directory:
             candidate = Path(directory)

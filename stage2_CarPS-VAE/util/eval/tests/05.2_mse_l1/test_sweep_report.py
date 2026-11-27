@@ -9,7 +9,8 @@ from types import SimpleNamespace
 from unittest import TestCase
 from unittest.mock import patch
 
-sys.path.insert(0, str((Path(__file__).resolve().parents[4] / "05_tsg_loss/05.2_mse_l1/execution/tests" / Path(__file__).name).parents[1]))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str(REPO / "stage2_CarPS-VAE/05_tsg_loss/05.2_mse_l1/execution"))
 
 import report_sweep
 from report_sweep import verify_native_control

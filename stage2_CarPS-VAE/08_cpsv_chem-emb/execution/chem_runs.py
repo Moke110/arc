@@ -25,11 +25,12 @@ from run_measured import AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_
 from run_measured import PHASES, SEALED_FILES, PHASE_FILES, axis_run, bind as bind_measured
 from evaluate_loss import axis_evaluate, check_trace
 from evaluate_sweep import TRACE_COLUMNS
-from run_shape import fit_with_diagnostics, kl_diagnostics
+from util.training.transigen import fit_with_diagnostics, kl_diagnostics
 from measured_roster import MEASURED_SHARED, SEEDS
 from stage2_util.representations import ARMS, WIDTHS
 from verify_alpha import verify_release
 from util.training import registered
+from util.training.chemical import aligned_features
 from util.training.provenance import verify_replay_configuration, verify_sealed_code
 
 SCHEMA = "carps-vae-alpha-chemical-run-v1"
@@ -42,15 +43,6 @@ ALPHA_MANIFEST = ALPHA / "output/release.json"
 def coordinates(smoke=False):
     """Return the preregistered representation × cold-drug fold × seed roster."""
     return tuple(product(ARMS, (0,) if smoke else range(3), (17,) if smoke else SEEDS))
-
-
-def aligned_features(vectors, arm, parents):
-    """Bind the source vectors to each pooled condition, preserving duplicates."""
-    parents_unique, inverse = np.unique(parents, return_inverse=True)
-    features = vectors.vectors(arm, parents_unique)
-    if features.shape != (len(parents_unique), WIDTHS[arm]) or features.dtype != np.float32:
-        raise ValueError(f"unexpected frozen representation width or dtype: {arm}")
-    return features[inverse]
 
 
 @dataclass(frozen=True)

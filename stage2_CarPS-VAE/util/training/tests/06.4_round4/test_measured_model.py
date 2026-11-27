@@ -7,15 +7,16 @@ from unittest import TestCase
 
 import torch
 
-HERE = (Path(__file__).resolve().parents[4] / "06_tsg_shape/06.4_round4/execution/tests" / Path(__file__).name)
-sys.path.insert(0, str(HERE.parents[1]))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str(REPO / "stage2_CarPS-VAE/06_tsg_shape/06.4_round4/execution"))
 
 from measured_model import MeasuredAdapter, configure_objective
 from measured_roster import (CONTROL_ONLY, MEASURED_SHARED, MEASURED_SEPARATE, SOURCE_SHAPES,
                              coordinates, fit_coordinates)
 from composition_model import CompositionAdapter
 
-SOURCE = next(parent for parent in HERE.parents if (parent / "pert_model/TranSiGen/source/src/model.py").is_file())
+SOURCE = next(parent for parent in (REPO, *REPO.parents)
+              if (parent / "pert_model/TranSiGen/source/src/model.py").is_file())
 SOURCE = SOURCE / "pert_model/TranSiGen/source"
 DEVICE = os.environ.get("TSG_MEASURED_TEST_DEVICE", "cpu")
 TRANSFORM = dict(kind="training-log10-dose-population-standardization-v1", mean=0., std=1.)

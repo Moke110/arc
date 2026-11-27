@@ -6,7 +6,8 @@ import unittest
 import numpy as np
 import pandas as pd
 
-STEP = (Path(__file__).resolve().parents[4] / "04_tsg_axis/execution/tests" / Path(__file__).name).parents[2]
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+STEP = REPO / "stage2_CarPS-VAE/04_tsg_axis"
 sys.path.insert(0, str(STEP / "output/api"))
 
 from tsg_axis.inputs import AxisInputs, score_fixed_prediction
@@ -79,7 +80,7 @@ class AxisInputsTest(unittest.TestCase):
 
         from tsg_axis.model import adapter, fit_transform
 
-        source = Path(os.environ.get("TRANSIGEN_TEST_SOURCE", STEP.parents[1] / "pert_model/TranSiGen/source"))
+        source = Path(os.environ.get("TRANSIGEN_TEST_SOURCE", REPO / "pert_model/TranSiGen/source"))
         if not (source / "src/model.py").is_file():
             self.skipTest("TranSiGen native source is not materialized")
         transform = fit_transform([0.2, 1., 10.])

@@ -8,7 +8,8 @@ from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
-STEP = (Path(__file__).resolve().parents[4] / "06_tsg_shape/06.1_round1/execution/tests" / Path(__file__).name).parents[2]
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+STEP = REPO / "stage2_CarPS-VAE/06_tsg_shape/06.1_round1"
 RENDERER = STEP / "execution/render_shape.py"
 SHAPES = ("original", "widen_z-110", "widen_z-120", "widen_z-130",
           "widen_enc-2k", "widen_enc-4k", "widen_enc-6k", "deepen_enc", "deepen_dec", "deepen_both")

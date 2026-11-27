@@ -8,10 +8,10 @@ import numpy as np
 
 from dose_model import model_features
 from dose_protocol import AXIS, DEFAULT_STEP03, HELD_DOSES, SCENARIO, STAGE, representation
-from chem_runs import aligned_features
 from training_data import open_tenv_axis_training
 from tsg_axis.inputs import AxisInputs
 from stage2_util.representations import RepresentationTable
+from util.training.chemical import aligned_features
 
 PARTITIONS = ("train", "valid", "test")
 SMOKE_LIMITS = dict(zip(PARTITIONS, (64, 24, 24), strict=True))

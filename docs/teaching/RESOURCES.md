@@ -25,31 +25,32 @@ High-trust sources for the training pipeline. Primary sources are in-repo (this 
   Overview of XPert as a pure library. Use for: model structure, loss weights, DTOXS splits, entry points, reproducibility notes.
 - [`pretrain/run.sh`](../../pert_model/XPert/source/pretrain/run.sh)
   Pretrain launcher with defaults (lr 0.004, batch 64, 2500 epochs cap, loss 0.2,0.003,0.2,1, patience 50, drug embeds `unimol,HG`).
-- [`stage1/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000.yaml`](../../stage1/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000.yaml)
+- [`stage1/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000.yaml`](https://github.com/Moke110/carps/blob/f0d5bb673435b1a0341301c802ceac5094708a54/stage1/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000.yaml)
   Pretrain recipe (workflow-owned); data roots point into `pert_data/XPert-L1000/source/data/` + the workflow `input/`.
 - [`src/train.py`](../../pert_model/XPert/source/src/train.py)
   Train/finetune/test/infer loops. Use for: exact loss composition, GradScaler, early stopping on PCC, finetune param handling.
 - [`src/model_xpert.py`](../../pert_model/XPert/source/src/model_xpert.py)
   Dual-branch Transformer (trt: CA+SA+SA+CA, ctl: SA+SA+SA+SA). Use for: how drug + cell inputs fuse.
 
-### Workflows (v0 vs v1)
+### Historical workflows (v0 vs v1)
 
-- [AGENTS.md: `stage1/xpert-fda-miri-v1/`](../../stage1/xpert-fda-miri-v1/AGENTS.md)
+The [current Stage 1 workflow](../../stage1/README.md) retains v2. The references
+below describe the original v0 and v1 implementations.
+
+- [AGENTS.md: `stage1/xpert-fda-miri-v1/`](https://github.com/Moke110/carps/blob/f0d5bb673435b1a0341301c802ceac5094708a54/stage1/xpert-fda-miri-v1/AGENTS.md)
   Use for: workflow layout, entrypoints, data facts/gotchas, ADR 0002/0008 (artifacts owned by workflow, components pure libraries).
-- [`stage1/xpert-fda-miri-v1/01_drug_embed/drug_embeddings.py`](../../stage1/xpert-fda-miri-v1/01_drug_embed/drug_embeddings.py)
+- [`stage1/xpert-fda-miri-v1/01_drug_embed/drug_embeddings.py`](https://github.com/Moke110/carps/blob/f0d5bb673435b1a0341301c802ceac5094708a54/stage1/xpert-fda-miri-v1/01_drug_embed/drug_embeddings.py)
   Step 01: copies the workflow-owned author HG reference (`input/HG_drug_embeddings.npy`) with a byte-parity gate.
-- [`stage1/xpert-fda-miri-v1/06_xpert_finetune/xpert_finetune.py`](../../stage1/xpert-fda-miri-v1/06_xpert_finetune/xpert_finetune.py) + [`config/dtoxs.yaml`](../../stage1/xpert-fda-miri-v1/06_xpert_finetune/config/dtoxs.yaml)
+- [`stage1/xpert-fda-miri-v1/06_xpert_finetune/xpert_finetune.py`](https://github.com/Moke110/carps/blob/f0d5bb673435b1a0341301c802ceac5094708a54/stage1/xpert-fda-miri-v1/06_xpert_finetune/xpert_finetune.py) + [`config/dtoxs.yaml`](https://github.com/Moke110/carps/blob/f0d5bb673435b1a0341301c802ceac5094708a54/stage1/xpert-fda-miri-v1/06_xpert_finetune/config/dtoxs.yaml)
   Step 06: all-train dtoxs finetune, artifacts moved into step output.
-- [`stage1/xpert-fda-miri-v1/05_xpert_finetune_bench/xpert_finetune_bench.py`](../../stage1/xpert-fda-miri-v1/05_xpert_finetune_bench/xpert_finetune_bench.py)
+- [`stage1/xpert-fda-miri-v1/05_xpert_finetune_bench/xpert_finetune_bench.py`](https://github.com/Moke110/carps/blob/f0d5bb673435b1a0341301c802ceac5094708a54/stage1/xpert-fda-miri-v1/05_xpert_finetune_bench/xpert_finetune_bench.py)
   Step 05: warm-start / cold-drug / cold-cate benchmark folds.
-- [`stage1/xpert-fda-miri-v1/07_xpert_predict/perturb_transcriptome.py`](../../stage1/xpert-fda-miri-v1/07_xpert_predict/perturb_transcriptome.py)
+- [`stage1/xpert-fda-miri-v1/07_xpert_predict/perturb_transcriptome.py`](https://github.com/Moke110/carps/blob/f0d5bb673435b1a0341301c802ceac5094708a54/stage1/xpert-fda-miri-v1/07_xpert_predict/perturb_transcriptome.py)
   Step 07: FDA prediction → `xpert_fda-cm_deg.csv`.
-- v0 finetune/predict (pre-refactor, viewable via git):
-  `git show 47e1604^:` on the then-`pert_model/` `xpert/` directory, then the
-  deleted `finetune/run.sh` and
-  `predict/predict.sh` files in that tree
+- [v0 finetune launcher](https://github.com/Moke110/carps/blob/70f774f32c2249376561c428a89442d22e61f7ee/pert_model/xpert/finetune/run.sh) +
+  [v0 prediction launcher](https://github.com/Moke110/carps/blob/70f774f32c2249376561c428a89442d22e61f7ee/pert_model/xpert/predict/predict.sh)
   The old library-owned orchestration that v1 replaced.
-- [`stage1/xpert-fda-miri-v0/scripts/run_all.py`](../../stage1/xpert-fda-miri-v0/scripts/run_all.py)
+- [`stage1/xpert-fda-miri-v0/scripts/run_all.py`](https://github.com/Moke110/carps/blob/70f774f32c2249376561c428a89442d22e61f7ee/fda_miri_vs/scripts/run_all.py)
   The scoring half that consumed the v0 DEG CSV (WCS+RGES / Zhang / pathway RGES).
 
 ### Literature
