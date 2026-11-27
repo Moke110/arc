@@ -40,9 +40,9 @@ traces, selected checkpoints, validation and test predictions, Delta
 arrays, and all 27 fold scores and eligibility counts. They selected
 epochs 129, 116, and 85 for folds 0, 1, and 2.
 
-[Mean held-out scores](figure/delta-metrics.png) ·
-[Mean paired differences](figure/delta-metrics-paired-difference.png) ·
-[Learning curves](figure/learning-curves.png) ·
+[Mean held-out scores](figure/metrics.png) ·
+[Mean paired differences](figure/metrics-paired.png) ·
+[Learning curves](figure/learning-curve.png) ·
 [270 fold scores](figure/data/fold-scores.csv) ·
 [90 equal-fold aggregates](figure/data/delta-metrics.csv) ·
 [Epoch objectives](figure/data/epoch-objectives.csv)
@@ -179,6 +179,8 @@ diff -r "$WORK/figures" "$WORK/figures-replay"
 
 ## Reproduce the formal matrix
 
+The [original release reproduction](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/06_tsg_shape/06.1_round1/README.md#reproduce-the-formal-matrix) pins the renderer and publication verifier for the historical results. Use that revision for the formal release verification below. The current comparison figures have their own CSV-only replay.
+
 Use the materialized checkout and the same capped runtime as the smoke.
 The driver registers, fits and replays only the six new coordinates. It
 uses the sealed #347 source when building the combined report.
@@ -243,20 +245,21 @@ Keep the candidate separate from the accepted release through verification.
 
 ## Replay the published figures
 
-The three canonical figures use the replicate, aggregate and epoch CSVs. Use
-the versions and digests in the [figure receipt](log/figure-render.json).
-The formal replay command verifies the scientific receipt and compares the
-current CSV-only renders against the figure receipt.
+The three current figures use the [epoch traces](figure/data/learning-curve.csv),
+[held-out scores](figure/data/metrics.csv) and [paired differences](figure/data/metrics-paired.csv).
+Differences subtract `original` within each fold and seed. The
+[replay receipt](log/figure-render.json) records the accepted fit evidence,
+plotted CSV and PNG digests, and renderer versions.
 
 ```bash
 STEP="$PWD/stage2_CarPS-VAE/06_tsg_shape/06.1_round1"
 mkdir -p "$PWD/tmp"
-WORK=$(mktemp -d "$PWD/tmp/tsg-shape-figures.XXXXXX")
+WORK=$(mktemp -d "$PWD/tmp/tsg-architecture-figures.XXXXXX")
 mkdir -p "$WORK/scratch" "$WORK/matplotlib"
 export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
-python "$STEP/figure/script/render_shape.py" \
+python "$STEP/figure/script/render_comparison.py" \
   --data "$STEP/figure/data" --output "$WORK/figures"
-for figure in delta-metrics.png delta-metrics-paired-difference.png learning-curves.png; do
+for figure in learning-curve.png metrics.png metrics-paired.png; do
   cmp "$STEP/figure/$figure" "$WORK/figures/$figure"
 done
 ```

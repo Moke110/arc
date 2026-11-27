@@ -81,10 +81,10 @@ the same three held-out folds.
 | 4−1−3+0 | +0.027580 ± 0.032154 | -0.006622 ± 0.006550 |
 | 5−2−3+0 | +0.007035 ± 0.030273 | -0.005457 ± 0.005543 |
 
-[Held-out scores](figure/delta-metrics.png) ·
-[Paired differences](figure/delta-metrics-paired-difference.png) ·
-[Primary contrasts](figure/primary-contrasts.png) ·
-[Learning curves](figure/learning-curves.png) ·
+[Held-out scores](figure/metrics.png) ·
+[Paired differences](figure/metrics-paired.png) ·
+[Original primary contrast figure](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/06_tsg_shape/06.3_round3/figure/primary-contrasts.png) ·
+[Learning curves](figure/learning-curve.png) ·
 [Fold and seed scores](figure/data/fold-scores.csv) ·
 [Aggregates and sample SD](figure/data/delta-metrics.csv) ·
 [Coordinate contrasts](figure/data/primary-contrasts.csv) ·
@@ -174,6 +174,8 @@ model source files.
 
 ## Reproduce the revised formal run
 
+The [original release reproduction](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/06_tsg_shape/06.3_round3/README.md#reproduce-the-revised-formal-run) pins the renderer and publication verifier for the historical results. Use that revision for the formal release verification below. The current comparison figures have their own CSV-only replay.
+
 Complete the bounded CUDA check above first. Run from the materialized checkout in the `arc` environment. Use the
 [Step 04 capped runtime](../../04_tsg_axis/README.md#prepare-the-capped-runtime)
 and keep the coordinator sampler active for the entire matrix, including
@@ -228,19 +230,21 @@ and execution revision from the publication. Use fresh `--activity` and
 
 ## Replay the published figures
 
-The renderer uses only the [plot CSVs](figure/data/). The
-[figure receipt](log/figure-render.json) records their hashes and the
-software versions for byte-identical replay.
+The three current figures use the [epoch traces](figure/data/learning-curve.csv),
+[held-out scores](figure/data/metrics.csv) and [paired differences](figure/data/metrics-paired.csv).
+Differences subtract `0_original` within each fold and seed. The
+[replay receipt](log/figure-render.json) records the accepted fit evidence,
+plotted CSV and PNG digests, and renderer versions.
 
 ```bash
 STEP="$PWD/stage2_CarPS-VAE/06_tsg_shape/06.3_round3"
 mkdir -p "$PWD/tmp"
-WORK=$(mktemp -d "$PWD/tmp/tsg-architecture-composition-figures.XXXXXX")
+WORK=$(mktemp -d "$PWD/tmp/tsg-architecture-figures.XXXXXX")
 mkdir -p "$WORK/scratch" "$WORK/matplotlib"
 export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
-python "$STEP/figure/script/render_composition.py" \
+python "$STEP/figure/script/render_comparison.py" \
   --data "$STEP/figure/data" --output "$WORK/figures"
-for figure in delta-metrics.png delta-metrics-paired-difference.png learning-curves.png primary-contrasts.png; do
+for figure in learning-curve.png metrics.png metrics-paired.png; do
   cmp "$STEP/figure/$figure" "$WORK/figures/$figure"
 done
 ```
