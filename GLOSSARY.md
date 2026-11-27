@@ -887,6 +887,12 @@ _Avoid_: narrowed corpus axis, new identity axis
 The name of a Stage 2 gene axis identified by its selection family and size in
 thousands of genes. `hvg` denotes HVG-DEG and `denoise` denotes Denoise-DEG.
 
+**Disease DEG1000 union**:
+The distinct genes appearing in at least one eligible disease's DEG1000 on the frozen CM gene axis.
+
+**Disease direction-correct coverage**:
+The percentage of the disease DEG1000 union for which a model correctly predicts a nonzero perturbation direction in a specified condition.
+
 **Gene-axis candidate**:
 A frozen-axis gene under consideration for the axis — the rows of
 `output/gene-axis/candidate_rank_sum.csv`, one per frozen gene. tenv-HVG ranks all 18,164

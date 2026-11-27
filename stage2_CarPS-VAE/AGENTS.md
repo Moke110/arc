@@ -22,6 +22,7 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 - [06_tsg_shape](06_tsg_shape/AGENTS.md) compares TranSiGen expression widths, depths and prediction architectures on the fixed denoise-5k axis.
 - [07_cpsv_alpha](07_cpsv_alpha/AGENTS.md) owns the fixed CarPS-VAE alpha entry point, KPGT default and exact checkpoint replay.
 - [08_cpsv_chem-emb](08_cpsv_chem-emb/AGENTS.md) compares seven frozen chemical representations using the fixed alpha.
+- [09_cpsv_axis](09_cpsv_axis/AGENTS.md) compares eight CarPS-VAE prediction axes with UniMol.
 
 Use Step 04's `execution/matrix.py` and `execution/evaluate.py` for the axis comparison.
 Steps 05.1–05.5 and 06.1–06.4 reuse the matched-control runtime and metric primitives with their own run and report commands.
