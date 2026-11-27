@@ -161,4 +161,4 @@ Drug biology / safety (literature & database briefing; see `reference/` for the 
 ChEMBL CHEMBL22 / CHEMBL654; KEGG D00145 / D00563; PMIDs 8328738, 10738846, 25359996, 41029321
 (trimethoprim); 40398828, 22032749, 30052325, 30900189 (mirtazapine). In-silico MIRI link for
 trimethoprim: PMID 35716513. Full mirtazapine evidence dossier:
-`stage1/xpert-fda-miri-v2/12_drug_survey/drugs/MIRTAZAPINE.md`.
+`stage1/12_drug_survey/drugs/MIRTAZAPINE.md`.

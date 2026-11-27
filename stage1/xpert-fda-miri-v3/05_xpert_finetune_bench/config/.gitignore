@@ -1,4 +1,0 @@
-# Runtime-generated data-ablation configs (one per seed/mode/fraction + per
-# seed pretrain anchor), written by xpert_data_ablation.py into this tracked
-# config dir so get_config_root resolves to the workflow root.
-ablation_*.yaml

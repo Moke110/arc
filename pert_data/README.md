@@ -28,7 +28,7 @@ every item.
 | `GSE247541/` | Xu antiviral hiPSC-CM panel; four author-positive drugs reassessed for ADR 0072 TOX (2 GEO files). |
 | `GSE262419/` | Tsai TempO-Seq hiPSC-CM environmental-chemical panel (16 plate CSVs + hash table + series matrix). |
 | `XPert-L1000/` | The three L1000 landmark-gene pretrain h5ads used by the workflow pretrain recipes; upstream provenance still unknown. |
-| `Annotation/` | Pinned HGNC complete set (download) + the public-registry compound snapshot and CM drug-audit report (local additions). |
+| `Annotation/` | Pinned HGNC complete set (download) + the public-registry compound snapshot, drug-audit report and frozen offline audit seed (local additions). |
 
 Each item's `author_log.json` carries its provenance; each `local/` file is declared in that
 log's `local_additions[]`. Current downstream preparation belongs to

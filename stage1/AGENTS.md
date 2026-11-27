@@ -1,13 +1,22 @@
-# AGENTS.md — stage1
+# AGENTS.md
 
-Stage 1 MIRI drug-repositioning workflows. Each entry is a self-contained
-11-step screen or a frozen snapshot; Stage 2 model setup/selection lives in the
-top-level `../stage2_CarPS-VAE/` and is not a dependency here.
+Routing index for the retained Stage 1 union-CM MIRI screen (ADR 0105). See README.md for reproduction.
 
-- `xpert-fda-miri-v1/` — canonical finalized screen (frozen DToxS finetune data).
-- `xpert-fda-miri-v1.1/` — DToxS-LINCS testbed sibling.
-- `xpert-fda-miri-v2/` — DToxS-primary + DToxS-iPSC-CM finetune sibling.
-- `xpert-fda-miri-v3/` — all-CM finetune sibling (current frontier).
-- `xpert-fda-miri-v0/` — frozen legacy snapshot (gitignored).
-
-Git history retains the old Stage 2 benchmark at its original `stage2/_archive/cm_bench_v1/` path.
+- `screen.ipynb` — end-to-end notebook walkthrough of the 11-step screen.
+- `01_drug_embed/` — merged L1000 drug list plus author-reference HG embeddings.
+- `02_cm_baseline/` — control consensus baseline for the screen.
+- `03_cm_finetune_data/` — builds the union finetune h5ad, gene maps, manifest, reports, gates.
+- `04_xpert_pretrain/` — workflow-owned L1000 pretrain weight and config.
+- `05_xpert_finetune_bench/` — three finetune benchmarks: `full/` (official folds), `data-ablation/`, and `warmstart_pr/` (direction-aware PR curves + AUPRC on the official warm-start folds).
+- `06_xpert_finetune/` — all-train union finetune producing the final prediction model.
+- `07_xpert_predict/` — perturbed-transcriptome prediction and z-scoring.
+- `08_miri_phenotype/` — integrated MIRI reference gene sets and rank reference.
+- `09_miri_efficacy_scores/` — three efficacy scorers with z-components and plots.
+- `10_filter/` — critical-pathway and WCS filters over drug candidates.
+- `11_integrate/` — integrated score, ranked candidates, deterministic report.
+- `12_drug_survey/` — agentic bilingual evidence survey of the top-20 candidates.
+- `13_limits/` — read-only limitations analysis: landmark coverage, critical-pathway overlap, screened-drug embedding PCA (+ `report.md`).
+- `_other/` — ad-hoc analyses outside the numbered screen (GO study, structure gallery).
+- `_lib/` — shared utils, gene mapping, drug resolution, scoring, verification helpers.
+- `input/` — frozen screen assets: HG reference, UniMol array, SMILES, drug list, pathways, and predecessor schema/fold H5ADs in references/.
+- `AGENTS.md` — this routing index.

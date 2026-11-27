@@ -29,22 +29,15 @@ FDA drugs, score MIRI transcriptional reversal (WCS+RGES / Zhang / pathway RGES 
 `-0.3*RGES_zs - 0.2*Zhang_zs + 0.3*pathway_reversal_zs + 0.025*sum(critical efficacy zs)`),
 then filter and rank.
 
-**Screens.** All four share the same 11-step layout, screen the same 1,004 drugs, and are
-anchored on the dtoxs-primary test sets. They differ only in finetune corpus:
+**Screen.** Stage 1 retains the former v2 workflow at `stage1/` (ADR 0105).
+The DToxS primary + iPSC union has 958 finetune samples across 45 drugs.
+The formal screen tested 1,004 drugs, of which 130 passed WCS < 0 and 64
+passed the critical-pathway filter. The v1.1 fold-source and v1 schema-reference
+H5ADs are frozen in `stage1/input/references/`.
 
-| workflow | finetune corpus | screened / WCS<0 / ≥6-of-8 critical | role |
-|---|---|---|---|
-| `xpert-fda-miri-v1` | frozen DToxS-only (521 samples / 36 drugs) | 1004 / 244 / **42** | frozen baseline; canonical finalized screen; archived agentic report |
-| `xpert-fda-miri-v1.1` | DToxS-LINCS (662 / 45) | 1004 / 95 / **20** | DToxS-LINCS testbed |
-| `xpert-fda-miri-v2` | primary+iPSC union (958 / 45) | 1004 / 130 / **64** | primary+iPSC sibling |
-| `xpert-fda-miri-v3` | all-CM union (~4,318 / ~180) | 1004 / 252 / **56** | current frontier |
-
-The rebuilt workflows (v1.1/v2/v3) share byte-identical dtoxs-primary fold test sets under
-the unified fold scheme (ADR 0014/0015/0017); v1 predates it. Per-plate normalization and
-the union builds are ADR 0016/0017.
-
-**Artifacts.** Per workflow: step 11 `output/` (`integrated_scores.csv`, `ranked_drugs.csv`,
-`report.md`), step 05 benchmarks (`dtoxs-primary/`, `data-ablation/`), and `screen.ipynb`.
+**Artifacts.** See the [Stage 1 reproduction guide](../stage1/README.md) for the
+screen notebook, final rankings and reports, and the official, ablation and
+warm-start PR benchmarks.
 
 **Benchmark (step 05).** XPert finetune beats the L1000-pretrain zero-shot anchor; warm-start
 > cold-drug. The data-ablation (v2/v3) shows test performance rising with finetune-corpus

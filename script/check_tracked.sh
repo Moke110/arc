@@ -66,10 +66,6 @@ find_repo_root() {
 # check. Remove entries as the restructure retires the tree.
 is_expected_ignored() {
   case "$1" in
-    # Frozen pre-refactor MIRI snapshot, deliberately kept out of git
-    # (.gitignore: "Frozen pre-refactor MIRI pipeline snapshots ...").
-    stage1/xpert-fda-miri-v0/*)
-      return 0 ;;
   esac
   return 1
 }
@@ -189,9 +185,9 @@ main() {
   # 4c. Documented expected-ignored trees (reported, not failed).
   if [ "$exp_count" -gt 0 ]; then
     echo "EXPECTED-IGNORED TREES (documented; reported, not failed)"
-    sed -E 's|^(pert_model/[^/]+)/.*|\1|; s|^(stage1/[^/]+)/.*|\1|' "$exp_rows" \
+    sed -E 's|^(pert_model/[^/]+)/.*|\1|' "$exp_rows" \
       | LC_ALL=C sort | uniq -c | awk '{ printf "  %6d  %s\n", $1, $2 }'
-    echo "  rationale: frozen v0 and ADR 0042 old formal recovery copies stay out of git. External items"
+    echo "  rationale: documented recovery copies stay out of git. External items"
     echo "  (source/ and local/) are pruned by the scan itself, not listed here. Remove an"
     echo "  entry from EXPECTED_IGNORED when its tree retires."
     echo

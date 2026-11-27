@@ -18,7 +18,7 @@ Files (as present in `source/data/`):
 
 They are log2 expression space and are read by the workflow-owned pretrain YAMLs
 (`stage1/xpert-fda-miri-v*/04_xpert_pretrain/config/l1000.yaml`). The matching
-drug embeddings are workflow-owned (`stage1/xpert-fda-miri-v1/input/`), not part
+drug embeddings are workflow-owned (`stage1/input/`), not part
 of this item. `local/L1000_summary.md` records what is known; the upstream
 provenance (source URL / producing commit) is still to be filled in here and in
 `author_log.json` (`version: "unknown"`).

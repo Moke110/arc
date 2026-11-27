@@ -203,7 +203,7 @@ One of the three building blocks of prediction: a perturbation dataset (`pert_da
 _Avoid_: module
 
 **Repositioning workflow**:
-A complete end-to-end drug-screening pipeline for one disease, bundling its scripts, prompts, data, and notebook. MIRI workflows live under `stage1/`: `stage1/xpert-fda-miri-v1/` is the canonical finalized MIRI screen (11 steps, frozen DToxS finetune data, untouched); `stage1/xpert-fda-miri-v1.1/` is its DToxS-LINCS testbed sibling (finetune data rebuilt from the LINCS LDS-1593 wells, per-plate normalized since ADR 0016, 11 steps — the agentic report step was removed); `stage1/xpert-fda-miri-v2/` is its DToxS-primary + DToxS-iPSC-CM finetune sibling (ADR 0015), aligned to v1.1's benchmark test sets with a single-cell encoding, per-plate normalized since ADR 0016, 11 steps; `stage1/xpert-fda-miri-v3/` is its all-CM finetune sibling (ADR 0017) training on all four usable CM datasets (primary + iPSC + gse244740 + gse262419) with train-only benchmark rows for the added datasets, 11 steps; `stage1/xpert-fda-miri-v0/` is the frozen legacy snapshot.
+A complete end-to-end drug-screening pipeline for one disease, bundling its scripts, prompts, data, and notebook. The retained MIRI workflow runs directly under `stage1/` (ADR 0105). It uses the DToxS primary and iPSC union (formerly v2, ADR 0015) and the official Stage 1 folds.
 _Avoid_: pipeline (when meaning a workflow), project
 
 **Disease data**:
@@ -224,27 +224,27 @@ _Avoid_: perturbation profile, drug signature
 The **978-landmark instance** of the perturbome: the predicted expression of 978 L1000 landmark genes for a drug-treated cell. Produced by XPert inference; z-scored and scored in the workflow. Distinct from Stage 2's whole-transcriptome instance.
 
 **Drug list**:
-The set of drugs a workflow screens — for `xpert-fda-miri-v1`/`v1.1`/`v2`/`v3`, the 1,004 L1000-contained FDA drugs (exact canonical-SMILES match, `drug_idx < 8981`). Identity of each drug is its SMILES; the canonical mapping is `all_drugs_idx2smi.npy`.
+The set of drugs a workflow screens — in the Stage 1 MIRI screen, the 1,004 L1000-contained FDA drugs (exact canonical-SMILES match, `drug_idx < 8981`). Identity of each drug is its SMILES; the canonical mapping is `all_drugs_idx2smi.npy`.
 _Avoid_: drug set
 
 **Baseline transcriptome**:
 The consensus control expression (978 genes) of the cell type under study, derived from the DToxS-primary control wells. Workflow-owned; the reference condition the perturbed transcriptome is measured against.
 
 **Union finetune data**:
-The workflow-built finetune h5ad of the CM datasets (step `03_cm_finetune_data`), used by the rebuilt workflows' finetune/benchmark/predict. HG-resolved compounds only, 978 landmarks, per-sample matched controls, precomputed dose/time indices. Since ADR 0016 every sample is **per-plate normalized**: its matched control is the mean of the control wells on its own `(dataset, plate)` and the 978-landmark matrix is quantile-aligned to the L1000 pretrain per `(dataset, plate)` group. v2's union = `dtoxs_primary.h5ad` + `dtoxs_ipsc.h5ad` (958 samples / 45 unique drugs); v3's union (ADR 0017) adds `gse244740.h5ad` (~2,424) + `gse262419.h5ad` (~936) for ~4,318 samples — gse244740-dominated (~56%), not gse262419 (its TempO-Seq panel is mostly environmental/toxicology compounds absent from the author table). The DToxS-primary arm reads the LINCS LDS-1593 well-level package and both arms carry real-concentration dose bins. The benchmark test sets are byte-identical to v1.1's fold test sets (v1.1 fold columns imported for the primary arm). Distinct from v1's frozen DToxS-only `stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` (dataset-wide normalized, the frozen historical anchor) and from v1.1's DToxS-LINCS finetune data.
+The DToxS primary and iPSC finetune H5AD built by Stage 1 Step 03 (958 samples across 45 drugs and 978 landmarks). Each row carries a same-plate matched control, per-plate quantile-aligned expression, and precomputed dose/time indices. Steps 05 and 06 use it to train XPert, and Step 07 uses that model to predict the screened drugs' perturbations. The official Stage 1 fold test sets come from the retained DToxS-LINCS reference.
 
 **Per-plate normalization**:
-The step-03 method (ADR 0016) that groups both the quantile alignment and the matched-control computation by `(dataset, plate)`: each sample's control baseline is the mean of the control wells on the same plate, and each plate's 978-landmark distribution is aligned to the L1000 pretrain independently. Applies to every dataset in the rebuilt finetune builds (v1.1/v2/v3); v1's frozen `stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` stays dataset-wide and is the documented historical anchor. Step 02's consensus baseline is *not* per-plate — it is a single dataset-wide scoring reference.
+The Step 03 method (ADR 0016) that groups both the quantile alignment and the matched-control computation by `(dataset, plate)`. Each sample's control baseline is the mean of its plate's control wells, and each plate's landmark distribution is aligned to the L1000 pretrain independently. The preserved v1 schema reference was normalized dataset-wide. Step 02 uses a single dataset-wide scoring reference.
 _Avoid_: per-batch normalization, plate-corrected
 
 **DToxS-LINCS finetune data**:
-The workflow-rebuilt DToxS finetune h5ad (662 samples / 45 drugs) that v1.1 trains on, built by its step `03_cm_finetune_data` from the LINCS LDS-1593 well-level package under `pert_data/LINCS-LDS-1593/source/Data/Level3` (released flat 2026-08-18) — a legitimate superset of v1's frozen 521/36 data (the raw GEO deposit lacks the non-KI perturbations). Schema-parity-gated against v1's frozen `stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` with an auditable delta report.
+The former v1.1 finetune H5AD (662 samples, 45 drugs) rebuilt from the LINCS LDS-1593 well-level package. It supplies Stage 1 official folds from `stage1/input/references/dtoxs_lincs.h5ad`. The same directory holds the earlier v1 schema reference `dtoxs.h5ad` (521 samples, 36 drugs).
 
 **LINCS LDS-1593**:
 The DToxS center's well-level Level-3 deposit (LINCS LDG-1452), released flat at `pert_data/LINCS-LDS-1593/source/` on 2026-08-18 (the former `lincs-lds-1593/` wrapper removed; the GSE146095/GSE146096 raw GEO deposit was deleted the same day as a strict subset). Carries the full 956-well campaign (23 KIs + non-KI drugs + anthracyclines + antibody/protein wells) and the LINCS metadata suite (SMILES, batch codes). The v1-era package is frozen byte-identically at `pert_data/LINCS-LDS-1593/local/v1-frozen/` (incl. v1's frozen `dtoxs.h5ad`).
 
 **Author drug embedding table**:
-The author-provided L1000 HG embedding table (rows 0–8980, `drug_idx < 8981`), workflow-owned at `stage1/xpert-fda-miri-v1/input/HG_drug_embeddings.npy`. A compound is an **in-HG drug** when it resolves to a row of this table (canonical-SMILES or author `cmap_name` match); compounds resolving only to the FDA-extension rows (≥ 8981) or not at all are excluded from finetune and recorded in the step-03 manifest.
+The author-provided L1000 HG embedding table (rows 0–8980, `drug_idx < 8981`), workflow-owned at `stage1/input/HG_drug_embeddings.npy`. A compound is an **in-HG drug** when it resolves to a row of this table (canonical-SMILES or author `cmap_name` match); compounds resolving only to the FDA-extension rows (≥ 8981) or not at all are excluded from finetune and recorded in the step-03 manifest.
 _Avoid_: HG-resolved, drug-set member
 
 **Collapsed CM cell identity**:

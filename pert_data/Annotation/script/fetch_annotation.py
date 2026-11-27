@@ -16,9 +16,8 @@ Two acquisition paths
     existing, checksum-matching file is a no-op.
 
 ``--compounds --from-audit <csv>``
-    Bootstrap the compound snapshot from the Stage 1 external audit table
-    (``stage1/xpert-fda-miri-v3/03_cm_finetune_data/output/
-    compound_external_audit.csv``).  That table was produced by live PubChem /
+    Bootstrap the compound snapshot from the frozen offline audit seed in
+    Annotation local additions. That table was produced by live PubChem /
     UniChem / ChEMBL / RxNav queries and is the one-time public-registry
     snapshot.  This is the path used for corpus v1: it is deterministic and
     makes no network call.
@@ -34,8 +33,7 @@ homolog from being relabelled as amiodarone.
 
 Usage:
     python pert_data/Annotation/script/fetch_annotation.py --hgnc
-    python pert_data/Annotation/script/fetch_annotation.py --compounds --from-audit \\
-        stage1/xpert-fda-miri-v3/03_cm_finetune_data/output/compound_external_audit.csv
+    python pert_data/Annotation/script/fetch_annotation.py --compounds
 """
 
 from __future__ import annotations
@@ -71,9 +69,7 @@ MANIFEST_PATH = LOCAL_DIR / "README.md"
 
 HGNC_URL = ("https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/"
             "hgnc_complete_set.txt")
-DEFAULT_AUDIT = (REPO_ROOT / "stage1" / "xpert-fda-miri-v3"
-                 / "03_cm_finetune_data" / "output"
-                 / "compound_external_audit.csv")
+DEFAULT_AUDIT = LOCAL_DIR / "compound_external_audit.csv"
 
 # Columns kept in the frozen compound snapshot.  `parent_inchikey` is the
 # desalted parent key (the corpus `drug_key`); `pubchem_inchikey` is the exact
@@ -128,8 +124,8 @@ def write_manifest(hgnc_extra: dict | None = None,
     if COMPOUND_PATH.exists() and compound_extra is not None:
         body.append(_manifest_block(
             "Compound structure and pharmacology snapshot", COMPOUND_PATH,
-            "stage1/xpert-fda-miri-v3/03_cm_finetune_data/output/"
-            "compound_external_audit.csv (PubChem/UniChem/ChEMBL/RxNav snapshot)",
+            f"{DEFAULT_AUDIT.relative_to(REPO_ROOT)} "
+            "(PubChem/UniChem/ChEMBL/RxNav snapshot)",
             compound_extra))
     LOCAL_DIR.mkdir(parents=True, exist_ok=True)
     MANIFEST_PATH.write_text("\n".join(header + body))

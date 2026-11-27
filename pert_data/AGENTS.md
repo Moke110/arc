@@ -11,7 +11,7 @@ Index of the CM drug-perturbation data lake. Eight external 项 (ADR 0030): each
 - `GSE247541/` — Xu antiviral hiPSC-CM panel; ADR 0072 author-positive TOX subset; `author_log.json`
 - `GSE262419/` — Tsai TempO-Seq hiPSC-CM environmental-chemical panel; `author_log.json`
 - `XPert-L1000/` — XPert L1000 landmark-gene pretrain h5ads (upstream provenance unknown); `author_log.json`
-- `Annotation/` — pinned HGNC gene set + public-registry compound snapshot + CM drug audit; `author_log.json`
+- `Annotation/` — pinned HGNC gene set + public-registry compound snapshot + frozen CM drug audit seed; `author_log.json`
 
 Layout contract: ADR 0030. Category docs: `README.md`. Paths in tracked code point at
 `<Item>/source/…` (downloaded bytes) or `<Item>/local/…` (local additions); item names are

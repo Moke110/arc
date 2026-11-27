@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
-# Regression: cross-workflow references must follow the stage1/ layout.
-
+# A materialized Stage 1 checkout validates its frozen inputs without sibling workflows.
 set -euo pipefail
 
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd -- "$repo_root"
 
-if rg -n 'WORKSPACE_ROOT\s*/\s*"workflow"' \
-  "$repo_root/stage1/xpert-fda-miri-v1.1/_lib/utils.py" \
-  "$repo_root/stage1/xpert-fda-miri-v2/_lib/utils.py" \
-  "$repo_root/stage1/xpert-fda-miri-v3/_lib/utils.py"; then
-  echo "legacy workflow/ path remains in a live Stage 1 utility" >&2
-  exit 1
-fi
+test -f stage1/screen.ipynb
+test -f stage1/03_cm_finetune_data/output/cm_union.h5ad
+while IFS=$'\t' read -r path target; do
+  if [[ ! -L "stage1/$path" || $(readlink "stage1/$path") != "$target" || ! -f "stage1/$path" ]]; then
+    echo "missing or changed Stage 1 weight symlink: $path" >&2
+    exit 1
+  fi
+done <stage1/pre_cutover_weights.tsv
 
-for path in \
-  stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad \
-  stage1/xpert-fda-miri-v1.1/03_cm_finetune_data/output/dtoxs_lincs.h5ad \
-  stage1/xpert-fda-miri-v2/03_cm_finetune_data/output/cm_union.h5ad
-do
-  if [ ! -f "$repo_root/$path" ]; then
-    echo "expected cross-workflow reference is missing: $path" >&2
+(cd stage1/input/references && sha256sum -c manifest.sha256)
+(cd pert_data/Annotation/local && sha256sum -c ../script/audit_seed.sha256)
+
+for version in v0 v1 v1.1 v2 v3; do
+  if [[ -e "stage1/xpert-fda-miri-$version" || -L "stage1/xpert-fda-miri-$version" ]]; then
+    echo "legacy Stage 1 workflow remains: xpert-fda-miri-$version" >&2
     exit 1
   fi
 done
 
-echo "PASS: Stage 1 cross-workflow references use the stage1/ layout"
+echo "PASS: Stage 1 uses its own frozen inputs and Annotation owns the offline audit seed"

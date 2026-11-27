@@ -84,13 +84,9 @@ Thumbs.db
 .scratch/
 tmp/
 
-# Frozen pre-refactor MIRI pipeline snapshots (large regenerable artifacts)
-stage1/xpert-fda-miri-v0/
-
-# Per-drug biomni agent JSONs / dossiers (regenerable external-agent output)
-stage1/xpert-fda-miri-v1/report/cache/
-stage1/xpert-fda-miri-v2/12_drug_survey/drugs/
-stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
+# Per-drug Biomni survey dossiers and assembled report.
+/stage1/12_drug_survey/drugs/
+/stage1/12_drug_survey/reports@20.html
 
 # External items (ADR 0030): source/ and local/ stay out of git; provenance
 # (script/, author_log.json, manifest.sha256) and item docs must stay tracked.
