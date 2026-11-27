@@ -12,7 +12,7 @@ from tempfile import TemporaryDirectory
 from chem_runs import STEP, axis_run
 
 RENDERER = STEP / "figure/script/render_chem.py"
-FIGURES = ("paired-primary.png", "primary-scores.png")
+FIGURES = ("delta-metrics.png", "delta-metrics-paired-difference.png")
 
 
 def replay(data, output, scratch, verify=False):

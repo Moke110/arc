@@ -58,7 +58,7 @@ UniMol had the lowest mean Δ RMSE (0.238599).
 UniMol’s mean paired Δ PCC gain was smaller than its sample SD (0.012432 versus 0.013493). KPGT remains the working default.
 
 - [All nine metrics by fold and seed](figure/data/fold-scores.csv), [foldwise paired summaries](figure/data/paired-by-fold.csv) and [overall paired summaries](figure/data/paired-summary.csv)
-- [Primary scores](figure/primary-scores.png), [paired differences](figure/paired-primary.png) and [CSV-only figure replay receipt](log/figure-render.json)
+- [Nine held-out metrics](figure/delta-metrics.png), [nine paired differences vs KPGT](figure/delta-metrics-paired-difference.png) and [CSV-only figure replay receipt](log/figure-render.json)
 - [Fit and checkpoint ledger](log/runs.csv), [epoch objectives](figure/data/epoch-objectives.csv) and [bandwidths](log/bandwidths.csv)
 - [Formal acceptance receipt](log/364-formal.json), [matrix resources](log/364-resources.jsonl) and [coordinator resources](log/364-coordinator-resources.jsonl)
 

@@ -1,7 +1,8 @@
-"""Render Step 08 primary metrics from the published fold and seed score CSV."""
+"""Render Step 08 nine held-out metrics from the published fold and seed score CSV."""
 
 import argparse
-import csv
+from itertools import product
+import math
 from pathlib import Path
 import sys
 
@@ -16,36 +17,72 @@ from stage2_util import palette, plotting
 
 ARMS = ("ECFP4C", "ECFP6C", "FCFP4C", "FCFP6C", "E3FP", "KPGT", "UniMol")
 HUES = palette.HUES[:len(ARMS)]
-PRIMARY = ("Δ PCC", "Δ RMSE")
-FIGURES = {"value": "primary-scores.png", "score_difference": "paired-primary.png"}
+METRICS = (
+    ("JAC_top200", "JAC top200"),
+    ("JAC_pos100", "JAC pos100"),
+    ("JAC_neg100", "JAC neg100"),
+    ("Δ PCC", "Δ PCC"),
+    ("Δ Spearman", "Δ Spearman"),
+    ("Δ RMSE", "Δ RMSE"),
+    ("Δ E-distance", "Δ E-distance"),
+    ("Δ MMD", "Δ MMD"),
+    ("Δ R²", "Δ R²"),
+)
+LOWER_IS_BETTER = {"Δ RMSE", "Δ E-distance", "Δ MMD"}
+FIGURES = {"value": "delta-metrics.png", "score_difference": "delta-metrics-paired-difference.png"}
+
+
+def read_scores(path):
+    scores = {}
+    pairs = set()
+    for row in plotting.read_rows(path):
+        coordinate = int(row["fold"]), int(row["seed"])
+        key = (row["arm"], row["metric"], *coordinate)
+        values = {field: float(row[field]) if row[field] else math.nan for field in FIGURES}
+        if key in scores or any(math.isinf(value) for value in values.values()):
+            raise ValueError(f"invalid or duplicate score for {key}")
+        scores[key] = values
+        pairs.add(coordinate)
+
+    bounded = {(0, 17)}
+    formal = set(product(range(3), (17, 42, 2026)))
+    if pairs not in (bounded, formal) or set(scores) != {
+        (arm, metric, *pair) for arm, (metric, _), pair in product(ARMS, METRICS, pairs)
+    }:
+        raise ValueError("plotting scores do not cover every registered arm, metric, fold and seed")
+    return scores, sorted(pairs)
 
 
 def render(data, output):
-    with (data / "fold-scores.csv").open(newline="", encoding="utf-8") as stream:
-        rows = [row for row in csv.DictReader(stream) if row["metric"] in PRIMARY]
-    keys = {(row["arm"], row["fold"], row["seed"], row["metric"]) for row in rows}
-    pairs = {(row["fold"], row["seed"]) for row in rows}
-    if (not pairs or len(keys) != len(rows)
-            or keys != {(arm, fold, seed, metric) for arm in ARMS for fold, seed in pairs for metric in PRIMARY}):
-        raise ValueError("plotting scores do not cover every paired metric coordinate")
+    scores, pairs = read_scores(data / "fold-scores.csv")
     output.mkdir(exist_ok=True, parents=True)
-    for value, filename in FIGURES.items():
-        figure, axes = plt.subplots(1, 2, figsize=(11.2, 3.6), layout="constrained")
-        paired = value == "score_difference"
-        for ax, metric in zip(axes, PRIMARY, strict=True):
-            groups = [[float(row[value]) for row in rows if row["arm"] == arm and row["metric"] == metric
-                       and row[value]] for arm in ARMS]
-            for index, (scores, hue) in enumerate(zip(groups, HUES, strict=True)):
-                plotting.replicate_bar(ax, index, scores, hue=hue, width=.68)
-            if paired:
-                ax.axhline(0, color="0.4", linewidth=.8, linestyle="--")
-            limits = plotting.focus_y(ax, groups, reference=0 if paired else None)
-            ax.set(xticks=list(range(len(ARMS))), xticklabels=ARMS,
-                   ylabel=f"{metric} minus KPGT" if paired else metric)
-            ax.tick_params(axis="x", labelrotation=30)
-            if not paired and limits and not limits[0] <= 0 <= limits[1]:
-                ax.set_title("Y-axis omits zero", fontsize=8, loc="right")
-        plotting.save_figure(figure, output / filename, dpi=160)
+    positions = range(len(ARMS))
+    for field, filename in FIGURES.items():
+        figure, axes = plt.subplots(3, 3, figsize=(18, 11), layout="constrained")
+        paired = field == "score_difference"
+        for (metric, label), ax in zip(METRICS, axes.flat, strict=True):
+            direction = "↓" if metric in LOWER_IS_BETTER else "↑"
+            ax.set_title(f"{label} {direction}", fontweight="bold")
+            groups = [[scores[arm, metric, *pair][field] for pair in pairs] for arm in ARMS]
+            for index, (values, hue) in enumerate(zip(groups, HUES, strict=True)):
+                bars, _, _ = plotting.replicate_bar(ax, index, values, hue=hue, width=.68)
+                if bars is None:
+                    ax.text(index, .02, "NA", ha="center", fontsize=7, transform=ax.get_xaxis_transform())
+            reference = 0 if paired or metric == "Δ R²" else None
+            lower, upper = plotting.focus_y(ax, groups, reference=reference)
+            if lower <= 0 <= upper:
+                ax.axhline(0, color="#666666", linewidth=.8, zorder=1.5)
+            ax.set_xticks(positions, ARMS, rotation=30, ha="right", fontsize=8)
+            ax.set_xlim(-.5, len(ARMS) - .5)
+            ax.grid(axis="y", color="#777777", alpha=.25, zorder=1)
+            ax.spines[["top", "right"]].set_visible(False)
+
+        title = "Bars are means · Dots are fold and seed coordinates · Error bars are sample SD"
+        if not paired:
+            title += "\nY-axis ranges follow the data and may omit zero."
+        figure.suptitle(title)
+        figure.supylabel("Paired difference from KPGT" if paired else "Held-out score")
+        plotting.save_figure(figure, output / filename, dpi=180)
         plt.close(figure)
 
 

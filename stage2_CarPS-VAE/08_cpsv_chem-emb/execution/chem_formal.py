@@ -14,7 +14,7 @@ import pandas as pd
 
 from audit_chem_report import audit
 from audit_chem_resources import audit_resources
-from chem_figures import FIGURES, RENDERER, replay
+from chem_figures import RENDERER, replay
 from chem_matrix import preflight, run_paths, verify_registrations
 from chem_reference import GATE, reference_plan
 from chem_report import (METRICS, PRIMARY_METRICS, SCHEMA as REPORT_SCHEMA, report_tables, verified_runs,
@@ -131,6 +131,15 @@ def figure_receipt(figure, scientific_receipt_sha256):
     }
 
 
+def scientific_evidence(receipt):
+    # Keep the original acceptance receipt intact when report figures are redrawn.
+    # The current figure receipt binds its own PNGs to that scientific receipt.
+    return {**receipt, "release_files_sha256": {
+        name: digest for name, digest in receipt["release_files_sha256"].items()
+        if not (name.startswith("figure/") and name.endswith(".png"))
+    }}
+
+
 def publish(args):
     build = args.mode == "build"
     matrix, activity, report = (args.bundle / name for name in ("matrix", "matrix-audit", "report"))
@@ -174,7 +183,7 @@ def publish(args):
             shutil.copyfile(activity / "resource-samples.jsonl", candidate / MATRIX_SAMPLES)
             (candidate / COORDINATOR_SAMPLES).write_text("".join(json.dumps(row) + "\n" for row in coverage))
         picture = replay(figure_path / "data", figure_path, work, verify=not build)
-        names = [*PROJECTIONS.values(), MATRIX_SAMPLES, COORDINATOR_SAMPLES, *(f"figure/{name}" for name in FIGURES)]
+        names = [*PROJECTIONS.values(), MATRIX_SAMPLES, COORDINATOR_SAMPLES]
         if configuration["working_default"] != REFERENCE:
             names.append(VARIANT)
             if build:
@@ -201,7 +210,7 @@ def publish(args):
         }
         if build:
             axis_run.write_json(candidate / RECEIPT, receipt)
-        elif previous != receipt:
+        elif scientific_evidence(previous) != receipt:
             raise ValueError("formal acceptance evidence differs from the sealed publication")
         scientific_sha = axis_run.digest(candidate / RECEIPT)
         plots = figure_receipt(picture, scientific_sha)

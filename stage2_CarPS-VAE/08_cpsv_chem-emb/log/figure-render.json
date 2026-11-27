@@ -10,11 +10,11 @@
   },
   "independent_renders": 2,
   "png_files_sha256": {
-    "figure/paired-primary.png": "76c3eb1b2eecbb2bcd80d7b875d3a2df3d4a39acd6bb1e458d9ce60a11309798",
-    "figure/primary-scores.png": "61d2a8727bd822f2c9c07e7b6ccdb90553eefc7eeed9e0f80483167aae4a05ab"
+    "figure/delta-metrics-paired-difference.png": "07bcdd6aa570c0e5549b612816acabad23539935f953d744b3ec35952a5ea3cf",
+    "figure/delta-metrics.png": "05bf0900cd5d49a62b011be93f2e807ca93a9e1fd9ebc037cd1e2fd9ac8c4bd0"
   },
   "renderer_files_sha256": {
-    "08_cpsv_chem-emb/figure/script/render_chem.py": "8835bf8dfc40b342d4f17b5f4af663a0f3a3bac6a4f8a509b74ce5729700d53d",
+    "08_cpsv_chem-emb/figure/script/render_chem.py": "5528e3bbb75dfd151112a412d90a2c704aa646afee96bbd2541823b3742f8516",
     "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },
