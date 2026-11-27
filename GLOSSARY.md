@@ -868,7 +868,7 @@ The reference entry that predicts, for every gene of a group, the mean Δ of tha
 _Avoid_: delta_mean (retired name), no_change (withdrawn)
 
 **Fold/seed index table**:
-Shared seeds are ordered by `stage2_util.seeds.read_seeds()`. Fold indices identify the partition frozen by each study. A separately frozen comparison partition has its own fold identities; taking a prefix of a different partition does not recreate it.
+Shared seeds are ordered by `cpst_util.seeds.read_seeds()`. Fold indices identify the partition frozen by each study. A separately frozen comparison partition has its own fold identities; taking a prefix of a different partition does not recreate it.
 
 **Historical Stage 2 palette (ADR 0063)**:
 The six hue families and nine shades used by the earlier tenv model comparison.

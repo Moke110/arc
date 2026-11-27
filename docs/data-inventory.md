@@ -179,17 +179,17 @@ retires that snapshot along with the other sibling screens.
 
 ## Stage 2 — published products and comparison payloads
 
-The [Stage 2 routing](../stage2_CarPS-VAE/AGENTS.md) identifies the active product
+The [Stage 2 routing](../cpst/AGENTS.md) identifies the active product
 owners. [ADR 0105](adr/0105-stage-cleanup.md) retires the local Stage 2 archive.
 Original code, tracked receipts and figures remain at their published Git revisions.
 
 | Owner | Accepted products |
 | --- | --- |
-| [Raw data](../stage2_CarPS-VAE/01_data_raw/README.md) | Seven source-native datasets and their release manifest under `output/`. |
-| [Prediction axes](../stage2_CarPS-VAE/02_gene_axis/README.md) | Ordered HVG-DEG and Denoise-DEG families with selection evidence. |
-| [Training data](../stage2_CarPS-VAE/03_data_train/README.md) | Six tenv plate-pooled releases and the Tahoe well-level release. |
-| [Axis comparison](../stage2_CarPS-VAE/04_tsg_axis/README.md) | Held-out matched-control TranSiGen evaluation, sealed formal results and canonical report exports. |
-| [Util](../stage2_CarPS-VAE/util/README.md) | Accepted gene identity and representation products plus shared operations. |
+| [Raw data](../cpst/01_data_raw/README.md) | Seven source-native datasets and their release manifest under `output/`. |
+| [Prediction axes](../cpst/02_gene_axis/README.md) | Ordered HVG-DEG and Denoise-DEG families with selection evidence. |
+| [Training data](../cpst/03_data_train/README.md) | Six tenv plate-pooled releases and the Tahoe well-level release. |
+| [Axis comparison](../cpst/04_tsg_axis/README.md) | Held-out matched-control TranSiGen evaluation, sealed formal results and canonical report exports. |
+| [Util](../cpst/util/README.md) | Accepted gene identity and representation products plus shared operations. |
 
 ### Archived single-dose three-fold comparison (#226/#231)
 

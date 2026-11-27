@@ -5,8 +5,8 @@ The item-local derivation: the GEO series matrix (the deposited RMA log2
 expression table plus the ``!Sample_*`` design block) and the GPL6244 platform
 annotation (transcript cluster -> Entrez gene symbol) are bound here, the
 probes are collapsed to one probe per gene, and the one live DEG implementation
-``stage2_util/derivation/disease_deg.R`` (limma on the deposited log2 matrix) is run through
-``stage2_util.derivation.disease_deg.run_deg_worker``. Nothing below that line re-implements the
+``cpst_util/derivation/disease_deg.R`` (limma on the deposited log2 matrix) is run through
+``cpst_util.derivation.disease_deg.run_deg_worker``. Nothing below that line re-implements the
 fit.
 
 Verified design (from the deposit, not from the ticket prose):
@@ -54,8 +54,8 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2_CarPS-VAE/util/output/api'))
-from stage2_util.derivation import deg_rank, disease_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'cpst/util/output/api'))
+from cpst_util.derivation import deg_rank, disease_deg  # noqa: E402
 
 SERIES_MATRIX = 'source/GSE35108_series_matrix.txt.gz'
 PLATFORM_ANNOT = 'source/GPL6244.annot.gz'
@@ -465,7 +465,7 @@ def main():
             'deposition': 'deposited RMA log2 expression (one-colour array)',
             'collapse': collapse_stats['rule'],
             'model': 'limma on the deposited log2 matrix (moderated t)',
-            'implementation': 'stage2_CarPS-VAE/util/output/api/stage2_util/derivation/disease_deg.R',
+            'implementation': 'cpst/util/output/api/cpst_util/derivation/disease_deg.R',
             'implementation_sha256': sha256(Path(disease_deg.DEG_WORKER)),
             'derivation': str(Path(__file__).resolve().relative_to(REPO)),
             'derivation_sha256': sha256(Path(__file__).resolve()),

@@ -1,0 +1,41 @@
+{
+  "csv_files_sha256": {
+    "figure/data/learning-curve.csv": "8f353139d70712d0e7e12b85d21777ad12397dd8ada9b14e9e994f0326b75962",
+    "figure/data/metrics-paired.csv": "fbd9405c0669ced1910c0f73c7d69d8406440f9c6fde86bd3cb1b667dc86172a",
+    "figure/data/metrics.csv": "37debe34665d28278a10ffa5999d99a8ce2ded20a03b7e52c77394399e663384"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13"
+  },
+  "evidence": {
+    "acceptance_receipt_sha256": "bdc65b62eafb834cbe1cc498a8d63c7ab00bbe6fc1d9bd545f5f0ad2a606bcf8",
+    "build_sha256": "59697b2a12418d9cf077b6565fe0e5bcac9c273e139a53003bf0116756829c11",
+    "fits": 27,
+    "fixed_jaccard_code_sha256": "66011526374d4405c137ba5f07f291ebad8a86c3bd8e97b8aba8ff9c540eb062",
+    "matched_controls_sha256": "97bb9f1b792efd81eeeca65a0318324680f509ecac74bb04acd22ba4523c109e",
+    "matrix_manifest_sha256": "575b5104bbf42728b8d4af66a1f854cb5ed9cfa2d08449b8763c2e3deba44e22",
+    "reference": "0",
+    "report_manifest_sha256": "dd411f4f90fbc6a3c6c4167f13d575c90cb6fa8db0e0eec05d90cf0dff8dcb54",
+    "sealed_jac_top200_parity": true,
+    "shared_metrics_sha256": "0a16f66b0b02b5fb21462b5b8ae94667ca7247398372d44a54be679372a451b6"
+  },
+  "independent_renders": 2,
+  "png_files_sha256": {
+    "figure/learning-curve.png": "bc237b3ca05a58b2d71bb8078abff421a1ec85867f1337c3ebf69079d5df0dca",
+    "figure/metrics-paired.png": "43fa27278b97029756328c866165285e13b906ee662b894e28a143ea2d68bb19",
+    "figure/metrics.png": "53397d63485511758fb153beb58d5ba55e2ceac7305b0117353e25551ff19011"
+  },
+  "renderer_files_sha256": {
+    "05_tsg_loss/05.2_mse_l1/figure/script/render_comparison.py": "b6a59896f24d86276590007525c8b628b5a79960b9f19659b1a74e60c80ccb2d",
+    "05_tsg_loss/figure/script/loss_comparison.py": "edc4916b5fcb819ace06c19d3aa5e7998927482df5466a6af2974105603a6336",
+    "util/output/api/cpst_util/comparison.py": "4b18733f177d09a3eb1b25861e18c8383f2505eb9746966fa7f75bb83f4f2572",
+    "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
+    "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
+  },
+  "schema": "cpst-figure-render-v1",
+  "status": "PASS",
+  "step": "05.2_mse_l1"
+}

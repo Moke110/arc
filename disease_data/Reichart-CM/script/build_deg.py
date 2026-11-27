@@ -37,8 +37,8 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2_CarPS-VAE/util/output/api'))
-from stage2_util.derivation import disease_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'cpst/util/output/api'))
+from cpst_util.derivation import disease_deg  # noqa: E402
 
 LOCAL = ITEM / 'local'
 PSEUDOBULK = LOCAL / 'pseudobulk' / 'reichart-cm_cm_pseudobulk.csv.gz'
@@ -125,7 +125,7 @@ def main():
         },
         'method': {
             'model': 'limma-voom (voom library-size normalisation, moderated t)',
-            'implementation': 'stage2_CarPS-VAE/util/output/api/stage2_util/derivation/disease_deg.R',
+            'implementation': 'cpst/util/output/api/cpst_util/derivation/disease_deg.R',
             'implementation_sha256': sha256(Path(disease_deg.DEG_WORKER)),
             'test': 'moderated t, BH-adjusted p-value',
             'contrast_direction': ('positive log2FC = up in genotype-negative DCM vs '

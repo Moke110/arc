@@ -29,9 +29,9 @@ records that discrepancy and the chamber/arm decision explicitly:
   batch-separated from the AF arm, so an AF-vs-HF de-confounding contrast is
   not identifiable here; its HF-vs-control count is measured as a diagnostic.
 
-The one live implementation is `stage2_CarPS-VAE/util/output/api/stage2_util/derivation/disease_deg.R`
+The one live implementation is `cpst/util/output/api/cpst_util/derivation/disease_deg.R`
 (limma-voom, voom's own library-size normalisation), run through
-`stage2_util.derivation.disease_deg.run_deg_worker`; the item declares the edgeR
+`cpst_util.derivation.disease_deg.run_deg_worker`; the item declares the edgeR
 `filterByExpr` rule through the worker's `filter` option.
 
 Usage (arc python):
@@ -56,8 +56,8 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2_CarPS-VAE/util/output/api'))
-from stage2_util.derivation import disease_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'cpst/util/output/api'))
+from cpst_util.derivation import disease_deg  # noqa: E402
 
 SOURCE = ITEM / 'source'
 SERIES = 'source/GSE138252_series_matrix.txt.gz'
@@ -514,7 +514,7 @@ def main():
             'deposition': 'raw integer gene-body counts',
             'model': "limma-voom (voom's own library-size normalisation, moderated t)",
             'filter': 'edgeR filterByExpr rule written out in the live worker',
-            'implementation': 'stage2_CarPS-VAE/util/output/api/stage2_util/derivation/disease_deg.R',
+            'implementation': 'cpst/util/output/api/cpst_util/derivation/disease_deg.R',
             'implementation_sha256': sha256(Path(disease_deg.DEG_WORKER)),
             'derivation': str(Path(__file__).resolve().relative_to(REPO)),
             'derivation_sha256': sha256(Path(__file__).resolve()),

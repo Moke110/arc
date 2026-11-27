@@ -5,8 +5,8 @@ The item-local derivation: the deposited RNA-seq master table (Ensembl gene x
 101 libraries, on the log2 normalised-count scale, with the authors' own DESeq2
 result columns) and the GPL20795 series matrix (the deposit's own sample block)
 are bound here and the one live DEG implementation
-``stage2_util/derivation/disease_deg.R`` (limma on the deposited log2 matrix) is run through
-``stage2_util.derivation.disease_deg.run_deg_worker``. Nothing below that line re-fits a model.
+``cpst_util/derivation/disease_deg.R`` (limma on the deposited log2 matrix) is run through
+``cpst_util.derivation.disease_deg.run_deg_worker``. Nothing below that line re-fits a model.
 
 Verified design (from the deposit, not from the ticket prose):
 
@@ -47,8 +47,8 @@ while not (REPO / '.git').exists():
     if REPO.parent == REPO:
         raise SystemExit('cannot locate the repository root')
     REPO = REPO.parent
-sys.path.insert(0, str(REPO / 'stage2_CarPS-VAE/util/output/api'))
-from stage2_util.derivation import disease_deg  # noqa: E402
+sys.path.insert(0, str(REPO / 'cpst/util/output/api'))
+from cpst_util.derivation import disease_deg  # noqa: E402
 
 MASTER_TABLE = 'source/GSE165303_RNA-Seq_master_table.txt.gz'
 SERIES_MATRIX = 'source/GSE165303-GPL20795_series_matrix.txt.gz'
@@ -408,7 +408,7 @@ def main():
         'method': {
             'deposition': 'log2(normalised counts) as deposited (floored matrix)',
             'model': 'limma on the deposited log2 matrix (moderated t)',
-            'implementation': 'stage2_CarPS-VAE/util/output/api/stage2_util/derivation/disease_deg.R',
+            'implementation': 'cpst/util/output/api/cpst_util/derivation/disease_deg.R',
             'implementation_sha256': sha256(Path(disease_deg.DEG_WORKER)),
             'derivation': str(Path(__file__).resolve().relative_to(REPO)),
             'derivation_sha256': sha256(Path(__file__).resolve()),

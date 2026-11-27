@@ -10,7 +10,7 @@ Category overview and conventions: `README.md`. Layout contract: ADR 0030.
 **Tiered admission (ADR 0073).** Collect every qualifying declared tier,
 independently of cumulative DEG yield. Human CM pseudobulk is tier 1;
 non-genetic patient CM models and the declared causal isogenic exception are
-tier 2; human atrial/ventricular whole-tissue bulk is tier 3. The accepted source catalogs and reassessment records in the [prediction axis evidence](../stage2_CarPS-VAE/02_gene_axis/02.1_hvg-deg/README.md) describe accepted admission.
+tier 2; human atrial/ventricular whole-tissue bulk is tier 3. The accepted source catalogs and reassessment records in the [prediction axis evidence](../cpst/02_gene_axis/02.1_hvg-deg/README.md) describe accepted admission.
 `GSE128188` contributes AF bulk and the `GSE116250` ICM arm contributes once to
 ICM, with controls shared explicitly across diseases. Source quality restrictions
 remain in force; Stage-1 animal MIRI references are not human axis sources.

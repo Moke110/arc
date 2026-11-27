@@ -1,0 +1,564 @@
+{
+  "bounded": true,
+  "folds": [
+    {
+      "test": {
+        "conditions_sha256": "7c527997333732f378205b66c264db0b8445985a68fc4903315a91a12cebbbc1",
+        "count": 462
+      },
+      "train": {
+        "conditions_sha256": "16d2334a9f943962024df14eeb963db7529b20ea6ce7a3227dfe36311f895df2",
+        "count": 828
+      },
+      "valid": {
+        "conditions_sha256": "eef7114c5bd7819d5795c43643545383521e685b0245a8ac226d7b0ec228552f",
+        "count": 93
+      }
+    },
+    {
+      "test": {
+        "conditions_sha256": "80a7da297af1ac9129b5137e642ea369798fa6feb96587eb3da9cedd8dc78d70",
+        "count": 459
+      },
+      "train": {
+        "conditions_sha256": "e6eac7273c33ca5f3a379bf3281c9cfd141a64869a23844c705946c2faff179b",
+        "count": 831
+      },
+      "valid": {
+        "conditions_sha256": "ccaf557a3e60de853a3328b0c7f3e1e46d899be7aed520615fd1cbe63db92618",
+        "count": 93
+      }
+    },
+    {
+      "test": {
+        "conditions_sha256": "4bbac376b73f3e1f21375c5dc8fa73b60fc94fb57832bd1f8c7b64d0c0ce3d13",
+        "count": 462
+      },
+      "train": {
+        "conditions_sha256": "6ac44f886d151d4f8283442807cafa7219ba1436b0f83681e804df62ba284aa0",
+        "count": 828
+      },
+      "valid": {
+        "conditions_sha256": "f6421eab5db2d583ac0c1174df6d539fde6a1bc94a49837a9dd72f12f3da12b0",
+        "count": 93
+      }
+    }
+  ],
+  "formal_configs_sha256": "9778bdc74854da7886f9cd97defc942171ccf649592acb280b071bb308b81fbe",
+  "formal_roster": [
+    [
+      "hvg-2k",
+      0,
+      17
+    ],
+    [
+      "hvg-2k",
+      0,
+      42
+    ],
+    [
+      "hvg-2k",
+      0,
+      2026
+    ],
+    [
+      "hvg-2k",
+      1,
+      17
+    ],
+    [
+      "hvg-2k",
+      1,
+      42
+    ],
+    [
+      "hvg-2k",
+      1,
+      2026
+    ],
+    [
+      "hvg-2k",
+      2,
+      17
+    ],
+    [
+      "hvg-2k",
+      2,
+      42
+    ],
+    [
+      "hvg-2k",
+      2,
+      2026
+    ],
+    [
+      "hvg-3k",
+      0,
+      17
+    ],
+    [
+      "hvg-3k",
+      0,
+      42
+    ],
+    [
+      "hvg-3k",
+      0,
+      2026
+    ],
+    [
+      "hvg-3k",
+      1,
+      17
+    ],
+    [
+      "hvg-3k",
+      1,
+      42
+    ],
+    [
+      "hvg-3k",
+      1,
+      2026
+    ],
+    [
+      "hvg-3k",
+      2,
+      17
+    ],
+    [
+      "hvg-3k",
+      2,
+      42
+    ],
+    [
+      "hvg-3k",
+      2,
+      2026
+    ],
+    [
+      "hvg-4k",
+      0,
+      17
+    ],
+    [
+      "hvg-4k",
+      0,
+      42
+    ],
+    [
+      "hvg-4k",
+      0,
+      2026
+    ],
+    [
+      "hvg-4k",
+      1,
+      17
+    ],
+    [
+      "hvg-4k",
+      1,
+      42
+    ],
+    [
+      "hvg-4k",
+      1,
+      2026
+    ],
+    [
+      "hvg-4k",
+      2,
+      17
+    ],
+    [
+      "hvg-4k",
+      2,
+      42
+    ],
+    [
+      "hvg-4k",
+      2,
+      2026
+    ],
+    [
+      "hvg-5k",
+      0,
+      17
+    ],
+    [
+      "hvg-5k",
+      0,
+      42
+    ],
+    [
+      "hvg-5k",
+      0,
+      2026
+    ],
+    [
+      "hvg-5k",
+      1,
+      17
+    ],
+    [
+      "hvg-5k",
+      1,
+      42
+    ],
+    [
+      "hvg-5k",
+      1,
+      2026
+    ],
+    [
+      "hvg-5k",
+      2,
+      17
+    ],
+    [
+      "hvg-5k",
+      2,
+      42
+    ],
+    [
+      "hvg-5k",
+      2,
+      2026
+    ],
+    [
+      "denoise-2k",
+      0,
+      17
+    ],
+    [
+      "denoise-2k",
+      0,
+      42
+    ],
+    [
+      "denoise-2k",
+      0,
+      2026
+    ],
+    [
+      "denoise-2k",
+      1,
+      17
+    ],
+    [
+      "denoise-2k",
+      1,
+      42
+    ],
+    [
+      "denoise-2k",
+      1,
+      2026
+    ],
+    [
+      "denoise-2k",
+      2,
+      17
+    ],
+    [
+      "denoise-2k",
+      2,
+      42
+    ],
+    [
+      "denoise-2k",
+      2,
+      2026
+    ],
+    [
+      "denoise-3k",
+      0,
+      17
+    ],
+    [
+      "denoise-3k",
+      0,
+      42
+    ],
+    [
+      "denoise-3k",
+      0,
+      2026
+    ],
+    [
+      "denoise-3k",
+      1,
+      17
+    ],
+    [
+      "denoise-3k",
+      1,
+      42
+    ],
+    [
+      "denoise-3k",
+      1,
+      2026
+    ],
+    [
+      "denoise-3k",
+      2,
+      17
+    ],
+    [
+      "denoise-3k",
+      2,
+      42
+    ],
+    [
+      "denoise-3k",
+      2,
+      2026
+    ],
+    [
+      "denoise-4k",
+      0,
+      17
+    ],
+    [
+      "denoise-4k",
+      0,
+      42
+    ],
+    [
+      "denoise-4k",
+      0,
+      2026
+    ],
+    [
+      "denoise-4k",
+      1,
+      17
+    ],
+    [
+      "denoise-4k",
+      1,
+      42
+    ],
+    [
+      "denoise-4k",
+      1,
+      2026
+    ],
+    [
+      "denoise-4k",
+      2,
+      17
+    ],
+    [
+      "denoise-4k",
+      2,
+      42
+    ],
+    [
+      "denoise-4k",
+      2,
+      2026
+    ],
+    [
+      "denoise-5k",
+      0,
+      17
+    ],
+    [
+      "denoise-5k",
+      0,
+      42
+    ],
+    [
+      "denoise-5k",
+      0,
+      2026
+    ],
+    [
+      "denoise-5k",
+      1,
+      17
+    ],
+    [
+      "denoise-5k",
+      1,
+      42
+    ],
+    [
+      "denoise-5k",
+      1,
+      2026
+    ],
+    [
+      "denoise-5k",
+      2,
+      17
+    ],
+    [
+      "denoise-5k",
+      2,
+      42
+    ],
+    [
+      "denoise-5k",
+      2,
+      2026
+    ]
+  ],
+  "fresh_fits": [
+    [
+      "hvg-2k",
+      0,
+      17
+    ],
+    [
+      "hvg-3k",
+      0,
+      17
+    ],
+    [
+      "hvg-4k",
+      0,
+      17
+    ],
+    [
+      "hvg-5k",
+      0,
+      17
+    ],
+    [
+      "denoise-2k",
+      0,
+      17
+    ],
+    [
+      "denoise-3k",
+      0,
+      17
+    ],
+    [
+      "denoise-4k",
+      0,
+      17
+    ],
+    [
+      "denoise-5k",
+      0,
+      17
+    ]
+  ],
+  "membership_sha256": {
+    "exclusions.csv": "63ca5e2f416efb432a1a0eddd2cc09a389f2fadb76b25ab0b7c5407970da1fbe",
+    "members.csv": "fcb33cae41ed4502d3c69169d51441ba37998493f735ff08e83f16111813a03b"
+  },
+  "registered_configs_sha256": "fef5fad8a40bcbc6b8076e45f4b60ddefd1a1eb8d49ef555c9503946d2f92b68",
+  "registered_roster": [
+    [
+      "hvg-2k",
+      0,
+      17
+    ],
+    [
+      "hvg-3k",
+      0,
+      17
+    ],
+    [
+      "hvg-4k",
+      0,
+      17
+    ],
+    [
+      "hvg-5k",
+      0,
+      17
+    ],
+    [
+      "denoise-2k",
+      0,
+      17
+    ],
+    [
+      "denoise-3k",
+      0,
+      17
+    ],
+    [
+      "denoise-4k",
+      0,
+      17
+    ],
+    [
+      "denoise-5k",
+      0,
+      17
+    ]
+  ],
+  "schema": "cpst-unimol-axis-matrix-v1",
+  "step08_reference_roster": [
+    [
+      "denoise-5k",
+      0,
+      17
+    ],
+    [
+      "denoise-5k",
+      0,
+      42
+    ],
+    [
+      "denoise-5k",
+      0,
+      2026
+    ],
+    [
+      "denoise-5k",
+      1,
+      17
+    ],
+    [
+      "denoise-5k",
+      1,
+      42
+    ],
+    [
+      "denoise-5k",
+      1,
+      2026
+    ],
+    [
+      "denoise-5k",
+      2,
+      17
+    ],
+    [
+      "denoise-5k",
+      2,
+      42
+    ],
+    [
+      "denoise-5k",
+      2,
+      2026
+    ]
+  ],
+  "training_manifests_sha256": {
+    "denoise-2k": "f36dcedcc372ae4ec3e336da77c5ee5f676a076036f120a07e7756b3b3040e94",
+    "denoise-3k": "f2b695c91827bb11fd588e3ee30d746b035a473e69c1b27912dface4843f1422",
+    "denoise-4k": "73b43419a5e5f99ade186bb47eb8716485109fa34e04407fe6c061a3cbef3e79",
+    "denoise-5k": "97bb9f1b792efd81eeeca65a0318324680f509ecac74bb04acd22ba4523c109e",
+    "hvg-2k": "b00e51dc03fdaefc596fd136c69bcbe022a8d26de4e93d6a0bcaf6ab4ce17a96",
+    "hvg-3k": "fb565ef2fc79a07fba924162b3f08dcf74c0904d24d9455aeb23cc41eab48a64",
+    "hvg-4k": "b397f926606fc824e329d174642b0c1e1ce8856c4a45decb950e1f79778707ed",
+    "hvg-5k": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37"
+  },
+  "unimol": {
+    "arm": "UniMol",
+    "manifest_sha256": "bc10c6af897b1b0d939a685aa198e03b22a3392e3891b721f70cc49f1f028678",
+    "projection_width": 400,
+    "vectors_sha256": "462f2deee01892b691beea7cea79ea97028f495ac1a0fd341dd14cc743bd6519",
+    "width": 512
+  }
+}

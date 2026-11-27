@@ -1,0 +1,35 @@
+# cpst_path_whitelist.txt — frozen recorded evidence that keeps retired step paths.
+#
+# Read by script/check_cpst_paths.sh. One entry per line:
+#
+#     <file-glob>:<literal-ERE>     exempt only that literal in that file
+#     <file-glob>                   exempt any literal in that file (last resort)
+#
+# `#` comments and blank lines are ignored. The file half is a shell glob
+# matched against the repo-relative source path; the literal half is an
+# extended regular expression matched against the exact extracted literal.
+#
+# Use this file ONLY for frozen evidence whose bytes are already committed:
+# a recorded payload string that reproduces an existing frozen output, or a
+# historical record quoted verbatim. A live document or live path literal that
+# merely needs updating is a path to FIX, not to whitelist.
+#
+# The axis contract looks up its sealed predecessor manifest by original name.
+cpst/02_gene_axis/02.1_hvg-deg/execution/tests/test_prediction_axis.py:^stage2/01_bases/output/gene-axis/gene_axis_$
+
+# This renderer is bound by the Step 02 figure receipt. The figure verifier
+# supplies the current Stage 2 utility package via PYTHONPATH.
+cpst/02_gene_axis/02.2_denoise-deg/figure/script/render.py:^stage2/util/output/api$
+
+# Shape receipts store code paths in the namespace that registered each fit.
+cpst/06_tsg_shape/06.2_round2/execution/evaluate_architecture.py:^stage2/06_tsg_shape/$
+cpst/06_tsg_shape/06.3_round3/execution/evaluate_composition.py:^stage2/06_tsg_shape/$
+cpst/06_tsg_shape/06.4_round4/execution/evaluate_measured.py:^stage2/06_tsg_shape/$
+cpst/06_tsg_shape/06.3_round3/execution/prior_unnormalized.py:^stage2/06_tsg_shape/06[.]3_round3/execution$
+
+# CPST release migration tests verify exact accepted Git paths and path boundaries.
+cpst/util/execution/tests/test_release_migration.py:^stage2_CarPS-VAE/07_cpsv_alpha/output/api/carps_vae_alpha[.]py$
+cpst/util/execution/tests/test_release_migration.py:^stage2_CarPS-VAE/09_cpsv_axis/log/figure-render[.]json$
+cpst/util/execution/tests/test_release_migration.py:^(cpst/archive_07_cpst_alpha|stage2_CarPS-VAE/archive_07_cpsv_alpha)[.]py$
+cpst/util/execution/migrate_release.py:^07_cpsv_alpha/output/release[.]json$
+cpst/util/execution/migrate_release.py:^10_cpsv_dose/output/formal/matrix$
