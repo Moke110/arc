@@ -1,0 +1,616 @@
+{
+  "alpha_replay_sha256": "751a7b2cc374007b6d9bb1f5164a950ade91e500205c83c854f10b458306106d",
+  "bounded_coordinates": 8,
+  "bounded_fit_lineage": [
+    {
+      "best_epoch": 2,
+      "coordinate": [
+        "hvg-2k",
+        0,
+        17
+      ],
+      "epoch_streams": [
+        {
+          "numpy_rng_sha256": "ed1596732407f97469a89c540262e20ad7fea2387713372683201c77cd16b53f",
+          "torch_cpu_rng_sha256": "74e3eb3743b5d0fb1ba11cd96e8ea44eeea6541c5fa30b332ccefce4983c1ce2",
+          "torch_cuda_rng_sha256": "3ade9c8f9998e39666c365ba4f0c5c5b7f683e9b58cbaa90a5814569da0cf7b4"
+        },
+        {
+          "numpy_rng_sha256": "891019a478e46b30bfd4c11fae8f9db3c3c81965a2aadfccd3272e9a2c3c5bd3",
+          "torch_cpu_rng_sha256": "1640cee5ac611a8348a6fb5826674763ae66dcb2c31e5a12763b99cf6787a2a5",
+          "torch_cuda_rng_sha256": "6ca712e496611284b0c03704d986127c83d356e7c371f3837d4502d33c41abbb"
+        }
+      ],
+      "epochs": 2,
+      "initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            2000
+          ],
+          "decoder_delta.4.weight": [
+            2000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            2000
+          ],
+          "decoder_x1.4.weight": [
+            2000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            2000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            2000
+          ]
+        },
+        "invariant_sha256": "c1161f6d0a1d872ddc4cd5146e04aa2ad62cf06c8469e167e13f4396143aae0f",
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "manifest_sha256": "d14ef35c788f23969dd2d2b64c0397d93433d90da7717125f0d5abaa956551ed",
+      "path": "runs/hvg-2k/fold-0/seed-17",
+      "registration_sha256": "97519905c225e20f7e2d30ab635497e7373ccb510d4cdf041cba92bc2add6afa",
+      "train_cuda_peak_allocated_bytes": 333606400,
+      "train_peak_rss_kib": 1683120
+    },
+    {
+      "best_epoch": 2,
+      "coordinate": [
+        "hvg-3k",
+        0,
+        17
+      ],
+      "epoch_streams": [
+        {
+          "numpy_rng_sha256": "ed1596732407f97469a89c540262e20ad7fea2387713372683201c77cd16b53f",
+          "torch_cpu_rng_sha256": "74e3eb3743b5d0fb1ba11cd96e8ea44eeea6541c5fa30b332ccefce4983c1ce2",
+          "torch_cuda_rng_sha256": "3ade9c8f9998e39666c365ba4f0c5c5b7f683e9b58cbaa90a5814569da0cf7b4"
+        },
+        {
+          "numpy_rng_sha256": "891019a478e46b30bfd4c11fae8f9db3c3c81965a2aadfccd3272e9a2c3c5bd3",
+          "torch_cpu_rng_sha256": "1640cee5ac611a8348a6fb5826674763ae66dcb2c31e5a12763b99cf6787a2a5",
+          "torch_cuda_rng_sha256": "6ca712e496611284b0c03704d986127c83d356e7c371f3837d4502d33c41abbb"
+        }
+      ],
+      "epochs": 2,
+      "initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            3000
+          ],
+          "decoder_delta.4.weight": [
+            3000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            3000
+          ],
+          "decoder_x1.4.weight": [
+            3000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            3000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            3000
+          ]
+        },
+        "invariant_sha256": "c1161f6d0a1d872ddc4cd5146e04aa2ad62cf06c8469e167e13f4396143aae0f",
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "manifest_sha256": "749f6ce464134f1e916832c5cbe65673ee71ffdc6eed40139fb3c8b9baea0089",
+      "path": "runs/hvg-3k/fold-0/seed-17",
+      "registration_sha256": "2cf453292e24a3d594943515eb723b7bb26cbd2b8067cef1493aafb8ec3a30fb",
+      "train_cuda_peak_allocated_bytes": 417191936,
+      "train_peak_rss_kib": 1688192
+    },
+    {
+      "best_epoch": 2,
+      "coordinate": [
+        "hvg-4k",
+        0,
+        17
+      ],
+      "epoch_streams": [
+        {
+          "numpy_rng_sha256": "ed1596732407f97469a89c540262e20ad7fea2387713372683201c77cd16b53f",
+          "torch_cpu_rng_sha256": "74e3eb3743b5d0fb1ba11cd96e8ea44eeea6541c5fa30b332ccefce4983c1ce2",
+          "torch_cuda_rng_sha256": "3ade9c8f9998e39666c365ba4f0c5c5b7f683e9b58cbaa90a5814569da0cf7b4"
+        },
+        {
+          "numpy_rng_sha256": "891019a478e46b30bfd4c11fae8f9db3c3c81965a2aadfccd3272e9a2c3c5bd3",
+          "torch_cpu_rng_sha256": "1640cee5ac611a8348a6fb5826674763ae66dcb2c31e5a12763b99cf6787a2a5",
+          "torch_cuda_rng_sha256": "6ca712e496611284b0c03704d986127c83d356e7c371f3837d4502d33c41abbb"
+        }
+      ],
+      "epochs": 2,
+      "initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            4000
+          ],
+          "decoder_delta.4.weight": [
+            4000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            4000
+          ],
+          "decoder_x1.4.weight": [
+            4000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            4000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            4000
+          ]
+        },
+        "invariant_sha256": "c1161f6d0a1d872ddc4cd5146e04aa2ad62cf06c8469e167e13f4396143aae0f",
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "manifest_sha256": "e4c706d3c2912eb7821dadd691b73e1e8c22a1623a7bb859d42afdd5887e1d85",
+      "path": "runs/hvg-4k/fold-0/seed-17",
+      "registration_sha256": "8862e47bdc8d5d799b37449647b7c07596326ccb782aecbd3a7d87a7d41a2f8b",
+      "train_cuda_peak_allocated_bytes": 495736320,
+      "train_peak_rss_kib": 1694816
+    },
+    {
+      "best_epoch": 2,
+      "coordinate": [
+        "hvg-5k",
+        0,
+        17
+      ],
+      "epoch_streams": [
+        {
+          "numpy_rng_sha256": "ed1596732407f97469a89c540262e20ad7fea2387713372683201c77cd16b53f",
+          "torch_cpu_rng_sha256": "74e3eb3743b5d0fb1ba11cd96e8ea44eeea6541c5fa30b332ccefce4983c1ce2",
+          "torch_cuda_rng_sha256": "3ade9c8f9998e39666c365ba4f0c5c5b7f683e9b58cbaa90a5814569da0cf7b4"
+        },
+        {
+          "numpy_rng_sha256": "891019a478e46b30bfd4c11fae8f9db3c3c81965a2aadfccd3272e9a2c3c5bd3",
+          "torch_cpu_rng_sha256": "1640cee5ac611a8348a6fb5826674763ae66dcb2c31e5a12763b99cf6787a2a5",
+          "torch_cuda_rng_sha256": "6ca712e496611284b0c03704d986127c83d356e7c371f3837d4502d33c41abbb"
+        }
+      ],
+      "epochs": 2,
+      "initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            5000
+          ],
+          "decoder_delta.4.weight": [
+            5000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            5000
+          ],
+          "decoder_x1.4.weight": [
+            5000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            5000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            5000
+          ]
+        },
+        "invariant_sha256": "c1161f6d0a1d872ddc4cd5146e04aa2ad62cf06c8469e167e13f4396143aae0f",
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "manifest_sha256": "ed03232fa84309115b190efcdb5a218639faa72f807e91d896d152dd2aa9a6b2",
+      "path": "runs/hvg-5k/fold-0/seed-17",
+      "registration_sha256": "619579c873d6f546c1299ea9c216ad5099e63b4a9fdaa4dc5467671fba902a78",
+      "train_cuda_peak_allocated_bytes": 498296832,
+      "train_peak_rss_kib": 1701632
+    },
+    {
+      "best_epoch": 2,
+      "coordinate": [
+        "denoise-2k",
+        0,
+        17
+      ],
+      "epoch_streams": [
+        {
+          "numpy_rng_sha256": "ed1596732407f97469a89c540262e20ad7fea2387713372683201c77cd16b53f",
+          "torch_cpu_rng_sha256": "74e3eb3743b5d0fb1ba11cd96e8ea44eeea6541c5fa30b332ccefce4983c1ce2",
+          "torch_cuda_rng_sha256": "3ade9c8f9998e39666c365ba4f0c5c5b7f683e9b58cbaa90a5814569da0cf7b4"
+        },
+        {
+          "numpy_rng_sha256": "891019a478e46b30bfd4c11fae8f9db3c3c81965a2aadfccd3272e9a2c3c5bd3",
+          "torch_cpu_rng_sha256": "1640cee5ac611a8348a6fb5826674763ae66dcb2c31e5a12763b99cf6787a2a5",
+          "torch_cuda_rng_sha256": "6ca712e496611284b0c03704d986127c83d356e7c371f3837d4502d33c41abbb"
+        }
+      ],
+      "epochs": 2,
+      "initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            2000
+          ],
+          "decoder_delta.4.weight": [
+            2000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            2000
+          ],
+          "decoder_x1.4.weight": [
+            2000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            2000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            2000
+          ]
+        },
+        "invariant_sha256": "c1161f6d0a1d872ddc4cd5146e04aa2ad62cf06c8469e167e13f4396143aae0f",
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "manifest_sha256": "d6b70d45509f66a5d517b74d763c32082b1908c46a76cdb2a4dd92abd2fc651f",
+      "path": "runs/denoise-2k/fold-0/seed-17",
+      "registration_sha256": "82c27ceca966184be5b716fa6fb4c545d3f0bd2c5f3dbfdb524162cb2197bf5f",
+      "train_cuda_peak_allocated_bytes": 333606400,
+      "train_peak_rss_kib": 1683300
+    },
+    {
+      "best_epoch": 2,
+      "coordinate": [
+        "denoise-3k",
+        0,
+        17
+      ],
+      "epoch_streams": [
+        {
+          "numpy_rng_sha256": "ed1596732407f97469a89c540262e20ad7fea2387713372683201c77cd16b53f",
+          "torch_cpu_rng_sha256": "74e3eb3743b5d0fb1ba11cd96e8ea44eeea6541c5fa30b332ccefce4983c1ce2",
+          "torch_cuda_rng_sha256": "3ade9c8f9998e39666c365ba4f0c5c5b7f683e9b58cbaa90a5814569da0cf7b4"
+        },
+        {
+          "numpy_rng_sha256": "891019a478e46b30bfd4c11fae8f9db3c3c81965a2aadfccd3272e9a2c3c5bd3",
+          "torch_cpu_rng_sha256": "1640cee5ac611a8348a6fb5826674763ae66dcb2c31e5a12763b99cf6787a2a5",
+          "torch_cuda_rng_sha256": "6ca712e496611284b0c03704d986127c83d356e7c371f3837d4502d33c41abbb"
+        }
+      ],
+      "epochs": 2,
+      "initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            3000
+          ],
+          "decoder_delta.4.weight": [
+            3000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            3000
+          ],
+          "decoder_x1.4.weight": [
+            3000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            3000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            3000
+          ]
+        },
+        "invariant_sha256": "c1161f6d0a1d872ddc4cd5146e04aa2ad62cf06c8469e167e13f4396143aae0f",
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "manifest_sha256": "5076f0a03e8d3a2edace3cd5d0adaa78b5ca15263d1fab3451fd798dca50b198",
+      "path": "runs/denoise-3k/fold-0/seed-17",
+      "registration_sha256": "e90e0d0caf2ec3e227e202ab2521e45763cedff34087a74d5d623f880746ee95",
+      "train_cuda_peak_allocated_bytes": 417191936,
+      "train_peak_rss_kib": 1689392
+    },
+    {
+      "best_epoch": 2,
+      "coordinate": [
+        "denoise-4k",
+        0,
+        17
+      ],
+      "epoch_streams": [
+        {
+          "numpy_rng_sha256": "ed1596732407f97469a89c540262e20ad7fea2387713372683201c77cd16b53f",
+          "torch_cpu_rng_sha256": "74e3eb3743b5d0fb1ba11cd96e8ea44eeea6541c5fa30b332ccefce4983c1ce2",
+          "torch_cuda_rng_sha256": "3ade9c8f9998e39666c365ba4f0c5c5b7f683e9b58cbaa90a5814569da0cf7b4"
+        },
+        {
+          "numpy_rng_sha256": "891019a478e46b30bfd4c11fae8f9db3c3c81965a2aadfccd3272e9a2c3c5bd3",
+          "torch_cpu_rng_sha256": "1640cee5ac611a8348a6fb5826674763ae66dcb2c31e5a12763b99cf6787a2a5",
+          "torch_cuda_rng_sha256": "6ca712e496611284b0c03704d986127c83d356e7c371f3837d4502d33c41abbb"
+        }
+      ],
+      "epochs": 2,
+      "initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            4000
+          ],
+          "decoder_delta.4.weight": [
+            4000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            4000
+          ],
+          "decoder_x1.4.weight": [
+            4000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            4000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            4000
+          ]
+        },
+        "invariant_sha256": "c1161f6d0a1d872ddc4cd5146e04aa2ad62cf06c8469e167e13f4396143aae0f",
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "manifest_sha256": "8f1e9e089118e90525d74dfc9088de33d84546c5fa09a453fb54d4a69511ddb4",
+      "path": "runs/denoise-4k/fold-0/seed-17",
+      "registration_sha256": "9164d52683a2e5b78e4a3918b3ba14ced58eb2ea5fe8b347fd378e539ab97838",
+      "train_cuda_peak_allocated_bytes": 495736320,
+      "train_peak_rss_kib": 1695668
+    },
+    {
+      "best_epoch": 2,
+      "coordinate": [
+        "denoise-5k",
+        0,
+        17
+      ],
+      "epoch_streams": [
+        {
+          "numpy_rng_sha256": "ed1596732407f97469a89c540262e20ad7fea2387713372683201c77cd16b53f",
+          "torch_cpu_rng_sha256": "74e3eb3743b5d0fb1ba11cd96e8ea44eeea6541c5fa30b332ccefce4983c1ce2",
+          "torch_cuda_rng_sha256": "3ade9c8f9998e39666c365ba4f0c5c5b7f683e9b58cbaa90a5814569da0cf7b4"
+        },
+        {
+          "numpy_rng_sha256": "891019a478e46b30bfd4c11fae8f9db3c3c81965a2aadfccd3272e9a2c3c5bd3",
+          "torch_cpu_rng_sha256": "1640cee5ac611a8348a6fb5826674763ae66dcb2c31e5a12763b99cf6787a2a5",
+          "torch_cuda_rng_sha256": "6ca712e496611284b0c03704d986127c83d356e7c371f3837d4502d33c41abbb"
+        }
+      ],
+      "epochs": 2,
+      "initialization": {
+        "axis_projection_shapes": {
+          "decoder_delta.4.bias": [
+            5000
+          ],
+          "decoder_delta.4.weight": [
+            5000,
+            800
+          ],
+          "decoder_x1.4.bias": [
+            5000
+          ],
+          "decoder_x1.4.weight": [
+            5000,
+            800
+          ],
+          "encoder_delta.0.weight": [
+            1200,
+            5000
+          ],
+          "encoder_x1.0.weight": [
+            1200,
+            5000
+          ]
+        },
+        "invariant_sha256": "c1161f6d0a1d872ddc4cd5146e04aa2ad62cf06c8469e167e13f4396143aae0f",
+        "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
+        "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
+      },
+      "manifest_sha256": "4ee6a817fc78dc3ef43c3ca2699064f14a302bfad510e234aeaa32a24e8340bb",
+      "path": "runs/denoise-5k/fold-0/seed-17",
+      "registration_sha256": "9c89b14adfd0bf7600940030ac00fc449dcea533cbc549c522fc12bc4db256f1",
+      "train_cuda_peak_allocated_bytes": 498296832,
+      "train_peak_rss_kib": 1701096
+    }
+  ],
+  "coordinator_samples_sha256": "7dc629cef456fa271c3e03dfc4f36e9eba0d24174cdeaa0c05c96beefdc122f8",
+  "disease_overlaps": {
+    "denoise-2k": 906,
+    "denoise-3k": 1225,
+    "denoise-4k": 1375,
+    "denoise-5k": 1513,
+    "hvg-2k": 1258,
+    "hvg-3k": 1889,
+    "hvg-4k": 2525,
+    "hvg-5k": 3149
+  },
+  "disease_union_size": 3481,
+  "equal_width_initialized_state_sha256": {
+    "2000": "a72f623a992d56f3a2e7a7897d86c66b343e34d8debda50c0d640693bfa2f0bd",
+    "3000": "03dc6adc4b14ba034be992e18bbe9e7c84d0f8c773b2fa4d44ae165d44e48fbf",
+    "4000": "51544f86b7ae5de24dd5c7a54c8e1c3f5bb553254af4750875fc01883091802b",
+    "5000": "25f4e66d37f949193673101e02d3c6bc214b0a9449bac7beb62bc7e864dc23e9"
+  },
+  "figures": {
+    "csv_sha256": {
+      "axis-metrics-paired.csv": "cf48f3b9c0d587530f6671b6f9f8087ae7fefe82ad68ee4d5733877b9f838e11",
+      "axis-metrics.csv": "cd9c8856383fb4d9d973d758cefc90682e346ed4b4543b6d57e4792f44bf4678",
+      "disease-correct-coverage-paired.csv": "060d84f2b7fe224f0bc3d1ca29b0c350ac64036445ba4d63472df82987f86591",
+      "disease-correct-coverage.csv": "f73c824811f6626b8cc445169f79d9d8f5f986aefc92423dfe99a133eea9748c",
+      "disease-metrics-paired.csv": "6f9868c14131ae3836e9bb6c257a155747cd0ed3fc95eec1accccf81ecd37eeb",
+      "disease-metrics.csv": "03de65cd16d1e3e145fe3c5447e39396d59b45562ffbc8f3d3684e942b1fbd20",
+      "learning-curves.csv": "9f0641869f15b1a26490477ca0b4f15b40aaa8cb90ed659328f00925b6ae2658"
+    },
+    "independent_csv_only_renders": 2,
+    "png_sha256": {
+      "axis-metrics-paired.png": "42b6588733eb86c08b15a7f27e149e31f67de6a071423344d7f02ead1c83c2f6",
+      "axis-metrics.png": "47bc317ae1d590cbc063b9c4131c58306b93b57b864d31080517b96701bd7f9e",
+      "disease-correct-coverage-paired.png": "dd0d36bfb4b151420d5101c5c697ddddd7c17f00cc1d8569e726ac53d90e7bbf",
+      "disease-correct-coverage.png": "fb192c9bf57dc055334932b0fe7c85e4280fe865fa153115ff60ad6bb8b9354d",
+      "disease-metrics-paired.png": "1c9a2c24757885fbf9951dc409a6ba9aa1b1683dfc875d64d5c4dd1d86084387",
+      "disease-metrics.png": "fd9505c2a44ac679bc6677a107fc2defc7f3507c6a29c33b0fb1d06daac8274a",
+      "learning-curves.png": "ada19d51059862f6450a3c74538e78c0c1042638e80d91794d74f4851b9b740d"
+    },
+    "status": "PASS"
+  },
+  "fit_budgets": {
+    "coordinator": {
+      "gaps_over_12_seconds": 0,
+      "maximum_gap_seconds": 10.0,
+      "sample_interval_seconds": 10,
+      "samples": 12
+    },
+    "matrix": {
+      "gaps_over_12_seconds": 2,
+      "maximum_gap_seconds": 12.95,
+      "sample_interval_seconds": 10,
+      "samples": 11
+    },
+    "matrix_samples_sha256": "93aa3fe5b6c5d39ae55f1184e05454e1631838ac57c20c79b95b12d9d42a3eb5",
+    "maximum_gpu_used_mib": 2984,
+    "minimum_disk_free_bytes": 33465016320,
+    "minimum_gpu_available_mib": 13151,
+    "minimum_windows_available_kib": 24182304,
+    "minimum_wsl_available_kib": 19963464,
+    "peak_scope_memory_bytes": 2294726656,
+    "phase_audit_sha256": {
+      "runs/denoise-2k/fold-0/seed-17/predict-1795742367556581945.log": "5e05b5980e11562c23470de349be88b149002261bf9d20353d6aa01c82615280",
+      "runs/denoise-2k/fold-0/seed-17/predict-1795742367556581945.resources": "fd20b6c3165977518b8539a8614d99028084979d457a6ca5771a644d46106ea6",
+      "runs/denoise-2k/fold-0/seed-17/register-1795742308791050340.log": "85c2187ea09563b4c0d81b9783ab39c51de874ec3341e0801b42f4530a0e2823",
+      "runs/denoise-2k/fold-0/seed-17/register-1795742308791050340.resources": "34b3ffbebf9a93749d120a64fa7c2a4525787e3702a3201638bc9b9b33c8232e",
+      "runs/denoise-2k/fold-0/seed-17/replay-1795742370775443524.log": "aeaf81af5f5957d2bf783b7cad274aecbe7df6690a41c9046a14cc4417b75277",
+      "runs/denoise-2k/fold-0/seed-17/replay-1795742370775443524.resources": "92d9be55196a41f4ad58e61613e83618af437da0e1cac4d8cd9e43b65ecd702d",
+      "runs/denoise-2k/fold-0/seed-17/train-1795742364180923692.log": "269d94f77a20bf1bd1722ade8dcdcfd6557bc39eb4e0b17b3c4d41d6cadb3869",
+      "runs/denoise-2k/fold-0/seed-17/train-1795742364180923692.resources": "8e3c31e74d8199e8ce3e0388a8a66e860c6f56921ab9d65d26f6259e048e5418",
+      "runs/denoise-3k/fold-0/seed-17/predict-1795742377671505380.log": "026a008070e2c82799182b024250030f798be3182918cea798cfc54e05e105a8",
+      "runs/denoise-3k/fold-0/seed-17/predict-1795742377671505380.resources": "8e779ccf40a0855518057141129c1e36a822f638d5489ba9531c06319a22c04e",
+      "runs/denoise-3k/fold-0/seed-17/register-1795742310610844968.log": "23cd1f6179924a07b73b34ba7c2f81dde1680a6519e65db243fc275df5d05e42",
+      "runs/denoise-3k/fold-0/seed-17/register-1795742310610844968.resources": "be89911af108c7ca1f67b4b807159fe32f1b027facb87f1490d7a908ded514ff",
+      "runs/denoise-3k/fold-0/seed-17/replay-1795742381090771213.log": "f1fbf417c852ab529b5033f0e65f8aeb928bf9a041405a0bc42be13f9c87cce0",
+      "runs/denoise-3k/fold-0/seed-17/replay-1795742381090771213.resources": "4205a69865f8e84edbd1b8191615cf9994900df411af5eea42d78adb0d084447",
+      "runs/denoise-3k/fold-0/seed-17/train-1795742374095488706.log": "b0513dd14daf2fbefac2cc01a10fc5596b185ef4b50d2824cc4ab2a277de6ae2",
+      "runs/denoise-3k/fold-0/seed-17/train-1795742374095488706.resources": "01d5688f307f3ff2d3d5bdf09ae47147e850d4a31d9f84805ed148ed02e10bdd",
+      "runs/denoise-4k/fold-0/seed-17/predict-1795742388184323055.log": "8afa462a21ad7a0e3d37d317381623e388cebed7deccee4dfd2847623894d577",
+      "runs/denoise-4k/fold-0/seed-17/predict-1795742388184323055.resources": "c611b7778bd9ec26fa4cef542027082c5d04214cbb2532945a3a0b5a40333014",
+      "runs/denoise-4k/fold-0/seed-17/register-1795742312428752821.log": "77e0ac71491c59e5fa5fc47f03b4b8299a31da91ee3ba1818ad543c2446e0cb2",
+      "runs/denoise-4k/fold-0/seed-17/register-1795742312428752821.resources": "01bf5c6393e9223cf233c1d09da34671101e999d9ea30e40059cc3ccf90be9c3",
+      "runs/denoise-4k/fold-0/seed-17/replay-1795742391553963850.log": "51bd26f186997bd5596e3c617692daff2710d2c9f25145e1ef0111d194f01af1",
+      "runs/denoise-4k/fold-0/seed-17/replay-1795742391553963850.resources": "5e6cabf285c6bcbd3513b44bd95ce15a17ed130530312275a581adeb66ac45e1",
+      "runs/denoise-4k/fold-0/seed-17/train-1795742384510572471.log": "896572151dd1bac2f2d01bb0b5ade65c9e79f7cb22c5c414e87cf7b684179ac9",
+      "runs/denoise-4k/fold-0/seed-17/train-1795742384510572471.resources": "0d0fae34ceab453554d1c02e7b238ddde7b3d44f405ea1c0ef4a6c4c830571ff",
+      "runs/denoise-5k/fold-0/seed-17/predict-1795742401591864794.log": "0187acd589f984aff79ad9494b818526bd47a5bafb1f1bfe89406b987179dc70",
+      "runs/denoise-5k/fold-0/seed-17/predict-1795742401591864794.resources": "068f24d27163055dcc841b89d9d824c4d8c038953076dc119d901005ce411d5c",
+      "runs/denoise-5k/fold-0/seed-17/register-1795742314246275948.log": "0f2c97ee69cedbfc056d2c14dbf3dc1901b553b5c34e0022493d8fed551e28ad",
+      "runs/denoise-5k/fold-0/seed-17/register-1795742314246275948.resources": "aacb0d8255dbe6ac4e5d2805534b67e80687f58182029bc91ba182e992e163e7",
+      "runs/denoise-5k/fold-0/seed-17/replay-1795742404960958889.log": "392e06a4ad75b269d6175cc94450390db24c027b3e7599f2b8d8234c8bc3bd5b",
+      "runs/denoise-5k/fold-0/seed-17/replay-1795742404960958889.resources": "eb5692c441cf7823ce107e233b6e16a675d71022f5915592f08a379aec28b860",
+      "runs/denoise-5k/fold-0/seed-17/train-1795742395073226385.log": "14d5eadcd836a882c15a01e581cecbfc96b6587a5c0b93cc9e542bb2c8f3cb94",
+      "runs/denoise-5k/fold-0/seed-17/train-1795742395073226385.resources": "fbeee04b0a74271e0b2f45ab759e7eae09c9341910b6e7ba22367231820afed6",
+      "runs/hvg-2k/fold-0/seed-17/predict-1795742320484680095.log": "951de84ef2c0c9a4c867a0748a2fd42a9b47ac665f323eca6b8b5e09bb08831d",
+      "runs/hvg-2k/fold-0/seed-17/predict-1795742320484680095.resources": "af0295f426e4dee74d4aee9d117bed85194d06e6b93be590aa1c3ca1d31bf15c",
+      "runs/hvg-2k/fold-0/seed-17/register-1795742301369594515.log": "90f9e3f86b19c304c481aaefe96dc51b8c76b4821cd3165249fe0bc8de00f64b",
+      "runs/hvg-2k/fold-0/seed-17/register-1795742301369594515.resources": "ee6b3ab5d7feb719cc85286c3d4f29cc005f5c17a33cea4f8754507e17f722a0",
+      "runs/hvg-2k/fold-0/seed-17/replay-1795742323766256072.log": "f0dc1d5462d593af6820ac9c3d05285fdfa1f292c57cddcde5e8e24693a83fb5",
+      "runs/hvg-2k/fold-0/seed-17/replay-1795742323766256072.resources": "981d5660f3b3896acaf5e9fc3d4c5c0c066a7b51e775f79a1b2d48e09cc8906c",
+      "runs/hvg-2k/fold-0/seed-17/train-1795742316164321761.log": "2990de7f2e2997ed04c3ed3ef03fc2869e7ac7fd554f1d698ed92847f9c1281b",
+      "runs/hvg-2k/fold-0/seed-17/train-1795742316164321761.resources": "16062c93630ead86b07a781bb13245ef0ea906a4051be0720fd1ce7c3654410f",
+      "runs/hvg-3k/fold-0/seed-17/predict-1795742333476626793.log": "6504ac89e49ee9581a4b976004f56086aef3e3ec66154015824eadf655e96531",
+      "runs/hvg-3k/fold-0/seed-17/predict-1795742333476626793.resources": "177a5e8349a03065adc7ed9e319448dafcc18af0cabf837e5db75519f098307b",
+      "runs/hvg-3k/fold-0/seed-17/register-1795742303187106917.log": "48c552f93128ee3ba9eeff3a2bed75cf7f72ab1031a4f659bc287293e9ca6995",
+      "runs/hvg-3k/fold-0/seed-17/register-1795742303187106917.resources": "e943c3c4cb02d53ace3426fb9f9381c2b1cfc2aed2eef345f0eacfd193a85765",
+      "runs/hvg-3k/fold-0/seed-17/replay-1795742336846410679.log": "697b61ba3b28c616759561ebdb3c95c817332605f6c129bb9fc54319218dfd9b",
+      "runs/hvg-3k/fold-0/seed-17/replay-1795742336846410679.resources": "8b8d3c9990bc5cf58ff8130587060e153bdd05fd504390e803e674d69c98e59f",
+      "runs/hvg-3k/fold-0/seed-17/train-1795742329934150864.log": "90b9699e96eff8a6ece15b7ccbe8f7b71a54afd12b53569074bf7b283bfaaccc",
+      "runs/hvg-3k/fold-0/seed-17/train-1795742329934150864.resources": "331d35abf2da733efe2fc7d461f29222fc957c423f90a14a3866bd6b9696d990",
+      "runs/hvg-4k/fold-0/seed-17/predict-1795742343852074620.log": "d6c0d79ead126c2ddeffb56a4d033abba69f2444e3b11e2ab9587c8f2bf84fdf",
+      "runs/hvg-4k/fold-0/seed-17/predict-1795742343852074620.resources": "c1fbf88ab81e2878845a63694ba604bdc5c268aea16b1f53098c9d5a4edbf769",
+      "runs/hvg-4k/fold-0/seed-17/register-1795742305004762870.log": "113292ec7f8e2b0da25caf052c8c69913c6f4dc3e1ab8ec541af423528866bc7",
+      "runs/hvg-4k/fold-0/seed-17/register-1795742305004762870.resources": "5d6d12330c2044e8a5fd4d1779419c6ec2928e6809129d7570f1e7dda0773a54",
+      "runs/hvg-4k/fold-0/seed-17/replay-1795742347377102806.log": "a0784b62b6ee8df2e8b32f102a16f1ae4eb4bec6b3e7a1f52e705629582e2236",
+      "runs/hvg-4k/fold-0/seed-17/replay-1795742347377102806.resources": "a2c1d9b7e3e43ce9e9172fe39e03becaf98a9de34f07b9e4c4e6850b440b6ce7",
+      "runs/hvg-4k/fold-0/seed-17/train-1795742340216022232.log": "6ebbde85093f03055ff8e0d7910a930e7b14956b364949df1bf636ed09f20a70",
+      "runs/hvg-4k/fold-0/seed-17/train-1795742340216022232.resources": "baa9a35ed689aa17ab3617b12bd22ee1d1262c7c3c0d8142bd5498e6481d3015",
+      "runs/hvg-5k/fold-0/seed-17/predict-1795742354515946786.log": "d277d3d8df661f48dda054f04139d359698b1aa6a558e1a98f76c6e2b4fb7638",
+      "runs/hvg-5k/fold-0/seed-17/predict-1795742354515946786.resources": "d7187e7afa6b6a5c688523ccaf2a26f23537ed1248fd91fa52898197c53dd3c2",
+      "runs/hvg-5k/fold-0/seed-17/register-1795742306872871336.log": "b64897d2fa768c390b81468d3ddcca1333142340f2596ae2901f52d20212bea7",
+      "runs/hvg-5k/fold-0/seed-17/register-1795742306872871336.resources": "1fece73b9d090183b89fcae825e08cafce44ccef717244ababdc33d22ede2480",
+      "runs/hvg-5k/fold-0/seed-17/replay-1795742357838668359.log": "7d916d725d2a4e58a333852d1494c807557e192b4a27703f42c01e3dca210c79",
+      "runs/hvg-5k/fold-0/seed-17/replay-1795742357838668359.resources": "f22cdecea8eeb94742701fdc6421a40839424c18bd1e70f7c57c2b33dfbcf59d",
+      "runs/hvg-5k/fold-0/seed-17/train-1795742350746373909.log": "3431d5dfe35387bb9613840dbef52db42487c25512ea49b4deb404a61932e40e",
+      "runs/hvg-5k/fold-0/seed-17/train-1795742350746373909.resources": "bbae79c63fb88f22272483489bdca3b92bbc3b246353c76b1527eedadb876360",
+      "scope-1795742408793678647.json": "838338170a4e255aff4203c4ea1a3c6312c30cb3ed4f396b340ad88807f8d1d6"
+    },
+    "phase_peak_rss_kib": {
+      "predict": 1487380,
+      "register": 849804,
+      "replay": 1502600,
+      "train": 1807328
+    },
+    "scope_memory_max_bytes": 12884901888,
+    "scope_swap_max_bytes": 8589934592,
+    "status": "PASS"
+  },
+  "formal_coordinates": 72,
+  "fresh_alpha_replays": 9,
+  "fresh_sealed_unimol_replays": 9,
+  "independent_directional_coverage_conditions": 192,
+  "matrix_sha256": "6053714598020403785257e30949c7ad8e7bbc45f9ecac214e42d216aff34e7e",
+  "preflight_sha256": "8225f0926f5af4f98c9731c3864997170345548f866507bf8ed06547889cb91b",
+  "process_resources": {
+    "alpha": {
+      "elapsed": "0:07.91",
+      "peak_rss_kib": 1594008
+    },
+    "figures": {
+      "elapsed": "0:08.34",
+      "peak_rss_kib": 802492
+    },
+    "gate": {
+      "elapsed": "1:50.86",
+      "peak_rss_kib": 1807328
+    },
+    "reference": {
+      "elapsed": "0:11.00",
+      "peak_rss_kib": 1599772
+    },
+    "score": {
+      "elapsed": "0:09.39",
+      "peak_rss_kib": 839252
+    }
+  },
+  "reference_plan_sha256": "1601dfb225d9806ba9db154c7897b03875d1a2bbb5ab539fd4bc06890101774a",
+  "report_sha256": "1f627981a1a5da533b48412fb7de187e7699f47303f2ef747d010bf0f1c55ada",
+  "status": "PASS",
+  "step08_acceptance_sha256": "56b8983678f72adc2deb9a34613561428b3bd77507f44b0ae091b1bc7d40a6f2",
+  "ticket": 367
+}
