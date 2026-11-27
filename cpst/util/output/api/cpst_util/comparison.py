@@ -52,7 +52,7 @@ def _read_metrics(data):
         scores[key] = _score(row["value"])
         panels[coordinate].add(metric)
     if not panels or any(values != set(METRIC_NAMES) for values in panels.values()):
-        raise ValueError("every fit needs all eight metrics")
+        raise ValueError("every fit needs all comparison metrics")
     return scores, set(panels)
 
 

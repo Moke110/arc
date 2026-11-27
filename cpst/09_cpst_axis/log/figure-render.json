@@ -26,7 +26,7 @@
   "renderer_files_sha256": {
     "09_cpst_axis/execution/axis_protocol.py": "1f0c9db26726b36ceca66069c42a320e4fb1c62a60ebd27f02053edb4145d98a",
     "09_cpst_axis/figure/script/render_axes.py": "c30f595c593631fe907afc89ccf86a78947637deb7c9c5d295bed65d6d98830e",
-    "util/output/api/cpst_util/comparison.py": "9871e70086caef331284093682f2dd1946fc658756f3ab989d68bc17144fc570",
+    "util/output/api/cpst_util/comparison.py": "4806e7c3d331637ba2d0d9310fd833ed9d2135c40bf62a2034cba38773eae65c",
     "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },

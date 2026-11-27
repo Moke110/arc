@@ -315,6 +315,12 @@ tmp/
 !/cpst/util/output/api/
 !/cpst/util/output/tables/
 !/cpst/util/output/tables/seeds.csv
+!/cpst/util/output/tenv-folds/
+/cpst/util/output/tenv-folds/*
+!/cpst/util/output/tenv-folds/v1/
+/cpst/util/output/tenv-folds/v1/*
+!/cpst/util/output/tenv-folds/v1/conditions.csv
+!/cpst/util/output/tenv-folds/v1/manifest.json
 !/cpst/util/output/gene-identity/
 !/cpst/util/output/gene-identity/**/*.csv
 /cpst/util/output/representations/

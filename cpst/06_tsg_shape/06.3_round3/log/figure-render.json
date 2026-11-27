@@ -33,7 +33,7 @@
   "renderer_files_sha256": {
     "06_tsg_shape/06.3_round3/figure/script/render_comparison.py": "49486baf9affb3195a48fba7802425a6cae477c2ffddb8381320d7dfbacf29ab",
     "06_tsg_shape/figure/script/architecture_comparison.py": "fb3959419ecc98f8a7ee07c4de6b1f137bf5fdd618641f5f58067ea6fee442d9",
-    "util/output/api/cpst_util/comparison.py": "9871e70086caef331284093682f2dd1946fc658756f3ab989d68bc17144fc570",
+    "util/output/api/cpst_util/comparison.py": "4806e7c3d331637ba2d0d9310fd833ed9d2135c40bf62a2034cba38773eae65c",
     "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },

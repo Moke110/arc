@@ -3,7 +3,7 @@
 `cpst/util` provides the identities, frozen features, training and scoring code,
 and figure renderers used across CarPS-Transcriptome. Steps 01–03 own the raw
 counts, ordered prediction axes and training releases. Steps 04–10 own their
-study populations, folds, calibration, score aggregation and reports.
+study populations, calibration, score aggregation and reports.
 [CarPS-Transcriptome steps](../README.md) · [Utility execution guide](AGENTS.md)
 
 ## Shared input and release APIs
@@ -16,6 +16,7 @@ Add `cpst/util/output/api` to the Python import path to import `cpst_util`.
 | [`representations`](output/api/cpst_util/representations.py) | `RepresentationTable(source="tenv")` or `RepresentationTable(source="tahoe_bulk")` checks the source-specific manifest and its files. `ordered_parents(observations)` collapses repeated records to unique desalted parents in InChIKey order. `table.verified_parent_keys(parents)` checks structures, and `table.vectors(arm, keys)` returns vectors in the caller’s key order, including duplicates. |
 | [`ecfp4`](output/api/cpst_util/ecfp4.py) | `open_ecfp4(directory, source_manifest=...)` verifies the 2,048-bit binary fingerprints and parent order, with an optional original manifest binding. `publish_ecfp4(input_directory, candidate_directory)` copies the verified fingerprint and parent table into a separate candidate and records their provenance. |
 | [`seeds`](output/api/cpst_util/seeds.py) | `read_seeds(count=None)` verifies the [seed table](output/tables/seeds.csv) and reads `(17, 42, 2026)` in order. Supply `count` to take a prefix. |
+| [`tenv_folds`](output/api/cpst_util/tenv_folds.py) | `open_tenv_folds()` verifies the shared release for Steps 04–11. Select a protocol by its versioned ID and align each fold to the ordered treatment table with `fold.positions_for_treatments(treatments)`. |
 | [`metrics`](output/api/cpst_util/metrics.py) | `vector_metrics(truth, prediction)` computes PCC, Spearman, RMSE and R² on paired finite vectors. Constant truth leaves both correlations and R² undefined. Constant prediction with varying truth gives zero for both correlations. `signed_jaccard(truth, predicted, gene_indices)` returns combined and direction-specific Jaccard over the top 100 genes per direction. |
 | [`publication`](output/api/cpst_util/publication.py) | `publication_lock(destination)` coordinates writers. Hold it while `publish_candidate` builds and verifies a candidate and `replace_release` installs it. |
 | [`derivation`](output/api/cpst_util/derivation) | `bulk_deg`, `disease_deg` and `deg_rank` share DEG and ranking operations. `r_env` locates the R worker environment and `release` handles derivation manifests, verification and publication. |
@@ -27,6 +28,35 @@ explicit directory. The representation reader uses its built-in source manifest
 pin unless `manifest_sha256` is supplied. The manifest pins the input generation,
 parent identities, conformer ledger and seven sets of frozen vectors.
 [Representation readers and manifest pins](output/api/cpst_util/representations.py) · [Step 08 release evidence](../08_cpst_chem-emb/log/364-formal.json)
+
+## Shared tenv evaluation
+
+Use `open_tenv_folds().protocol(COLD_DRUG)` for Steps 04–09 and Step 11.
+The release fixes five parent groups and seeds `17, 42, 43, 2026, 2027`.
+Use `open_tenv_folds().protocol(COLD_DOSE_DRUG)` for Step 10. Its nine folds
+cross three historical parent groups with 0.2, 1 and 10 µM in parent-group-major
+order. Each fold exposes the held group and dose and both excluded strips.
+The ordered training seed roster is `17, 42, 2026`.
+
+Bind new runs to `protocol.name`, `protocol.release_sha256`, `fold.number`,
+the training seed and the axis release identity. Use `protocol.coordinates`
+to register the full ordered fold-and-seed roster. The positions reader maps
+the frozen plate, parent and dose identities to the caller’s matrix row order
+and requires the complete population. The returned keys include `train`,
+`valid` (validation), and `test`. The [manifest](output/tenv-folds/v1/manifest.json)
+records the split seed, roster, ledger and partition digests, and eight
+source-axis digests.
+Historical Step 03 folds are available through the original readers and
+[pinned Step 03 release](https://github.com/Moke110/carps/tree/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/03_data_train).
+
+To reproduce the ledger from all eight materialized tenv axes, run from the
+checkout root in `arc` with a fresh candidate directory.
+
+```bash
+PYTHONPATH=cpst/util/output/api python cpst/util/execution/build_tenv_folds.py \
+  --training cpst/03_data_train --output tmp/tenv-folds-replay
+diff -r cpst/util/output/tenv-folds/v1 tmp/tenv-folds-replay
+```
 
 ## TranSiGen training and evaluation
 
