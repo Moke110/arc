@@ -12,7 +12,6 @@ REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 STEP = REPO / "cpst/04_tsg_axis"
 sys.path[:0] = [str(STEP / "output/api"), str(STEP.parent / "util/output/api")]
 
-from cpst_util import metrics
 from tsg_axis.metrics import (distribution_scores, fold_bandwidth, signed_disease_f1, signed_jaccard,
                               summarize_conditions, summarize_folds)
 
@@ -27,29 +26,13 @@ class AxisMetricTest(unittest.TestCase):
         self.assertTrue(math.isnan(neg))
         self.assertTrue(all(math.isnan(x) for x in signed_jaccard([0], [0], [1])))
 
-    def test_weighted_signed_jaccard_on_a_2k_axis(self):
+    def test_signed_jaccard_caps_each_direction_at_100(self):
         genes = np.arange(2000)
         truth, prediction = np.zeros(2000), np.zeros(2000)
         truth[:1000] = np.arange(1000, 0, -1)
         prediction[:100] = truth[:100]
         prediction[1000:1900] = np.arange(900, 0, -1)
-        top200, weighted = metrics.signed_jaccard_scores(truth, prediction, genes)
-        self.assertEqual(top200, 1)
-        for cutoff, expected in ((200, 1), (500, 1 / 4), (1000, 1 / 9), (2000, 1 / 19)):
-            with self.subTest(cutoff=cutoff):
-                self.assertEqual(metrics.signed_jaccard(truth, prediction, genes, limit=cutoff // 2)[0],
-                                 expected)
-        self.assertAlmostEqual(weighted, (0.125 + 0.25 / 4 + 0.5 / 9 + 1 / 19) / 1.875)
-
-    def test_weighted_jaccard_keeps_signs_separate_and_empty_undefined(self):
-        genes = [13, 4, 8, 1, 17]
-        observed = [1, 1, -1, 0, 0]
-        predicted = [0, 1, 1, 0, 0]
-        top200, weighted = metrics.signed_jaccard_scores(observed, predicted, genes)
-        self.assertEqual(top200, 1 / 4)
-        self.assertAlmostEqual(weighted, 1 / 4)
-        self.assertTrue(all(math.isnan(value) for value in
-                            metrics.signed_jaccard_scores([0], [0], [0])))
+        self.assertEqual(signed_jaccard(truth, prediction, genes)[0], 1)
 
     def test_off_axis_and_reversed_disease_hits(self):
         score = signed_disease_f1(np.array([1, -1, 1]), [1, 2, 4],

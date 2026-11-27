@@ -130,7 +130,7 @@ differences from its reference. The metric panels show defined replicates,
 means, sample SD when at least two values are defined, and zero.
 [Current figure verification guide](AGENTS.md#verify-the-current-figures) ·
 [Shared figure verifier](util/figure/script/verify_report_figures.py) ·
-[Figure standard](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
+[Figure standard](../docs/adr/0109-cpst-seven-metric-comparison-figures.md)
 
 ## Historical evidence and active-input checks
 

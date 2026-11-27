@@ -86,7 +86,7 @@ class ScientificAudit(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "registered full-axis report"):
                 checked_report(report)
 
-    def test_plot_audit_rejects_divergent_weighted_score_or_checkpoint_trace(self):
+    def test_plot_audit_rejects_divergent_score_or_checkpoint_trace(self):
         import pandas as pd
         from audit_axis_report import audit_plotted_csvs
         from axis_report import figure_data
@@ -119,7 +119,7 @@ class ScientificAudit(unittest.TestCase):
 
             path = data / "metrics.csv"
             original = path.read_text()
-            path.write_text(original.replace("wJAC-2000,0.5", "wJAC-2000,0.75"))
+            path.write_text(original.replace("JAC_top200,0.5", "JAC_top200,0.75"))
             with self.assertRaisesRegex(ValueError, "metrics.csv"):
                 audit_plotted_csvs(data, release, runs)
             path.write_text(original)

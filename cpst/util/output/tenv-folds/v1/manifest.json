@@ -1,0 +1,84 @@
+{
+  "axis_inputs": {
+    "denoise-2k": {
+      "manifest_sha256": "f36dcedcc372ae4ec3e336da77c5ee5f676a076036f120a07e7756b3b3040e94",
+      "members_sha256": "fcb33cae41ed4502d3c69169d51441ba37998493f735ff08e83f16111813a03b",
+      "treatments_sha256": "badaba27ffbe5578e526cdc1650e2a5b83e5757293f1db17fb3408bd75f34cc1"
+    },
+    "denoise-3k": {
+      "manifest_sha256": "f2b695c91827bb11fd588e3ee30d746b035a473e69c1b27912dface4843f1422",
+      "members_sha256": "fcb33cae41ed4502d3c69169d51441ba37998493f735ff08e83f16111813a03b",
+      "treatments_sha256": "e028794e14e102257450f2b3a05a7b9265eabd8e49b438c4bce73664356f715f"
+    },
+    "denoise-4k": {
+      "manifest_sha256": "73b43419a5e5f99ade186bb47eb8716485109fa34e04407fe6c061a3cbef3e79",
+      "members_sha256": "fcb33cae41ed4502d3c69169d51441ba37998493f735ff08e83f16111813a03b",
+      "treatments_sha256": "c64ce764d1b89015734b0d0998092596b9e22df229f2fac2d1bfe23cb741c603"
+    },
+    "denoise-5k": {
+      "manifest_sha256": "97bb9f1b792efd81eeeca65a0318324680f509ecac74bb04acd22ba4523c109e",
+      "members_sha256": "fcb33cae41ed4502d3c69169d51441ba37998493f735ff08e83f16111813a03b",
+      "treatments_sha256": "4cee264d1c6c335b7286e384db018d46d3a7869190599c4287028982ea705722"
+    },
+    "hvg-2k": {
+      "manifest_sha256": "b00e51dc03fdaefc596fd136c69bcbe022a8d26de4e93d6a0bcaf6ab4ce17a96",
+      "members_sha256": "fcb33cae41ed4502d3c69169d51441ba37998493f735ff08e83f16111813a03b",
+      "treatments_sha256": "8f0d77a66dc90ead5d95cf48ddb07a6aa539203e3398804388e6926590b90157"
+    },
+    "hvg-3k": {
+      "manifest_sha256": "fb565ef2fc79a07fba924162b3f08dcf74c0904d24d9455aeb23cc41eab48a64",
+      "members_sha256": "fcb33cae41ed4502d3c69169d51441ba37998493f735ff08e83f16111813a03b",
+      "treatments_sha256": "01dac0b2e8a52212cfbc06d1981162902ae450e62d8bcc45831fa8993069bdc4"
+    },
+    "hvg-4k": {
+      "manifest_sha256": "b397f926606fc824e329d174642b0c1e1ce8856c4a45decb950e1f79778707ed",
+      "members_sha256": "fcb33cae41ed4502d3c69169d51441ba37998493f735ff08e83f16111813a03b",
+      "treatments_sha256": "dbb5c1f81203e333e56e8b3be9a9ffd94721264e3c12063cc1627d4afad9af3b"
+    },
+    "hvg-5k": {
+      "manifest_sha256": "73e61bf4511ecc2329c15776c9f5302a88c57b194954bbf56c4889feb1c4ad37",
+      "members_sha256": "fcb33cae41ed4502d3c69169d51441ba37998493f735ff08e83f16111813a03b",
+      "treatments_sha256": "f56de93136d068f45a11010d2379d39e09ad61fd835d2cd472950339ddadc523"
+    }
+  },
+  "cold_drug_rotation": "Test group equals fold; validation group equals (fold + 1) modulo five.",
+  "dose_crossing": {
+    "development_roles": "Use original cold_drug roles where neither holdout matches.",
+    "fold_order": "parent-group-major",
+    "held_doses_um": [
+      0.2,
+      1.0,
+      10.0
+    ]
+  },
+  "outputs": {
+    "conditions.csv": "e1b065d4aaf05bfd51bd7049f36fd2301211b2f823476159887cab742a68dfd2"
+  },
+  "parent_group_rule": "Sort by SHA-256 of seed:parent, then by parent; assign rank modulo five.",
+  "partition_sha256": {
+    "tenv-cold-dose-drug-v1": "64715edc9c648fb72837dcae86d7935a46fd0d12c2907f12e7b0efc249ee86e1",
+    "tenv-cold-drug-v1": "7a2a991a4b2a91b4bdf8e92742862c9694c1178fc6a9fecac6c1aea332977b0f"
+  },
+  "protocols": {
+    "tenv-cold-dose-drug-v1": {
+      "folds": 9,
+      "seeds": [
+        17,
+        42,
+        2026
+      ]
+    },
+    "tenv-cold-drug-v1": {
+      "folds": 5,
+      "seeds": [
+        17,
+        42,
+        43,
+        2026,
+        2027
+      ]
+    }
+  },
+  "schema": "cpst-tenv-evaluation-v1",
+  "split_seed": 20261128
+}

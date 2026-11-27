@@ -3,7 +3,7 @@
 `cpst/util` provides the identities, frozen features, training and scoring code,
 and figure renderers used across CarPS-Transcriptome. Steps 01–03 own the raw
 counts, ordered prediction axes and training releases. Steps 04–10 own their
-study populations, folds, calibration, score aggregation and reports.
+study populations, calibration, score aggregation and reports.
 [CarPS-Transcriptome steps](../README.md) · [Utility execution guide](AGENTS.md)
 
 ## Shared input and release APIs
@@ -16,7 +16,8 @@ Add `cpst/util/output/api` to the Python import path to import `cpst_util`.
 | [`representations`](output/api/cpst_util/representations.py) | `RepresentationTable(source="tenv")` or `RepresentationTable(source="tahoe_bulk")` checks the source-specific manifest and its files. `ordered_parents(observations)` collapses repeated records to unique desalted parents in InChIKey order. `table.verified_parent_keys(parents)` checks structures, and `table.vectors(arm, keys)` returns vectors in the caller’s key order, including duplicates. |
 | [`ecfp4`](output/api/cpst_util/ecfp4.py) | `open_ecfp4(directory, source_manifest=...)` verifies the 2,048-bit binary fingerprints and parent order, with an optional original manifest binding. `publish_ecfp4(input_directory, candidate_directory)` copies the verified fingerprint and parent table into a separate candidate and records their provenance. |
 | [`seeds`](output/api/cpst_util/seeds.py) | `read_seeds(count=None)` verifies the [seed table](output/tables/seeds.csv) and reads `(17, 42, 2026)` in order. Supply `count` to take a prefix. |
-| [`metrics`](output/api/cpst_util/metrics.py) | `vector_metrics(truth, prediction)` computes PCC, Spearman, RMSE and R² on paired finite vectors. Constant truth leaves both correlations and R² undefined. Constant prediction with varying truth gives zero for both correlations. `signed_jaccard_scores(truth, predicted, gene_indices)` returns JAC-top200 and wJAC-2000 for one signed Δ pair. |
+| [`tenv_folds`](output/api/cpst_util/tenv_folds.py) | `open_tenv_folds()` verifies the shared release for Steps 04–11. Select a protocol by its versioned ID and align each fold to the ordered treatment table with `fold.positions_for_treatments(treatments)`. |
+| [`metrics`](output/api/cpst_util/metrics.py) | `vector_metrics(truth, prediction)` computes PCC, Spearman, RMSE and R² on paired finite vectors. Constant truth leaves both correlations and R² undefined. Constant prediction with varying truth gives zero for both correlations. `signed_jaccard(truth, predicted, gene_indices)` returns combined and direction-specific Jaccard over the top 100 genes per direction. |
 | [`publication`](output/api/cpst_util/publication.py) | `publication_lock(destination)` coordinates writers. Hold it while `publish_candidate` builds and verifies a candidate and `replace_release` installs it. |
 | [`derivation`](output/api/cpst_util/derivation) | `bulk_deg`, `disease_deg` and `deg_rank` share DEG and ranking operations. `r_env` locates the R worker environment and `release` handles derivation manifests, verification and publication. |
 
@@ -27,6 +28,35 @@ explicit directory. The representation reader uses its built-in source manifest
 pin unless `manifest_sha256` is supplied. The manifest pins the input generation,
 parent identities, conformer ledger and seven sets of frozen vectors.
 [Representation readers and manifest pins](output/api/cpst_util/representations.py) · [Step 08 release evidence](../08_cpst_chem-emb/log/364-formal.json)
+
+## Shared tenv evaluation
+
+Use `open_tenv_folds().protocol(COLD_DRUG)` for Steps 04–09 and Step 11.
+The release fixes five parent groups and seeds `17, 42, 43, 2026, 2027`.
+Use `open_tenv_folds().protocol(COLD_DOSE_DRUG)` for Step 10. Its nine folds
+cross three historical parent groups with 0.2, 1 and 10 µM in parent-group-major
+order. Each fold exposes the held group and dose and both excluded strips.
+The ordered training seed roster is `17, 42, 2026`.
+
+Bind new runs to `protocol.name`, `protocol.release_sha256`, `fold.number`,
+the training seed and the axis release identity. Use `protocol.coordinates`
+to register the full ordered fold-and-seed roster. The positions reader maps
+the frozen plate, parent and dose identities to the caller’s matrix row order
+and requires the complete population. The returned keys include `train`,
+`valid` (validation), and `test`. The [manifest](output/tenv-folds/v1/manifest.json)
+records the split seed, roster, ledger and partition digests, and eight
+source-axis digests.
+Historical Step 03 folds are available through the original readers and
+[pinned Step 03 release](https://github.com/Moke110/carps/tree/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/03_data_train).
+
+To reproduce the ledger from all eight materialized tenv axes, run from the
+checkout root in `arc` with a fresh candidate directory.
+
+```bash
+PYTHONPATH=cpst/util/output/api python cpst/util/execution/build_tenv_folds.py \
+  --training cpst/03_data_train --output tmp/tenv-folds-replay
+diff -r cpst/util/output/tenv-folds/v1 tmp/tenv-folds-replay
+```
 
 ## TranSiGen training and evaluation
 
@@ -41,7 +71,7 @@ bind the study configuration and execute each phase in a separate process.
 | --- | --- |
 | 04–06 | [`eval/fixed_prediction.py`](eval/fixed_prediction.py) verifies held-out condition and gene order, paired predictions and signed Δ arrays before scoring. [`eval/shape.py`](eval/shape.py) pairs architecture scores with the registered control on the same fold. The consolidation checked 285 installed registrations against the original Git blobs and matched 343 smoke and formal configurations between the original and shared entry points. Representative CUDA fits matched the original checkpoints, predictions and metrics. [TranSiGen verification](training/verification.md) · [Formal receipt checksums](training/formal-receipts.sha256) |
 | 07 | [`training/cpst_model.py`](training/cpst_model.py) implements the fixed `XΔ-XΔ` CarPS-Transcriptome alpha. The KPGT default preserves the Step 06.4 initialization and forward path. The alpha release verified its source pins and nine Step 06.4 checkpoint replays. [Alpha release](../07_cpst_alpha/README.md) · [Tracked release manifest](../07_cpst_alpha/output/release.json) |
-| 08–10 | [`training/chemical.py`](training/chemical.py) aligns frozen chemical vectors to pooled conditions. [`training/registered.py`](training/registered.py) locks runs and validates their phase receipts. [`eval/axis_delta.py`](eval/axis_delta.py) adds wJAC-2000 for the full-axis comparisons in Steps 09 and 10. The acceptance checked the original source and scientific configuration of 207 fresh registrations across Steps 08–10, with reused fits bound to predecessor receipts. [Shared runtime verification](training/cpst-verification.md) · [Receipt checksums](training/cpst-receipts.sha256) |
+| 08–10 | [`training/chemical.py`](training/chemical.py) aligns frozen chemical vectors to pooled conditions. [`training/registered.py`](training/registered.py) locks runs and validates their phase receipts. [`eval/axis_delta.py`](eval/axis_delta.py) scores the full-axis comparisons in Steps 09 and 10. The acceptance checked the original source and scientific configuration of 207 fresh registrations across Steps 08–10, with reused fits bound to predecessor receipts. [Shared runtime verification](training/cpst-verification.md) · [Receipt checksums](training/cpst-receipts.sha256) |
 
 Step 08’s formal rule retained KPGT as the working default. Changing it required
 one representation to lead both primary metrics and each mean paired improvement
@@ -65,9 +95,14 @@ checks historical source digests at each experiment’s pinned Git revision. [Mi
 [`comparison`](output/api/cpst_util/comparison.py) renders `learning-curve.png`,
 `metrics.png` and `metrics-paired.png` from the published CSVs. Its paired scores
 subtract the reference within the same fold and seed. Studies compute
-signed Jaccard at cutoffs 200, 500, 1,000 and 2,000 per held-out condition
-before aggregating at their established boundaries.
-[Comparison design](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
+JAC-top200 per held-out condition before aggregating at their established
+boundaries. Both metric figures use the seven-panel layout in ADR 0109.
+[Current panel layout](../../docs/adr/0109-cpst-seven-metric-comparison-figures.md)
+The ADR 0109 migration verifies the prior CSV digests, retains the scored
+rows for the current metrics, and renders both layouts from those rows. The
+receipt names the predecessor Git revision and records its receipt digest.
+The Step 09 and 10 receipts also bind the projected scientific tables.
+[Original comparison design](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
 
 | CSV under `figure/data/` | Columns |
 | --- | --- |

@@ -86,11 +86,9 @@ recipe retains the publisher and renderer used for the scientific receipt.
 The current figures show the train and validation objectives for each fit,
 held-out fold scores, and signed differences from `original` on the same fold
 and seed. Bars show means, error bars show sample SD, and dots show individual
-folds. The score panels include wJAC-2000 alongside JAC-top200 and the six Δ
-metrics. The figure receipt binds the weighted score to the accepted
-held-out predictions and matched controls.
+folds. The score panels show JAC-top200 and the six Δ metrics.
 [Learning curves](figure/learning-curve.png) · [Held-out scores](figure/metrics.png) ·
-[Paired differences](figure/metrics-paired.png) · [Comparison protocol](../../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md) ·
+[Paired differences](figure/metrics-paired.png) · [Comparison protocol](../../../docs/adr/0109-cpst-seven-metric-comparison-figures.md) ·
 [Figure receipt](log/figure-render.json)
 
 The renderer reads the three plotted CSVs. Its environment and the accepted

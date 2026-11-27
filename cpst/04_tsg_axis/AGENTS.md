@@ -138,8 +138,7 @@ python "$step/execution/export_canonical.py" --output "$work/report"
 ## Rebuild and verify the comparison figures
 
 [`build_comparison.py`](execution/build_comparison.py) verifies the sealed fits
-and report, checks JAC-top200 against the per-condition and fold scores, and adds
-wJAC-2000 to the plotted data. The paired figure uses `denoise-5k` as the
+and report, checks JAC-top200 against the per-condition and fold scores. The paired figure uses `denoise-5k` as the
 within-fold reference. Verify all three CSV and PNG hashes against the
 [rendering receipt](log/figure-render.json) before replacing the canonical files.
 

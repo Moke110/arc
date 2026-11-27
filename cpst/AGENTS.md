@@ -57,7 +57,7 @@ for the successor configuration and its decisions.
   common limits for directly comparable panels. Include zero in every
   comparison metrics panel and label other bar charts that omit zero.
   [Plotting decision](../docs/adr/0093-stage2-shared-plotting-and-in-place-figures.md) ·
-  [Comparison standard](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md) ·
+  [Comparison standard](../docs/adr/0109-cpst-seven-metric-comparison-figures.md) ·
   [Comparison CSV schema](util/README.md#comparison-figures)
 
 ## Acceptance and replacement

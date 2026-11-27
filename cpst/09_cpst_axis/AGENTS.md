@@ -147,16 +147,14 @@ capped python "$FORMAL" install --bundle "$WORK/bundle" \
 
 ## Verify the installed release
 
-Use the locally materialized `output/formal` bundle with the tracked receipts
-and figures. Run the independent rescore alone under the cap and retain its
-peak RSS. For a figure-only check, run `axis_figures.py verify` by itself. It
-reproduces the three canonical PNGs twice in fresh processes using the plotted
-CSVs alone.
-[Formal receipt](log/371-formal.json) · [Figure verifier](execution/axis_figures.py)
+Use the original checkout at `a7613b74fc23f9f48d8ea0d4479542c008d701db`
+with the materialized `output/formal` bundle for the full scientific rescore. The pinned guide contains the command
+and the sealed report is validated against its original tracked receipts.
+The active figure receipt records the projection of those accepted score tables.
+Run the active CSV-only figure check from this checkout.
+[Historical verification](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/09_cpst_axis/AGENTS.md#verify-the-installed-release) · [Active figure receipt](log/figure-render.json)
 
 ```bash
-capped /usr/bin/time -v -o "$WORK/verify.time" \
-  python "$FORMAL" verify --scratch "$WORK/scratch"
 python "$STEP/execution/axis_figures.py" verify --data "$STEP/figure/data" \
   --output "$STEP/figure" --scratch "$WORK/scratch"
 ```

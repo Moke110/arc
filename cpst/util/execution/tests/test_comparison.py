@@ -17,13 +17,16 @@ from cpst_util.comparison import METRIC_PANELS, render_comparison, write_paired_
 
 STAGE = Path(__file__).resolve().parents[3]
 PANELS = (
-    ("Δ Spearman", "ΔSpearman"), ("wJAC-2000", "wJAC-2000"), ("JAC_top200", "JAC-top200"),
+    ("Δ Spearman", "ΔSpearman"), ("JAC_top200", "JAC-top200"),
     ("Δ PCC", "ΔPCC"), ("Δ RMSE", "ΔRMSE"), ("Δ R²", "ΔR²"),
     ("Δ E-distance", "ΔE-distance"), ("Δ MMD", "ΔMMD"),
 )
 
 
 class ComparisonTests(unittest.TestCase):
+    def test_metric_roster_matches_adr_0109(self):
+        self.assertEqual(METRIC_PANELS, PANELS)
+
     def test_csv_replay_pairs_only_matching_fold_and_seed(self):
         with TemporaryDirectory(dir=os.environ.get("TMPDIR")) as scratch:
             data = Path(scratch)
@@ -79,10 +82,10 @@ class ComparisonTests(unittest.TestCase):
             checked.add(path.name)
             with (data / path.with_suffix(".csv").name).open(newline="") as stream:
                 scores = list(csv.DictReader(stream))
-            self.assertEqual(len(figure.axes), 8)
+            self.assertEqual(len(figure.axes), 7)
             for position, ((metric, title), axis) in enumerate(zip(PANELS, figure.axes, strict=True)):
                 self.assertEqual(axis.get_title(), title)
-                self.assertEqual(axis.get_subplotspec().get_geometry(), (3, 3, position, position))
+                self.assertEqual(axis.get_subplotspec().get_geometry(), (2, 4, position, position))
                 self.check_metric_marks(axis, scores, metric)
 
         arguments = [str(renderer), "--data", str(data), "--output", scratch]

@@ -1,8 +1,8 @@
 {
   "csv_files_sha256": {
     "figure/data/learning-curve.csv": "085257a1f505bafd03ba540691deec09ff262a92e0d5e4e8d8f8900bdedcde9a",
-    "figure/data/metrics-paired.csv": "6ee50e8d07914b7666bc8746133d3ecb886162881d4d1d1c578a4957c5929b4f",
-    "figure/data/metrics.csv": "8f4df4f446d694125873a4510c2336f8f3640e725138862c84a94bb1aa34d7bf"
+    "figure/data/metrics-paired.csv": "80bada6345f7b0c1e96343db6f114cbc97687c2307aaff0a1825561240012ef4",
+    "figure/data/metrics.csv": "c57b39f0c099645b62e62dd3fb10e014277f4af0571b94ff5c882275eb94f128"
   },
   "environment": {
     "matplotlib": "3.10.9",
@@ -17,6 +17,8 @@
     "fixed_jaccard_code_sha256": "66011526374d4405c137ba5f07f291ebad8a86c3bd8e97b8aba8ff9c540eb062",
     "matched_controls_sha256": "97bb9f1b792efd81eeeca65a0318324680f509ecac74bb04acd22ba4523c109e",
     "matrix_manifest_sha256": "a467b5df448ecc23cff4093f59009d019d2e7be91b15f64834353c75979daa0b",
+    "predecessor_figure_receipt_sha256": "9c6046f8061b72850856833b3881b0394a3032e59f2a9fb8558ea26f4eab16f8",
+    "predecessor_revision": "a7613b74fc23f9f48d8ea0d4479542c008d701db",
     "reference": "0",
     "report_manifest_sha256": "5c783eb0a86f510a9371c106cdb33da6d626045ea01d459b2439686eb952809a",
     "sealed_jac_top200_parity": true,
@@ -25,13 +27,13 @@
   "independent_renders": 2,
   "png_files_sha256": {
     "figure/learning-curve.png": "bdf8da7dbcfa91db4fb0489421405a17bed5bd564adcc814a078fb134ba4c2e4",
-    "figure/metrics-paired.png": "6999b2e86a658d6a54b113d08fcae8950d4ef86b4968cb68128ea0347f46265b",
-    "figure/metrics.png": "0e2bf4700c261b1cb8bf03ff836939200a9c03f6cc06a0adac52fc6889e35674"
+    "figure/metrics-paired.png": "f734f195a4b6ad4167de26b1ba2437d413229b303b4f039796a78430ffe72dc0",
+    "figure/metrics.png": "cfb30787a324fb7221248390b469294c7360957f063109cf180d30202d3e7fa0"
   },
   "renderer_files_sha256": {
     "05_tsg_loss/05.5_mse-l1_cos/figure/script/render_comparison.py": "b6a59896f24d86276590007525c8b628b5a79960b9f19659b1a74e60c80ccb2d",
     "05_tsg_loss/figure/script/loss_comparison.py": "edc4916b5fcb819ace06c19d3aa5e7998927482df5466a6af2974105603a6336",
-    "util/output/api/cpst_util/comparison.py": "4b18733f177d09a3eb1b25861e18c8383f2505eb9746966fa7f75bb83f4f2572",
+    "util/output/api/cpst_util/comparison.py": "4806e7c3d331637ba2d0d9310fd833ed9d2135c40bf62a2034cba38773eae65c",
     "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },

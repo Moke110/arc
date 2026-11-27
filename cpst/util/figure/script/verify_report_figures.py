@@ -73,6 +73,8 @@ def verify_report(step, receipt_name, renderers, work, env, *, comparison=False)
     for hashes in (csvs, pngs):
         check_hashes(step, hashes)
     check_hashes(script_root, scripts)
+    projected_tables = receipt.get("evidence", {}).get("projected_scientific_tables_sha256", {})
+    check_hashes(step, projected_tables)
 
     for attempt in ("first", "second"):
         scratch = work / attempt

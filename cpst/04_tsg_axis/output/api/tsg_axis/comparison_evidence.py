@@ -5,13 +5,13 @@ import pandas as pd
 
 from .inputs import score_fixed_prediction
 from cpst_util.derivation.release import sha256
-from cpst_util.metrics import signed_jaccard_scores
+from cpst_util.metrics import signed_jaccard
 
 EVIDENCE_FILES = ("conditions.csv", "genes.csv", "prediction.npy", "measured_delta.npy", "predicted_delta.npy")
 
 
 def read_fixed_jaccard(run, config, manifest, data):
-    """Return ordered held-out IDs, JAC-top200 and wJAC-2000 for a verified fit."""
+    """Return ordered held-out IDs and JAC-top200 for a verified fit."""
     for name in EVIDENCE_FILES:
         if sha256(run / name) != manifest["outputs"][name]:
             raise ValueError(f"sealed fit payload differs for {run / name}")
@@ -38,7 +38,7 @@ def read_fixed_jaccard(run, config, manifest, data):
             raise ValueError(f"matched-control {name} differs from sealed fit for {run}")
     gene_indices = genes.gene_index.to_numpy()
     scores = np.asarray([
-        signed_jaccard_scores(truth, predicted, gene_indices)
+        signed_jaccard(truth, predicted, gene_indices)[0]
         for truth, predicted in zip(targets.measured_delta, targets.predicted_delta, strict=True)
     ])
-    return targets.condition_ids, scores[:, 0], scores[:, 1]
+    return targets.condition_ids, scores

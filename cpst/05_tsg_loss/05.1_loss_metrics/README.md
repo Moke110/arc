@@ -41,9 +41,9 @@ records the selected additive objective.
 [Formal receipt and manifest hashes](log/330-formal.json) · [Run ledger](log/runs.csv)
 
 The current [score figure](figure/metrics.png) and [paired differences](figure/metrics-paired.png)
-show eight metrics. Differences subtract the native MSE score at weight 1 within the
-same fold and seed. The figure update computed wJAC-2000 from the sealed predictions and
-matched controls and verified parity on the sealed JAC-top200 scores. The
+show seven metrics. Differences subtract the native MSE score at weight 1 within the
+same fold and seed. The figure update verified JAC-top200 against the sealed predictions and
+matched controls. The
 [learning curves](figure/learning-curve.png) show training and validation for every fit
 through its stopping epoch, with 4,920 epochs in the [objective table](figure/data/epoch-objectives.csv).
 [Render receipt](log/figure-render.json) · [CSV-only verification](AGENTS.md#verify-the-current-figures)
