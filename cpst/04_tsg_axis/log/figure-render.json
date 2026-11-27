@@ -1,8 +1,8 @@
 {
   "csv_files_sha256": {
-    "figure/data/learning-curve.csv": "3dd4e3e7b18df243d18da77ad4f5f97ac57210e6868f8fb0bce818ef3e5b98e0",
-    "figure/data/metrics-paired.csv": "20dec1dbe2b648c897e56daeae3ca2228cb2c347a96a29f6a032fe4398c7c955",
-    "figure/data/metrics.csv": "a1f451249c7f04b3cbc01a24e958dff658f104ce17966bf14ce5b08f76fb6949"
+    "figure/data/learning-curve.csv": "4c26ce40f0d864d0fbe855f47b55496f762897f75426d8f7b1ff5dfef928dd9f",
+    "figure/data/metrics-paired.csv": "604b02d96dcb6011c72f11e37e9900b4399206b09569fc842e14349152a0c6da",
+    "figure/data/metrics.csv": "68838434be323b3ab443d368793d8099a4ea838a06f60ad90da1b4e47289dcff"
   },
   "environment": {
     "matplotlib": "3.10.9",
@@ -11,20 +11,20 @@
     "python": "3.13.13"
   },
   "evidence": {
-    "build_sha256": "0307b868cc7964b99870b77f1f69713ed8c9b40112647e09023ec5b29aeac5a7",
-    "fits": 18,
-    "matrix_manifest_sha256": "9e2c01145387794e36336734efd261aa7c80132208d5a51f8eb4074f55830b5e",
-    "predecessor_figure_receipt_sha256": "6b9a4c6a230cea67427c951334c5045a473c2dfbeae647769b3b3de229246bdb",
-    "predecessor_revision": "a7613b74fc23f9f48d8ea0d4479542c008d701db",
-    "report_manifest_sha256": "9627a97200a7276298063a6e8b698372287fc63592bcceb2d4dc622209135a26",
-    "sealed_jac_top200_parity": true,
-    "shared_metrics_sha256": "0a16f66b0b02b5fb21462b5b8ae94667ca7247398372d44a54be679372a451b6"
+    "fits": 150,
+    "fold_release_sha256": "f6a6a9c43ec5e146fd3ee8a06c3aec62b98e686f18a0f0fd3920f6b4469b084c",
+    "matrix_manifest_sha256": "75150bc305a7425fe646ca021a60cf276198370cb9c30c095488e8bcc471a769",
+    "projected_scientific_tables_sha256": {
+      "figure/data/delta-metrics.csv": "370c0fe9a4376c8206b3c63c7f09438c594e5b996a8e1b8ae7180d93b084cd3e",
+      "figure/data/disease-f1.csv": "52e8698e8e58a8853672c13c354fc84cdf743d83262d58be0ba360ec4c246a89"
+    },
+    "report_manifest_sha256": "594eac15150bdb8ad7fffd06d0c0fe44b3198707a0d1832203b9df6edd8e3aab"
   },
   "independent_renders": 2,
   "png_files_sha256": {
-    "figure/learning-curve.png": "d024d200fdcec8aba7c270c95116ecb1779be0850213766aed4021df523f477e",
-    "figure/metrics-paired.png": "b3e3eeb6c0bec257c03f2c3b38e5a42e334b04eb67aab0b470e352c59553ba5c",
-    "figure/metrics.png": "5609d143dabfd774da7eae4554c21f473165a6707c9dfafbc48a65e53d72f153"
+    "figure/learning-curve.png": "ae979a3d4eda5417a522f23c6d4ab289931ea1533f394de3f0c1b1d2ca6d0f32",
+    "figure/metrics-paired.png": "a91b9f10bd83b6f814339f9b86f9dc51acdbcde8fec6dc13101400a55e41ad02",
+    "figure/metrics.png": "5e31b2a4c64e742884f7ad95f0806d24a9de6c301fe71e3f4a71a02b4bc586fc"
   },
   "renderer_files_sha256": {
     "04_tsg_axis/figure/script/render.py": "cb7efd683ee6337224cb1ea1c2f109cf9335a41d67f5afeba2052180a945dfcf",

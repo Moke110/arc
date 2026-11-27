@@ -70,7 +70,22 @@ The report binds its per-fold full-axis bandwidth to the shared fold-release
 digest and the actual training rows. Its `bandwidths.csv` is the Step 09
 calibration lineage input. Install accepted successors under
 `output/formal-tenv-v1/` and `output/report-tenv-v1/` while preserving the
-historical releases described below.
+historical releases described below. Keep the process logs beside the matrix
+in `output/formal-tenv-v1-audit/logs/` and keep the coordinator samples with
+that audit. Verify the installed result before replacing the tracked figures.
+
+```bash
+work=$(mktemp -d "$PWD/tmp/tsg-axis-verification.XXXXXX")
+capped_step04 python "$step/execution/report_formal.py" verify \
+  --matrix "$step/output/formal-tenv-v1" \
+  --matrix-audit "$step/output/formal-tenv-v1-audit" \
+  --report "$step/output/report-tenv-v1" --figures "$step/figure" \
+  --logs "$work/report-logs"
+```
+
+Each registered fit records the full runtime and source hashes. Use the
+source commit and environment in the formal receipt to resume or replay a
+fit when the active training code has changed.
 
 The study uses matched same-plate DMSO as the model input in every partition.
 At the fixed-prediction boundary, `prediction.npy` is absolute treated expression.
@@ -86,7 +101,7 @@ This example runs the bounded HVG-DEG 5k smoke through exact replay and report
 verification. `--smoke` bounds the fit to two epochs and 64 train, 24 validation
 and 24 test conditions. For a full single-coordinate fit, omit `--smoke` at
 registration and stop after `replay`. Formal scoring requires the full matrix.
-[Smoke receipt](log/318-matched-control-smoke.json)
+[Bounded gate evidence](log/399-tenv-v1-formal.json)
 
 ```bash
 work=$(mktemp -d "$PWD/tmp/tsg-axis-smoke.XXXXXX")
@@ -151,16 +166,13 @@ python "$step/execution/export_canonical.py" --output "$work/report"
 
 ## Rebuild and verify the comparison figures
 
-[`build_comparison.py`](execution/build_comparison.py) verifies the sealed fits
-and report, checks JAC-top200 against the per-condition and fold scores. The paired figure uses `denoise-5k` as the
-within-fold reference. Verify all three CSV and PNG hashes against the
-[rendering receipt](log/figure-render.json) before replacing the canonical files.
-
-```bash
-work=$(mktemp -d "$PWD/tmp/tsg-axis-figures.XXXXXX")
-TMPDIR="$work" MPLCONFIGDIR="$work/mpl" \
-  python "$step/execution/build_comparison.py" --output "$work/publication"
-```
+Use `report_formal.py` to reproduce the successor's plotted tables and PNGs
+from its installed matrix. The paired figure uses `denoise-5k` as the
+within-fold and seed reference. The
+[rendering receipt](log/figure-render.json) binds the active plots and tables.
+For the pinned three-fold matrix and its report, the historical
+[`build_comparison.py`](execution/build_comparison.py) still checks
+JAC-top200 parity against the sealed condition and fold scores.
 
 For figure-only verification, render from the published CSVs and compare the
 three PNGs byte for byte. [CSV-only renderer](figure/script/render.py)
