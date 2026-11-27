@@ -14,7 +14,7 @@ import pandas as pd
 
 from audit_chem_report import audit
 from audit_chem_resources import audit_resources
-from chem_figures import RENDERER, replay
+from chem_figures import COMPARISON_RENDERER, RENDERER, replay
 from chem_matrix import preflight, run_paths, verify_registrations
 from chem_reference import GATE, reference_plan
 from chem_report import (METRICS, PRIMARY_METRICS, SCHEMA as REPORT_SCHEMA, report_tables, verified_runs,
@@ -117,8 +117,10 @@ def score_in_process(args, work, name):
     return report, rss
 
 
-def figure_receipt(figure, scientific_receipt_sha256):
-    render_deps = [RENDERER, *(STAGE / f"util/output/api/stage2_util/{name}.py" for name in ("palette", "plotting"))]
+def figure_receipt(figure, scientific_receipt_sha256, *, comparison=False):
+    renderer, helpers = ((COMPARISON_RENDERER, ("comparison", "palette", "plotting", "representations"))
+                         if comparison else (RENDERER, ("palette", "plotting")))
+    render_deps = [renderer, *(STAGE / f"util/output/api/stage2_util/{name}.py" for name in helpers)]
     return {
         "schema": "stage2-figure-render-v1", "status": "PASS", "step": STEP.name,
         "environment": {"python": python_version(), **{name: version(name) for name in ("matplotlib", "numpy", "pandas")}},
@@ -182,7 +184,9 @@ def publish(args):
                 shutil.copyfile(report / source, target)
             shutil.copyfile(activity / "resource-samples.jsonl", candidate / MATRIX_SAMPLES)
             (candidate / COORDINATOR_SAMPLES).write_text("".join(json.dumps(row) + "\n" for row in coverage))
-        picture = replay(figure_path / "data", figure_path, work, verify=not build)
+        published_plot_receipt = {} if build else axis_run.read_json(candidate / FIGURE_RECEIPT)
+        comparison = "figure/learning-curve.png" in published_plot_receipt.get("png_files_sha256", {})
+        picture = replay(figure_path / "data", figure_path, work, verify=not build, comparison=comparison)
         names = [*PROJECTIONS.values(), MATRIX_SAMPLES, COORDINATOR_SAMPLES]
         if configuration["working_default"] != REFERENCE:
             names.append(VARIANT)
@@ -213,11 +217,11 @@ def publish(args):
         elif scientific_evidence(previous) != receipt:
             raise ValueError("formal acceptance evidence differs from the sealed publication")
         scientific_sha = axis_run.digest(candidate / RECEIPT)
-        plots = figure_receipt(picture, scientific_sha)
+        plots = figure_receipt(picture, scientific_sha, comparison=comparison)
         if build:
             axis_run.write_json(candidate / FIGURE_RECEIPT, plots)
             candidate.rename(args.publication)
-        elif plots != axis_run.read_json(candidate / FIGURE_RECEIPT):
+        elif plots != {key: value for key, value in published_plot_receipt.items() if key != "evidence"}:
             raise ValueError("formal figure receipt differs from its independent CSV renders")
     return {"status": "PASS", "receipt_sha256": scientific_sha, "scores": numerical["score_rows"],
             "new_fits": len(fresh), "reused_fits": len(coordinates()) - len(fresh), **configuration}

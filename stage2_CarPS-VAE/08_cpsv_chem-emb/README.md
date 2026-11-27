@@ -58,11 +58,40 @@ UniMol had the lowest mean Δ RMSE (0.238599).
 UniMol’s mean paired Δ PCC gain was smaller than its sample SD (0.012432 versus 0.013493). The comparison is closed, and [ADR 0100](../../docs/adr/0100-carps-vae-unimol.md) selects UniMol for subsequent CarPS-VAE studies.
 
 - [All nine metrics by fold and seed](figure/data/fold-scores.csv), [foldwise paired summaries](figure/data/paired-by-fold.csv) and [overall paired summaries](figure/data/paired-summary.csv)
-- [Nine held-out metrics](figure/delta-metrics.png), [nine paired differences vs KPGT](figure/delta-metrics-paired-difference.png) and [CSV-only figure replay receipt](log/figure-render.json)
+- [Learning curves](figure/learning-curve.png), [eight held-out metrics](figure/metrics.png), [paired differences vs KPGT](figure/metrics-paired.png) and [CSV-only figure replay receipt](log/figure-render.json)
 - [Fit and checkpoint ledger](log/runs.csv), [epoch objectives](figure/data/epoch-objectives.csv) and [bandwidths](log/bandwidths.csv)
 - [Formal acceptance receipt](log/364-formal.json), [matrix resources](log/364-resources.jsonl) and [coordinator resources](log/364-coordinator-resources.jsonl)
 
-## Formal reproduction
+## Reproduce the comparison figures
+
+The current figures follow [ADR 0102](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md).
+All 63 coordinates include their sealed training and validation traces,
+including the nine registered KPGT reuses. The figure build verifies the fixed
+held-out predictions against their matched controls and checks JAC-top200
+against the sealed condition and fold scores before deriving wJAC-2000.
+Differences subtract KPGT within each fold and seed.
+
+From the materialized checkout with `arc` active, run:
+
+```bash
+STEP="$PWD/stage2_CarPS-VAE/08_cpsv_chem-emb"
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/carps-chemical-figures.XXXXXX")
+mkdir "$WORK/scratch"
+export TMPDIR="$WORK/scratch" PYTHONDONTWRITEBYTECODE=1
+python "$STEP/execution/build_comparison.py" \
+  --output "$WORK/publication" --scratch "$WORK/scratch"
+python "$STEP/execution/chem_figures.py" verify --comparison \
+  --data "$STEP/figure/data" --output "$STEP/figure" --scratch "$WORK/scratch"
+```
+
+The second command independently renders twice using only the
+[learning curve CSV](figure/data/learning-curve.csv),
+[metric CSV](figure/data/metrics.csv) and [paired metric CSV](figure/data/metrics-paired.csv).
+The original plots and replay instructions remain available at the
+[fixed publication revision](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/08_cpsv_chem-emb/README.md#formal-reproduction).
+
+## Formal scientific reproduction
 
 Run the formal comparison under the same resource limits and environment as
 the bounded gate. The formal runner checks each KPGT reference separately
@@ -104,8 +133,8 @@ is recorded in [ADR 0100](../../docs/adr/0100-carps-vae-unimol.md).
 To verify the installed release from the materialized checkout, use the
 canonical bundle in `output/formal` and pass a fresh scratch directory under
 `tmp/`. This replays the retained KPGT predictions, independently rescores
-the complete matrix, audits the arithmetic and verifies the PNGs using
-only their tracked CSV.
+the complete matrix, audits the arithmetic and independently verifies the current
+PNGs and figure receipt from their tracked plot CSVs.
 
 ```bash
 capped python "$STEP/execution/chem_formal.py" verify --scratch "$WORK/scratch"
