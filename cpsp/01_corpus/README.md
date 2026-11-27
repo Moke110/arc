@@ -1,80 +1,60 @@
-# 01_corpus — Heliste source-first cell viability
+# 01_corpus — Heliste cell viability
 
-This step builds separate `output/baseline/` and `output/H-R/` corpora from
-unchanged Heliste 2021 Dataset S1 and frozen PubChem chemical evidence in
-[`pheno_data/Heliste-2021`](../../pheno_data/README.md), under
-[ADR 0044](../../docs/adr/0044-stage3-source-first-corpora.md) and specs #52, #54 (desalted-parent amendment), and #56 (magnitude direction labels).
+CarPS-Phenotype uses Heliste 2021 Dataset S1 as the source for two separate
+`cell_viability` corpora. `baseline` comes from chemically treated normoxia
+(`CTRL`), and hypoxia–reoxygenation (`H-R`) comes from `HYP`. The CellTiter-Glo
+assay measures ATP-dependent luminescence in HL-1 mouse atrial cardiomyocytes.
+The H-R schedule comprises 24 hours of pretreatment, 48 hours of hypoxia and
+24 hours of reoxygenation. Parallel normoxia is duration-matched at about
+96 hours. See the [source-first decision](../../docs/adr/0044-stage3-source-first-corpora.md)
+and [phenotype source archive](../../pheno_data/README.md).
 
-Use the `arc` environment (Python with `openpyxl`, `pyarrow`, RDKit; frozen RDKit
-version is recorded in the identity evidence):
+## Build the two arm corpora
 
-```bash
-python cpsp/01_corpus/execution/corpus.py build
-python cpsp/01_corpus/execution/corpus.py verify
-python -m unittest discover -s cpsp/01_corpus/execution/tests -v
-```
+Dataset S1 contains 689 source labels measured at 0.04, 0.2, 1 and 5 µM in
+each arm. Frozen PubChem evidence supports 686 labels mapped to 663 unique
+desalted parent structures. The release accounts for all 5,512 numerical
+cells through the arm exports and their pending-identity reports.
 
-A fresh checkout first acquires originals with
-`python pheno_data/Heliste-2021/script/download.py`. The tracked local identity
-snapshot is sufficient for offline building; only an intentional identity refresh
-runs `python pheno_data/Heliste-2021/script/desalt_chemicals.py --acquire`
-with network access. The immutable v1 reference snapshot is retained; v2 freezes
-the desalted parents and additional reference evidence. New reference evidence may change coverage and must be reviewed.
-`--output /tmp/heliste-corpus` builds an alternate output. Existing output is
-verified and never silently overwritten. Remove or choose a new directory after
-an intentional input/software change.
+| Arm | Source cells | Admitted | Pending chemical identity |
+| --- | ---: | ---: | ---: |
+| Baseline | 2,756 | 2,744 | 12 |
+| H-R | 2,756 | 2,744 | 12 |
 
-Each condition contains equivalent `corpus.parquet` and `corpus.csv`,
-`source_annotation.json`, and `chemical_resolution_report.json`. The common
-`output/manifest.json` hashes outputs, frozen inputs and records coverage and
-software versions. Verification checks hashes and reconstructs the entire release
-from the archived workbook and independently checked reference evidence offline.
-It rejects changed output even if its checksum is recomputed.
+Each admitted row retains the original source label, dose, workbook cell and
+reported value in `readout.source_reported`. Aliases remain separate rows even
+when they share a desalted parent. Replicate index `rep` is null because the
+workbook leaves replicate identity and individual-versus-group-mean semantics
+unresolved. Admission depends on supported chemical identity. The pending
+labels are Verteporfin (Visudyne) and Formoterol hemifumarate, whose evidence
+leaves stereochemistry unresolved, and Sevelamer HCl, a polymer without a
+supported single finite structure. Related source files and both frozen
+chemical snapshots are recorded in the [Heliste provenance log](../../pheno_data/Heliste-2021/author_log.json).
 
-One record is one supplied numerical cell. `source_label` preserves the exact
-original name; `canonical_smiles` is a deterministic isomeric RDKit representation
-of the desalted parent: RDKit selects the largest organic fragment, removes
-counterions and solvates, and uncharges removable protonation. Stereochemistry,
-isotopes and permanent charges remain. Active coordination-metal drugs retain
-their metal and ligand components (even when the reference SMILES is disconnected),
-removing only water and alkali counterions; their charges are preserved. Bacitracin
-zinc instead uses an independently confirmed, stereochemically matching Bacitracin
-parent. No tautomer or stereoisomer is selected.
-Original salt/form structures remain in the frozen reference evidence. `dose_um` is micromolar, `condition` is `baseline` or
-`H-R`, and `phenotype` is `cell_viability`. `source_asset` and `source_cell` identify
-the workbook cell. `rep` is null; `readout` is `{"source_reported": value}` (a typed
-struct in Parquet, JSON in CSV). `direction` is a derived integer: -1 below 80, 0 from 80 through 120 inclusive,
-and +1 above 120. This is the user-selected ±20% magnitude rule, assuming each
-arm's own 0.01% DMSO vehicle reference equals 100. The assumption is not an
-explicitly confirmed source formula. Class 0 means within the magnitude band,
-not statistical equivalence; these labels make no significance claim. The
-versioned rule and normalization assumption are recorded in each source annotation.
-Schema version 2 adds this column without changing the source readout.
+## Derive magnitude direction
 
-Distinct source labels are retained even when
-they resolve to the same structure. Attribute combinations are not uniqueness keys.
+Schema version 2 records `direction` as −1 below 80, 0 from 80 through 120
+inclusive and +1 above 120. This ±20% rule assumes each arm's own 0.01% DMSO
+vehicle reference equals 100. The paper confirms DMSO normalization and leaves
+the exact oxygen-specific denominator unresolved. Class 0 indicates a value
+within the magnitude band. The labels describe magnitude only, and the source
+annotations record the assumption and unresolved drug persistence. See the
+[baseline annotation](output/baseline/source_annotation.json) and
+[H-R annotation](output/H-R/source_annotation.json).
 
-Dataset S1 has 689 source-label rows, four doses (0.04, 0.2, 1 and 5 µM), and
-5,512 numerical cells, 2,756 per condition. CTRL denotes chemically treated
-normoxia and HYP denotes hypoxia followed by reoxygenation. Every cell is admitted
-with a resolved structure or accounted for in the pending-resolution report.
-Chemical labels and unique structures are counted separately. Current coverage is
-686 resolved labels and 663 unique desalted parents, with 2,744 admitted values
-and 12 pending values per condition. Verteporfin and Formoterol hemifumarate have
-unresolved stereochemical reference ambiguity; Sevelamer is a polymer without a
-supported single finite structure. Desalting does not resolve these identities. No statistical or
-endpoint admission filter is applied.
+## Verify the release and use it in the Morgan baseline
 
-The assay is normalized CTG ATP-dependent luminescence in HL-1 mouse atrial
-cardiomyocytes: 24 h pretreatment, 48 h hypoxia and 24 h reoxygenation, with parallel
-duration-matched normoxia, approximately 96 h elapsed and 0.01% DMSO controls.
-Drug persistence and the exact normalization denominator remain unresolved.
-Supplied values do not establish physical replicates or group-mean semantics;
-vehicle measurements, SD, n, p-values, raw RLU and source-provided endpoint labels
-are absent. Derived magnitude directions are supplied under the assumption above.
-These limitations do not exclude resolved chemical measurements. The direction column supplies a magnitude target; train/test splitting and model
-views remain downstream work.
+Each arm provides `corpus.parquet`, `corpus.csv`, `source_annotation.json` and
+`chemical_resolution_report.json`. The schema version, coverage, dependency
+versions and code, input and output hashes are pinned in the
+[corpus manifest](output/manifest.json). The eight arm files and source-input
+hashes match the pre-migration release. CPSP acceptance verified the release
+against an independent offline rebuild, and the manifest transition is pinned in
+the [Morgan release record](../02_base_morgan/execution/release_record.json).
+The separate [endpoint-gated release record](execution/historical/release_record.json)
+describes the superseded corpus.
 
-`execution/historical/` retains unchanged endpoint-gated release evidence. Its
-path strings and scientific exclusions describe the superseded workflow; the old
-implementation is recoverable from Git at commit `74f7e7a`.
+Use the [step instructions](AGENTS.md) to run the offline [corpus CLI](execution/corpus.py).
+The [Morgan baseline](../02_base_morgan/README.md) verifies this release before
+preparing both arms for cold-drug, cold-dose and warm-start evaluation. Its
+direction target comes from the corpus rule above.

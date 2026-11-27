@@ -1,72 +1,54 @@
-# Stage 2 raw data
+# CarPS-Transcriptome raw data
 
-The source-native corpus retains tenv wells, Tahoe plate/well/cell-line bulk
-profiles, four additional cardiac perturbation deposits and their observed
-native gene columns. Vehicles, technical blanks and unmatched observations
-remain present. No axis projection, normalization or treated–control contrast
-is applied to stored counts. Each source records measured common-axis coverage.
-The builder rejects an incomplete common axis for tenv and Tahoe.
+Step 01 publishes nonnegative integer counts in each dataset's native gene
+order. It preserves source observation identities, vehicles, technical blanks
+and unmatched treatments. The release records measured coverage of the frozen
+18,164-gene common axis and requires complete coverage for tenv and Tahoe bulk.
+Stored counts remain on the native axis. [Data ownership decision](../../docs/adr/0085-stage2-raw-and-training-data.md)
 
-| Source | Native identity | Control metadata |
-|---|---|---|
-| tenv | GSE262419 plate well and resolved native HGNC gene | Same-plate vehicle. The paired-study DMSO group is kept separate from Media. |
-| Tahoe bulk | Plate, well, cell line and deposited Ensembl/token gene | Same plate and cell line, vehicle DMSO_TF. |
-| DToxS-iPSC | Separate conventional and DGE read counts by published sample and gene | Experiment design records with cell, plate, time and control state. |
-| LINCS LDS-1593 | One DToxS-primary count matrix keyed by Plate, Well, Cell, Experiment, Dish, State and Time | Each original control context is retained with its publisher table. A match requires an identified compatible solvent. |
-| sctox (GSE244740) | Published ScreenSeq well barcode and Ensembl row | Optimization and Screening plate identities kept distinct with separate DMSO and untreated groups. |
-| GSE247541 | Published sample replicate and versioned Ensembl row | Published DMSO replicate group. |
+## Accepted corpus
 
-XPert-L1000 has no verified native raw integer count publication in the
-materialized source. Annotation is reference metadata with no observations.
-The release manifest inventories seven dataset directories directly under
-`output/`. Each directory holds a dataset manifest and a single H5AD with
-native counts, canonical observations and native gene metadata. The tenv
-directory also contains the probe map and source-build manifest. The
-DToxS-primary directory contains `source_observations.csv`, which traces
-842 merged observations to all 956 original rows across eight tables.
-Counts for shared observations must agree after alignment by native gene ID.
-The [original acceptance receipt](log/acceptance.json) records the v1
-populations, coverage, source replay and payload digests. The
-[migration receipt](log/migration-303.json) records the archived and candidate
-manifest digests, bounded count parity, primary membership and downstream checks.
-The [raw-step relocation record](log/migration-306.md) locates both accepted
-generations and their original audit records after the directory rename.
+| Dataset key | Observation unit | Observations | Native genes | Common genes measured |
+| --- | --- | ---: | ---: | ---: |
+| `tenv` | GSE262419 plate well | 4,510 | 19,613 | 18,164 |
+| `tahoe_bulk` | Tahoe-100M plate, well and cell line | 67,018 | 62,710 | 18,164 |
+| `dtoxs_ipsc_conv` | Published DToxS-iPSC conventional sample | 1,171 | 38,478 | 17,112 |
+| `dtoxs_ipsc_dge` | Published DToxS-iPSC DGE sample | 344 | 38,478 | 17,112 |
+| `dtoxs_primary` | LINCS LDS-1593 observation across eight publisher tables | 842 | 38,478 | 17,112 |
+| `sctox` | GSE244740 ScreenSeq well | 3,072 | 44,154 | 18,164 |
+| `gse247541` | Published sample replicate | 15 | 60,656 | 18,160 |
 
-```python
-from native_corpus import open_corpus
+tenv retains 32 technical blanks and keeps the same-plate DMSO and Media
+groups distinct. Tahoe bulk uses same-plate, same-cell-line DMSO_TF controls.
+DToxS-primary matches treatments within their original table and compatible
+solvent context. Its `source_observations.csv` traces 842 accepted
+observations to all 956 publisher rows, including the original table and
+control context. Shared observations passed count equality after alignment
+by native gene ID. The accepted primary corpus contains 41 matched treatments,
+699 unmatched treatments and 102 vehicles. [Migration receipt](log/migration-303.json)
 
-with open_corpus("cpst/01_data_raw/output") as corpus:
-    source = corpus.source("tenv")
-    native_columns = source.native_columns([9, 20, 10])
-    counts = source.counts(0, 64)[:, native_columns]
-    control_rows = source.matched_control_rows(0)
-```
+The installed `output/manifest.json` pins the seven dataset manifests and
+their H5AD payloads. The tenv inventory also pins the probe map and source-build
+manifest. XPert-L1000 lacks verified native integer counts. Annotation supplies
+reference metadata only. [Perturbation data sources](../../pert_data/README.md) ·
+[Release inventory and digests](log/migration-303.json)
 
-Add `cpst/01_data_raw/output/api` to the Python import path. Source keys, native
-observation metadata, output digests and ordered common-axis mappings are
-published in `manifest.json` and the bounded reader. `native_columns` fails
-on unmeasured genes. Windows have a 256-row maximum. Read subsequent windows
-through `batches()`. The reader checks a source's payload before allowing reads.
+The original source replay verified tenv against its pinned counts and
+Tahoe bulk across all 14 plates and all native genes. The v2 migration
+compared counts and checked observation and gene metadata for the six
+datasets carried forward from v1, and verified the new DToxS-primary
+membership ledger. The relocation receipt records the original audit paths.
+[Original acceptance](log/acceptance.json) ·
+[Migration acceptance](log/migration-303.json) ·
+[Relocation record](log/migration-306.md)
 
-```bash
-python cpst/01_data_raw/execution/build_corpus.py publish
-python cpst/01_data_raw/execution/build_corpus.py verify
-```
+## Downstream use
 
-The publisher replays tenv and native Tahoe counts against pinned external inputs.
-Tahoe aggregation checkpoints can resume after source pins are checked again.
-Default `publish` on an installed release verifies its inventory, digests,
-native coverage and compatibility with active training. It returns the
-installed digest. Stage 2 training pins the whole corpus manifest. Use an
-unused `--output <scratch>` to build a different candidate and validate its
-consumer releases together before any generation cutover.
-
-Default `verify` checks the installed migrated release. Pass
-`--predecessor <sealed-v1>` to replay a migrated generation using an explicit
-input and use a separate scratch output for migration. Migration compares native matrices,
-observations and gene mappings for the six equivalent datasets. Active tenv
-training pins the current corpus digest. The source replay verifies newly
-published native builds. A separately staged native Tahoe build can be read
-with `--tahoe-built` and goes through the same independent source replay before
-publication. For linked worktrees, `--materialized-root` selects the checkout
-holding the immutable inputs.
+Step 02 projects native counts onto ordered prediction axes. Step 03 uses
+the accepted corpus for eight plate-pooled tenv training releases and
+the Tahoe well-level HVG-DEG 5k release. Use the source-native reader for
+bounded count windows, observation metadata and matched vehicle rows.
+The step workflow gives the reader setup and the accepted-release and
+candidate verification routes. [Prediction axes](../02_gene_axis/README.md) ·
+[Training data](../03_data_train/README.md) ·
+[Reader](output/api/native_corpus.py) · [Step workflow](AGENTS.md)

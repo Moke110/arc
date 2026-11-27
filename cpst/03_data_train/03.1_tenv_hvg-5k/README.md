@@ -1,47 +1,57 @@
-# tenv HVG-DEG 5k training
+# 03.1 tenv training data on HVG-DEG 5k
 
-The source-specific tenv release pools the native integer counts on the
-accepted HVG-DEG 5k axis. For each eligible plate, it sums DMSO wells.
-For each plate, canonical drug parent and measured dose, it sums treated
-wells. After pooling, each profile uses its own selected-axis total for
-CP10K and natural `log1p`. Each perturbation's Delta is treatment expression
-minus the normalized control of its plate. The overall tenv reference weights
-all normalized plate controls equally.
+This release gives each tenv perturbation condition a measured DMSO control
+from the same plate. It uses [source-native integer counts](../../01_data_raw/README.md)
+and the [ordered HVG-DEG 5k axis](../../02_gene_axis/02.1_hvg-deg/README.md).
+The builder selects the 5,000 genes before summing DMSO wells by plate and
+treated wells by plate, canonical drug parent and measured dose. It applies
+CP10K and natural `log1p` to each pooled profile using that profile's
+selected-axis count total. The released Δ subtracts the normalized matched
+control from the normalized treatment. The dataset-wide reference is the
+equal-weight mean of the normalized plate controls.
 
-| Output | Contents |
+## Accepted release
+
+Of 4,510 source observations, 112 were excluded, including 80 incompatible
+vehicle observations and 32 technical blanks. The release contains 16 pooled
+plate controls and 1,383 pooled treatment conditions. Candidate publication,
+independent byte-exact replay, partition checks and promotion all passed.
+The candidate, replay and promoted manifest digests agree.
+[Release manifest](output/manifest.json) · [Acceptance receipt](../log/312-source-specific-releases.json)
+
+The treatment rows carry three cold-drug folds and three cold-dose-drug
+folds from the [frozen tenv inputs](../output/frozen-folds/tenv/manifest.json).
+Cold-dose-drug assigns their held-parent and held-dose intersection to test.
+Train and validation use rows outside their union. Rows matching only one
+held criterion have an empty assignment and a `held_parent` or `held_dose` value in the
+corresponding `_reason` column.
+
+| File in the materialized `output/` | Contents |
 | --- | --- |
-| `tenv-ref-vector.h5` | `C`, the overall control vector |
-| `plate-ref-mtx.h5` | `M_C`, its plate keys and control row metadata |
-| `pert-mtx.h5` | `M_T/treatment`, `M_T/delta`, row keys, `control_row` and six fold columns |
-| `genes.csv`, `controls.csv`, `treatments.csv` | Ordered genes and row metadata |
-| `members.csv`, `exclusions.csv` | The native observation identities contributing to each row or excluded with a reason |
-| `manifest.json` | Input and payload digests, normalization and populations |
+| `tenv-ref-vector.h5` | Dataset-wide control vector `C` |
+| `plate-ref-mtx.h5` | Plate control matrix `M_C` and its row metadata |
+| `pert-mtx.h5` | `M_T/treatment` and `M_T/delta`, condition keys, matched `control_row` and fold metadata |
+| `genes.csv`, `controls.csv`, `treatments.csv` | Ordered genes and matrix row metadata |
+| `members.csv`, `exclusions.csv` | Source observation membership and exclusion reasons |
 
-`cold_drug_0` through `cold_drug_2` and `cold_dose_drug_0` through
-`cold_dose_drug_2` carry the three frozen Step 07 folds for each family.
-The test partition in cold-dose-drug holds the intersection of the held
-parents and dose. Train and valid exclude their union. A row belonging to
-only one of the two held sets has an empty assignment and its reason in
-the corresponding `_reason` column.
+## Downstream use and verification
 
-Add `cpst/03_data_train/output/api` to `PYTHONPATH` and call
-`open_tenv_training()` from `training_data`. Pass an output directory to
-read a separately materialized release. Read `control()`, `read_controls`
-or `read_treatments` with at most 256 matrix rows per call. The `treatments`
-table aligns to the rows returned by `read_treatments`.
+Step 03 uses this release to check that new tenv axes preserve condition
+keys, raw membership, exclusions and fold assignments. HVG-DEG 5k was
+included in the Step 04 TranSiGen and Step 09 CarPS-Transcriptome axis
+comparisons. Step 09 selected Denoise-DEG 5k for CarPS-Transcriptome.
+[Step 03 training axes](../README.md#tenv-training-axes) · [Step 04 comparison](../../04_tsg_axis/README.md) · [Step 09 selection](../../09_cpst_axis/README.md#formal-results)
 
-```bash
-ROOT=$PWD/cpst/03_data_train
-BUILDER=$ROOT/execution/build_tenv_training.py
-CANDIDATE=$PWD/tmp/tenv-hvg-5k/candidate
-STAGING=$PWD/tmp/tenv-hvg-5k/staging
-python "$BUILDER" publish --output "$CANDIDATE" --staging "$STAGING"
-python "$BUILDER" verify --output "$CANDIDATE" --staging "$STAGING"
-python "$BUILDER" publish --output "$ROOT/03.1_tenv_hvg-5k/output" \
-  --staging "$STAGING" --expected-sha256 "$VERIFIED_SHA256"
-```
+Use `open_tenv_training()` from `training_data` with
+`cpst/03_data_train/output/api` on `PYTHONPATH`. Pass a materialized release
+directory to override the default. `control()` returns `C`. Read up to 256
+consecutive rows per call with `read_controls(start, stop)` or
+`read_treatments(start, stop, layer="delta")`. The treatment reader defaults
+to normalized treatment expression, and both layers align to the
+`treatments` table. [Reader implementation](../output/api/training_data.py)
 
-Use the manifest digest printed by the verification command for
-`VERIFIED_SHA256`. Verification independently rebuilds the release and
-matches its manifest and all payload digests. Use `--raw` when the accepted
-native corpus is in a different checkout.
+Follow the Step 03 candidate publication and replay procedure with
+`--axis hvg-5k` and use `cpst/03_data_train/03.1_tenv_hvg-5k/output` for
+the stable release. The `verify` command independently rebuilds the release
+and compares the manifest and every payload digest.
+[Build and replay procedure](../README.md#tenv-training-axes) · [Builder](../execution/build_tenv_training.py)
