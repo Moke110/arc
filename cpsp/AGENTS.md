@@ -1,4 +1,4 @@
-# AGENTS.md — stage3
+# AGENTS.md — cpsp
 
 - `01_corpus/` — separate Heliste baseline and H-R cell-viability corpora; read its `AGENTS.md` and `README.md` before changing builds.
 - `02_base_morgan/` — structure-and-dose direction baseline; read its `AGENTS.md` and `README.md` before modifying preparation, splits, training or verification.

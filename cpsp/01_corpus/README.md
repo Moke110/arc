@@ -9,9 +9,9 @@ Use the `arc` environment (Python with `openpyxl`, `pyarrow`, RDKit; frozen RDKi
 version is recorded in the identity evidence):
 
 ```bash
-python stage3/01_corpus/execution/corpus.py build
-python stage3/01_corpus/execution/corpus.py verify
-python -m unittest discover -s stage3/01_corpus/execution/tests -v
+python cpsp/01_corpus/execution/corpus.py build
+python cpsp/01_corpus/execution/corpus.py verify
+python -m unittest discover -s cpsp/01_corpus/execution/tests -v
 ```
 
 A fresh checkout first acquires originals with

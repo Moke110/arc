@@ -1,45 +1,14 @@
 {
   "aggregate_sha256": {
-    "benchmark.json": "ff1292646326b95b61badf5263ad1205c8f18335577254828974bbf325cba645",
+    "benchmark.json": "ce057dccac6313117c9c345eb380854928b4e6155b98a15f3eb1a94918dab4b6",
     "report.md": "c01ba8b98f65bdfc65d6794ee7b9cdd3dc50578edb28bbd861e55f429aca2efe",
-    "summary.json": "1ea09cba4d6b186d9ebf4df7bc304c84b39caf2c0cc8007a0625c072d14fdd4c"
+    "summary.json": "517fdc7034725f9a61da96cc8048eb09af6233cec002ca4e6de319d700b14362"
   },
   "class_order": [
     -1,
     0,
     1
   ],
-  "code_transitions": {
-    "additional_transitions": [
-      {
-        "commit": "a33ffe1",
-        "reason": "Resource classification only: small maintenance scripts may coexist; semantic training entry points always block and unknown Python at 1 GiB RSS remains heavy. Telemetry and memory floors unchanged.",
-        "resources_sha256": "09224391c9fcc4eac730bee997753aeb69ec4a4f94d2c85147314671234296b4"
-      }
-    ],
-    "commit": "ae2426a",
-    "continuation_hashes": {
-      "stage3/02_base_morgan/execution/benchmark.py": "5ebd4a5b90e66f11ecdd0c02329baa69b9975afe9d8a4699fbb8f2649ac3ca74",
-      "stage3/02_base_morgan/execution/cold_dose.py": "405ac53f01001465e8549d3ff2c592fcee1f4e2005efd433f69fda1e3217b2d8",
-      "stage3/02_base_morgan/execution/metrics.py": "8bd6cb3331c481d7932ad6d0e57c618bcff022aec581f5d19bdca3eb2c7c2e74",
-      "stage3/02_base_morgan/execution/reporting.py": "5becc9d7c15c3cb3dcf46a9fe1615553c5d92d49d3013593f11a9bcbe321b80b",
-      "stage3/02_base_morgan/execution/resources.py": "1d1211e8d5a67f54ea91ad192a35b8a490aeb039e96d1d337839f7fbf5aedd92",
-      "stage3/02_base_morgan/execution/training.py": "efda6caba6af2bd5958c3d40baef54edaab31ca3f030fa98349c7815888221eb",
-      "stage3/02_base_morgan/execution/warm_start.py": "a44bf1aadf61176ad052c219f80ab896bf8554f7537a615adcf809024d8b0e24",
-      "stage3/02_base_morgan/execution/workflow.py": "dc3cbac5fb458b542bc79a64f0eb191dadf8f25d285b705dcd3e8ea99bedb7fc"
-    },
-    "previous_hashes": {
-      "stage3/02_base_morgan/execution/benchmark.py": "24411ee8656e8af64d570dc4336fa48660bcc0a16a7e386d244b47825be1546c",
-      "stage3/02_base_morgan/execution/cold_dose.py": "df8b4b904998d396bbdd9b249dd86d75e144b43726e3829cc46b385073ca68ce",
-      "stage3/02_base_morgan/execution/metrics.py": "8bd6cb3331c481d7932ad6d0e57c618bcff022aec581f5d19bdca3eb2c7c2e74",
-      "stage3/02_base_morgan/execution/reporting.py": "635b4ccd03448dfd0fc15b060aa29dc93737377146b6f08d03a577335b05fad8",
-      "stage3/02_base_morgan/execution/resources.py": "1d1211e8d5a67f54ea91ad192a35b8a490aeb039e96d1d337839f7fbf5aedd92",
-      "stage3/02_base_morgan/execution/training.py": "efda6caba6af2bd5958c3d40baef54edaab31ca3f030fa98349c7815888221eb",
-      "stage3/02_base_morgan/execution/warm_start.py": "a44bf1aadf61176ad052c219f80ab896bf8554f7537a615adcf809024d8b0e24",
-      "stage3/02_base_morgan/execution/workflow.py": "dc3cbac5fb458b542bc79a64f0eb191dadf8f25d285b705dcd3e8ea99bedb7fc"
-    },
-    "reason": "Resource and completion-accounting fixes only; no training architecture, feature configuration, prepared input, split, schedule or HPO change."
-  },
   "config": {
     "batch_size": 64,
     "classes": [
@@ -55,14 +24,14 @@
     "weight_decay": 0.0001
   },
   "current_code_sha256": {
-    "stage3/02_base_morgan/execution/benchmark.py": "5ebd4a5b90e66f11ecdd0c02329baa69b9975afe9d8a4699fbb8f2649ac3ca74",
-    "stage3/02_base_morgan/execution/cold_dose.py": "405ac53f01001465e8549d3ff2c592fcee1f4e2005efd433f69fda1e3217b2d8",
-    "stage3/02_base_morgan/execution/metrics.py": "8bd6cb3331c481d7932ad6d0e57c618bcff022aec581f5d19bdca3eb2c7c2e74",
-    "stage3/02_base_morgan/execution/reporting.py": "5becc9d7c15c3cb3dcf46a9fe1615553c5d92d49d3013593f11a9bcbe321b80b",
-    "stage3/02_base_morgan/execution/resources.py": "09224391c9fcc4eac730bee997753aeb69ec4a4f94d2c85147314671234296b4",
-    "stage3/02_base_morgan/execution/training.py": "efda6caba6af2bd5958c3d40baef54edaab31ca3f030fa98349c7815888221eb",
-    "stage3/02_base_morgan/execution/warm_start.py": "a44bf1aadf61176ad052c219f80ab896bf8554f7537a615adcf809024d8b0e24",
-    "stage3/02_base_morgan/execution/workflow.py": "dc3cbac5fb458b542bc79a64f0eb191dadf8f25d285b705dcd3e8ea99bedb7fc"
+    "cpsp/02_base_morgan/execution/benchmark.py": "c4232c06b2323198e2f34b42aa55bab5db81dfdac76a64b2134325bb69ee7d8a",
+    "cpsp/02_base_morgan/execution/cold_dose.py": "405ac53f01001465e8549d3ff2c592fcee1f4e2005efd433f69fda1e3217b2d8",
+    "cpsp/02_base_morgan/execution/metrics.py": "8bd6cb3331c481d7932ad6d0e57c618bcff022aec581f5d19bdca3eb2c7c2e74",
+    "cpsp/02_base_morgan/execution/reporting.py": "5becc9d7c15c3cb3dcf46a9fe1615553c5d92d49d3013593f11a9bcbe321b80b",
+    "cpsp/02_base_morgan/execution/resources.py": "09224391c9fcc4eac730bee997753aeb69ec4a4f94d2c85147314671234296b4",
+    "cpsp/02_base_morgan/execution/training.py": "efda6caba6af2bd5958c3d40baef54edaab31ca3f030fa98349c7815888221eb",
+    "cpsp/02_base_morgan/execution/warm_start.py": "a44bf1aadf61176ad052c219f80ab896bf8554f7537a615adcf809024d8b0e24",
+    "cpsp/02_base_morgan/execution/workflow.py": "dc3cbac5fb458b542bc79a64f0eb191dadf8f25d285b705dcd3e8ea99bedb7fc"
   },
   "execution": {
     "cap_mechanism": "RLIMIT_AS",
@@ -94,16 +63,6 @@
     "prediction_rows_checked": 49392,
     "result": "passed"
   },
-  "initial_code_sha256": {
-    "stage3/02_base_morgan/execution/benchmark.py": "24411ee8656e8af64d570dc4336fa48660bcc0a16a7e386d244b47825be1546c",
-    "stage3/02_base_morgan/execution/cold_dose.py": "df8b4b904998d396bbdd9b249dd86d75e144b43726e3829cc46b385073ca68ce",
-    "stage3/02_base_morgan/execution/metrics.py": "8bd6cb3331c481d7932ad6d0e57c618bcff022aec581f5d19bdca3eb2c7c2e74",
-    "stage3/02_base_morgan/execution/reporting.py": "635b4ccd03448dfd0fc15b060aa29dc93737377146b6f08d03a577335b05fad8",
-    "stage3/02_base_morgan/execution/resources.py": "1d1211e8d5a67f54ea91ad192a35b8a490aeb039e96d1d337839f7fbf5aedd92",
-    "stage3/02_base_morgan/execution/training.py": "efda6caba6af2bd5958c3d40baef54edaab31ca3f030fa98349c7815888221eb",
-    "stage3/02_base_morgan/execution/warm_start.py": "a44bf1aadf61176ad052c219f80ab896bf8554f7537a615adcf809024d8b0e24",
-    "stage3/02_base_morgan/execution/workflow.py": "dc3cbac5fb458b542bc79a64f0eb191dadf8f25d285b705dcd3e8ea99bedb7fc"
-  },
   "input_fingerprint": "add497518b1f99418c5127fc31147a2864e59be13126a3fdd2c0f2de4cc32e3f",
   "metric_convention": {
     "argmax_ties": "first in class_order",
@@ -118,59 +77,38 @@
     "probability_sum_atol": 1e-06,
     "zero_division": 0
   },
-  "mode": "formal",
-  "prepared_fingerprint": "3d7de01222ea4025eac3ec7a4c94babd139491e63ee4d16ed2d44eb1952f3efc",
-  "public_replay": {
-    "artifact_stability": {
-      "after_evaluate_aggregate_hashes.json": {
-        "aggregate_sha256": {
-          "report.md": "c01ba8b98f65bdfc65d6794ee7b9cdd3dc50578edb28bbd861e55f429aca2efe",
-          "summary.json": "1ea09cba4d6b186d9ebf4df7bc304c84b39caf2c0cc8007a0625c072d14fdd4c"
-        },
-        "snapshot_sha256": "421ebffe479bd05466a024d8da41e4bada7ce8a48d32dd4ed2fe1000ce62ec5a",
-        "unchanged": true
+  "migration": {
+    "metadata": {
+      "cpsp/01_corpus/output/manifest.json": {
+        "migrated_sha256": "a96ed80f4b3ebceba917ba09a2e88ce0744f902eb850d4c24ca92a076247f120",
+        "original_path": "stage3/01_corpus/output/manifest.json",
+        "original_sha256": "5608f77e4ba76061f88ad77ed96318d3eca89adb02dc8dedfa2ac7be02e2224c"
       },
-      "completed19_immutable_hashes.json": {
-        "checked_files": 95,
-        "snapshot_sha256": "03980c387e0e8c21a1c2bc9736b3c6f3a40ee88c591ba9b2721bc5eecbcfcc31",
-        "unchanged": true
+      "formal/benchmark.json": {
+        "migrated_sha256": "ce057dccac6313117c9c345eb380854928b4e6155b98a15f3eb1a94918dab4b6",
+        "original_sha256": "ff1292646326b95b61badf5263ad1205c8f18335577254828974bbf325cba645"
       },
-      "completed28_immutable_hashes.json": {
-        "checked_files": 140,
-        "snapshot_sha256": "1d6998ad2bd1b0fb27e86644eb9104f204b80820041be920cc2c4628e9c3df32",
-        "unchanged": true
+      "formal/summary.json": {
+        "migrated_sha256": "517fdc7034725f9a61da96cc8048eb09af6233cec002ca4e6de319d700b14362",
+        "original_sha256": "1ea09cba4d6b186d9ebf4df7bc304c84b39caf2c0cc8007a0625c072d14fdd4c"
       },
-      "completed60_before_replay_hashes.json": {
-        "checked_files": 300,
-        "snapshot_sha256": "27a052192b82efceb7aff7b2d0092e0df0bb22dedd7a15119ef7526b688a3eff",
-        "unchanged": true
+      "prepared/prepared.json": {
+        "migrated_sha256": "b913a193378b2546e55735c233f5a2d85f73102ad4b61fcbe90034a326ac05b4",
+        "original_sha256": "4e5f9f722a76199fc90ae86e7964f15f9682033888ea640e0eb692ea23820df0"
       }
     },
-    "cap_mechanism": "RLIMIT_AS",
-    "commands": {
-      "evaluate": {
-        "command": "python stage3/02_base_morgan/execution/workflow.py evaluate --benchmark stage3/02_base_morgan/output/formal --require-complete",
-        "elapsed": "3:26.68",
-        "exit_code": 0,
-        "log_sha256": "d97e77b54bf9065fe4290f7141e3ac9062fa8b5fc8c49d813c26b023299e6dd4",
-        "maximum_rss_kib": 856592,
-        "time_sha256": "eb84555067336195e022b2d75f52e38f034e67e091d5c79fd61ae9d6ce080121"
-      },
-      "verify": {
-        "command": "python stage3/02_base_morgan/execution/workflow.py verify --benchmark stage3/02_base_morgan/output/formal --prepared stage3/02_base_morgan/output/prepared/prepared.json --require-complete",
-        "elapsed": "3:28.07",
-        "exit_code": 0,
-        "log_sha256": "d97e77b54bf9065fe4290f7141e3ac9062fa8b5fc8c49d813c26b023299e6dd4",
-        "maximum_rss_kib": 856260,
-        "time_sha256": "1d92b325152a186db54b7da29c00756e294f6ce1f5ac7e0f1d867506e3836eb4"
-      }
+    "original_code_revisions": {
+      "initial": "844d849fdf7b25c39eae2c198403146dfbea0c1f",
+      "initial_resources": "49f6839a6b7fe1f8ec128f751275814f0ee94ff1"
     },
-    "cuda_visible_devices": "",
-    "memory_cap_bytes": 10737418240,
-    "threads": 2,
-    "verified_at_utc": "2026-11-06T15:45:57.391240+00:00",
-    "without_refit": true
+    "original_release": {
+      "path": "stage3/02_base_morgan/execution/release_record.json",
+      "revision": "2fd12768b755afe405f14a41f726e484c2f9812d",
+      "sha256": "47a2be6b6776639ef850fb8e06de688c33be4fccd9ffae0309f0ee6256b23a99"
+    }
   },
+  "mode": "formal",
+  "prepared_fingerprint": "5e4da9f1ff4eacdf8f8511a245322371989d076ee545efaa55952067f7edf799",
   "resources": {
     "combined_method": "At each resource snapshot select workflow.py PIDs and recursive descendants by ppid; sum their RSS. Sampling maximum, not kernel peak; host GPU usage includes external desktop/probes.",
     "max_monitored_child_tree_rss_bytes": 777007104,
@@ -2795,11 +2733,12 @@
         "unique_canonical_structures": 663
       }
     },
-    "manifest_sha256": "5608f77e4ba76061f88ad77ed96318d3eca89adb02dc8dedfa2ac7be02e2224c",
+    "manifest_sha256": "a96ed80f4b3ebceba917ba09a2e88ce0744f902eb850d4c24ca92a076247f120",
     "source": "frozen Heliste"
   },
   "split_fingerprint": "ba45b77aa83810b957e855fab7dfd72691b962f179b45ab4347fa55775e0d075",
   "split_manifest_sha256": "c7316f2bffed7267543fb2994691a05f5ec2cae6ee215efa1e57362c8d312942",
+  "stage": "cpsp",
   "summary": {
     "complete": true,
     "completed_formal": 60,
@@ -2827,7 +2766,7 @@
           "unique_canonical_structures": 663
         }
       },
-      "manifest_sha256": "5608f77e4ba76061f88ad77ed96318d3eca89adb02dc8dedfa2ac7be02e2224c",
+      "manifest_sha256": "a96ed80f4b3ebceba917ba09a2e88ce0744f902eb850d4c24ca92a076247f120",
       "source": "frozen Heliste"
     },
     "status_counts": {

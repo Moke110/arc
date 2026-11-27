@@ -66,6 +66,18 @@ logs/
 wandb/
 lightning_logs/
 
+# CPSP publishes the sealed corpus; benchmark runs and other outputs stay local.
+!/cpsp/01_corpus/output/
+/cpsp/01_corpus/output/*
+!/cpsp/01_corpus/output/manifest.json
+!/cpsp/01_corpus/output/H-R/
+!/cpsp/01_corpus/output/baseline/
+/cpsp/01_corpus/output/*/*
+!/cpsp/01_corpus/output/*/chemical_resolution_report.json
+!/cpsp/01_corpus/output/*/corpus.csv
+!/cpsp/01_corpus/output/*/corpus.parquet
+!/cpsp/01_corpus/output/*/source_annotation.json
+
 # OS
 .DS_Store
 Thumbs.db

@@ -281,10 +281,10 @@ The remaining active phenotype items are `pheno_data/Heliste-2021/`,
 items; Huang contains public evidence, with its full numerical screen unavailable.
 Original images/tables remain ignored; small declared curation snapshots and
 download/verification code provide reconstruction evidence. The immutable local
-Heliste source-first corpora live in `stage3/01_corpus/output/baseline/` and
-`stage3/01_corpus/output/H-R/`; chemical-resolution reports describe admitted and
+Heliste source-first corpora live in `cpsp/01_corpus/output/baseline/` and
+`cpsp/01_corpus/output/H-R/`; chemical-resolution reports describe admitted and
 pending values separately from source availability. Historical endpoint-gated
-evidence is retained under `stage3/01_corpus/execution/historical/`. No model view or training result is implied by the archive.
+evidence is retained under `cpsp/01_corpus/execution/historical/`. No model view or training result is implied by the archive.
 
 ## ADR 0072 TOX admission inputs
 

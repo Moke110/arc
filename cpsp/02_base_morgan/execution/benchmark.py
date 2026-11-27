@@ -18,6 +18,10 @@ def _identity_key(identity):
     return digest(identity)
 
 
+def _run_path(output, entry):
+    return output / entry['run_path']
+
+
 def _validate_ledger(prepared, ledger, output):
     if ledger.get('schema_version') != 1 or ledger.get('mode') not in ('formal', 'smoke'):
         raise ValueError('Invalid benchmark execution configuration')
@@ -39,17 +43,20 @@ def _validate_ledger(prepared, ledger, output):
     for entry in entries:
         if entry['status'] not in ['pending', 'running', 'completed', 'failed']:
             raise ValueError('Invalid run status')
-        if entry['run_path'] != str((output/'runs'/_identity_key(entry['identity'])).resolve()):
+        relative = Path('runs') / _identity_key(entry['identity'])
+        if Path(entry['run_path']) not in (relative, output / relative):
+            raise ValueError('Unexpected benchmark run path')
+        if _run_path(output, entry).resolve() != output / relative:
             raise ValueError('Unexpected benchmark run path')
     actual = {str(path.resolve()) for path in (output/'runs').glob('*')}
-    allowed = {entry['run_path'] for entry in entries}
+    allowed = {str(_run_path(output, entry)) for entry in entries}
     if actual - allowed:
         raise ValueError('Unexpected run directories')
 
 
-def _completed(entry, prepared_path, ledger):
+def _completed(entry, prepared_path, ledger, output):
     from training import verify
-    path = Path(entry['run_path'])
+    path = _run_path(output, entry)
     verify(path, prepared_path)
     manifest = json.loads((path/'run.json').read_text())
     if (manifest['identity'] != entry['identity'] or manifest['mode'] != ledger['mode']
@@ -63,18 +70,19 @@ def evaluate_benchmark(output, prepared_path=None, require_complete=False):
     from reporting import summarize, render_report
     output = Path(output).resolve()
     ledger = json.loads((output/'benchmark.json').read_text())
-    prepared_path = Path(prepared_path or ledger['prepared_path'])
+    prepared_path = Path(prepared_path) if prepared_path is not None else output / ledger['prepared_path']
     prepared = _prepared(prepared_path)
     _validate_ledger(prepared, ledger, output)
     for entry in ledger['runs']:
         if entry['status'] == 'completed':
-            _completed(entry, prepared_path, ledger)
-        elif entry['status'] == 'pending' and Path(entry['run_path']).exists():
+            _completed(entry, prepared_path, ledger, output)
+        elif entry['status'] == 'pending' and _run_path(output, entry).exists():
             raise ValueError('Pending run has unexpected artifacts')
         elif entry['status'] == 'running':
             entry['status'], entry['error'] = 'failed', 'interrupted_run'
     _write(output/'benchmark.json', ledger)
-    summary = summarize(prepared, ledger['runs'], require_complete=require_complete)
+    resolved_runs = [dict(entry, run_path=str(_run_path(output, entry))) for entry in ledger['runs']]
+    summary = summarize(prepared, resolved_runs, require_complete=require_complete)
     summary['benchmark_mode'] = ledger['mode']
     summary['formal_benchmark_complete'] = ledger['mode'] == 'formal' and summary.get('complete', False)
     _write(output/'summary.json', summary)
@@ -93,7 +101,7 @@ def _archive_attempt(entry, output, log):
     metadata = {key: value for key, value in entry.items() if key != 'failed_attempts'}
     metadata['attempt_index'] = index
     _write(archive/'attempt.json', metadata)
-    for path, name in [(Path(entry['run_path']), 'run'), (log, 'resources')]:
+    for path, name in [(_run_path(output, entry), 'run'), (log, 'resources')]:
         if path.exists():
             path.rename(archive/name)
     attempts.append(dict(archive_path=str(archive), **metadata))
@@ -144,8 +152,8 @@ def benchmark(prepared_path, output, smoke_epochs=None, snapshot_fn=None, interv
     # Validate ALL existing artifacts before launching another child.
     for entry in ledger['runs']:
         if entry['status'] == 'completed':
-            _completed(entry, prepared_path, ledger)
-        elif entry['status'] == 'pending' and Path(entry['run_path']).exists():
+            _completed(entry, prepared_path, ledger, output)
+        elif entry['status'] == 'pending' and _run_path(output, entry).exists():
             raise ValueError('Pending run has unexpected artifacts')
         elif entry['status'] == 'running':
             entry['status'], entry['error'] = 'failed', 'interrupted_run'
@@ -168,7 +176,7 @@ def benchmark(prepared_path, output, smoke_epochs=None, snapshot_fn=None, interv
             _archive_attempt(entry, output, log)
         log.mkdir(parents=True, exist_ok=True)
         command = [sys.executable, str(cli), 'train', '--prepared', str(prepared_path),
-                   '--output', entry['run_path']]
+                   '--output', str(_run_path(output, entry))]
         for key, value in identity.items():
             command.extend(['--'+key, str(value)])
         if smoke_epochs is not None:
@@ -184,7 +192,7 @@ def benchmark(prepared_path, output, smoke_epochs=None, snapshot_fn=None, interv
             entry['resource_summary'] = result
             if result['exit_code'] != 0 or result['stop_reason']:
                 raise ValueError(f'Guarded child failed: {result}')
-            _completed(entry, prepared_path, ledger)
+            _completed(entry, prepared_path, ledger, output)
             peak = re.search(r'Maximum resident set size \(kbytes\):\s*(\d+)', (log/'time.txt').read_text())
             if peak is None:
                 raise ValueError('Missing measured peak RSS')

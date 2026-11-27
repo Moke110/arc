@@ -40,9 +40,9 @@ not run alongside the active Stage2 training worker, per repository resource rul
 Reproduce with the arc Python environment:
 
 ```bash
-python stage3/01_corpus/execution/corpus.py build
-python stage3/01_corpus/execution/corpus.py verify
-python -m unittest discover -s stage3/01_corpus/execution/tests -p test_corpus.py -v
+python cpsp/01_corpus/execution/corpus.py build
+python cpsp/01_corpus/execution/corpus.py verify
+python -m unittest discover -s cpsp/01_corpus/execution/tests -p test_corpus.py -v
 bash pheno_data/Heliste-2021/script/verify.sh
 bash script/check_paths.sh
 bash script/check_tracked.sh

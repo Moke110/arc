@@ -15,7 +15,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 ROOT = next(p for p in Path(__file__).resolve().parents if (p/'.git').exists())
-COMMAND = ROOT/'stage3/01_corpus/execution/corpus.py'
+COMMAND = ROOT/'cpsp/01_corpus/execution/corpus.py'
 
 class CorpusWorkflow(unittest.TestCase):
     def command(self, *args, succeeds=True, script=COMMAND):
@@ -155,7 +155,7 @@ class CorpusWorkflow(unittest.TestCase):
             (clone/'.git').mkdir()
             shutil.copytree(ROOT/'pheno_data/Heliste-2021',clone/'pheno_data/Heliste-2021')
             shutil.copy(ROOT/'pheno_data/registry.json',clone/'pheno_data/registry.json')
-            script = clone/'stage3/01_corpus/execution/corpus.py'
+            script = clone/'cpsp/01_corpus/execution/corpus.py'
             script.parent.mkdir(parents=True)
             shutil.copy(COMMAND,script)
             evidence_path = clone/'pheno_data/Heliste-2021/local/chemical_resolution_v2.json'
