@@ -6,7 +6,7 @@ tmp="$(mktemp -d)"
 trap 'rm -rf -- "$tmp"' EXIT
 mkdir -p "$tmp/repo/script" "$tmp/repo/pert_data/Test/source" "$tmp/bin"
 cp "$root/script/check_paths.sh" "$tmp/repo/script/"
-for name in check_stage2_paths check_stage3_paths; do
+for name in check_cpst_paths check_cpsp_paths; do
   printf '#!/bin/bash\nexit 0\n' > "$tmp/repo/script/$name.sh"
 done
 printf '%s/%s\n' pert_data 'Test/source/' > "$tmp/repo/README.md"
