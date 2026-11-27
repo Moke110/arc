@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from hashlib import file_digest
+from hashlib import file_digest, sha256
 import itertools
 import json
 import math
@@ -162,13 +162,11 @@ class InterruptedResources:
         'cpst/10_cpst_dose/execution/dose_matrix.py':
             '88dbf66b2741478944940b429f3dd43d0ee52de7fc3ca8bff22943b93c7368cf',
     }
-    LAUNCH_ROOT = Path('/home/chang/carps')
-    LAUNCH_TICKET = LAUNCH_ROOT / 'tmp/spec26-405'
-    LAUNCH_RUN = LAUNCH_TICKET / 'tmp/405-backing-e/run.SylLiG'
+    WORKER_ARGV_SHA256 = '69babc6eb4d3744c5b2e7c95a0d2734f08796333cd9025795c3ea474b23dc6e1'
+    ATTEMPT_PARENT_SHA256 = '20c2f0bd94b87c5e0827ad459a80ac687967771dfed17f3c458bc394f8d835f8'
     LAUNCHER = '56d2bfc4812fed384074e4168f88cdc92cedcb6bd8dbb2a048d017d4f2210325'
 
     def __init__(self, bundle, pin):
-        from hashlib import sha256
         from subprocess import check_output
 
         repo = Path(__file__).resolve().parents[3]
@@ -215,19 +213,14 @@ class InterruptedResources:
             '/usr/bin/env', 'OMP_NUM_THREADS=2', 'MKL_NUM_THREADS=2', 'OPENBLAS_NUM_THREADS=2',
             'NUMEXPR_NUM_THREADS=2', '/usr/bin/time', '-v', '-o',
         ]
-        expected_worker = [
-            '/home/chang/miniconda3/envs/arc/bin/python',
-            str(cls.LAUNCH_TICKET / 'cpst/10_cpst_dose/execution/dose_matrix.py'),
-            '--step03', str(cls.LAUNCH_ROOT / 'cpst/03_data_train'),
-            '--representations', str(cls.LAUNCH_ROOT / 'cpst/util/output/representations'),
-            '--source', str(cls.LAUNCH_ROOT / 'pert_model/TranSiGen/source'),
-            '--output', str(cls.LAUNCH_RUN / 'matrix'), '--logs', str(cls.LAUNCH_RUN / 'matrix-audit'),
-        ]
         args = shlex.split(command)
         index = len(expected_prefix)
-        if (args[:index] != expected_prefix or args[index + 1:] != expected_worker
-                or Path(args[index]).parent != cls.LAUNCH_RUN
-                or not re.fullmatch(r'matrix-attempt\.[a-zA-Z0-9]+\.resources', Path(args[index]).name)):
+        if len(args) != 21 or args[:index] != expected_prefix:
+            raise ValueError('systemd matrix command differs from the pinned launcher and candidate')
+        attempt = Path(args[index])
+        if (sha256(shlex.join(args[index + 1:]).encode()).hexdigest() != cls.WORKER_ARGV_SHA256
+                or sha256(str(attempt.parent).encode()).hexdigest() != cls.ATTEMPT_PARENT_SHA256
+                or not re.fullmatch(r'matrix-attempt\.[a-zA-Z0-9]+\.resources', attempt.name)):
             raise ValueError('systemd matrix command differs from the pinned launcher and candidate')
 
     def coverage(self, matrix, final_measurement):

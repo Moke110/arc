@@ -142,6 +142,12 @@ def build(bundle, publication, scratch, step03, *, recovery_sha256=None):
             numerical = measured_report_action("audit", bundle, scored, data, step03, candidate / RESOURCES[1])
             for name in PUBLISHED_TABLES:
                 shutil.copyfile(scored / name, candidate / "log" / name)
+            for name in RESOURCES:
+                measurement = candidate / name
+                lines = measurement.read_text().splitlines(keepends=True)
+                measurement.write_text("".join(
+                    line for line in lines if not line.lstrip().startswith("Command being timed:")
+                ))
             activity = bundle / "matrix-audit"
             interrupted = InterruptedResources(bundle, recovery_sha256) if recovery_sha256 else None
             coverage, _ = audit_resources(activity, bundle / "coordinator.jsonl", coordinates(),

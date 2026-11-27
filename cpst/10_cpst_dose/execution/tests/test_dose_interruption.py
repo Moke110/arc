@@ -3,13 +3,51 @@
 import json
 from hashlib import sha256
 from pathlib import Path
+import shlex
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from dose_interruption import Scope, active_samples, scope_windows, verify_attempt
+from dose_interruption import InterruptedResources, Scope, active_samples, scope_windows, verify_attempt
+
+
+class LauncherCommandTest(unittest.TestCase):
+    def test_worker_arguments_and_attempt_path_are_pinned_separately(self):
+        prefix = [
+            '/usr/bin/env', 'OMP_NUM_THREADS=2', 'MKL_NUM_THREADS=2', 'OPENBLAS_NUM_THREADS=2',
+            'NUMEXPR_NUM_THREADS=2', '/usr/bin/time', '-v', '-o',
+        ]
+        attempt = '/candidate/matrix-attempt.fit1.resources'
+        worker = [
+            '/runtime/python', '/checkout/dose_matrix.py', '--step03', '/inputs/step03',
+            '--representations', '/inputs/vectors', '--source', '/inputs/author',
+            '--output', '/candidate/matrix', '--logs', '/candidate/matrix-audit',
+        ]
+        with patch.multiple(
+            InterruptedResources,
+            WORKER_ARGV_SHA256=sha256(shlex.join(worker).encode()).hexdigest(),
+            ATTEMPT_PARENT_SHA256=sha256(b'/candidate').hexdigest(),
+        ):
+            command = [*prefix, attempt, *worker]
+            InterruptedResources.check_command(shlex.join(command))
+            command[8] = '/candidate/matrix-attempt.fit2.resources'
+            InterruptedResources.check_command(shlex.join(command))
+            for index, value in (
+                (8, '/elsewhere/matrix-attempt.fit2.resources'),
+                (8, '/candidate/unrelated.resources'),
+                (9, '/another/python'),
+                (18, '/elsewhere/matrix'),
+            ):
+                with self.subTest(index=index, value=value):
+                    altered = command.copy()
+                    altered[index] = value
+                    with self.assertRaisesRegex(ValueError, 'pinned launcher and candidate'):
+                        InterruptedResources.check_command(shlex.join(altered))
+            with self.assertRaisesRegex(ValueError, 'pinned launcher and candidate'):
+                InterruptedResources.check_command(shlex.join([*command, '--bounded']))
 
 
 class ScopeWindowsTest(unittest.TestCase):
