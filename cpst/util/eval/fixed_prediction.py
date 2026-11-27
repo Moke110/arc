@@ -6,6 +6,7 @@ import math
 import numpy as np
 import pandas as pd
 
+from cpst_util.release_names import original_axis_manifest_sha256
 from prediction_axis import axis_coordinates, open_axes
 from tsg_axis.inputs import score_fixed_prediction
 from .metrics import (CONDITION, DISTRIBUTION, METRICS, condition_scores, distribution_scores,
@@ -26,7 +27,8 @@ def verify_inputs(path, config, data, base, axis, fold, smoke):
     baseline = base.release.manifest["inputs"]
     if (config["axis_sha256"] != stage03["axis_sha256"]
             or config["axis_sha256"] != released_axis.sha256
-            or config["axis_family_manifest_sha256"] != axes.manifest_sha256
+            or config["axis_family_manifest_sha256"] not in {
+                axes.manifest_sha256, original_axis_manifest_sha256(axes.manifest_sha256)}
             or config["training_sha256"] != data.release.manifest_sha256
             or config["raw_sha256"] != stage03["raw_sha256"]
             or config["raw_sha256"] != baseline["raw_sha256"]

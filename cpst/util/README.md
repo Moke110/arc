@@ -56,8 +56,9 @@ scores and Step 10’s fold calibration belong to their own reports.
 
 Current registrations and receipts use `cpst` paths. The release migration maps
 reissued registration digests to the originals embedded in unchanged checkpoints.
-The provenance reader checks historical source digests at each experiment’s pinned
-Git revision. [Migration inventory](execution/385-release-migration.json) · [Pinned Step 06.4 replay](../06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit)
+The [runtime lookup](output/api/cpst_util/registration-hashes.json) holds that
+projection and the accepted Denoise-DEG manifest reissue. The provenance reader
+checks historical source digests at each experiment’s pinned Git revision. [Migration inventory](log/385-release-migration.json) · [Pinned Step 06.4 replay](../06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit)
 
 ## Comparison figures
 

@@ -38,7 +38,7 @@ evidence verification. For a linked worktree, set `MATERIALIZED` to the
 checkout with the Step 03 release, frozen representations and TranSiGen source.
 Check live WSL and Windows host RAM, GPU and disk before launching a matrix.
 Run the heavy phases serially. Use a fresh scratch directory for each recipe.
-[Execution limits](../../docs/agents/execution-environment.md) · [Migration receipt](../util/execution/385-release-migration.json)
+[Execution limits](../../docs/agents/execution-environment.md) · [Migration receipt](../util/log/385-release-migration.json)
 
 ```bash
 set -e

@@ -25,8 +25,7 @@ HVG=02.1_hvg-deg/figure
 DENOISE=02.2_denoise-deg/figure
 python "$AXES/$HVG/script/render_coverage.py" \
   --data "$AXES/$HVG/data" --output "$RENDER_DIR/$HVG"
-PYTHONPATH="cpst/util/output/api${PYTHONPATH:+:$PYTHONPATH}" \
-  python "$AXES/$DENOISE/script/render.py" \
+python "$AXES/$DENOISE/script/render.py" \
   --data "$AXES/$DENOISE/data" --output "$RENDER_DIR/$DENOISE"
 sha256sum "$RENDER_DIR"/*/figure/*.png
 ```

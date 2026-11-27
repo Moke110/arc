@@ -6,7 +6,8 @@ from pathlib import Path
 import subprocess
 import unittest
 
-from cpst_util.release_names import checkpoint_registration_sha256, current_path, historical_path
+from cpst_util.release_names import (checkpoint_registration_sha256, current_path, historical_path,
+                                     original_axis_manifest_sha256)
 
 ROOT = Path(__file__).resolve().parents[4]
 
@@ -43,7 +44,7 @@ class ReleaseNamesTest(unittest.TestCase):
             self.assertEqual(sha256((ROOT / "cpst" / path).read_bytes()).hexdigest(), digest)
 
     def test_migrated_checkpoint_keeps_its_embedded_registration_hash(self):
-        migration = json.loads((ROOT / "cpst/util/execution/385-release-migration.json").read_bytes())
+        migration = json.loads((ROOT / "cpst/util/log/385-release-migration.json").read_bytes())
         suffix = "/Zmol-FiLM/fold-0/seed-17/registration.json"
         record, = [row for row in migration["metadata"] if row["path"].endswith(suffix)]
         self.assertEqual(
@@ -51,6 +52,17 @@ class ReleaseNamesTest(unittest.TestCase):
             "ec67859b8dc8c4538f40913ca4fbef50c4ab9e0f2c6e1da74649bd1891e173a3",
         )
         self.assertEqual(checkpoint_registration_sha256("new-registration"), "new-registration")
+
+    def test_only_the_published_denoise_manifest_resolves_to_its_original_hash(self):
+        relative = "02_gene_axis/02.2_denoise-deg/output/release/manifest.json"
+        current = (ROOT / "cpst" / relative).read_bytes()
+        original = subprocess.check_output(
+            ["git", "show", f"9e7c85e3:stage2_CarPS-VAE/{relative}"], cwd=ROOT,
+        )
+        observed = sha256(current).hexdigest()
+        self.assertEqual(original_axis_manifest_sha256(observed), sha256(original).hexdigest())
+        tampered = sha256(current + b"\n").hexdigest()
+        self.assertEqual(original_axis_manifest_sha256(tampered), tampered)
 
     def test_path_matching_does_not_rewrite_unrelated_names(self):
         unaffected = "fixtures/not-stage2_CarPS-VAE/archive_07_cpsv_alpha.py"

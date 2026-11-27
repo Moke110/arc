@@ -18,7 +18,7 @@
         "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
         "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
       },
-      "manifest_sha256": "c76ff73c3640ca764dba44823d56179e1f787290d2e2f8e5b8f395a4e0b604e0",
+      "manifest_sha256": "e7ce565d7a920c58a59e0ff535ccc63c5017a1d04b7a1b725e19e83a89470e19",
       "paired_initialization": {
         "axis_projection_shapes": {
           "decoder_delta.4.bias": [
@@ -49,7 +49,7 @@
         "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
       },
       "prediction_sha256": "0d574ed4979ff7cf7c460b65dc85a79defca9887dda728003dd08608c0dd2870",
-      "registration_sha256": "95d0e32160820234c35ec06d1de94569bcf836024609ffb7ce2bd68d90df2c53",
+      "registration_sha256": "8820e83866f660a4a1135416487794aa6b9b9e7c1ab56b592f9ec2fefbf3e1e7",
       "test_replay": "exact",
       "trace_sha256": "cad048ffacd94397579002197f33daa637b289c18fcc5a837c2965d6844a3bb2",
       "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
@@ -74,7 +74,7 @@
         "torch_cpu_rng_sha256": "89a353c499634866c94a2122472e12ef859b35506500ffec60633bdd2bc16704",
         "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
       },
-      "manifest_sha256": "6fa4f271d7aee3799252cd51b3087c574865b2aedd0afad1f018142b1ecaa82d",
+      "manifest_sha256": "044cbf462158cdbdb5294aec68641a0cb108fe73df34b6e7364100bb909d0557",
       "paired_initialization": {
         "axis_projection_shapes": {
           "decoder_delta.4.bias": [
@@ -105,7 +105,7 @@
         "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
       },
       "prediction_sha256": "bc63eca1082e375b5f53da40fc7554b00878aa42ca8a45301d18c274cbd519dd",
-      "registration_sha256": "d9d303843a5f30fa39edf20775ab5c5bd4d1b9a63a4d3fa2e4556d49774e53ac",
+      "registration_sha256": "7f574dc31dc7a1838addb2588178415a5043827945ca694ed97b862dfcabde07",
       "test_replay": "exact",
       "trace_sha256": "a1ecfb1638168fea1f01cee0d24b4ddc0b0850fca5c720c0ab271c5cbbe2bc84",
       "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
@@ -130,7 +130,7 @@
         "torch_cpu_rng_sha256": "af9bbaa2c06738870ee8abef7b553606f95b5b8600c98f714fb7ac83d63d20dc",
         "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
       },
-      "manifest_sha256": "1ac1809cb96a5996f67c6dd73778f64c87fb8ab3c467470e7cee3f4cac20c689",
+      "manifest_sha256": "e288b6eff526ddd5820a1c510e710404cfcf2d172bd532ce775fa8d1032615f8",
       "paired_initialization": {
         "axis_projection_shapes": {
           "decoder_delta.4.bias": [
@@ -161,7 +161,7 @@
         "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
       },
       "prediction_sha256": "06494b16c40f8f5f79808fe0605ac4dc7ec0cfa355fb5627fd30cedcefe24272",
-      "registration_sha256": "b1f062f6ccdfd4bb51bcf5d9c76a5f3fcd529db52106403869d5588f1cc3bf54",
+      "registration_sha256": "4205d3c82554c6cd1bac32b8eb3cdd242dce54f51af519f8745bf58180bc516a",
       "test_replay": "exact",
       "trace_sha256": "26444cd115a28f16a0541e3251ec0ad9950d230b071d0a38269a1e050958dcd2",
       "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
@@ -186,7 +186,7 @@
         "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
         "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
       },
-      "manifest_sha256": "66a35c3143254b317f27520363e11b8038f346fdaaf3d50d321dbd236fab4896",
+      "manifest_sha256": "7edcfeb4ce56356b6e1a4b615cf5895ed50fa90f8c1a0abdbdd30a94f0521ca8",
       "paired_initialization": {
         "axis_projection_shapes": {
           "decoder_delta.4.bias": [
@@ -217,7 +217,7 @@
         "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
       },
       "prediction_sha256": "3ce89820743a77acfdaf1e76ae15a23fb35442a72bc62e608d9c701f91ac7b34",
-      "registration_sha256": "f0faa7c1b8c2bda665a03ab158b979d23625e7d59c784418957a1496260f93dc",
+      "registration_sha256": "6c652e9e86d85f60915d7683b1b9b0fa50c80af9831da063db3e80f58d5ad297",
       "test_replay": "exact",
       "trace_sha256": "aacacce15af4d2e967be025ffd4101bb4156c390f7513dbf4986d6ddbfaa9275",
       "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
@@ -242,7 +242,7 @@
         "torch_cpu_rng_sha256": "89a353c499634866c94a2122472e12ef859b35506500ffec60633bdd2bc16704",
         "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
       },
-      "manifest_sha256": "83a6d71d64e5a2ac299433c9de3cc16235a1e84b7dc4ec2f6fe32e0907001e89",
+      "manifest_sha256": "6e579cd6e1cc060096f0102d89df5adf053a785ac478432e7e36f0507a0df05e",
       "paired_initialization": {
         "axis_projection_shapes": {
           "decoder_delta.4.bias": [
@@ -273,7 +273,7 @@
         "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
       },
       "prediction_sha256": "e21258fd8a0a63122215f38cbd14a032f18c0814dc61b7713183c9c2df107d74",
-      "registration_sha256": "0e56545c090f40b8124c63dbc17b3a02615b850271305b0688a71e365ad45a7a",
+      "registration_sha256": "581d2f9b0f8fd22a8ff9c0e07b5b17bc11a428ff4cff13ffe2c66950f57c6c45",
       "test_replay": "exact",
       "trace_sha256": "80b5575c7b681f3a0e6006abd3bc78bd038d04ea6a6a4bcbdb1d6fb2c2827bd6",
       "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
@@ -298,7 +298,7 @@
         "torch_cpu_rng_sha256": "af9bbaa2c06738870ee8abef7b553606f95b5b8600c98f714fb7ac83d63d20dc",
         "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
       },
-      "manifest_sha256": "e59c5625fb32b035320d22e106852f851e0fcb04058fb82d0232da5fe927ff0e",
+      "manifest_sha256": "95ebf5b49cb7f84ea1bc0920d4cf7e3616540732367daa3f00772f434edf980a",
       "paired_initialization": {
         "axis_projection_shapes": {
           "decoder_delta.4.bias": [
@@ -329,7 +329,7 @@
         "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
       },
       "prediction_sha256": "6d563e39be43b1310a955df5f608ab04059cdd6f57c145cc845bb578bbc49315",
-      "registration_sha256": "dbe39fd6b681d9341786f2a08c3a0f1fafc293d11231f6badff40ba9e82800d8",
+      "registration_sha256": "40d5bf347401cdd2e6f57f5e367d05279675fc3979e92f0d6aec89edc211c3db",
       "test_replay": "exact",
       "trace_sha256": "60a76fe87a27c63429178a12ba3227c5f7f843aa644921ccd60419868c972771",
       "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
@@ -354,7 +354,7 @@
         "torch_cpu_rng_sha256": "13d237a92d38b9e436e65ecc1a515a178e30e446c344409a7b6668f5ff353897",
         "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
       },
-      "manifest_sha256": "391be6f691ffc8b11680596dc6157d23e95a03dd554a39151266a77a571362b9",
+      "manifest_sha256": "06933bf73370b06710032fa0193782e46db746598b098eddd3eefbf34fad8ee3",
       "paired_initialization": {
         "axis_projection_shapes": {
           "decoder_delta.4.bias": [
@@ -385,7 +385,7 @@
         "torch_cuda_rng_sha256": "8b47fb8c37b46edd9f7329da45697f422f78543f594538e47b07768e1629457e"
       },
       "prediction_sha256": "c27e65691a730c5b85331ba5e5f44d4feb3a29fa9b68a63afa86e48cf9e8d351",
-      "registration_sha256": "fbd51c8bea756e528cf68ab36f30eda984a4830e801c19ea0f1cb7d8061b5bb1",
+      "registration_sha256": "d355b7de8c435194cf66e121764487d71df11dca02433cac4cdbeac58f8ac221",
       "test_replay": "exact",
       "trace_sha256": "68a5bc60e14cad22142da5c3c84f44b505bc78862d6c5fdfe5e2a1cddfa23cce",
       "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
@@ -410,7 +410,7 @@
         "torch_cpu_rng_sha256": "89a353c499634866c94a2122472e12ef859b35506500ffec60633bdd2bc16704",
         "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
       },
-      "manifest_sha256": "ff20c2eed484298b8642c70c3028da7c5c6f0e77d97143cea91bc64ff583cfc8",
+      "manifest_sha256": "3fdc7454a0bec79d6c9a59a455334a5fe3378bec4845ef37c2f66a286a846074",
       "paired_initialization": {
         "axis_projection_shapes": {
           "decoder_delta.4.bias": [
@@ -441,7 +441,7 @@
         "torch_cuda_rng_sha256": "aefdce03def94ffed42159e55677ec20e91200e1981f25b1f271b6fd99c3c263"
       },
       "prediction_sha256": "efa073a640d0402f634d7b70e325101ed6ccb34e147557722eff0a1d7bb81c3f",
-      "registration_sha256": "42ab9045d71be674e89a38e27cf2ad84458b00697603a9c8f32e44ac7918a12c",
+      "registration_sha256": "511d4337eecd4a5995ef101d3c8989dc06fb5faad77ba00f3f5a41d36936f140",
       "test_replay": "exact",
       "trace_sha256": "59ed0f20468a5904c71215926eb938cbbd7ea825c605921c345e377cd79e3602",
       "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
@@ -466,7 +466,7 @@
         "torch_cpu_rng_sha256": "af9bbaa2c06738870ee8abef7b553606f95b5b8600c98f714fb7ac83d63d20dc",
         "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
       },
-      "manifest_sha256": "38bac6dbf3b9fe273646ad8704e07c307065b4e3ab98971d55967ad66d1c30fe",
+      "manifest_sha256": "ff611623358dc6c565ff364fed79546ccb0ffe77ebb0df26f9886bc611a9398f",
       "paired_initialization": {
         "axis_projection_shapes": {
           "decoder_delta.4.bias": [
@@ -497,7 +497,7 @@
         "torch_cuda_rng_sha256": "a8f02cd10262012d33a1c2be90b4ab03bbf252d62bb11f5371301bcfccc7b1a7"
       },
       "prediction_sha256": "663d3f9accc6fcf6b853af71729f4a27ed9dd82c76fae99c18bb5c4ad671c76c",
-      "registration_sha256": "f27029d432ae124f459cedef73a6b0401afdece9628a3f2ae79362480fdb3b9b",
+      "registration_sha256": "09ed7f4fb7e9b3ccce475dcbda2473ac2ec3c97e0ce625f7f6ccf7343eecaf7e",
       "test_replay": "exact",
       "trace_sha256": "2e5d075cf6bffec41b67dd3a8c27bccb780795169c340413f9ef9b8dc6f94268",
       "training_stream": "same inherited fit loop, ordered rows, rng seeds and native initialization",
@@ -505,5 +505,5 @@
       "validation_replay": "exact"
     }
   ],
-  "step08_acceptance_sha256": "23dca95c178fc2c03dd2b44c02db1ad5254cd51aadc5e307b97de0ae9b2f0573"
+  "step08_acceptance_sha256": "feb3d9a0a4bddf3f66258ec8bc99c91b9f68de14671dd073325a0a09c0dc462c"
 }

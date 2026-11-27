@@ -5,9 +5,9 @@
     "size": 18164
   },
   "inputs": {
-    "stage2/01_data_raw/output/manifest.json": "91a54af534bb34df97619814c38ea676a074e1ec826753095c6f55b068165a90",
-    "stage2/02_gene_axis/02.1_hvg-deg/output/release/manifest.json": "ca14d9ff0dbdd83ec5ba6acf0fcd345dfc1aedb7445bbc362329754105989494",
-    "stage2/util/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57"
+    "cpst/01_data_raw/output/manifest.json": "91a54af534bb34df97619814c38ea676a074e1ec826753095c6f55b068165a90",
+    "cpst/02_gene_axis/02.1_hvg-deg/output/release/manifest.json": "ca14d9ff0dbdd83ec5ba6acf0fcd345dfc1aedb7445bbc362329754105989494",
+    "cpst/util/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57"
   },
   "screening": {
     "nonzero_fraction_min": 0.1,

@@ -319,5 +319,8 @@ tmp/
 !/cpst/util/output/gene-identity/**/*.csv
 /cpst/util/output/representations/
 
+# Serialize metadata migration for the CPST release.
+/.cpst.publication.lock
+
 # Quarantine any pre-ADR 0105 local Stage 2 archive pending removal.
 /cpst/history/

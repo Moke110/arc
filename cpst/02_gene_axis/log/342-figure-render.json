@@ -25,7 +25,7 @@
   },
   "renderer_files_sha256": {
     "02.1_hvg-deg/figure/script/render_coverage.py": "9623b0d185eca92bb28385b39b851f7c2ed46d81dcb9b57043797ec3a2aef4ee",
-    "02.2_denoise-deg/figure/script/render.py": "c43957bd3d432d0f7993a840d5f92a3eee4b3d3f00fd9e5a9459b7781649a4b7"
+    "02.2_denoise-deg/figure/script/render.py": "af762459c55e6e5fc035788c4a745d307b919ff661688bb4de0ba728458567e2"
   },
   "schema": "cpst-figure-render-v1",
   "status": "PASS",

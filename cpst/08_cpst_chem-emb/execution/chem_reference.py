@@ -12,6 +12,7 @@ from chem_matrix import execute
 from chem_report import METRICS, TENV_DEFAULT, AxisInputs, axis_evaluate, open_tenv_training, score_run
 from chem_runs import (REFERENCE, ROUND_FOUR, STEP, AlphaAdapter, add_inputs, axis_run, bind, coordinates,
                        initialization, open_inputs)
+from cpst_util.release_names import original_axis_manifest_sha256
 from verify_alpha import (ACCEPTANCE, RELEASE, REFERENCE_ROSTER, verify_protocol, verify_reference,
                           verify_reference_release, verify_release)
 
@@ -98,6 +99,9 @@ def reference_plan(round_four, training, representations, source, bandwidth_trai
                 stage = "current alpha and Step 08 protocol equivalence"
                 verify_protocol(config, data, vectors, source)
                 current = bind(key, data, vectors, source, False)
+                axis = "axis_family_manifest_sha256"
+                if current[axis] != config[axis]:
+                    current[axis] = original_axis_manifest_sha256(current[axis])
                 if ({name: value for name, value in config.items() if name not in HISTORY_FIELDS}
                         != {name: value for name, value in current.items() if name not in HISTORY_FIELDS | ADDED_FIELDS}):
                     raise ValueError("registered KPGT model or inputs differ in Step 08")

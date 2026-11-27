@@ -25,8 +25,7 @@ bounded native counts in the published gene order.
    DEG1000 list. Apply the exclusion union before ranking. Break score ties by
    frozen gene index and write the five nested memberships in ascending index order.
 4. Replay the figures with [render.py](figure/script/render.py) using `--data` for
-   the plot tables and `--output` for the candidate PNGs. From the repository
-   root, prepend `cpst/util/output/api` to `PYTHONPATH` for the
+   the plot tables and `--output` for the candidate PNGs. The renderer loads the
    [shared plotting API](../../util/README.md#plotting).
 
 ## Acceptance

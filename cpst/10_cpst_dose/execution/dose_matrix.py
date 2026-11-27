@@ -9,6 +9,7 @@ import sys
 import time
 
 from dose_inputs import open_inputs
+from cpst_util.configuration import ordered_configurations_sha256
 from dose_protocol import REFERENCE, STEP, TRANSIGEN, coordinates
 from dose_runs import DOSE_CODE, ORIGINAL_CODE, PHASES, add_inputs, axis_run, bind, read_run, verify_release
 from util.training.provenance import historical_gate_configuration, legacy_configuration
@@ -101,9 +102,9 @@ def preflight(step03, representations, source, bounded):
     return selected, {
         "schema": SCHEMA, "bounded": bounded, "formal_roster": [list(key) for key in formal],
         "registered_roster": [list(key) for key in selected],
-        "formal_configs_sha256": digest_values([json.dumps(config, sort_keys=True) for config in formal.values()]),
-        "gate_configs_sha256": digest_values([json.dumps(config, sort_keys=True) for config in historical]),
-        "registered_configs_sha256": digest_values([json.dumps(config, sort_keys=True) for config in selected.values()]),
+        "formal_configs_sha256": ordered_configurations_sha256(formal.values()),
+        "gate_configs_sha256": ordered_configurations_sha256(historical),
+        "registered_configs_sha256": ordered_configurations_sha256(selected.values()),
         "folds": folds,
     }
 
@@ -204,10 +205,8 @@ def verify_matrix(root, bounded):
         raise ValueError("invalid Step 10 matrix or preflight record")
     runs, fits = read_fits(root, bounded)
     selected = [{name: value for name, value in run[1].items() if name != "nonce"} for run in runs.values()]
-    # JSON registration files are sorted by key, so normalize the field order
-    # before comparing configuration identities across independently read files.
-    selected = [json.dumps(config, sort_keys=True) for config in selected]
-    if (manifest["fits"] != fits or preflight["registered_configs_sha256"] != digest_values(selected)):
+    if (manifest["fits"] != fits
+            or preflight["registered_configs_sha256"] != ordered_configurations_sha256(selected)):
         raise ValueError("sealed Step 10 fits differ from the preregistered matrix")
     return runs
 

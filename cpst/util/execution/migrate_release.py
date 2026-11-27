@@ -12,11 +12,12 @@ import re
 import subprocess
 import sys
 import tarfile
-from tempfile import NamedTemporaryFile
 
-STAGE = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(STAGE / "util/output/api"))
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+sys.path.insert(0, str(REPO / "cpst/util/output/api"))
 
+from cpst_util.configuration import ordered_configurations_sha256
+from cpst_util.publication import publication_lock, publish_files
 from cpst_util.release_names import current_path, migrate_names
 
 ORIGINAL_REVISION = "9e7c85e38d2ab09c9b509ff8b2f30c67ea07ea85"
@@ -25,6 +26,7 @@ FIGURE_RECEIPTS = {"342-figure-render.json", "figure-render.json"}
 CURRENT_STEPS = {"07_cpsv_alpha", "08_cpsv_chem-emb", "09_cpsv_axis", "10_cpsv_dose"}
 LEDGERS = ("formal-receipts.sha256", "carps-vae-receipts.sha256")
 ALPHA_MANIFEST = f"{ORIGINAL_ROOT}/07_cpsv_alpha/output/release.json"
+DENOISE_MANIFEST = f"{ORIGINAL_ROOT}/02_gene_axis/02.2_denoise-deg/output/release/manifest.json"
 FORMAL_CODE = {
     "08_cpsv_chem-emb": ("ac62a177a54aa99e6ac626728af12394f3e0d940", 54),
     "09_cpsv_axis": ("d3395ca0e0a055dc28e8e431740f5ec640ee4247", 63),
@@ -32,7 +34,8 @@ FORMAL_CODE = {
 }
 METADATA_FIELDS = {".json", ".jsonl", ".csv", ".sha256"}
 DIGEST = re.compile(rb"(?<![0-9a-f])[0-9a-f]{64}(?![0-9a-f])")
-RECORD = "cpst/util/execution/385-release-migration.json"
+RECORD = "cpst/util/log/385-release-migration.json"
+REGISTRATION_LOOKUP = "cpst/util/output/api/cpst_util/registration-hashes.json"
 ARCHIVE = "cpst/util/output/migration-originals.tar.gz"
 
 
@@ -95,7 +98,7 @@ def metadata_path(name):
     if path.parts[:1] != (ORIGINAL_ROOT,) or ".." in path.parts or path.as_posix() != name:
         return False
     return (
-        path.name in {*FIGURE_RECEIPTS, *LEDGERS}
+        name == DENOISE_MANIFEST or path.name in {*FIGURE_RECEIPTS, *LEDGERS}
         or (len(path.parts) > 3 and path.parts[1] in CURRENT_STEPS
             and ((path.parts[2] in {"log", "output"} and path.suffix in METADATA_FIELDS)
                  or (path.parts[2:4] == ("figure", "data") and path.suffix == ".csv")))
@@ -141,6 +144,14 @@ def metadata_records(repo, tracked, names, read):
         accepted = read(name)
         if Path(name).name in FIGURE_RECEIPTS:
             candidate = migrate_figure(repo, name, accepted)
+        elif name == DENOISE_MANIFEST:
+            manifest = json.loads(accepted)
+            manifest["inputs"] = {path.replace("stage2/", "cpst/", 1): expected
+                                  for path, expected in manifest["inputs"].items()}
+            for path, expected in manifest["inputs"].items():
+                if digest((repo / path).read_bytes()) != expected:
+                    raise ValueError(f"Denoise-DEG axis input differs: {path}")
+            candidate = (json.dumps(manifest, indent=2) + "\n").encode()
         else:
             candidate = migrate_names(accepted)
             if name == ALPHA_MANIFEST:
@@ -164,12 +175,9 @@ def dose_preflight(records):
                   for arm, fold, seed in reading["registered_roster"])
 
     def identity(registrations):
-        configs = []
-        for data in registrations:
-            config = json.loads(data)
-            del config["nonce"]
-            configs.append(json.dumps(config, sort_keys=True))
-        return digest(json.dumps(configs, separators=(",", ":")).encode())
+        configs = (json.loads(data) for data in registrations)
+        return ordered_configurations_sha256({name: value for name, value in config.items() if name != "nonce"}
+                                             for config in configs)
 
     old_hash = identity(records[config].accepted for config in names)
     if reading["registered_configs_sha256"] != old_hash or reading["formal_configs_sha256"] != old_hash:
@@ -224,20 +232,6 @@ def build_plan(records):
     return resolved
 
 
-def write_atomic(path, contents):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with NamedTemporaryFile(dir=path.parent, delete=False) as handle:
-        temporary = Path(handle.name)
-        try:
-            handle.write(contents)
-            handle.close()
-            mode = path.stat().st_mode if path.exists() else 0o644
-            temporary.chmod(mode)
-            temporary.replace(path)
-        finally:
-            temporary.unlink(missing_ok=True)
-
-
 def migration_record(records, migrated):
     items = [
         {"original_path": name, "original_sha256": record.original_hash,
@@ -249,7 +243,20 @@ def migration_record(records, migrated):
     return {"schema": "cpst-release-migration-v1", "original_revision": ORIGINAL_REVISION, "metadata": items}
 
 
-def write_archive(path, records):
+def registration_lookup(records, migrated):
+    def original(name):
+        return records[name].original_hash
+
+    return {
+        "schema": "cpst-registration-hashes-v1",
+        "alpha_original_release_sha256": original(ALPHA_MANIFEST),
+        "denoise_manifest_sha256": {digest(migrated[DENOISE_MANIFEST]): original(DENOISE_MANIFEST)},
+        "registrations_sha256": {digest(migrated[name]): record.original_hash for name, record in records.items()
+                                 if name.endswith("/registration.json")},
+    }
+
+
+def archive_bytes(records):
     data = io.BytesIO()
     with gzip.GzipFile(fileobj=data, mode="wb", mtime=0) as compressed:
         with tarfile.open(fileobj=compressed, mode="w") as archive:
@@ -260,7 +267,25 @@ def write_archive(path, records):
                 entry.size = len(record.accepted)
                 entry.mode = 0o644
                 archive.addfile(entry, io.BytesIO(record.accepted))
-    write_atomic(path, data.getvalue())
+    return data.getvalue()
+
+
+def prepare_update(repo, pending, name, expected, *, original=None, allow_missing=False):
+    target = repo / name
+    if target.resolve() != target or (target.exists() and not target.is_file()):
+        raise ValueError(f"migration requires a regular file at {target}")
+    if not target.exists():
+        if not allow_missing:
+            raise FileNotFoundError(f"missing release metadata: {target}")
+        if not target.parent.is_dir():
+            raise FileNotFoundError(f"missing release metadata directory: {target.parent}")
+    else:
+        observed = target.read_bytes()
+        if observed == expected:
+            return
+        if observed != original:
+            raise ValueError(f"release metadata differs: {target}")
+    pending[target] = expected
 
 
 def verify(repo, tracked, archive_path, *, install=False):
@@ -282,26 +307,22 @@ def verify(repo, tracked, archive_path, *, install=False):
         names = {entry["original_path"] for entry in recorded["metadata"]}
         if len(names) != len(recorded["metadata"]) or not all(map(metadata_path, names)):
             raise ValueError("invalid CPST metadata migration paths")
+        expected_names = {name for name in tracked.union(archive.getnames()) if metadata_path(name)}
+        if names != expected_names:
+            raise ValueError("CPST metadata migration omits sealed metadata")
         records = metadata_records(repo, tracked, names, read)
         verify_original_formal_code(repo, records)
         migrated = build_plan(records)
         if recorded != migration_record(records, migrated):
             raise ValueError("CPST metadata digest correspondence differs from its sealed original")
+        prepare_update(repo, pending, REGISTRATION_LOOKUP, json_bytes(registration_lookup(records, migrated)))
         for name, expected in migrated.items():
-            target = repo / current_path(name)
-            observed = target.read_bytes()
-            if observed == expected:
-                continue
-            if not install or name in tracked or observed != records[name].accepted:
-                raise ValueError(f"migrated release metadata differs: {target}")
-            if target.is_symlink() or not target.resolve().is_relative_to(repo):
-                raise ValueError(f"migrated metadata cannot replace a linked payload: {target}")
-            pending[target] = expected
+            original = records[name].accepted if install and name not in tracked else None
+            prepare_update(repo, pending, current_path(name), expected, original=original)
     if install:
         if archive_path != repo / ARCHIVE:
-            write_atomic(repo / ARCHIVE, archive_path.read_bytes())
-        for target, contents in pending.items():
-            write_atomic(target, contents)
+            prepare_update(repo, pending, ARCHIVE, archive_path.read_bytes(), allow_missing=True)
+        publish_files(pending, staging=repo / "tmp")
     print(f"Verified {len(migrated)} CPST metadata files against their original release")
 
 
@@ -318,13 +339,15 @@ def migrate(repo, tracked, original):
     records = metadata_records(repo, tracked, names, read)
     verify_original_formal_code(repo, records)
     migrated = build_plan(records)
-    write_archive(repo / ARCHIVE, records)
+    pending = {}
     for name, expected in migrated.items():
-        target = repo / current_path(name)
-        if target.read_bytes() != expected:
-            write_atomic(target, expected)
+        prepare_update(repo, pending, current_path(name), expected, original=records[name].accepted)
     record = migration_record(records, migrated)
-    write_atomic(repo / RECORD, json_bytes(record))
+    prepare_update(repo, pending, ARCHIVE, archive_bytes(records), allow_missing=True)
+    prepare_update(repo, pending, REGISTRATION_LOOKUP, json_bytes(registration_lookup(records, migrated)),
+                   allow_missing=True)
+    prepare_update(repo, pending, RECORD, json_bytes(record), allow_missing=True)
+    publish_files(pending, staging=repo / "tmp")
     print(f"Reissued {len(record['metadata'])} CPST metadata files")
 
 
@@ -334,15 +357,15 @@ def main():
     parser.add_argument("--original-checkout", type=Path)
     parser.add_argument("--original-archive", type=Path)
     args = parser.parse_args()
-    repo = STAGE.parent
-    tracked = set(original_paths(repo))
-    if args.action == "migrate":
-        if args.original_checkout is None:
-            parser.error("migrate requires --original-checkout")
-        migrate(repo, tracked, args.original_checkout.resolve())
-    else:
-        archive = args.original_archive.resolve() if args.original_archive else repo / ARCHIVE
-        verify(repo, tracked, archive, install=args.action == "install")
+    if args.action == "migrate" and args.original_checkout is None:
+        parser.error("migrate requires --original-checkout")
+    tracked = set(original_paths(REPO))
+    with publication_lock(REPO / "cpst"):
+        if args.action == "migrate":
+            migrate(REPO, tracked, args.original_checkout.resolve())
+        else:
+            archive = args.original_archive.resolve() if args.original_archive else REPO / ARCHIVE
+            verify(REPO, tracked, archive, install=args.action == "install")
 
 
 if __name__ == "__main__":

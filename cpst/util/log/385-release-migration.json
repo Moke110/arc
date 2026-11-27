@@ -1,11 +1,18 @@
 {
   "metadata": [
     {
+      "original_path": "stage2_CarPS-VAE/02_gene_axis/02.2_denoise-deg/output/release/manifest.json",
+      "original_sha256": "e3c9a88ac4f8f787ab6a13c8f2b667b29cf6f55e2f554c8d5a148f3475c35b33",
+      "original_source": "git",
+      "path": "cpst/02_gene_axis/02.2_denoise-deg/output/release/manifest.json",
+      "sha256": "00d7631970bd17dc6e5a7a061667fd30ceeb14ec5662188923584b56180405ea"
+    },
+    {
       "original_path": "stage2_CarPS-VAE/02_gene_axis/log/342-figure-render.json",
       "original_sha256": "12e570e9f8b44edf9364578e06194d4a89beebfc5f10ff516e6b12f9b41270cd",
       "original_source": "git",
       "path": "cpst/02_gene_axis/log/342-figure-render.json",
-      "sha256": "8e9aaf7bc372d01976d3c3f6de44a86b9a844aa1d6d6a0ecfa1d524f28270cc0"
+      "sha256": "f75f188c7595937a77150e5de51f55dfa11358abc1b8e516ecce258728c15731"
     },
     {
       "original_path": "stage2_CarPS-VAE/04_tsg_axis/log/figure-render.json",
@@ -103,14 +110,14 @@
       "original_sha256": "400dfe79c297fdc0f0667a135a5e5613c63ada111858f0aa7245f76cd544eb3c",
       "original_source": "git",
       "path": "cpst/08_cpst_chem-emb/figure/data/epoch-objectives.csv",
-      "sha256": "d65a72861374bcaba33397704200a6e709b0323f89b710795d78fb50dea0ac50"
+      "sha256": "8f9e6faf66dff2f03d9a4b9663a65a89191e5e4b230fd80f35fabda530fce5fd"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/figure/data/fold-scores.csv",
       "original_sha256": "31d3aa314ac3d2e2c7ebf65a2dd2cf0aa198c71fbc940d3c786ca91ac3822d42",
       "original_source": "git",
       "path": "cpst/08_cpst_chem-emb/figure/data/fold-scores.csv",
-      "sha256": "235a08ed4ad49c87c3ed36027b1a36b013a8ddad3be8bff37507cffdd494af3d"
+      "sha256": "76bf974b99b567999f17baa274aa4df5b79842f57307e63e3f3a3c3613b0b7ac"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/figure/data/learning-curve.csv",
@@ -180,7 +187,7 @@
       "original_sha256": "56b8983678f72adc2deb9a34613561428b3bd77507f44b0ae091b1bc7d40a6f2",
       "original_source": "git",
       "path": "cpst/08_cpst_chem-emb/log/364-formal.json",
-      "sha256": "23dca95c178fc2c03dd2b44c02db1ad5254cd51aadc5e307b97de0ae9b2f0573"
+      "sha256": "feb3d9a0a4bddf3f66258ec8bc99c91b9f68de14671dd073325a0a09c0dc462c"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/log/364-resources.jsonl",
@@ -201,14 +208,14 @@
       "original_sha256": "e8b092421687efcb76e64c3b89d15c2c3b3f7a7d3ef39931bcdbaf5df1b2ba3a",
       "original_source": "git",
       "path": "cpst/08_cpst_chem-emb/log/figure-render.json",
-      "sha256": "fb46643d25f5b5bce5f3ddb3cac2f46c8ffa31f8cd3c6de2a986aa921f455455"
+      "sha256": "8d0b0c3c7f22fb93c87ca82e7c6a03153f8092c22e3f122e51f4251223988e92"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/log/runs.csv",
       "original_sha256": "b66bb965065ffbe95a98282643bdf50f7d6b79b7cb63b4c7e2396615623071c1",
       "original_source": "git",
       "path": "cpst/08_cpst_chem-emb/log/runs.csv",
-      "sha256": "207dc7e9b02693ccdaca98f60d32061b0b69cc61806fa37f4c234cbc6490f843"
+      "sha256": "e0a0af51f72b6f14d8480e53a5878426962959d11cb8979e573d9f639f2eb966"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix-audit/resource-samples.jsonl",
@@ -229,7 +236,7 @@
       "original_sha256": "0f9afde298a69b5586e2f762c2cd7568bbabb1b918cfe357806e419c9a16290f",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/manifest.json",
-      "sha256": "d3b67f7b4246320afcc5883a8fda85718d43a36fc6e19875c2d7a12b51c99cb8"
+      "sha256": "1f3a95b8694a64c18e9a378ce42500af75541f59580aeef9bfddade5e1e31f85"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/preflight.json",
@@ -271,28 +278,28 @@
       "original_sha256": "bb9276a3517cd12f19d3aae4f5f786b47044bbbe98cddda48c403fa7bfaa841f",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-17/manifest.json",
-      "sha256": "39c68d0804c15eebcbb44e8ecca14a5c150f4840f0693f17b661ac55d8f3838c"
+      "sha256": "62dc4bcfa49353b91e019a9caa744b7cf0dd5e20a16822cccc8b6008793bd962"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-17/predictions.json",
       "original_sha256": "8d27b8b36efa56420d9968fa2ae78e9e97b04caeeb3eb7a1667f05f3f81ee0aa",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-17/predictions.json",
-      "sha256": "1ec7d9038c06abaa525546a6305001a9bcc29367e6f04ddd563fe6594906e9d8"
+      "sha256": "769fb3483134e5c53316a72214e84bd282382a65b11f6f6c6def5139385d47df"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-17/registration.json",
       "original_sha256": "14ceb7b66046bfcccd998c4e5a1c68737d1f3f12c41096c1c5672e051ce2882b",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-17/registration.json",
-      "sha256": "1c057325ea88ecc6fb53efb1ca14e3d0affa01f06fc01f284b6a1906b94e6096"
+      "sha256": "c4bd87456faaee6db1571ff300530bf013d3ca73788b742a407674a0f6512eb1"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-17/training.json",
       "original_sha256": "c82bef4dc98625eee020feaf95e7bba86b886671a7583b34b11817f839c51e8c",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-17/training.json",
-      "sha256": "7d69bddb6bad77249f08d1853e62c189f9e5f321eb3d9339fb1831dceffad99d"
+      "sha256": "8bcf5b6330726e6ac3edca9a6d39e6c277cf145ac629cf4ef323487c3f09471f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-2026/conditions.csv",
@@ -327,28 +334,28 @@
       "original_sha256": "ac06be9c94cc40cbec9d45499b0c79c6367d2ba99d315494462bd4d0ec6e40c7",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-2026/manifest.json",
-      "sha256": "63a69cd15817eaf2b3aa9b5cd7bce4625fcfc6331ec7e6ecbf8369d48bf5db80"
+      "sha256": "79de7fa11d7d37b92e83df287599e030edac4f349e69a7e78cb5eeedbdcbc188"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-2026/predictions.json",
       "original_sha256": "69d1c2a04e1d34fcb87bf680c896e9e6cb4a8a09d23fb3345fa23daf0ed83b3c",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-2026/predictions.json",
-      "sha256": "1a303179f947d5119cde6572492c1240ed65af5659aa9fe6bc3c99aa61f761af"
+      "sha256": "9299f1978d4198d70c4c1c0dd20efa34b034c4279016be05f63a1afb48a971c1"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-2026/registration.json",
       "original_sha256": "9575f401e428c394721105303acf300575a855f01caefb8f8c098e0c8bb1c5bf",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-2026/registration.json",
-      "sha256": "dc4778ba85e4a378bc4ba18ff03f7e61d271d1ebd412edbbdd09a1f8d486e1f1"
+      "sha256": "971f49ee7dee727d7498804855d50c3c7819208f17789e235f0de9cfb7cb95fb"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-2026/training.json",
       "original_sha256": "c956f7d06e22750d6919e54f5ea728b873988d65771b8a5357d56fa67c69bed2",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-2026/training.json",
-      "sha256": "0f3160c79fe891424ed0505bb7677e86fbe0b86746073b1ea02a1ad393e358f9"
+      "sha256": "f9aeb40878a3104ce3d41a53652f4e4ff768c3feb84cd2c9956d0fb709c6c033"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-42/conditions.csv",
@@ -383,28 +390,28 @@
       "original_sha256": "f7bfb71771b5998a5731ae422cced3c7cdc6d6c78c63daceb710742610aafb08",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-42/manifest.json",
-      "sha256": "2df8f97738de828da225944e8e17a251c003195c7a0ad0f6e88684077b79fa89"
+      "sha256": "5c731d48274f6482647834fd7fe7632e2c8f419ec9e92de6fb5867b6c5c84602"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-42/predictions.json",
       "original_sha256": "9ad3ceeb672e64b24d846785ac4e9ee767617893ec9c0b0cefdfebabece122e5",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-42/predictions.json",
-      "sha256": "4df836b7aabba185b709954bab9c0c329bbfcb12d7ab03ec9042c1c7caef3fdd"
+      "sha256": "ba90c6f40676cab3a1461c5df908be75d7153dfdde8a062c63e9d9357c79f0cf"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-42/registration.json",
       "original_sha256": "b3f2a57b59852fd14ed7c435229ca08cb677c8685e17fe3348d96cce88e37e50",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-42/registration.json",
-      "sha256": "794105e99117bdbac61c705ad476850fa4e0920010aad42b34a4c4bcf8f1aedd"
+      "sha256": "b7860ffee28ff0f40bd50ea61cea42173fe3c3a9fd0680825e900dd1ac52b8ac"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-42/training.json",
       "original_sha256": "6b4e3ce82cf91d042e56bf98505a579a9db078f615271b9f7e2c76361c5d4a7d",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-0/seed-42/training.json",
-      "sha256": "ec3feeabc2dd2eb65a859096f8baeb22e626157624d659d2d36a44ca6d4209e4"
+      "sha256": "f062e5be3428c9fea936cff984d807244eeafe5a2d3ad783a75323525f5af7f3"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-17/conditions.csv",
@@ -439,28 +446,28 @@
       "original_sha256": "c2cc630aec93cdedf2c15c93bb38fad191efe49ddc93dbc90b639b23487d1150",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-17/manifest.json",
-      "sha256": "b3d1712df39243304c2a87a00fe4eb45fe07697b7fff920016f859e736b4af57"
+      "sha256": "f67691edeb1e50b4ae5d7ff7a37e633afa31343ae2f47fc4a679a2b2dcdccc7c"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-17/predictions.json",
       "original_sha256": "eb843f0c1111dcf703b34b28229e1fba94f99f00d18fb95535208d1697b4e15d",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-17/predictions.json",
-      "sha256": "17a06671e56553076538a16be1cac0e9ce7f478d39bb2ef27451645ab1065587"
+      "sha256": "f773227394eedf232fe918492f676fd95f7453f1d6fa13d0de0386fd11443a51"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-17/registration.json",
       "original_sha256": "4014a697de5ee8692bcbe08559f9ac03bf225c33e97873c3c7d48212ef2ea26e",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-17/registration.json",
-      "sha256": "ae277c250a87cccd3f236f83fb3cd4c098c5dfa7f500b5ff9ca7b43df32a6700"
+      "sha256": "0fd0b2b0cb4bee9058173482b6f6e7c79ed658f93c91681b32c8f02c3ae0cb0c"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-17/training.json",
       "original_sha256": "15eee53bf37865fb3d156b7cc35792ad6f4888dc40f4069e63072a15e67efa58",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-17/training.json",
-      "sha256": "9c83b054560e59cee02c1088aa846b58fdd7b65b50c63bcd8533b294d45cfb30"
+      "sha256": "cbecbcfa72b0bcb87e25e6c63ac8bc7f2760e44ab28e461e4cb365379424a340"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-2026/conditions.csv",
@@ -495,28 +502,28 @@
       "original_sha256": "fab18406757fb91baae6dfa38cee8a6cce986eb19c4bb543c278addf1002b97b",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-2026/manifest.json",
-      "sha256": "9eb36a8c870ad288ce34c6b9637361982417f0acfa3d2573cec1dd196b4fd3d4"
+      "sha256": "05ed6655ef1f338f80badfa0edc44c92a920887cd53dd09e4b46ac0216334da9"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-2026/predictions.json",
       "original_sha256": "34c43664fca7d2d4ef50d1dbcb9a3ca986bc9137fb9e819d4acf7ec35674d016",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-2026/predictions.json",
-      "sha256": "529986f6ab880adde262a00151caeff4c582e108d4519c67dab499a7f967d35b"
+      "sha256": "ab79d9e7b6db5ca904e76389e0053a158aecc317da1bbab76e44afa8281414c7"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-2026/registration.json",
       "original_sha256": "68a6bb6c3cb43de381fe0f295873f16bf491af4a4a5bb95bc2e006a61ce39551",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-2026/registration.json",
-      "sha256": "57191a2d27a517e7cd63643a408e74d1d4abfabe6e05fd34403d8bd4fd8018aa"
+      "sha256": "37e58a68b5f58e0f374fe3c1d67cb8b79b961a0df603bd00a96ec2160a20c45b"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-2026/training.json",
       "original_sha256": "a2dc48f0e0ef5bc65b01b87ec28f359cd76ce025a4319d8b219a1ada5f049e72",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-2026/training.json",
-      "sha256": "ce42687afc97a892197151bf17fa4b1c1c2c4c3437dd629b9b49fdea02dd3fb9"
+      "sha256": "e17c7c98f6e7e23fe42ebddf326d527de73dd63cc06a3f2de4fa3ef2de357dd8"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-42/conditions.csv",
@@ -551,28 +558,28 @@
       "original_sha256": "65e978653c8f09846bcf02f0208764acb3829f113c37d99afd23eb8e572ac2ba",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-42/manifest.json",
-      "sha256": "3c5e864377a45be978e2cd3409320262a01a5809e3de0dc50a074f130ff85677"
+      "sha256": "24df334e6045717dc218bedf575ca6d1f71b02148253da018d01703f09e2d5fb"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-42/predictions.json",
       "original_sha256": "aaa3ea7009012bc141c543378ad5a9f8219b859514db2e20d10c151962c9af7a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-42/predictions.json",
-      "sha256": "0da1d7088a09fbb50dce58a61d1bb6d7479e9d68fb7cf9a6eacb4620b45dd315"
+      "sha256": "647cbdc6951e5b9d14b4636757e93c0ef6474f0c945f9cc1c8f0a9089ec3cb54"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-42/registration.json",
       "original_sha256": "e46ef8c5dd1699f4a9f81eda45284631ac86ccef36e29b71f23126a3f925c029",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-42/registration.json",
-      "sha256": "8bb8eae2ee95ebf9d762ac7ac2fb598cea392f90f5262c32d4700d42280d1a79"
+      "sha256": "f6bc185fdbaee2bff6afd24ae0a5c2fcd7a492ba96e84df47cd5ed0c5c6f447d"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-42/training.json",
       "original_sha256": "012e5f115eef294f22aa21b4ba855aa18bd90b0a5073c987645d8193d7ce8827",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-1/seed-42/training.json",
-      "sha256": "2cca56f3aad8497981b25e576e93a2367b062e547af3f87548078156aef2a3b7"
+      "sha256": "62e86e51bfd35136e4608e424e4b889f4d71932a6b41ad93286775f5d65b7106"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-17/conditions.csv",
@@ -607,28 +614,28 @@
       "original_sha256": "d07792a1ca8f4f09af1397d743179c85bec78816264e66fa059d795e5a10ec1e",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-17/manifest.json",
-      "sha256": "89f855be86982e6f9ad96ea2b976d63e87843f8005f80058551f54730014cec7"
+      "sha256": "f5e55c4f4113d5949cd6b6fb261879a50ad3ea20acfad32f166bf56dd420c1e0"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-17/predictions.json",
       "original_sha256": "a7beee68d895b5f0d38d0ce910c3e4c5bc57e9f850d55ea599c56123947db5db",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-17/predictions.json",
-      "sha256": "944d5a5a5671ba327999f51d8eaaa8b7e1b2094c711ba2ffebe6537b17121ff8"
+      "sha256": "3801fac2a7465b0ac996f5e1f3578d35ef38dbe471472951265a8060238a8ec1"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-17/registration.json",
       "original_sha256": "838c01342168e909a32862f5055909e4660d2b85efdad4d3de258bf25daa4963",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-17/registration.json",
-      "sha256": "258c26f9e8e8bcd5e7f251b2b2146dfdd744c94e8c7663f5241cfe87f16acd8d"
+      "sha256": "a1198416de5ca2c8ca3f6d2774bd9f73d551a28817cea4016409f56ea60eb3f3"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-17/training.json",
       "original_sha256": "2f07a4173bbad7ec69ec6add8a8e53920ee15b075c4fbd757f6c5c4f4c12601a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-17/training.json",
-      "sha256": "bd32b819528efff93896b7100ec099bb32b2c5a096d6fa50c081c46bc788df01"
+      "sha256": "d91309f73fb9b1831a6e212f7c1a63fd74aa78a067cdf3e361d6a3c2dcc61eb2"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-2026/conditions.csv",
@@ -663,28 +670,28 @@
       "original_sha256": "33bc15f8aaf9fadc9d3d0dab23e91484d53670a4cdb81e75d14b8224e5a472ba",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-2026/manifest.json",
-      "sha256": "cc969da3b20036e7210d44da17db7dbca9d3fc27ef5650ae0658dd5d2481f736"
+      "sha256": "d3a2c36e71aa4874fbe1b608656927b9ba058d192f68b6f2043936623b438d36"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-2026/predictions.json",
       "original_sha256": "135f629e344f580a38c99114f2e1ffc67abed81420a8874faa58403e310ddc4a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-2026/predictions.json",
-      "sha256": "2241e071ea4156ab9893406a58dd070686fd92b135d34204b07f31648b6bbac6"
+      "sha256": "d69c592155aba760372162972ef3def3da4209e45ece1cbbb148bbe617becaf7"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-2026/registration.json",
       "original_sha256": "e52258750c4ed5833de27c27c074ffb93fff224950d880748956e5ee916c9b2d",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-2026/registration.json",
-      "sha256": "800cba37646b7dc0cd6f3bfb7089707ca0c7c32753dd95a201ba1a5390ff24f2"
+      "sha256": "70741341a3505872e8cc4942771e51da6034a45061617343feb2a08dd3968692"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-2026/training.json",
       "original_sha256": "981aa69a9a81d55fe5297d2ba2659874d11bc419a54c7ca65376d426b34ef974",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-2026/training.json",
-      "sha256": "be4e0281f3400fafca2ee91adec8b93cabadd1368c963a569b258a8fcb6c22f1"
+      "sha256": "8ec2b3f85f902db62e36fd4812347fd0f5cd3b2bae971d1f17a6778dbee5e98f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-42/conditions.csv",
@@ -719,28 +726,28 @@
       "original_sha256": "779fd4a802940bd2699e1d7b20215de43e1b377db9c8aeedd346b5c261daad16",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-42/manifest.json",
-      "sha256": "887e5442448852c07aa7d904b822d755f886d54053ea3ec1de62df8c1cecfbe3"
+      "sha256": "9a5dd0223c76b2eeb045ac20c77b987cc43327bd0867716f69e964fde466d87f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-42/predictions.json",
       "original_sha256": "ae319cedf6598ed020b9cdb8b83893c225cb4418a2c91b4f925a8273c1d4e516",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-42/predictions.json",
-      "sha256": "49cad7665645098197ba2b6482f4516ea93f55b2035eb5e30718c6b7bc293054"
+      "sha256": "b183b259717f5e01c265f7a193e35c5709d58167b66c96a02f079279f7f667f7"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-42/registration.json",
       "original_sha256": "a1335bbb1f1eb964cf228675204707e72ec615f35b476379e472a69c84d9bae6",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-42/registration.json",
-      "sha256": "50d3aae73aa10f55fc4b81320ee6f079f05abe707f651401db8b94904d18cd6b"
+      "sha256": "af25cd4862d5e63e435e6998af0a3da83da4d8504bede4ab89460d71130bfab6"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-42/training.json",
       "original_sha256": "a53f3f2d41a0234a7feaddc027e35ded39f8c0bb53c675a3efa0ace3d24266d3",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/E3FP/fold-2/seed-42/training.json",
-      "sha256": "d0dc5bb847678585d099241cf6a985689df6c824c432cd15db83127a234ad058"
+      "sha256": "ad9871fe670f8d98febbf45b644514c0e460b0a8758344f3ad9b18ec32868e17"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-17/conditions.csv",
@@ -775,28 +782,28 @@
       "original_sha256": "c1370c015c72b41cecc0bd9946800067462fef1b007ded696eef2eb0f20b8acb",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-17/manifest.json",
-      "sha256": "a9d620274d908ba87cbb4806394e522cb5a6869f5f0cb64b4dce676581faa8fa"
+      "sha256": "d651be5fc1078860c40d0aa17f6a747537f5b53f51c30b56d01b453dea523684"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-17/predictions.json",
       "original_sha256": "811e6c4219b11c22fc66f9cb11e828345d1f5bf5116c6ffa3edc795c37acb9a1",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-17/predictions.json",
-      "sha256": "d353f305c3d9c89727524b9a64b1742a8c4b8f6e0b231ef29cbed2d01caf73fc"
+      "sha256": "b4f269b6e216a1d9e77e7c2a3871e6b532142d2e0ccfbe45b21535231cb46b49"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-17/registration.json",
       "original_sha256": "56d76ddf9c37688b65317a83efb50cab13778099748a1708f39fd5c58bd15768",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-17/registration.json",
-      "sha256": "aa7e0ea8321acb5c2c17af314b5a73588161d117289c69d0cbff141694281391"
+      "sha256": "e821d43ecac4aabf0ce34e3bba4fc2ec68edad62a6fdb50b9a3321d2b2d67d70"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-17/training.json",
       "original_sha256": "ab0c1c411a9286b92c0d1e4ae9552ee4fe091117ec7607bb35f771eb1525429f",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-17/training.json",
-      "sha256": "8413acf707be13d27f8bc65727f073f41c22a004689efa83ea457d48552fd6c5"
+      "sha256": "5a7fa49ee1e6db7195adc8f27d9dc4392d3312fb4708e5dce9882bdd47dc3fe8"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-2026/conditions.csv",
@@ -831,28 +838,28 @@
       "original_sha256": "15f6dc2e10ba54ca0424264300392bdf459f3ad01f3ed347834ccc29be8deb62",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-2026/manifest.json",
-      "sha256": "d97dece0f6d829a9bef6c320b10bf801f014440566b3fe280255aa53434b9ba5"
+      "sha256": "ce4451f7eb5d66932686763436d01d14c3e3010294e100708f49ea28718eebd4"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-2026/predictions.json",
       "original_sha256": "5a5415496d67c65578922cedec99dc9e1fa82163cf4f8634dbed70820e7a905a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-2026/predictions.json",
-      "sha256": "1774bcd414a50c7caca98e309cfb78c99b93855784c6710a5663d72cb20aafa9"
+      "sha256": "abcf315fc344e47954bb3667f24e1be164d90f967930793a817a3a0fba4d93e8"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-2026/registration.json",
       "original_sha256": "ab908307da4ece1ecba2b002a7a86853847ff0d2dde39187d0c9d0400b29ab03",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-2026/registration.json",
-      "sha256": "fa71b7596bacd3fb7cff6ec4a77296e1d25bf948ec91951cd0171e2f9336284b"
+      "sha256": "8669529014aa08bffa373bcad8ef3da24e0451b33bc6e580f19c2d5098476c98"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-2026/training.json",
       "original_sha256": "ff1658530530b31892c8be0a401c33423508eb9613cbe9f74502481f6a4d334e",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-2026/training.json",
-      "sha256": "8eaf569d8e2362b405f9c681791270a9b3c21a2a9eb56cc734ec0b555d11093a"
+      "sha256": "ab1700f289238027d8762905af8c8ecbc8971ef38d7dc579e9729831ccc2c725"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-42/conditions.csv",
@@ -887,28 +894,28 @@
       "original_sha256": "b447b932a5eb96ea613ef760d58b2eeec729f9e00877a0cffd7515b3b8b66ae4",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-42/manifest.json",
-      "sha256": "1a86e4244440a3af6f4e6d5d6c78d34568b5d0aa1114e57cc0daaefea7099a6d"
+      "sha256": "fc3270b5bc0fb8d2a8f5f288a8ddac0638e351b17d18db4413c4fe7f5710de6b"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-42/predictions.json",
       "original_sha256": "ff2ba7f8afafed0ca8fcaa3cd92d22dbf7f839ac1dbc4f87a4611ab85f549040",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-42/predictions.json",
-      "sha256": "ca4ee9d41f1c4be5407b3eefa5590dd58f3c21c735027e79fce637ca2d260b1d"
+      "sha256": "584dc8785693f5d585909415a65810bdc05a0310dfe4f8f2f08ba7981e48c699"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-42/registration.json",
       "original_sha256": "ebb1cfc4c7c27362346324c0e0895cfc9a0fd1f8130ac2d9127fc0e063a3008c",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-42/registration.json",
-      "sha256": "cbb12a07db4d9da8a5b7c902f94edca518469b94da8c9dcb638df9d79dc712d1"
+      "sha256": "73a364a6c265356ca5297fb45106715096b03f3157178c4851c00608860e40bf"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-42/training.json",
       "original_sha256": "8adfcea04a994635c7701fb0f80ccf983d9e8a76153a254f7685bcf7d9ebdcdf",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-0/seed-42/training.json",
-      "sha256": "153b8d8df7e7c0ac684f1f222f5c39b9cc078c857f12f40b391b4aebeb015c6d"
+      "sha256": "12821622033b06b0ec68117302bfc15847731d070612df72920844f38d7a7552"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-17/conditions.csv",
@@ -943,28 +950,28 @@
       "original_sha256": "3b312521d7368ef8dc8141dc47a74360202a8b58ab8d380eb01d2c99b2bf2afa",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-17/manifest.json",
-      "sha256": "3bdc7ce941ca068b4791a10c0c41afe5a45e81a5055235190be23a0f1bc62480"
+      "sha256": "6ac281eb7bcc663e66d91f801c6bbcb3e148e1e1bce6e551df14ee714f7663b6"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-17/predictions.json",
       "original_sha256": "9c70c5d853410ff1edc09dde253f51a6c025b3d1ea10387c9f882fedfa5c9378",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-17/predictions.json",
-      "sha256": "b904d6118375623ddf47d4c66893e3303ca202f553316718cdb0791df263485c"
+      "sha256": "bbf355b98c41a2e074e88353afa2e79486af072d869b5cfaefe855fb193b0d71"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-17/registration.json",
       "original_sha256": "692e428912a2e523ceb3791dfd872d0028f0a5204add84d015cafe32919ac283",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-17/registration.json",
-      "sha256": "b442b636688762833b836c1b425c4fa4eacb29eb3acb0d1c2b8d634308ed10e7"
+      "sha256": "ae56bd42d85af929a55c927d31ff615e46239d25e01b564501b58658f25a3ecc"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-17/training.json",
       "original_sha256": "0c340bdb74bd26298e41cfa891ce81b79e51484cbca5ae641c6b68d7257757ef",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-17/training.json",
-      "sha256": "1ccac446f9b8edb5eba464701eb6137462f638f974eb5becb135faa281908a93"
+      "sha256": "237e7e6cdc7440f77557860ecd9852d9888f69eb2afe7f829b80004e44c124de"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-2026/conditions.csv",
@@ -999,28 +1006,28 @@
       "original_sha256": "dc41a975013f152b8962c034354a8a21ed356b57b5e4ab1850259d466f573d91",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-2026/manifest.json",
-      "sha256": "ba90d20b72283d96c1471652bf72befe17945118472f6352baf4af2ebf26eafb"
+      "sha256": "f061da8e6cdf26dc06b26bb60bf8060ee505dd6bd650b67e576a02ed90a070ad"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-2026/predictions.json",
       "original_sha256": "f0e5c30e9cc67b80b8862cead645385b728f51b2a6cda4bd1bdc7da067614d05",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-2026/predictions.json",
-      "sha256": "de37c8e8668a5e06e2e3b6fe89268ef2d99b14004d117ad9deadb684c65c26fb"
+      "sha256": "fe152016b08b0ef3145a78ef1241316e59f42c81b4c10e3989babe109f9723a7"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-2026/registration.json",
       "original_sha256": "5db66d6f63f85d65da205666ef468849b75ce6a4a8fe8a8272cf581d1148d32c",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-2026/registration.json",
-      "sha256": "1e53dc9c8f6fac39a04b4c104a9da511149188cdf6a53fcafe007b2dd9fb1d0e"
+      "sha256": "ecffe842acff7ba7dd7b045e103e02499936920d71fa259bb27f1aef5b8ebe0c"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-2026/training.json",
       "original_sha256": "77b0da331f0074bbc3c7f32906eea5831f57b6c52b5c69cfc4e78a38464e1e49",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-2026/training.json",
-      "sha256": "b11b81a65d9b35cfb6f5174c377c79029b698d49ca86347d2b9c5d6df6dcffa1"
+      "sha256": "734fab756e2e12445d021e7b4a56320ae3f984a1293dc5f4151d388726e43da4"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-42/conditions.csv",
@@ -1055,28 +1062,28 @@
       "original_sha256": "ce037568fcd3f11088ba3e9b9e832658d33686c456811c65a0e6d84b13ed33b8",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-42/manifest.json",
-      "sha256": "9e277c215d41d76abede82debfcc08c4ebde7de60db233e70f62ad4da3570c82"
+      "sha256": "0142c166fba202066a61729bf73c70bbb3ce68ec0ad628d02128f73fff9a0771"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-42/predictions.json",
       "original_sha256": "6fcc81c45df654cf90c0e1139b370c884f6056ef1c1e6fa82f04797a4c4252f5",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-42/predictions.json",
-      "sha256": "4d5b6a84f1ffba95dcc86111fae143e454469ab12a6388961158e46d5d5feeac"
+      "sha256": "7bb2765652e4ee51bda61c474bcae136f95079a2fdb2bed5ddc01a114e2ab906"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-42/registration.json",
       "original_sha256": "4db80180ebd9405261f8c0127a3cdd009e4fbe14d5a2aa3b0a08bc110d2e8e02",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-42/registration.json",
-      "sha256": "86ca22ee69a8ca4e205304e66dc1df450e2a5a30e2518dea0e9aff665370298f"
+      "sha256": "fd65b21b313286c973fbbe319d0ddb5c6c8b043e7f1da2e86ef1332894fdcf61"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-42/training.json",
       "original_sha256": "c302b3cfbe928dc1049c642c626c6b28b9ff9dccdde84e67b82df26f10292842",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-1/seed-42/training.json",
-      "sha256": "6b24c9ecd488bae7752964db1d5eb5f2623783b7f3f70841904cd508fead202f"
+      "sha256": "2ffa29daedac9fb67e0e335dc066a9b5850932b8a979185d683fd2a0bec0ba4a"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-17/conditions.csv",
@@ -1111,28 +1118,28 @@
       "original_sha256": "d8a45f11b600fa8b123660ed074b3ff1bb3619a2499f8d1e5750ae82d75b4176",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-17/manifest.json",
-      "sha256": "d924413f83ed8f3eb2c00e1b712324fc608ce9f66fd2356273cb405c1427f09a"
+      "sha256": "3cceea2a0ea5957167f75c0ce3299582b6e97607841322b85bd408071073832e"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-17/predictions.json",
       "original_sha256": "1b04b262b94a570d44e7ed31a46d834c1b432088d2559825798cf1f2a721f328",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-17/predictions.json",
-      "sha256": "c6ed1a3d19fd5729115b03eb1508ea09dedbdbe789bbe7e2fa956eba76e0c383"
+      "sha256": "0e06fabdf162f0a8b38f4817b00d8f104ed9561d5350fb3bad83f84ff6f5c68f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-17/registration.json",
       "original_sha256": "21c34bfc5e62c875400bd44bed24b7a0e08b9c6428e7a7ead57de762308812af",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-17/registration.json",
-      "sha256": "9143b3dfa360067bbc952080d7b9487f3025d19c37e658929585388f16ddf3aa"
+      "sha256": "6c0f20e4bf61be689d33f589fa1f7bdd391fe4f28eb9ba1172d6e42683092347"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-17/training.json",
       "original_sha256": "19a3ff1a0d3e88d2394cc5302c719af484bdc1f3b5949952ed30092d70c720f0",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-17/training.json",
-      "sha256": "f1989904d2a0237bf2fae20633271ccb393d243ea293237928cc95e9683b86dd"
+      "sha256": "c708e0f9495487b9af60301442f5806c14f2e5def8d47402cf674146bb0ef83b"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-2026/conditions.csv",
@@ -1167,28 +1174,28 @@
       "original_sha256": "70a945cc75394ad73011f5ea4c72cae70059098f2198cd96df068e4b5621d565",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-2026/manifest.json",
-      "sha256": "e84067010194fcb8e9bc42d11fafa79fa3ed90f926ca4ed12a06a75563d3b90a"
+      "sha256": "d5158d327ca79e10ea8e63ed13f430458e91c8c742baf2d80310f975bb241efe"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-2026/predictions.json",
       "original_sha256": "87612a401b9fda30b65ee66992cf82395225c64da71882339b08bafcd3a944b7",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-2026/predictions.json",
-      "sha256": "f8230976978b661e371c3d73fdec6a8e4ad2a484c36540ff289924e389b39c75"
+      "sha256": "1f048c1955096a0fce8fbd763cc2b099e9775a30e081b18eeae945248cfcccf2"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-2026/registration.json",
       "original_sha256": "d32be90bb09f887b9c59d5eea74416e76f6fe97aed3e0b3f12ea9bac1693154a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-2026/registration.json",
-      "sha256": "be9dd9bfc041757006b0d0223c33f520ca62eb6fda1a824d92da656a5a7f2203"
+      "sha256": "e9eb276c0d372cbeca0521a669d78417de2776a5677e8dbb75bd4a1f336e8ba7"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-2026/training.json",
       "original_sha256": "332b9af579b84de37430f9a9beacdeea8da1af1e152cf2960fdb9ccd33a45fd7",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-2026/training.json",
-      "sha256": "915f3ef182bd4b1eba8919129bf1440bb6bf4e70920271d160afafbcf4349cdf"
+      "sha256": "ff3fb1be68716837f1a590fb59bc2f6c9b054aff9fdc56605b0dc6b21e9005fe"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-42/conditions.csv",
@@ -1223,28 +1230,28 @@
       "original_sha256": "a701134312db6bdf371ae6ac66cb993df801adb1d337df1a992bee45d49f0c28",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-42/manifest.json",
-      "sha256": "3002337b79ff54650b09033d638c931681975601c84467b1b142fb14555bc8d1"
+      "sha256": "a34f5c77fee0f4da1c53206c9c305fd030a297aa8052db3187459dc75d6213cf"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-42/predictions.json",
       "original_sha256": "7b78d135659c72a9236393112830d26e880be3271f43ae461dfe618291fdb66a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-42/predictions.json",
-      "sha256": "1f0f11c365d5ed2e1eefccfc82dee6a68c21e7e1cbf2a65f6649ead259c5bc05"
+      "sha256": "38e4fc9bac1a200a895384e1ca2f00c54b2ee8da0649ea909bb7465ed3e7fe38"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-42/registration.json",
       "original_sha256": "4e00d62a3ad076c22ecfe1861ea1b2e298909d34e62f500bc54c7058d19e9737",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-42/registration.json",
-      "sha256": "9a5919a9879fec8dedb7168294cb2bdd96585fb262017dc54079c98b77a50a9a"
+      "sha256": "4e9044d184eb2b2a3117826a3428b3fdcb8fba87d7d2894d16605c7bc40fabdf"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-42/training.json",
       "original_sha256": "687b9d36c0aa857a41c552ec71d7d2ea707256695c7d748abefb371a36dee27b",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP4C/fold-2/seed-42/training.json",
-      "sha256": "e5a3cf6121161378ef7c75424e606025dadcdab74f11f8a29ebad52ca59ed268"
+      "sha256": "3fdc11e26185e3f3d2098503903f010eb70da5656acf1b06cda774366fed5f68"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-17/conditions.csv",
@@ -1279,28 +1286,28 @@
       "original_sha256": "246198b0748c90fa50a2d4d755b89ed49b882b6bece80be30a1805b9cc811670",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-17/manifest.json",
-      "sha256": "a1e5c80c35e6fd7c779c70a52b787475b4ad8d1579c33d78f8e8c7723fda1db8"
+      "sha256": "3370bae0d63384af1a6696c2c9243fedefc0aa792a814ffd98540534e62168bb"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-17/predictions.json",
       "original_sha256": "1c34bd59f15168b61374fbb03244252fa80b25e04811ccd48586e47f4b4dbf4b",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-17/predictions.json",
-      "sha256": "9c9b50e0d072ccb08f3c6faceac629aa9ef5a1e4c112f6c2b08602a90a82cfba"
+      "sha256": "d226fc89872bbc63d7946be582505a904c29e3ccce9790a3e727814b5cef041b"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-17/registration.json",
       "original_sha256": "3e104713ac4e6f42952a5f6799224fc08d1de0908b787bd658ea88576b7e6514",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-17/registration.json",
-      "sha256": "f9c0c020bba7bb603d0ee0d4e43f1657751fd62d2074c379bdafbd27dda9d63e"
+      "sha256": "b2e119ca160cd82489ca2f5810c1bfbd02b08ba0921c1e220ce36e0cec52be76"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-17/training.json",
       "original_sha256": "cad348a349b31a72754237699eafdb3d57a162998a6009ea5914c50158685903",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-17/training.json",
-      "sha256": "56225c8a592098e0b0156ecb6763f1bea40d43be0639de05da32e635a7384717"
+      "sha256": "cd201e65811ca0b1a68338222fa360c3ac75ccadec34de9c19d5b7a8da39097b"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-2026/conditions.csv",
@@ -1335,28 +1342,28 @@
       "original_sha256": "4c33a62d410d53a83822321bd80ec10f06d2cbeb9ba70268bfe53e57254e2839",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-2026/manifest.json",
-      "sha256": "fb3eb790353a589619b9b00f3515adf82d8c9fede8546f6b4de90595bf1783c8"
+      "sha256": "6441812c9ba3e8de2080ab16b2b3f4ecf7015d715e54b4caed673fd65f1b0949"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-2026/predictions.json",
       "original_sha256": "5a789d73680c36026d3abd80c729d5c2be2492de3836946989c538ed9252d387",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-2026/predictions.json",
-      "sha256": "e612b9344381ece81fcdf0e5ef4f02826055310c599b68a2c657eadf4c0357ef"
+      "sha256": "748c12a37a2677ae37b7f3ac87e2ba9af0674adda218488fff00ab5c307538b1"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-2026/registration.json",
       "original_sha256": "65b6475089bdf9218e4213da9a5561362335ddf8938bf81eda3635fd9eab2701",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-2026/registration.json",
-      "sha256": "5aa1fb2b71354bf93e89e53056cbdf9e8b641d0b4a222b6794593dcf732c56c1"
+      "sha256": "9a964996419dc7cbbf7bec7fab6128976de325ea15cc64416f896cf7f8cce4c7"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-2026/training.json",
       "original_sha256": "b4ef0af9b111a0bf0f8589aa2e194404f0a027d0a5e5b6136fd23d271b0da3ff",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-2026/training.json",
-      "sha256": "9fbd46eaf57712cdab0a3c9a3cf98215221fa0f6ebab98b80e9b4980721bfe38"
+      "sha256": "36df744aab15384015d8c6703382138c38725469a7e7df73cd3e399d99b4c392"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-42/conditions.csv",
@@ -1391,28 +1398,28 @@
       "original_sha256": "61576ad587ca560f22a5f5f69cc9efd28b889b89730fa17e8edcf7e3f2b748ec",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-42/manifest.json",
-      "sha256": "ce8e4a3161b6b2769617a7ac763e7e0dc170bbd200de948abbbd32c90226bb01"
+      "sha256": "15ad8c2709715ddc2a013473a3493e383dbfc996541b41b75c1ae8a12b9b5eef"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-42/predictions.json",
       "original_sha256": "64844ca4d87723459b5b93d1bb0a8e24600b526633048b6951e270cfe9c3e44d",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-42/predictions.json",
-      "sha256": "afd6783bb0dcb724c47136a9567fedbeda43210645885f49e50dd35275cecd70"
+      "sha256": "7ad970df67b405e1601b5d17970be3fb469869810889ac65d8ed03d2d6571428"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-42/registration.json",
       "original_sha256": "7da1181041573862073834954c87b220d95b3fad07b6934dfc388528e439ade7",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-42/registration.json",
-      "sha256": "e7d22516a2c14649725b4c6327b5f99260a4938fd7aef94f043e0d467108f78e"
+      "sha256": "72a9a309f086b9d30a2651b6003eb8ab29e0bd22d0c0469cc8152269b6d1230e"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-42/training.json",
       "original_sha256": "ddffe3f0e7b0ebe78251fc0c035c669f8044475b1ddfe1ff1d0367d709ef99f9",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-0/seed-42/training.json",
-      "sha256": "392dcd838c2ade52fb9ff6f497116967c00ce3bb5f39e080a330c8eddd16341e"
+      "sha256": "d285bc953ab63112b9e9a039fff7f2d0a6298d461f91499868a6f84b85b49302"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-17/conditions.csv",
@@ -1447,28 +1454,28 @@
       "original_sha256": "6223d21d34db9bfbb394e4414f9a0468f923444134b543e4c7083d42445f5ed8",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-17/manifest.json",
-      "sha256": "519321b7a01318cff566ec2af8e2628b50f41d8370d48527123ced77f1e0f632"
+      "sha256": "7577371c33cbd24b5277c3cae30c82c6ffa3c3bc0e3e8800e60a9ecf3fdbcde0"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-17/predictions.json",
       "original_sha256": "cd306742bd2afe2cda70f746f1f9c02123757d8c1dde6456c90561dab9e498f1",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-17/predictions.json",
-      "sha256": "88aa9894088093d739f62aa93af75d7f0dcde8dbb6e81e7e6589ee1dbfe3b0e5"
+      "sha256": "d40667d16f65524e3f35de12a81a9e872ae2c3a9a33e87d1357d14bb281b4ce6"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-17/registration.json",
       "original_sha256": "00809bc6af74b4ffae21274047dfe59bbdf808c73637aaa0e467b31d563eeeb1",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-17/registration.json",
-      "sha256": "dcadf60cc80b9dd94349050c9e4754b4950d6a23a79e46139aee15945789a683"
+      "sha256": "73d596b9ad61cf933385a88280dfbd070af073d465ca7c7ec0ed9e3945ee519b"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-17/training.json",
       "original_sha256": "9d50b00c9c0f9d713929a690573c7388da5207085b840e1a3269bc40270cdde1",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-17/training.json",
-      "sha256": "817731a3b0d8835fb56cf51f693bbc2c1b5c9d0c864b85973238d42fef04c0b4"
+      "sha256": "48d1204ef405a72cb8f315c106531cff7c33f694c20e41d3c4d2f5d065f6fce4"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-2026/conditions.csv",
@@ -1503,28 +1510,28 @@
       "original_sha256": "ca8de9db3196561b55df3ed85403a777d7083b91f347e299df872abace0861a7",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-2026/manifest.json",
-      "sha256": "1e2980c95d933540eafa643b4897144c16d18d07440876f252250bd4abab3403"
+      "sha256": "f78c684191efc41e1db9a5d2db39d30ed43baf6b080d1f3f0e679788640f7663"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-2026/predictions.json",
       "original_sha256": "8c5d950f22383c4c0c4c0463a8ab4a5fb5f07c3857a791b6e35d003e0d891689",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-2026/predictions.json",
-      "sha256": "5016b1a7751ab0c3630d6a906d8561f136b6591f46a16c5b217eb190941ab4ea"
+      "sha256": "a1e679ae45835b259b4cb304fbeb6314ebe2f4d8fe06a5551cc2fba116c0b96b"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-2026/registration.json",
       "original_sha256": "3d70e75db151a1d5222b23d7c046f316beb682633373a4342a9a02e4ec4f0100",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-2026/registration.json",
-      "sha256": "6f19f7a065f3e93ccd5f8feb7cc26981f6c54f9689cf5125d99cc8a5b38ebf3a"
+      "sha256": "b029c42759c354f249f4fa48630bfb92203b464ea48440e487c3e7b7c8e5c4b2"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-2026/training.json",
       "original_sha256": "2f1416554b69465c4ae79689302d2a521918658f0f2cf91986c79c93b8fbd4c3",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-2026/training.json",
-      "sha256": "4e916e8966f2d558345e8c978f283d755857674611165b26d190d8cb0ce062fd"
+      "sha256": "b47f420b3324041052213931558e0e2debd09c01e23d1bd981186e751dca4c17"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-42/conditions.csv",
@@ -1559,28 +1566,28 @@
       "original_sha256": "e749e26e22713dfb9523b262fe568ce9d75ea5bec60e0e7ae37d12ee208a5380",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-42/manifest.json",
-      "sha256": "fc174260498183a91a59aaff1fc7cac565fed00ac3635bcc48df2009d0ded4c6"
+      "sha256": "5331a94a098e8f2a0dd08c66555f9fd0201bfcb38ab5263c098e43f9275a7c94"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-42/predictions.json",
       "original_sha256": "2970a90e9d0e89e691f4ea1848b720bbef700251f40d99717c71564406e8a261",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-42/predictions.json",
-      "sha256": "1d0b49ff6b63190cf6d5de83167cc5e754e19d7c2de2925a2a86ed61d82fd18d"
+      "sha256": "6faaa06d54a338daaa0dba8a149d3c8477384657744bcadc5aa7b295edc6c6a0"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-42/registration.json",
       "original_sha256": "ae2b3b69ab0fff1dc53a79c722258265bdd75fcf0c948b302058998568a1b4f6",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-42/registration.json",
-      "sha256": "394a3d29210e80fa9cef804efa24b31a8cca24325e6ae3074b4763e8ca51e70c"
+      "sha256": "aa53cf2ba1d257c8c500f759dca8b169afb71e92c99ac9b6501c6fa059907d9d"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-42/training.json",
       "original_sha256": "4a69ba86f376313467840c933becbb414bf9978efd2fb575d64833825ef6c687",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-1/seed-42/training.json",
-      "sha256": "c5cac1bd6e5f46df2a9671b483775b0e93e5de4ef810cf9eee6c9e629c185777"
+      "sha256": "25ac7be402342547404dadc38e611faa138fe03abb52b411de8a67f65d6d05d2"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-17/conditions.csv",
@@ -1615,28 +1622,28 @@
       "original_sha256": "696c1af0c2d12c9b4dee41e7150bf4359b90d657a3560b3eb3c3ac73d5c09f1e",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-17/manifest.json",
-      "sha256": "20b2765fb066b2e0cb4ace7f20e19a787b7f43934c9e95807e9abab63ca58fe8"
+      "sha256": "cc00bb88d9023fba972ce5da60b5cb59400aa94384f2dffcf1220397e316f70a"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-17/predictions.json",
       "original_sha256": "575cade05d4348882c579d17102525509dc5cee4ca6c36d16a61c7d3d64b9ce3",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-17/predictions.json",
-      "sha256": "021dfbd055e59ed7c723234b040611c76bb721e73d2b8657bd0980c5b2d155b6"
+      "sha256": "4b76fb385e6d271dd4baca9f44842d7bd91305d4089b1977ca83460589f08bed"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-17/registration.json",
       "original_sha256": "9fed6ad6f21be96f324fb31ccdb4ab6f90d8d0b2b4b5dda1b8a365cb0bae16f3",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-17/registration.json",
-      "sha256": "c7f883f24720816dd2cdf33ddfd978368e7ea7cf8979ee2128ca49d07c7a4e9b"
+      "sha256": "0bd31915c61b69095453c9964c340bedd41eb15ac86e8fefd09ad1db3a5367b9"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-17/training.json",
       "original_sha256": "fefc286c5447ae89a58950be4d765191d9761e3babf899fb13988b95efc3496d",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-17/training.json",
-      "sha256": "2d2380afa60a15a9e0b1c977c8237a73e0385869016817fc4e520ef6163314a4"
+      "sha256": "98df72e1a75d1334762444d4cb30047394c64f494c3461a20046a51144fc2e39"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-2026/conditions.csv",
@@ -1671,28 +1678,28 @@
       "original_sha256": "2b1bec4251dfce92d55bda58fea1f898244463931faa96c2d8fa04fd86b46056",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-2026/manifest.json",
-      "sha256": "c209827f5c4cb56000715073e4b3aa2ea99294885b42c069748dea61d9c6d3de"
+      "sha256": "3d38375eaf3020c015341f8e5a88d3ad781f5fbe454f28a84974113f927bcf9f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-2026/predictions.json",
       "original_sha256": "f3f6f6731257890f1e5de27c8da8eaea4d978c4d2d9b02fe9ad8ae382ccca44c",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-2026/predictions.json",
-      "sha256": "f54af578d0f9f30fc2943f774f55a9fbbfe08a8be762685510436789bf1d9ab3"
+      "sha256": "94d487b7359c15b7421161b7966a3c7e867f2499157e6957f536df62aca089aa"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-2026/registration.json",
       "original_sha256": "3ee7003d6ade63a16726f08d4f44dacc41a14ec82f8e868e23875104843e1055",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-2026/registration.json",
-      "sha256": "78f66f4336f5fd99b02ba362924e41c405bd8c5b5c3669abf8d15d4582e2b459"
+      "sha256": "5a3bd2e5b3a1f81eaae77fa55f5d1883a4c40508bc9b9b06acf1e82f990c6212"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-2026/training.json",
       "original_sha256": "986773d8c92e552e4f7c04709d7df0061bef19a3dc588328586be7f4200afa29",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-2026/training.json",
-      "sha256": "59a060591b52ea24089a673274b02dff4bf4dce0767297df4dafcf8b89945859"
+      "sha256": "a97a34b8adaf60ebea907f333d0acca770b940afd06aa31b546e89e3a683a928"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-42/conditions.csv",
@@ -1727,28 +1734,28 @@
       "original_sha256": "a47810f119d239ef3943d5b7fc94b7494dc5008e4c0b714c36c1283a1dacb492",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-42/manifest.json",
-      "sha256": "063ed1e19239fc65a223866f44f4a38697b3da2cdf80de7e646367274c4532be"
+      "sha256": "0d10090897919eb9a140b96cc8ff3a948324ea400ce9e8f0bd41317336e32643"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-42/predictions.json",
       "original_sha256": "90bfae72d9718f4f36acdd76cb2c2e38d5e5543130fc8c41956402803b99c873",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-42/predictions.json",
-      "sha256": "732ba4ed5f1cb9dc015d5d665f9416b6101e3e67065517fee23ebecb120c63f8"
+      "sha256": "924a4bb3e3262950a34bcfc89cd91336ba2efc7c0e04f282368f5fbba3644e5b"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-42/registration.json",
       "original_sha256": "00509be22129f382ee435f45fc8ae514e7cd20ef253a3b44431e42d783b9dd22",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-42/registration.json",
-      "sha256": "8e67056fe20a0c5a19555fb3826f9f7267f776ef64f6386cbc35445d2a7ca182"
+      "sha256": "f5ec8ce62abca97194f31be5ea82ba9b587b153bf367b79e4a70d7de59aefeb7"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-42/training.json",
       "original_sha256": "0a0a533535f67824edc13b22cf97805ebb61baad6f2ea331372d49b95be1f268",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/ECFP6C/fold-2/seed-42/training.json",
-      "sha256": "5adcfbd16d271c93425aac1cd1f5505753876b71b6954d74c52945dcd885a68d"
+      "sha256": "2412357d3ccb49acba51b53a9496e39af661973d0b23a85a1322ffe0135f5236"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-17/conditions.csv",
@@ -1783,28 +1790,28 @@
       "original_sha256": "28597e4211d5be0e7a30d3e22a1fe296c86d849a79551058abf0f71923a05906",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-17/manifest.json",
-      "sha256": "e1be8aaba0c97f814db50a082f2c1e9e801d0a68658b1c7ac04eeec2b6cc7fc7"
+      "sha256": "f519ecb12f7edf5de359951de37dd6165a1739e48997ad3b144032a6786613b1"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-17/predictions.json",
       "original_sha256": "668e086a3f6983b64586e68d0af13f012d53c987582d53abd85dff480a743f64",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-17/predictions.json",
-      "sha256": "7d0f49b2f0f63626b6789bb5cc4590168ffeb472df15bd3930ce902c6764fb8a"
+      "sha256": "dc264c5d4c6717c0956514731ef8b4cf0a00152f92e51883bef41c4acab33619"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-17/registration.json",
       "original_sha256": "619af2c25077b4c20512e880e5d7dc19c380a1a82fc64065682261569316b713",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-17/registration.json",
-      "sha256": "eb37d63ada13e41f9076130b9e0cba256f8297714ae4a203f2c9b84ee9354a3c"
+      "sha256": "7dbacfff830bac21083f8074e67a194d8bd49bb927e7e74debc332a7158745ce"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-17/training.json",
       "original_sha256": "5349f059c8b8e0001c80b6bfe77e2201ef5d4cf846e54a253990e8d2aaeefaa4",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-17/training.json",
-      "sha256": "da7da824abd028d642ac812c59eb4d37021a8f67af1db4eeb9649c51a8db732a"
+      "sha256": "8e5ca9cd0ece756548fd4c768f8324092bc46d1ccea0696cdd65c3d870566e37"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-2026/conditions.csv",
@@ -1839,28 +1846,28 @@
       "original_sha256": "5c4e276d2d7e729637cf90a7409d63fee8218a40504ff013e1f2769c43165186",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-2026/manifest.json",
-      "sha256": "30b5e77027695835657d2d46394db77c1555aeb9b83c50ffff6eedbb3d11fd95"
+      "sha256": "190fd9aca8616f9104fc6934f795f3fee21df900c758742d60e649bea2d2c0c1"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-2026/predictions.json",
       "original_sha256": "a62b18118ed144ed2dcf4bf2c89a60371213ee11a2f728ce7d0c4e672ccbd5fa",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-2026/predictions.json",
-      "sha256": "1c24f6c3e61ebf8fae0f878b14335dc3fdb70d32c0139f6bf8ad6a80ad412e13"
+      "sha256": "d3f8b98b3375e963c55549effdc296caf67672d1e5cf70562914d9067d8e4f10"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-2026/registration.json",
       "original_sha256": "c1bd842b1c30104156302260afaec048b78ccb4f78b253952293315a905ac98e",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-2026/registration.json",
-      "sha256": "c62dee3351c5798940e77b89f138fa110e6bf7a730b3f5dee17a80c7539809b1"
+      "sha256": "064130de1612a24349bd607e1375ca2198517bf8e2ce921911020f4fa945ebd2"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-2026/training.json",
       "original_sha256": "a28d876801d757ef8c12c72a12bdfee7fb9b174dc8b26fa76b18443927bbedb2",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-2026/training.json",
-      "sha256": "c54bc71a07d2cf0578605b5b23bb28232214abc7d0bf4eee67937aec1bd9d0d2"
+      "sha256": "933f479e768083768cb779a9620af03f82e3d88aabdc0a1150657d6438bb6fc3"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-42/conditions.csv",
@@ -1895,28 +1902,28 @@
       "original_sha256": "4b02cdf266d1cefaedade63db44c6c26b89a80e25c6c4ebaf11a928938fecccb",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-42/manifest.json",
-      "sha256": "1630d8595a5a2109bed2841d0cf75ea78d8a4d838165c7f5ac1a4714d170879d"
+      "sha256": "45160974827d9ba83ea59f466b5e7f2f147f7651a5b00c9612800378a0d9a475"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-42/predictions.json",
       "original_sha256": "3dbd6f282423650583ae7416a4c0260a9d65b01603042fb47c8ce5be2a873811",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-42/predictions.json",
-      "sha256": "f0975686895682bb31c6fd176123a2a3aa08c71a584434c7ac7d63f40cf56ade"
+      "sha256": "c0d556a80fbccb6364511747af9a9b26ea4df5006b93b3868dfd4f2bcb078acc"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-42/registration.json",
       "original_sha256": "5d96b8a25a6b204e5a9b405f2a687396341b6809c33f27fce23bee76baba3c53",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-42/registration.json",
-      "sha256": "67022bd35cb67d54b9aa304875df1144f59fa8e5f1cd837b76fcef643d442129"
+      "sha256": "387019ea378ca532f5a3aee326ba6a9d481b3aa2ab7238993d35c05401a1255f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-42/training.json",
       "original_sha256": "b4e87e7a94dbf207f312253c00e3ac69ade088b590be75039a30dc9ba6c9c20d",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-0/seed-42/training.json",
-      "sha256": "adab2e8e49c4179eba8c6e6e60746a7f6fa246833bc4e92c19dab3d0414ced1f"
+      "sha256": "9f40d2dc383c922242f1d5441a99106e4f65ba6de9f9d961ea8254b01b46c991"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-17/conditions.csv",
@@ -1951,28 +1958,28 @@
       "original_sha256": "5a59012b60f463ec16ad1134922cf298ae810e0dc2c9e499f022a26b391e9ba5",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-17/manifest.json",
-      "sha256": "b79dda9e9ad79a6108cb3e9e849f5d27f562f5771930bb0b8a43dfad79e389f3"
+      "sha256": "480c5b45e0bd9e409b622ff3eb5d2b7e786810ce989c988ef3d7a3f262bb2941"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-17/predictions.json",
       "original_sha256": "332862f1d3d02371dcffe7350fb0e6e337f10d1db4792a6d098a9a64eea263b3",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-17/predictions.json",
-      "sha256": "e50a19fb59deb896eb3a59fea76c62bd501b16d8879fdda500d4baee754ad90f"
+      "sha256": "6a22ad5057d4897626122047593ebe64778834a5bd7a9d05bdc484a4d92eca92"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-17/registration.json",
       "original_sha256": "c89a069efde7a0662cf696648f59bdc85829211a5c71ff50b26853224c19565b",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-17/registration.json",
-      "sha256": "6cf56225d6622685b190b7c50a59777ea9d8fe317681e93ea315255208d1ced9"
+      "sha256": "8b7152d619aa95b4cae95ae525447657a08f1ace282190666dc6d3dfc39e22d2"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-17/training.json",
       "original_sha256": "21a448e9b631de8ad4d9fb9a273802a0e4072486cf01d9b0e48764ea0b41d05e",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-17/training.json",
-      "sha256": "f9ff40185159d3d11a4e1a3de3fd0fb8adea21758098a0335bc30692a5de6bf5"
+      "sha256": "65bbc94452224d7b32e4e651d23e54ac3aacda54ca7652979329df4d03df1b8f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-2026/conditions.csv",
@@ -2007,28 +2014,28 @@
       "original_sha256": "4830bce4ceac96cacf4f817d2f661a96647b906b9d0e4f2fff41b35d0b461214",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-2026/manifest.json",
-      "sha256": "d89a09c23c314466cc272a1b404c530ae0a7c4153e4428ec16893887e317edfd"
+      "sha256": "c618d9a8f9315766843817c00f2e93e17ea3a761c1e5585b5b5898c6a7f7775e"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-2026/predictions.json",
       "original_sha256": "452b9efe23643717feb05700bf74045587c0634453de30a27a9e814c5edfd670",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-2026/predictions.json",
-      "sha256": "f301dbbe7a16465b326520f1951ef57084e7c7b5750b5c17566df685795ac3ec"
+      "sha256": "25a6ab0741fc8def7daa4fd7c6f41b5200681cf98b78fb0837c9bd35da499478"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-2026/registration.json",
       "original_sha256": "cc5c3f20db598358333f27df7533a696f128533b1a37bb21b52c533d466121d5",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-2026/registration.json",
-      "sha256": "61fdd4269f8a6d4f7afc028e93bd505ec2a27c26968039fdf0bc7738dc0808ae"
+      "sha256": "83d8fbfe13cb90450bde78d22657442e4f83ccdaf0eae91df9d7d080744bab14"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-2026/training.json",
       "original_sha256": "a8fbae7439fa2bb3433f35a63da8ac6dccedff11fb84dbff280144b211d0eddc",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-2026/training.json",
-      "sha256": "487c65d9f3902577616c9a2c8a920c8eda486cf2b93a43d53a802e9e76ec0901"
+      "sha256": "45ed312d5a7a18d4ab60cdeee0485356a723e8fb85264412849e550ec0f53253"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-42/conditions.csv",
@@ -2063,28 +2070,28 @@
       "original_sha256": "cd8a6294f974be1f679c212212e39fd54fd2f2383d55ea54e24efdd1a3240669",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-42/manifest.json",
-      "sha256": "312b39a12a0d07f68eae31f8e83bef1844a3905aff09de2a8f97c5c4be2c5f7d"
+      "sha256": "96323d37f4cf5c0ef0d927980e679d844cd1ae2fc313b044587c1f54c3cf3b95"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-42/predictions.json",
       "original_sha256": "6e273168604d90e5c5cff93cdfd2fc20acd188688ab895ab029abbef681a3d22",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-42/predictions.json",
-      "sha256": "9439baa9d3dc678743740d337866e9c1e7ccdac5cefc9fa8b5869a39d7adba69"
+      "sha256": "08e85c9dcb15f1c55e73eaa1cfa678158450ecc6e5f43be5f750f653216f007a"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-42/registration.json",
       "original_sha256": "df63fdc51f22a487870ed4f31fbc474424daa7837a3b17512bd1f80402f34be4",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-42/registration.json",
-      "sha256": "9c4518fb8f23098abd0e489ff33a6da23e93d081ad5662434e65a43d4dff0d74"
+      "sha256": "2df2b425224534323b9dfb7bf0c737d83fdb4cd9216fc1b9f7c6ccbe6fa7f303"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-42/training.json",
       "original_sha256": "c0c873b68091708780ff7d9b27ac121b0431ed9a5bc9e191950394890a452965",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-1/seed-42/training.json",
-      "sha256": "77e2a51dde04885e6e76d35cbf1e4358f5b8df25309ff500617322d1b992738e"
+      "sha256": "b3c906aa7993453eb93a225fd4eb28317a339eb316b526f931873c2f8782c12c"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-17/conditions.csv",
@@ -2119,28 +2126,28 @@
       "original_sha256": "bc50a50282aca14d2764c0533eb1bcb1094aa9e6859a4d2de800cefd66c92224",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-17/manifest.json",
-      "sha256": "daf44094163b3c3d572c907fccc750bd277274f3a870ac291e5503bcc4ea08a3"
+      "sha256": "59cb796dcc03520ef2d86a79d2ba16219af45a340ce0126479d5bfab82c48eeb"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-17/predictions.json",
       "original_sha256": "50e33db5ec5c3c5909409fa70a8a55cda6a0b3ad083c901fb172c13e22084a07",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-17/predictions.json",
-      "sha256": "94cc9a63761636de22330c29a46efe3e01f4320a53cd8f95df80c36b201f13cb"
+      "sha256": "da99d522ab8afbb2c2d85a49ab565261dce0d8707b7015b62fd1fe979dfe369d"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-17/registration.json",
       "original_sha256": "8f8a8a65fe51ba740de4a2db5a7431910fe440efa7b73bd854a2d368d3f4aaaf",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-17/registration.json",
-      "sha256": "0d2967abf916f8688ced0730485d9c5710f4602abfe66592082e58453b5d978b"
+      "sha256": "5bef0f24f2a120fe7189deaddbb14a8524a3701723ddb42599756311d65c2210"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-17/training.json",
       "original_sha256": "51607614672b3b36f643e47f17c3d03c5e2675142696c23e20739d1341bbd2d0",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-17/training.json",
-      "sha256": "22f3696336e7e560818ab1db491073ddac574931c3d00f3969a183b0c7dfe40b"
+      "sha256": "b920d8f12cfcf753944f97d8fdc757a1c63147ca73b9e5999e8f6d7d06d80bfa"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-2026/conditions.csv",
@@ -2175,28 +2182,28 @@
       "original_sha256": "6c79e2f534d25c93ad14764ddf11697e6369040b374afb5d749479fe631f905f",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-2026/manifest.json",
-      "sha256": "11f0c7b0038f52bcaf6258a6826829d097e4440c62f805cf51b6d8b406592042"
+      "sha256": "8ff1942d631e819218671b1c52c435e3cf5865df85ed492a945d28c143cbfd78"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-2026/predictions.json",
       "original_sha256": "65e0e5a742171b9e38fb8cb771226bd59ab8bf047e91eba7ef04d9959af56f2f",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-2026/predictions.json",
-      "sha256": "a23bb498d5851a90c8c936a608868af4b83d869a37e0e592bf32195eab961e90"
+      "sha256": "c3311389daa0af33da359891b268d12742ad3d0b44902a2c97e32bdd5d6e3d54"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-2026/registration.json",
       "original_sha256": "f1077ee5e9f5741bb01eecbb1da53a89627467ba663903a7e32f2d437891f753",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-2026/registration.json",
-      "sha256": "353ab58d444f4fbde5182063a0edddf405804db3096873fd1d7511484b75bda5"
+      "sha256": "f57025df9b72b513c8eee5879e0da48dcc4c03f6dbf3aa47ff1fd93dcf921082"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-2026/training.json",
       "original_sha256": "df803ec3c85d579f113b31286311fdb24a8a72ad19c9cc1f2969862df94c613f",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-2026/training.json",
-      "sha256": "bf6e6ddd152033c11b31c2bf33e48f242fd3c12a706d444b8852bcd09ab3d722"
+      "sha256": "017e6f4a3aa089a79611c66da4fc0ddc48953ecf516ea0512f9309fd8623cc59"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-42/conditions.csv",
@@ -2231,28 +2238,28 @@
       "original_sha256": "8f15623a8628e014d2fc79d65a39a6b6add2309510ed29cdb2c15dfe6af6a3d7",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-42/manifest.json",
-      "sha256": "bc1a280c5fed246b8c63adbfe5fc122f3fd89ab498f2b4abd20bf2e72fddf4b4"
+      "sha256": "2dff1c85efc0df1bb37d70adc32ff6b0a8285ab632a58d34eaba7498ac167b9a"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-42/predictions.json",
       "original_sha256": "0871fcffd1279608fbb25ab969282b54936c348e0a5420bfae2fdb8a600e6931",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-42/predictions.json",
-      "sha256": "5ca9e470385a6ec83f8157c892ab433babce9426afb6197a347c69bc5cb64569"
+      "sha256": "fdac881bf725db205cd70ff8e4b634775bbf2c830c4a3f7375c2bcbbd8343680"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-42/registration.json",
       "original_sha256": "16355381ff5d8afe76adc8b4b90e64cfd1e86549d6f5a5b66ce757a52f1a950e",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-42/registration.json",
-      "sha256": "c39d19073543e142a6ce5c4ca67fa5996f91d10aab295458d37a674ef5fe8aff"
+      "sha256": "ef98e94be2b146982b91c4704b28364d1a9d255c55f4ae380090f7c62614288f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-42/training.json",
       "original_sha256": "f58dda9fb34321ab387c5a7a6172e793c0917789b5b872e3a0bde68415fc1f24",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP4C/fold-2/seed-42/training.json",
-      "sha256": "d939411c55b32e8ba74d79fc8187d75634c3432c739b21f2543e9bda3ae555d5"
+      "sha256": "9249c40ce360e691096a5ff745a48d6ac6f0d2c9a467412bbfbe07c8e47ffc34"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-17/conditions.csv",
@@ -2287,28 +2294,28 @@
       "original_sha256": "93b3ec7e9f0c1b3478f54956f4e3bf8ac8823d2b1496524429bed75995682bb9",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-17/manifest.json",
-      "sha256": "8073238fb83652dc825f1656f0f723aa6922fcec2ff20d82ac0a1e0253df4e73"
+      "sha256": "0b29ced1ebe2dd4e37d485353fa5b29b56ff0a87df8c73241696dac9a35e174c"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-17/predictions.json",
       "original_sha256": "e0f58d039fed1b197eafb5093dd20f06d5917ec271e4cdca0cb1401c748facff",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-17/predictions.json",
-      "sha256": "1a87a6c4b2dcab485569785016e9e7eddb4de9b0d8f2881ac360e09cc46cf016"
+      "sha256": "2fb76dbd1c89040a9dd0b5ecc046ae0c18c1d90e1cb99e0f1936fe6f9489b2be"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-17/registration.json",
       "original_sha256": "bb5523db460f3647d8f60a53129445cd8e9b559679b4a90daa0a6496f5d64dd5",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-17/registration.json",
-      "sha256": "a95c5b1a0ca25efe5cce0ccaad74ac478206557b92ecd3247585c6d19382d416"
+      "sha256": "fa8783b9a4369ffdaa767e0a90a035bfc076e53ef8014376166e30ea417fad90"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-17/training.json",
       "original_sha256": "5987e02536975531c523d5b079106f3c513cb8a851f42c6e762067684214e566",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-17/training.json",
-      "sha256": "accafabb700e200e6fc503a031f42241aedec4ba10a67839bc21ee94cab473ac"
+      "sha256": "834b35fb995a4635e59b03ad3ccd5f8d7e4a1c1ced22ca3eff7ccd95ea6dbffa"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-2026/conditions.csv",
@@ -2343,28 +2350,28 @@
       "original_sha256": "16e55bf5816f4651563d8b69703cbf63cbbde41040a81cbc6419e8f7985a5947",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-2026/manifest.json",
-      "sha256": "b756dda9a7dc36bfbd6d7842f556e1daa4a6fccd87c73228153ef295069c86b8"
+      "sha256": "1c8cec150be4243575959a23f8bd6e7bfaa13d450ac4c03e4672b483a7c1c965"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-2026/predictions.json",
       "original_sha256": "dc4c4cb8224f87d9bb9160adcb249d2550f274f0218b9b63eca51a8dc2a2466a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-2026/predictions.json",
-      "sha256": "4ee662d9a61169fd79b256b8e5548769789aafd3ac0a4814385f945a25c96800"
+      "sha256": "448efe5c3eb5d326a6892c358fe61489df37f4ee087d4a7f659b53a070211b9e"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-2026/registration.json",
       "original_sha256": "c2897a63516f8aceb8c0d5704f911e0e68ed494693d8530bfa2cd93632ba417f",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-2026/registration.json",
-      "sha256": "2221dacb70cbb0988c9dfeece161c5f3b078ad1e3a0dd41248d55885c8489616"
+      "sha256": "9f2b2403ad4d5f86b4c76c617535880bd3bd0b19930aad71e579f2ae23446050"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-2026/training.json",
       "original_sha256": "ffb49f0559375f157b16d66643a038f7324f216cf4c0bb25ccfa494b0b3c48a8",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-2026/training.json",
-      "sha256": "ff3c99589dfe28e1553c207a7ffd20f5ce814e7401517540e24284149a4a8e72"
+      "sha256": "4e370ecb320c41374faad5cd740d8b507c77ad9935bdf0b88dd0b318269b8cd6"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-42/conditions.csv",
@@ -2399,28 +2406,28 @@
       "original_sha256": "d9a4fcef3216fdea2b18a793131fd4d1660acf2081865a2f836f1364b1be34ac",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-42/manifest.json",
-      "sha256": "ca9cee5a838ccde4afc29f050fd9613d8d019b30d5abe2eb284a0f5534d390cd"
+      "sha256": "b51c6c79b0035d36f685a007f7851dbb4a269accea4fb66ce628a0e0ab7dd917"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-42/predictions.json",
       "original_sha256": "594ea1cd20ee509b789feff7dc9020092c8588f51ba37488a621728be79ea1cc",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-42/predictions.json",
-      "sha256": "27ce6e983a4ba071a90d76c7ed4b61fd17e952f42b3afbf2193de6ff8db32d39"
+      "sha256": "7fb8db5a4d58b9f5ac905a16078ea7c9d3de1f38ec97ecfc999c24ba23a1e660"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-42/registration.json",
       "original_sha256": "0bb66575d1c43557a1ec7a39a2fbf382c339dadb778f5fb923cb724742e68c41",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-42/registration.json",
-      "sha256": "58e781557fd8ec2da7c1baeff8d2ac527bcfc98f3fbf69f66e76f8460ae7fd85"
+      "sha256": "d4bcdda5c8b970c7ea958a60916d73bc62a97e8227246ef02deb8c9d5ac4eb57"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-42/training.json",
       "original_sha256": "5f087d6168640512e4707a1efa31cf0df8695200c684fc6cbb1d67deef6bc435",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-0/seed-42/training.json",
-      "sha256": "06cd56717996e074c37c0971885b31b3af2ef0d121616efcc59bef8e970a2a87"
+      "sha256": "1029428204d9609931cd38917817e3a62facc438f074a9e990952994c949fc2a"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-17/conditions.csv",
@@ -2455,28 +2462,28 @@
       "original_sha256": "f78529f0c76f75e5e7d7f8fa10dd3c9a52dccda312dd78a5c72b759257b31f76",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-17/manifest.json",
-      "sha256": "f6bd84c933f55d975cba652c325952783dafbac378b268249e2669c260502e20"
+      "sha256": "fd0f9541ff8b2daec43eab1bfff6174d576ca37b3d2cae9edb4dab8e8ff357d3"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-17/predictions.json",
       "original_sha256": "69333e9f6ac5aeb852d2db229dc0683f1c865e14c0df081d3d698b09d34d98b4",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-17/predictions.json",
-      "sha256": "608009bf7f1be001e73457e023da5f841a4cfce8d05a777053be848aea3f63a0"
+      "sha256": "8f4ad5c11af147cbd3d188763c2f1284829a85368d56dbee5529fca1625e6f9f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-17/registration.json",
       "original_sha256": "966abc611b29864e079c4bdc42bdbeb8e34131fbd79f56449cb891067e358b69",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-17/registration.json",
-      "sha256": "27063d93a633bf137401320b9acc1a4d605965fd6bfe806933b3a5ec2de737d2"
+      "sha256": "34a332953a21e283ff08a3b866222a8834152f63b39f891efde5f84f5c85653d"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-17/training.json",
       "original_sha256": "e528b8aabfbcd1bae24c5eb2eb8a8e922bbdddc67b5f3ca3946f00d79941ada5",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-17/training.json",
-      "sha256": "0f61fb2a7ddfb749143e18380fe130e43a97b3853073a5feff66b13db3d1868a"
+      "sha256": "ba36811ae5eb279666a290b73d5d786e58a0fb5758a15a963c3c0c8b577593c8"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-2026/conditions.csv",
@@ -2511,28 +2518,28 @@
       "original_sha256": "d98ca74109509761d84c5acb874b55746b05c6315709239b8b0f7e08a7495247",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-2026/manifest.json",
-      "sha256": "e8b481419257648fc923a7625008b5a0fca2494f3b9a0d8476ef5f10fbece102"
+      "sha256": "b8b85d358c5baa36ddf7acb9de0059fcfd5965951e47918b4a14b8d8ff061871"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-2026/predictions.json",
       "original_sha256": "956aaa4b5cceef523a5f4f241647607dd4d7eb67ebc526fd5971eca50aa68f0c",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-2026/predictions.json",
-      "sha256": "4a4ed247d8ab380f9d73a095a8234a6418f47773f755cdfb18169d8d7e0f28fd"
+      "sha256": "d3ae788a4ab8b88eeaf86bce51c1186afc6ad887a16d5aca2ae1150abfcdefee"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-2026/registration.json",
       "original_sha256": "0ea7afa34394f8047f9550c2f770b9257822e9a4aae14732ffcb4fba6694ac0a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-2026/registration.json",
-      "sha256": "fcd487da73df1e4c02642de6fd80751d6b620a5713460f7e530537e4352cf843"
+      "sha256": "122948ad3e068cbf984f71cb3e69b6f3ea2f43f42aa3f77730bbc1dda40d5180"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-2026/training.json",
       "original_sha256": "5f8291d275065d231718f7ef44130c71c0fc39f2a08ee3a210e25e80314791c8",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-2026/training.json",
-      "sha256": "599b0f80597e04a4287d18e52c6d1592176b2f83277a1607e857d98def86cb32"
+      "sha256": "d7640c43dcf7036c6bd6c1194f8ba3b1a1016a2656339fd09220a9f9ef3c19a5"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-42/conditions.csv",
@@ -2567,28 +2574,28 @@
       "original_sha256": "b9593a2017a7d81d0d3a231a403f4bbe0f1ab4a20413bbb91863ac2507036788",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-42/manifest.json",
-      "sha256": "edb5c80568b9022740652e57c5436b9306545f922f7c18a4b5a474586ad04fe7"
+      "sha256": "2342e2b9fe8ba05150ebcc1ecfa76f3b3428fadc1a14f287686d46ed20c86da3"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-42/predictions.json",
       "original_sha256": "7effcdb666f196e660082a2ca09756f692f017bf2a3caeea18db6a39160621fa",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-42/predictions.json",
-      "sha256": "dd21c50eb27e092891506ced008cb33fb4ee100b562c5c6bdf7fd80c331e00f6"
+      "sha256": "aafa11babedbe161bd1fffb179804e27c3b2afd0b5e3884f655bd592f9a8440d"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-42/registration.json",
       "original_sha256": "be7babf563e0df575276dd3bc815d6fe2167f722f4a3f148c22baf510e6e1604",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-42/registration.json",
-      "sha256": "4381084469ab7ba9918ec378b6015c89985f97375a6954d4ed9fd8ebcaf7b31f"
+      "sha256": "35e5c9062ee14ccd20a718c4480ef7ef175b5b075a82315faa9660679b367be1"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-42/training.json",
       "original_sha256": "a5df727e0d172b5ba6bc0b0f3c7a6b0315fdfa4b55e9f72c2d48dbdd3e11d24e",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-1/seed-42/training.json",
-      "sha256": "85e3bbd79ce9080b2367371fd8b6d0590a6418ed8f043d83c79c31086592d8e5"
+      "sha256": "e20f03f92e3de32b84f0e2752bd2f472868f0315e608fd901e9abacf6a664097"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-17/conditions.csv",
@@ -2623,28 +2630,28 @@
       "original_sha256": "cc4d2454c16d5c3bbac95ef2617aae7fef2b6ab54c16ae06109417d18b8e0de7",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-17/manifest.json",
-      "sha256": "0468dee4c60deea64f2d29589540243b033ed01683006c9b66825030129040e3"
+      "sha256": "e759a7c91ab0e8787efe0c258d0b0dea43b861d9e8c6935ec909b81be5f8d175"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-17/predictions.json",
       "original_sha256": "81775de083934f3609e1c85504168962baabc2a6edbfb607f5203685f681f61e",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-17/predictions.json",
-      "sha256": "81b8bd2b1ac112846ce7455e0ca88a406602b55f099d6a62f038f824b9a99784"
+      "sha256": "7f9cdfaa602541ffb7a510ea52e67816fe4504c98ab3d9560aef38c9d9346da7"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-17/registration.json",
       "original_sha256": "deece33496e1ddc65b1c3719baaa782aee1cb49b2b749c88b1527e9a32967993",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-17/registration.json",
-      "sha256": "216876fd05010632a53acc0b70c6acf0765f4558d129e0ee082bb062f077e71e"
+      "sha256": "8bbdf4db82c53758daf9dedd5e2ab5de2702e002a103a13ba2fc6fe6a547a668"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-17/training.json",
       "original_sha256": "af379e899ca39c9dfc04bae05854c619c606b05f226387a090bf6c95e3f3bab2",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-17/training.json",
-      "sha256": "f9c54f3bfaf902b9f6481bac471b28cab49ac9614eeaca1a2eaf338d33eafed7"
+      "sha256": "cc4294ebc2101d79e28bbcaee945009dfb60d13f3813aed93a0f1070858b5f52"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-2026/conditions.csv",
@@ -2679,28 +2686,28 @@
       "original_sha256": "90ca7c3e356e975b8795064f15817ec4a852732e73b208fb6cd5ef916fefcd8c",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-2026/manifest.json",
-      "sha256": "082b356f057b2db513ad3df15d87f3f65933a3f8442a5941dfdbf352fd25d06b"
+      "sha256": "7f3437e2433ab740ae2e7030aea923c5d7a877143bdfb2ac82ea6db62d7c626e"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-2026/predictions.json",
       "original_sha256": "c771d6a554aa8a1cc185e7ade337e1ca239b1fbdecbce8754ef1f79caee1268a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-2026/predictions.json",
-      "sha256": "a91301fcecc84ac1c330e3e06b859b5eb160964ad0026c4e03a7956dec9c3aa7"
+      "sha256": "e815f0a44cd95d4e12f2160d261099c37c8bc790d2a0c11a964fb6ac3ba26b40"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-2026/registration.json",
       "original_sha256": "566f86d4fa51fd984877a9496547798d6c494ffb15ec4c73899ec074033e0f33",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-2026/registration.json",
-      "sha256": "0d01c2b407a384136d10cfca12e183dc8ed6b4b3d5040ebeb5f71f37cbf15f7b"
+      "sha256": "983fc685c8f3274b334b0f19aace9365d55276f9271a6de554b4993eaccc55c4"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-2026/training.json",
       "original_sha256": "a051a3a94157bbdd18fb6a27a9b1596ae12d1a0a2bc03a8c771c1adf42e76846",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-2026/training.json",
-      "sha256": "441d31c47882c66d52baff3e6d69966e9deb4b761f2a05bdfa962ae5f0bac02c"
+      "sha256": "95304459f6827f9d626139b12c50182a6b1043e887825db9fcc7d40049e16175"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-42/conditions.csv",
@@ -2735,28 +2742,28 @@
       "original_sha256": "d00d667fd3a81f95afc426ee824fca739577d225768cddbe62a78f07fcd1f006",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-42/manifest.json",
-      "sha256": "01ac30fee244f001ddea134bbab7dedebadfd68639172eddb4e6e036c1b60e8c"
+      "sha256": "c3292266d73f946b90d9818c978ccf1bba03398526db1e32617b81e92cd64548"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-42/predictions.json",
       "original_sha256": "0b40c19f23bf0b789a04dc48adc9be78e42ac570c14147fcfb1eee399d3a09fc",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-42/predictions.json",
-      "sha256": "8b15f3c264624f1a0c1b7620ca4b413a32c7bcca83e083ffe3d6f4aaf57bdade"
+      "sha256": "8dc7d67229652a7472ec5009579d3da66cdddae0082fb34f1e781e37832b68b1"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-42/registration.json",
       "original_sha256": "7d335fc7a19621264328afb4861e6b6039b61c6c43f542f659a35305428acd0d",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-42/registration.json",
-      "sha256": "85f0f5aae0265d79f573269a67bd0de2981624b83b334931f089aedbb0eb3a38"
+      "sha256": "ca327d3f889797f3610b583c39b491da5db77f03df1590d1b89f94ea4a0e83d2"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-42/training.json",
       "original_sha256": "7ca9221516967dec8015ce33ec0e03784fcfe4263df4e8593ec1fb8ae6d77fd5",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/FCFP6C/fold-2/seed-42/training.json",
-      "sha256": "3b2ef7105b278fe199df1e39788c95fa39dd61eb7c85aa3219be6ccc9f25a1f9"
+      "sha256": "29c861efbc285ed51141d0b77fd68451915694f098ebbdb40df245f59a7279d0"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-17/conditions.csv",
@@ -2791,28 +2798,28 @@
       "original_sha256": "62b872982ec4d4ce4ba9a60e2cdaaf9b2fde1c2037b7d258e82750ed5c0d7ee1",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-17/manifest.json",
-      "sha256": "c76ff73c3640ca764dba44823d56179e1f787290d2e2f8e5b8f395a4e0b604e0"
+      "sha256": "e7ce565d7a920c58a59e0ff535ccc63c5017a1d04b7a1b725e19e83a89470e19"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-17/predictions.json",
       "original_sha256": "b3e94f93cf96581611e91c0804fdb9c1027607dba7d258f105ba7fab3bbee392",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-17/predictions.json",
-      "sha256": "5a7707654a80abd610ee7877edcec103f71b39bb8eefc8b0fb95cdcb5b609aa9"
+      "sha256": "40620eba0fafbbb5e922dc3dc9a6fd2ceb9499356ab680bdfb4cbd1dc8ed0e8f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-17/registration.json",
       "original_sha256": "9f49e94d46ca155fbc16653f51f7cf2ffb390df166b5ba7599e24f4e57c9a55e",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-17/registration.json",
-      "sha256": "95d0e32160820234c35ec06d1de94569bcf836024609ffb7ce2bd68d90df2c53"
+      "sha256": "8820e83866f660a4a1135416487794aa6b9b9e7c1ab56b592f9ec2fefbf3e1e7"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-17/training.json",
       "original_sha256": "5d3866296152c460da8b696721b86e52748b8d257d173475e980187ddb1a8fd3",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-17/training.json",
-      "sha256": "4e97a122f284d22c8e3edb1535c7b7977ff04eaf76e88f36658d2f8edce3b00f"
+      "sha256": "42b5df25fab73bf12745cb294a4def5c7b4cd014339bd2476862b9ca3d91eff6"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-2026/conditions.csv",
@@ -2847,28 +2854,28 @@
       "original_sha256": "58b810fd8036e8c9472960366c682cbbddbbb4489dcac18a906142cb3f5f8a1c",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-2026/manifest.json",
-      "sha256": "1ac1809cb96a5996f67c6dd73778f64c87fb8ab3c467470e7cee3f4cac20c689"
+      "sha256": "e288b6eff526ddd5820a1c510e710404cfcf2d172bd532ce775fa8d1032615f8"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-2026/predictions.json",
       "original_sha256": "6d4f579087b957491dcdd5d4eb5993f49632bfbe519f555a4b1909827c311f9a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-2026/predictions.json",
-      "sha256": "cd5d0e6e23108050acdc0f670a4f435fecaac34b88ffc240dfe11f8ede777b59"
+      "sha256": "f7f3f83d7be8711ff8c825e25c23e1326040fd966c0bfdf2b3eeb7cf05130abd"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-2026/registration.json",
       "original_sha256": "cb6a7dfb2de090875601dacd1028c80c271e82029e7f21c64cefeb0af9afdc29",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-2026/registration.json",
-      "sha256": "b1f062f6ccdfd4bb51bcf5d9c76a5f3fcd529db52106403869d5588f1cc3bf54"
+      "sha256": "4205d3c82554c6cd1bac32b8eb3cdd242dce54f51af519f8745bf58180bc516a"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-2026/training.json",
       "original_sha256": "18ade186ce671b3a09b0df2b55cf85758596b313081915b98bf115623db314ed",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-2026/training.json",
-      "sha256": "cab8ea1f91422f0703199f1776f29340d1e7f1d8bd050fe63f115101edb1a7db"
+      "sha256": "becd08d163862bdd17939561897d7c3f4410ccdb77f3466d726eee69ed622eb2"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-42/conditions.csv",
@@ -2903,28 +2910,28 @@
       "original_sha256": "8fc39bb008b926ebb3c19741351ba293d57f089a8dc56f674bac8fa09ac4ed8d",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-42/manifest.json",
-      "sha256": "6fa4f271d7aee3799252cd51b3087c574865b2aedd0afad1f018142b1ecaa82d"
+      "sha256": "044cbf462158cdbdb5294aec68641a0cb108fe73df34b6e7364100bb909d0557"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-42/predictions.json",
       "original_sha256": "dfa7621a7f7bab804e848204faf20cd3aad1a865f89269af997cfdbf4643b53c",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-42/predictions.json",
-      "sha256": "2e892119220c90e85b4a737038779bf43951a7ed1a74e173a31e9e38a326bfc8"
+      "sha256": "e060aa9e371f3ccfab8c963ea92437287d309746de7fb171263135239bd61542"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-42/registration.json",
       "original_sha256": "60d072bed998ff25c09cdf2a8ff86788722ba08b4e9d40b98d7a7bbadeb7ee4f",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-42/registration.json",
-      "sha256": "d9d303843a5f30fa39edf20775ab5c5bd4d1b9a63a4d3fa2e4556d49774e53ac"
+      "sha256": "7f574dc31dc7a1838addb2588178415a5043827945ca694ed97b862dfcabde07"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-42/training.json",
       "original_sha256": "881836106af33b528f7698cd33de58eb390fa78bccd1a5ad71aec9f333559b3a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-0/seed-42/training.json",
-      "sha256": "54abf20022978b6ee648d8e97571b63929d58fbb975e0712e3ab55b49272ab6a"
+      "sha256": "69bf6f07b9d812bed04525538104fff188154c9c3db767f4727b4582c28e90a5"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-17/conditions.csv",
@@ -2959,28 +2966,28 @@
       "original_sha256": "7a7c372472e9b541abd48769163bbbd871c126bb869efd8097e9d7ec0a863342",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-17/manifest.json",
-      "sha256": "66a35c3143254b317f27520363e11b8038f346fdaaf3d50d321dbd236fab4896"
+      "sha256": "7edcfeb4ce56356b6e1a4b615cf5895ed50fa90f8c1a0abdbdd30a94f0521ca8"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-17/predictions.json",
       "original_sha256": "63c584a7d5216f89e95bf0b7120bdb35bd0785fb359c251ebba1e0ba24da4401",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-17/predictions.json",
-      "sha256": "8ac293ac37f4cd1d01af0ded18b1b358218dbe0495da63551e48b982b1e8d234"
+      "sha256": "d0490d448056c9ba4e9bdaaee2279c0df8660c88f394a249867c3501f21b8e26"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-17/registration.json",
       "original_sha256": "68f9662f74bcb3fe4ad505c1af531afb5d86e0d37a3a4081529065c4eed34299",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-17/registration.json",
-      "sha256": "f0faa7c1b8c2bda665a03ab158b979d23625e7d59c784418957a1496260f93dc"
+      "sha256": "6c652e9e86d85f60915d7683b1b9b0fa50c80af9831da063db3e80f58d5ad297"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-17/training.json",
       "original_sha256": "41226ceb84ba0e325cd7f59d8a200e82521f4942637eb4ae1b9c98fe6af73385",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-17/training.json",
-      "sha256": "bc92be17edf33df61d324f82bd2fccfe07d13f8b1edd5296fe7dee24342156cd"
+      "sha256": "b5f7a6820edab77c24e414bc18d0eaafedde8be4db4a02883ad961921e86d0ad"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-2026/conditions.csv",
@@ -3015,28 +3022,28 @@
       "original_sha256": "67766f6331f9e301381d6732458b67372f7b4f3ab904a965e2404dc0e54cdd30",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-2026/manifest.json",
-      "sha256": "e59c5625fb32b035320d22e106852f851e0fcb04058fb82d0232da5fe927ff0e"
+      "sha256": "95ebf5b49cb7f84ea1bc0920d4cf7e3616540732367daa3f00772f434edf980a"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-2026/predictions.json",
       "original_sha256": "ccf2c572f5aa81c7e6dff6da0ffa31667c72e25324fd87e9afb3d8776124385b",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-2026/predictions.json",
-      "sha256": "913ef74b41d98ac36e30e9eba4e96732a41e5a4b526631f7838eca3ffd839d8b"
+      "sha256": "85363b6dc51a9f149c61ad86dcf308660fdd04b0e2c915028754be8c56096e6f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-2026/registration.json",
       "original_sha256": "4abb3fcd4a62bc18e41356bed850c3540a949a7baab4c550882fb363b530dae9",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-2026/registration.json",
-      "sha256": "dbe39fd6b681d9341786f2a08c3a0f1fafc293d11231f6badff40ba9e82800d8"
+      "sha256": "40d5bf347401cdd2e6f57f5e367d05279675fc3979e92f0d6aec89edc211c3db"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-2026/training.json",
       "original_sha256": "e1b26700496668c83eb8ac3fefa3e7ee8e703f71c454da373ce0230acde94906",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-2026/training.json",
-      "sha256": "67ce258a4ce31856b0305e0d94bed2cf44579032da54de6ee50b44f42aa8c326"
+      "sha256": "c20b6af0ec1fc45c772098b35c941e9df2077df13233ae59f4bb2e4cffe9ea3c"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-42/conditions.csv",
@@ -3071,28 +3078,28 @@
       "original_sha256": "e3601c0e2aa2e3030ebfdf58d62278a1f7467a157239efcae9a1f5b7a185be67",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-42/manifest.json",
-      "sha256": "83a6d71d64e5a2ac299433c9de3cc16235a1e84b7dc4ec2f6fe32e0907001e89"
+      "sha256": "6e579cd6e1cc060096f0102d89df5adf053a785ac478432e7e36f0507a0df05e"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-42/predictions.json",
       "original_sha256": "04000d1b6e5aabd6bb02b23a2b66d5ecf248d732787649bb81e8d5e7c90114e8",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-42/predictions.json",
-      "sha256": "3d17c5d1f835c416af86dc2e7161c438872194224a505921e0c17111917fdee7"
+      "sha256": "ccf7364d6b156e3dced238637d6f16f6bba578e88a72a8cc31b3a78ac2c5d0e7"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-42/registration.json",
       "original_sha256": "04d59e47c3f640b46a1b63edb9d0bd6e50191879dd2b3bbf771675aef2bce11d",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-42/registration.json",
-      "sha256": "0e56545c090f40b8124c63dbc17b3a02615b850271305b0688a71e365ad45a7a"
+      "sha256": "581d2f9b0f8fd22a8ff9c0e07b5b17bc11a428ff4cff13ffe2c66950f57c6c45"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-42/training.json",
       "original_sha256": "c229a60265726541f4247eb9d10c11c176729cb25ac9ff5c530eb188f4d83058",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-1/seed-42/training.json",
-      "sha256": "05b1cd544496eb501c1b9e1242eb373bd44ac0cc5f473b0d3f653bab75a6f191"
+      "sha256": "ccd837487986840e651a05653aeab9beee786720a53885a7511334fa5f817b7a"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-17/conditions.csv",
@@ -3127,28 +3134,28 @@
       "original_sha256": "4c4884c7dfea0e276565a18c4661988fc73171312140b30e76a2e8af3cdc490a",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-17/manifest.json",
-      "sha256": "391be6f691ffc8b11680596dc6157d23e95a03dd554a39151266a77a571362b9"
+      "sha256": "06933bf73370b06710032fa0193782e46db746598b098eddd3eefbf34fad8ee3"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-17/predictions.json",
       "original_sha256": "b79fabf37c3e981cfd03db36ccbc135ca2ac8e68beb245ca457eceac6e53fa14",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-17/predictions.json",
-      "sha256": "859b3ff3829040ce2b994874640f0588e5d9f44b68a54faad1ab5f8f4ee92e11"
+      "sha256": "1722cf62f7359359753c5965efec6652f8cab87b9e4d2085b19a3c66ac462895"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-17/registration.json",
       "original_sha256": "fcd70549e952270d1c5754fa0f5967187c28387c4795bd4e65d4f96ccaaae0ed",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-17/registration.json",
-      "sha256": "fbd51c8bea756e528cf68ab36f30eda984a4830e801c19ea0f1cb7d8061b5bb1"
+      "sha256": "d355b7de8c435194cf66e121764487d71df11dca02433cac4cdbeac58f8ac221"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-17/training.json",
       "original_sha256": "ee830c7a66a09b7e93e754cbf3b3de246c1a7cde831f1ad4d8a4ac810d4b6fb2",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-17/training.json",
-      "sha256": "f53dc8e51d2f6e2a40e4ac7163b1d0f56a8751ebb9eb1791e4d5012b2bb4d4ca"
+      "sha256": "34c4632756526e2b96b715ff608e72ebefd19e4cb52d795cfc6a39aab5f647ee"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-2026/conditions.csv",
@@ -3183,28 +3190,28 @@
       "original_sha256": "7cdb043194389e3b9b08e0a9228ed9e578fff58c823fc3294028603ad612aa13",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-2026/manifest.json",
-      "sha256": "38bac6dbf3b9fe273646ad8704e07c307065b4e3ab98971d55967ad66d1c30fe"
+      "sha256": "ff611623358dc6c565ff364fed79546ccb0ffe77ebb0df26f9886bc611a9398f"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-2026/predictions.json",
       "original_sha256": "411b12ddec5da77641ab52bacba2bc349b6ee4f4bf32c169b639b2b1a94e8562",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-2026/predictions.json",
-      "sha256": "38811f3293bf4a0a0cd613b3de7de65ea99a3ccbe63e766dcbc3175293b91835"
+      "sha256": "426f8828daa519ce0e72979c746e0615a13630617cd990d8ce95ecc5a5aeb422"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-2026/registration.json",
       "original_sha256": "7500f23e5886c857495fba76e3102c97ef307d06a82a920f0c67c01785646a84",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-2026/registration.json",
-      "sha256": "f27029d432ae124f459cedef73a6b0401afdece9628a3f2ae79362480fdb3b9b"
+      "sha256": "09ed7f4fb7e9b3ccce475dcbda2473ac2ec3c97e0ce625f7f6ccf7343eecaf7e"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-2026/training.json",
       "original_sha256": "2b58687f47a557781d52fe40d667801d9729f4489522871d0eaf00c5646bcfbb",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-2026/training.json",
-      "sha256": "448613e7d90f13256ddb62e7611f4d7720060d7d9af78c12c18b6f643fde85d3"
+      "sha256": "5007982e02490ec8cf40cfb9f6cdb0d7d343de5563b94a62f17577a94bdf0b17"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-42/conditions.csv",
@@ -3239,28 +3246,28 @@
       "original_sha256": "ce6bf23b1665f6e0dbcc4c24448818bca2dac5ec36df893715f9498b1127b477",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-42/manifest.json",
-      "sha256": "ff20c2eed484298b8642c70c3028da7c5c6f0e77d97143cea91bc64ff583cfc8"
+      "sha256": "3fdc7454a0bec79d6c9a59a455334a5fe3378bec4845ef37c2f66a286a846074"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-42/predictions.json",
       "original_sha256": "359d0fec48d5e574721a0786e2657bf68c4949e4fba870f7abba05f1bff3bd6d",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-42/predictions.json",
-      "sha256": "7da1f54cb0a262bcdc191dd061154843ac21efdc2a8b2ed033dabf473356ff73"
+      "sha256": "6eeef30187ee9bf100e3b4fca24eaec19f0db424f57bf02f577376bde7f69015"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-42/registration.json",
       "original_sha256": "e75434e848444694131c9cea0f555252ec899c955322ae2fae18ccd773f00389",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-42/registration.json",
-      "sha256": "42ab9045d71be674e89a38e27cf2ad84458b00697603a9c8f32e44ac7918a12c"
+      "sha256": "511d4337eecd4a5995ef101d3c8989dc06fb5faad77ba00f3f5a41d36936f140"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-42/training.json",
       "original_sha256": "31c7a37ee51fd901de5ffb337c783e73de75c2c8541ec43430f0fa0df4a54fc8",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/matrix/runs/UniMol/fold-2/seed-42/training.json",
-      "sha256": "2290638e59f57a84d1e9900d11b763476aed346e36f92ccc8cc66c2b3e92709d"
+      "sha256": "916565497c00912cc58655a8872efeb6fd6e2adb68dbfd8e3c98e505c4765fea"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/report/bandwidths.csv",
@@ -3274,28 +3281,28 @@
       "original_sha256": "b4c2a5896d2b7e5ef00752288db95363c22ac72524526fe9fb72ed8279b8bdbb",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/report/condition-scores.csv",
-      "sha256": "7b068cf1f52a9eed5265ecdb06a07002d8f1ef2d934b20bbd6dff809205c2efa"
+      "sha256": "1ad93d74bea3313123f62209fc8b9cf08c45a03c8a5e45ed815806a7430d3a65"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/report/epoch-objectives.csv",
       "original_sha256": "400dfe79c297fdc0f0667a135a5e5613c63ada111858f0aa7245f76cd544eb3c",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/report/epoch-objectives.csv",
-      "sha256": "d65a72861374bcaba33397704200a6e709b0323f89b710795d78fb50dea0ac50"
+      "sha256": "8f9e6faf66dff2f03d9a4b9663a65a89191e5e4b230fd80f35fabda530fce5fd"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/report/fold-scores.csv",
       "original_sha256": "31d3aa314ac3d2e2c7ebf65a2dd2cf0aa198c71fbc940d3c786ca91ac3822d42",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/report/fold-scores.csv",
-      "sha256": "235a08ed4ad49c87c3ed36027b1a36b013a8ddad3be8bff37507cffdd494af3d"
+      "sha256": "76bf974b99b567999f17baa274aa4df5b79842f57307e63e3f3a3c3613b0b7ac"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/report/manifest.json",
       "original_sha256": "03fb762a8ce02889975ee24a8e56ba7b3e8f8b365e0f16fa2e6dfc3f534739b2",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/report/manifest.json",
-      "sha256": "aec6ae16246ad741b89c651e85c27067503562f273cfed931a23f322870ca5f7"
+      "sha256": "ca1353c3b841a8c69e2b842b4e70e079cb3c28d517fba052e30c7f9d71777ef7"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/report/paired-by-fold.csv",
@@ -3316,7 +3323,7 @@
       "original_sha256": "b66bb965065ffbe95a98282643bdf50f7d6b79b7cb63b4c7e2396615623071c1",
       "original_source": "sealed_archive",
       "path": "cpst/08_cpst_chem-emb/output/formal/report/runs.csv",
-      "sha256": "207dc7e9b02693ccdaca98f60d32061b0b69cc61806fa37f4c234cbc6490f843"
+      "sha256": "e0a0af51f72b6f14d8480e53a5878426962959d11cb8979e573d9f639f2eb966"
     },
     {
       "original_path": "stage2_CarPS-VAE/08_cpsv_chem-emb/output/formal/reuse-preflight.json",
@@ -3351,7 +3358,7 @@
       "original_sha256": "37d1a2df4b0186ace85dbcf413417939f4f3b9944e60aeaca6f6aa61c573d2ad",
       "original_source": "git",
       "path": "cpst/09_cpst_axis/log/367-bounded.json",
-      "sha256": "5afeadda218b2a0449e140194dadb3ddb61fb2fabab391a767f8f9b177d554cf"
+      "sha256": "635e4dc94a0e3b9ea058f85cfc76ce6ba316893b338548175778131643129e86"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/log/367-coordinator-resources.jsonl",
@@ -3386,7 +3393,7 @@
       "original_sha256": "1601dfb225d9806ba9db154c7897b03875d1a2bbb5ab539fd4bc06890101774a",
       "original_source": "git",
       "path": "cpst/09_cpst_axis/log/367-step08-reference.json",
-      "sha256": "6d7aa8fda1bc3e750138f4245aad18721ae781b0e8f121b0dd654b2a0b8ab9a5"
+      "sha256": "815c24ecdef761de027eef1a9b60d3f465062f115bbf08f5138b808f0a779d94"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/log/368-coordinator-resources.jsonl",
@@ -3400,7 +3407,7 @@
       "original_sha256": "e2e86b309936940d609b8fda083e32d31c668a2836f470578e72f7e115456d3a",
       "original_source": "git",
       "path": "cpst/09_cpst_axis/log/368-reference.json",
-      "sha256": "801cf97e892abb22a232b5dff242007a68f3d5070c10ad45f7db6fc8d889f24e"
+      "sha256": "664cd5a9b13f360ac5f9fa7e28fc973b966047bf4b1a0c6c2632de1b18e5b872"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/log/368-resources.jsonl",
@@ -3414,7 +3421,7 @@
       "original_sha256": "b8d20c28479c49348a90ef7d6c2071d5c741451fc8f5bd3ee4568de5f09472eb",
       "original_source": "git",
       "path": "cpst/09_cpst_axis/log/371-formal.json",
-      "sha256": "3d76bc0498bb2d26b4bd48f1fb299169468c949475b6e364454103f40f927185"
+      "sha256": "0e2694ecfa30b8f2743d4055f219f031f9ca15b2832852fcc7ec1fcbd13c304b"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/log/bandwidths.csv",
@@ -3428,14 +3435,14 @@
       "original_sha256": "0074b3524da67e3782dd90914de2dd5a33efb021a88497d8a9938efebe214a9e",
       "original_source": "git",
       "path": "cpst/09_cpst_axis/log/figure-render.json",
-      "sha256": "45572c866d84a57099a1042d9b6c7a9463d76a7430a2c0939562b0afd22940e8"
+      "sha256": "a106fa5e3bd91bb2953b8a38afe6c773ff03cb905def53187b9ece0a8fb68035"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/log/runs.csv",
       "original_sha256": "871c90b9f5be4385abfa7b705aaa956ea209d6795e85e05a9b16126f53779f95",
       "original_source": "git",
       "path": "cpst/09_cpst_axis/log/runs.csv",
-      "sha256": "203d4572fa141af45885d420f5cd36b3f1ce9cb1d1c7c092a52da9f01f744360"
+      "sha256": "2d4bfb8af43c5b6b2372455e384ea6b81a355afa6eb7c624edbb8055b77f0796"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/log/summary.csv",
@@ -3463,7 +3470,7 @@
       "original_sha256": "9db7f05012f645134eeba5260c8efa2396b55a814640c35a74d7d5eb48a95a1a",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/manifest.json",
-      "sha256": "5bbf1a6b0215877c07c29ecc371446bf3bc90702436d7c7464a03bd82f542ed8"
+      "sha256": "84e7673cd0c057710909ec0e813b511a24ac0199431691d5ea4748af92de2690"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/preflight.json",
@@ -3505,28 +3512,28 @@
       "original_sha256": "bb46880bd89a6faaabad314325c999630d0d4d638b82ecf263728414fe65c3c8",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-17/manifest.json",
-      "sha256": "f3f9bdaa957eeb18ac4cdcc8f4bd87d6149f5e2b054ca8c18849989b7c194995"
+      "sha256": "daaf8e7b53c9fb275f6e547cb1f997af77716e4993d2192804d3384f65aa9e92"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-17/predictions.json",
       "original_sha256": "443944c0340ca6cbfc20b77c0f8c46df59474701a8e4132d1c84251455ce4e26",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-17/predictions.json",
-      "sha256": "b85071c78798668d6c471e6068d56aa817fc6080b0f7805178c4aa15c49d1b70"
+      "sha256": "23ade7c0a7f7b3fe276c349383d5fd99e78a9e5d1f48a06c286d268ee346ecfb"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-17/registration.json",
       "original_sha256": "2c86fd6706bb69ac888899235f7613625291b3f6a6a3e3390df6e36879161917",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-17/registration.json",
-      "sha256": "3884d100d19d80303092925f2dddb461ff74b488a5b7b31ddb2cb9c9f1c1edce"
+      "sha256": "dd902f66e8b222b3e0d5206ede5079bdbed6f77b7f7a5732a7fccb18a8d4d582"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-17/training.json",
       "original_sha256": "a6c83fc667518e9f7bf3b150dd23c6d406357c9a322f348eb9456e85bfaf3f5f",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-17/training.json",
-      "sha256": "30102effd7900c8b1aab555e5070590cb0b44b0624bdd67aa32482ecd268b18f"
+      "sha256": "3b31034feb806424c1e5a35943d672d7c4545f1bb3a8832486ad84af16413ea5"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-2026/conditions.csv",
@@ -3561,28 +3568,28 @@
       "original_sha256": "1232f7ff8fade072cd1e3a9121189aa4604eea277b858fad5dbc79339118d746",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-2026/manifest.json",
-      "sha256": "331b266859cbaca12bc0a1a12f6231ffdc9e4501fd84b1a73dedfb2459f3195e"
+      "sha256": "7fb882c683251e8461680c97df462bbd7ccb83474c14b704ee77750be08e7b02"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-2026/predictions.json",
       "original_sha256": "969f1c3cb777ae65730150f1fb10d8a2476fcbc8dc05931cd32d334f306409c1",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-2026/predictions.json",
-      "sha256": "0b7f0f8bbbe978648f7165fc8ea1e7bdd75a00f619dbc15edafa507ffd5f1283"
+      "sha256": "0a419de372992a4dfd462ff541b1060e9ebd3349a4711032864cddd6f03bf6fb"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-2026/registration.json",
       "original_sha256": "0c5cff8c3e5be28895101581db97ea3bbfe433634de9e34ba37db04b9cbace83",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-2026/registration.json",
-      "sha256": "a9348130b309ef92ebc325ed4bfcacfaf335231201b5cf34104fc667ca8c22b4"
+      "sha256": "156107b0959f8208ef68ae0d2b36318a298ee10255408d01b802d1ad55cd977b"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-2026/training.json",
       "original_sha256": "24bbb0329947a010c42642dbdb66774cea964efd26d4f05bddc5e11a35c8bc05",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-2026/training.json",
-      "sha256": "b9abd5c720bca1d046dd65e807b5fb78ac9220ceb6cddabb45e0db76977ffc8b"
+      "sha256": "55f5b145c5199f4b547ac39ca20c754014116f60a70e50d6f6e0623cb9249c59"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-42/conditions.csv",
@@ -3617,28 +3624,28 @@
       "original_sha256": "ff48726ad609ddca08955fcd368de58bc247b11cef9d549114cc44df16abd27f",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-42/manifest.json",
-      "sha256": "11df457b898a1f5956a04a12573c3e1937e19aadbbc3ed1f0667387f39dc60a9"
+      "sha256": "80c2ddc04b8b868de01ea18b11d4e322c9e6b0c800bc2d3077c1a07dae719f67"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-42/predictions.json",
       "original_sha256": "fd080ca01c994225ad57fb61a15a0781b781d2ba47a6e090008ce5529594d387",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-42/predictions.json",
-      "sha256": "0f4f444765b7b9b624d08404917c850d0592c9de14db0b1df3615f68325c9cb0"
+      "sha256": "c5b92241dbf12ce1229c3d2ea79eac86c721750f2048d325b89b8715cc7ae7dd"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-42/registration.json",
       "original_sha256": "a1ffbbdba234a77333925aeb62cf94ce1535484ff0b4cc8966508631bbc3d069",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-42/registration.json",
-      "sha256": "12dc38c6e146123e159f2378813516b12cce9691fa7310d723fb9b96fa245be5"
+      "sha256": "9d923d285cda90dc9e50ef55897f8a601d2b51d7dc9c3d7cbf5116ecaafa4a08"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-42/training.json",
       "original_sha256": "226445910517635f4dcf5cbe47d0e3a82f51ab5b4533cf246ed08fb8d8b1f62f",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-0/seed-42/training.json",
-      "sha256": "d9eaab794f7d8cc6e77e0790566d2e22c47cb04a93f42e5214c5048a0d0b668e"
+      "sha256": "2061aba1de095ccb1c6a1d18b69d5c28695154cb62c891fa641b087975a9eb1a"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-17/conditions.csv",
@@ -3673,28 +3680,28 @@
       "original_sha256": "8585b68337e685e76228c7b57592e417e49cdf6dc5d9d5f55660b0b9ce5d8558",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-17/manifest.json",
-      "sha256": "b08c5d64134cbb31fcef8c293120a50782d05eb9f10d129d85c768d948bcbd1c"
+      "sha256": "d4896f0ef1a84e780f2b387384c0538c1abec57edb73eda92163cd58d09c84a4"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-17/predictions.json",
       "original_sha256": "5adf2bdb18d6290d5c8964ff1a49c9a6d53e1b683129a6027889b3934a0ad402",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-17/predictions.json",
-      "sha256": "6db3fffe0ae5c0729b0188d3b1e267f396035354cf59c147cb80e83d304ae365"
+      "sha256": "1b3eb49ce7eb006fe152ca6d7b04e574846791d381ee4043ea33662df54cb735"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-17/registration.json",
       "original_sha256": "5f7dc91fd55cfd4213f3b72626ae712d0f483dbb3d858b548943c02ea8d18565",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-17/registration.json",
-      "sha256": "b0265f6d40e8138adcc1ff850c4eb333736e6c80f5a65bd068512c76e0cd03bc"
+      "sha256": "f9b694748c484fab4e7bc98bc24a3801f846acdd725639b723cd133b6df7f79b"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-17/training.json",
       "original_sha256": "6009835f756e31ad0d7fc8da469642684c705c782b18ef2ee91f967cb38e6ab9",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-17/training.json",
-      "sha256": "b781767d5107d4050fdee43b544823782a219d3e8cf6b60314637003efa81b91"
+      "sha256": "21bf8a91cddeacc7b7eab759f4f7b3021dea6497c1d26ada82cbbd5059e0c8fb"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-2026/conditions.csv",
@@ -3729,28 +3736,28 @@
       "original_sha256": "f1e8837afd2a1e158137e9bcd699a92f89e548bbca25c0bd627ffaabaeca645e",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-2026/manifest.json",
-      "sha256": "a933a859e6bbb58d24147586b0e2da453cdc0c075751debda52dd6744c0e18c2"
+      "sha256": "c11050ef0fc1218b9b445506c41f9fbff9ee506a34f11a2499e54e16aa8fa2fd"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-2026/predictions.json",
       "original_sha256": "78a09c300dd41f88da41179315b3da8b571a40b59519b9ac4f27595acaefe984",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-2026/predictions.json",
-      "sha256": "017b1bd01ecca50b985f8b423916fbf1c6766b087f03b7020d1df7d826ec7306"
+      "sha256": "6337ca8653beb9313b6d7170992def781fe0d05d1d4ffc8e6b1e829093ccd000"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-2026/registration.json",
       "original_sha256": "0e22f8eedf657119dab237af15393213e2d2656da41ff82bb03609a64dfb5291",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-2026/registration.json",
-      "sha256": "c0a4591cd59d5c3edbe062e740bb532992aa37e8742676d1e50c23a8b6bcde6e"
+      "sha256": "5f7c57638c60246e9036ac53ed97c651bcc091d710ddcaf0be751fa37a2bce21"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-2026/training.json",
       "original_sha256": "55881931288aea1f92c6874d367eff26522430927d1ed7b77d47de5ee6dac1dc",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-2026/training.json",
-      "sha256": "00878161ceb7482dddca7193c2028b16eaac725b0fef1d5e289e05c613aa039d"
+      "sha256": "cc807047679c7200696860ccb4a7b1f7419bb720151e250102dbfb360f47dc63"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-42/conditions.csv",
@@ -3785,28 +3792,28 @@
       "original_sha256": "3515b3751a01ceed473e0249996bcedd229dd3be94901b77574a35f78bd3018f",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-42/manifest.json",
-      "sha256": "e8cd7c8b656a81643b7adb77a8af9eb2b19c3048cdc0a99dd72bad564cd25160"
+      "sha256": "8c35c5c89a20efd9189e866d8e27791ef09a10cc7faa6d7a578c6758067fd770"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-42/predictions.json",
       "original_sha256": "69b67ebe4a7923f3497fde2bd9782d38424c62bf87173dab7142152ebb391fff",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-42/predictions.json",
-      "sha256": "0066cdf67957c30c1572cdc71c169450abccd97adde376034d8d2ba226a295c5"
+      "sha256": "7aab6c29c1f4a0f0fe26951670235e59342d0bb3ba62a96b5b924ec4faa306fd"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-42/registration.json",
       "original_sha256": "e9adc771d79490d447212928bf76da0c4d58035ee6a790d9dd9659c19a105498",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-42/registration.json",
-      "sha256": "d04ad9ba921dec9f9679a00b284a226612ca9be0520c45e51a476926b9ac32c4"
+      "sha256": "0ae929889e41188715be3530c301e48a0a96638796ffc0e8b2ecfef5a68377e4"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-42/training.json",
       "original_sha256": "85d0b8e98ea9fe25c1a15ff10edebebf73c29be29efcbb19758660f0b29bea78",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-1/seed-42/training.json",
-      "sha256": "9dfd7b93cd9db9453c09265310c64a3ef188e9661eab478fe3ab4f222fb87adc"
+      "sha256": "e0a8f565702e1ae00d1814ffe059c1188e45d54b31c78e03648759b30abd93ff"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-17/conditions.csv",
@@ -3841,28 +3848,28 @@
       "original_sha256": "e97f66c3d0fdbdc890753c89477abe61ec8dc4b000dc278fad1830b01160284e",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-17/manifest.json",
-      "sha256": "899b32f4eeaad04f2de257d15f95c1ca01fffd390af299d2e439caffebb7800c"
+      "sha256": "c76f4e97b188280400b67fda80f7b48d445db69feba8b8e7f058c089e7da4cde"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-17/predictions.json",
       "original_sha256": "6567c8985bcb0edd5d11257d4ef4457d5a6b521f2402a977fa1af54258b16301",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-17/predictions.json",
-      "sha256": "f412b4911b7f01ea62dcc6f1d96f907be805b4ce128bc0a5dd7add509fd90fec"
+      "sha256": "22c5fedd8e75388331822e4070a8c011327730be7c35dbe2d37f89491e74517b"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-17/registration.json",
       "original_sha256": "04b45b2f451b0df4340a589c62f8cf3a5d55c1ef95072312227e7451811eba2c",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-17/registration.json",
-      "sha256": "5ab245c67defdc53125cac4f2c2df733ed192171225b7805f48a07ed853297d0"
+      "sha256": "68bbd8e666629912e7ca5fe62270f66ca5a156eef6e7c777446c02818ec2632a"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-17/training.json",
       "original_sha256": "caa20cd9cccecf64dc727263c121d9cd585f7a17a2da3c7ddf9792e9c1f5fc2c",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-17/training.json",
-      "sha256": "34421105d04cf4a4f9d72472f8ad43ecc660b8070725526c1c07dc8be202348f"
+      "sha256": "3cde512f410086a001bc805896bc76968350d1346a8b01eb62bfa7a00fb31a44"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-2026/conditions.csv",
@@ -3897,28 +3904,28 @@
       "original_sha256": "3a185ddd0ae57ed55008eb838892d26a72f98492e95d834c37ddcb13db1c3de5",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-2026/manifest.json",
-      "sha256": "8d42994cb7be2ac440dc53e1b7b75c8273bdb3f658f4f3b46300719229bbb739"
+      "sha256": "ee58a65bef6d6795bdfb9ab1a3047dcaca1e4e9f1b86d1bdc3e672f3e360484e"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-2026/predictions.json",
       "original_sha256": "6ad39541b78d03141e09497e1f4d77a004752898083a88801df9f4011cfa6adb",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-2026/predictions.json",
-      "sha256": "430356c92e034939554a21282a486aaf49976b27565df384b82e733406b93121"
+      "sha256": "d48b3ee174d16682513edccd2f0813250eefdfb50a87382349b34580ebac6f0e"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-2026/registration.json",
       "original_sha256": "6fa5a3839a64169a2da88f89ffe4611262d875f688880d2c5fbc6365696ec97d",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-2026/registration.json",
-      "sha256": "b75b37532547c737dec00853cb8ac318289f19b0af4bacef68116a4ac7fe1a88"
+      "sha256": "74d2a33081d84e00eec75278e69b92382683ff9875b94180f08f659d0d97d8a8"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-2026/training.json",
       "original_sha256": "896f0c4a6eb753d3d772590b022ec1ab4454b311a0cede17cb6ae6b5b7585bd7",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-2026/training.json",
-      "sha256": "34cc4282e5b91ac6b727ab43aebc68faffbab29d403fb576a80a6dbface0c2ee"
+      "sha256": "329f59c2a6fd89875aab2bf1e0814c64c13f28beca230daa3312a745ae70db2d"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-42/conditions.csv",
@@ -3953,28 +3960,28 @@
       "original_sha256": "d527232439b2557c5e9ac688b1de164b9f2217c79bcccf83b83b58af81427155",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-42/manifest.json",
-      "sha256": "c04f451774dbfaecf2c953e485720578c27c7ca1825942532267a749fd84416e"
+      "sha256": "4ece7cf2d57832719305e24c1071f2874ead75a56a2eb2cd93b0cec79dc5691f"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-42/predictions.json",
       "original_sha256": "c887217b2f04075578201cec912bcd0a889f783ab3fda0c2ffb30c2fd1dd060c",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-42/predictions.json",
-      "sha256": "e2d03fdf75b093fb50ca5ab2e45caef8ad8ad20b4d17cd88b31eabca73c3c17f"
+      "sha256": "0894cdbd51f1322f2bb682e0c79cdd20c50e47e13d7162a7d87aed19576fbc9a"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-42/registration.json",
       "original_sha256": "2dbe3f4194da1c6a825781de4ae0374239c6e9fb9fbc0a2755f52b188c1edf27",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-42/registration.json",
-      "sha256": "7e770e388a14cc6f69b517f0dd55f6f7b9fe2822528b52afe7884c64d6c0f4e8"
+      "sha256": "6f70cec31c6fa9658470534e1055905db1cc9fd59edcebd175860a0c5d88d41f"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-42/training.json",
       "original_sha256": "35e3865d67aae9c68827625af6908ea4af1d701257c04846771ede19792ef1ae",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-2k/fold-2/seed-42/training.json",
-      "sha256": "8a15ccd1709e0395a787a7fd297cade9aa9f1ffb817f5060e7b185e9bb2c7333"
+      "sha256": "1aaaeb16d29f8741f8f62ddd533312d7222449692cccffe256eeefff47e5ec71"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-17/conditions.csv",
@@ -4009,28 +4016,28 @@
       "original_sha256": "194fbb5aa8e2f6b1ec2374d7c9240ff372c1c42c884831c50f0a46c200ab2108",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-17/manifest.json",
-      "sha256": "a13eb3ebfed1e4384ceccac5369ed1eae38c5279dbde31c71a83d0a976e0930d"
+      "sha256": "91b93036920416f55ebb3986f627a480c0d3e81f5c9df4034ba49398428ec76e"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-17/predictions.json",
       "original_sha256": "36fd1c4bfa451ce533909a6b8c1a41604a60d368a5ebc7955dece12d89afcc3f",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-17/predictions.json",
-      "sha256": "bd56d9a74ee0ed0aa6d6b69cb1ea947eef7d7ece8042128044d4d9da975c19a4"
+      "sha256": "488be6c66a605277682a60c87c49859e8dd0ad0fb7415898fdf32efc941c6947"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-17/registration.json",
       "original_sha256": "46da97ec0feb85c3768cbe01e9b8da30d1aa3518fde649c057a6a9be496414fd",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-17/registration.json",
-      "sha256": "4e5ea95988b3438cb96f554509265393fb083eefb95b9784fc2a533e73157c0c"
+      "sha256": "3bc4b98adf846d3ab0acd38a8a3017fd25a70803e1d13e5add468b139fab1510"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-17/training.json",
       "original_sha256": "8a445702ddb26979ecdc2dba0d41b914e02076c9726ddc295bc8552552469869",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-17/training.json",
-      "sha256": "9aaa291e9f44210374a6e1ee919077875e60897f56d79abfc53449cb353e03de"
+      "sha256": "a02633ad787017d2fa636481f6461a83af87c65d04cec34e68521f913a103b19"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-2026/conditions.csv",
@@ -4065,28 +4072,28 @@
       "original_sha256": "c15c75fd99b1ccf9a27f1e4646c1dde75c44b2a090dc2fd45306fdac1ab21b90",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-2026/manifest.json",
-      "sha256": "328ab62cf92aeac1eb05b193fa523ebb5a2bb8ff4cd98f7178642de900abe272"
+      "sha256": "8a34e6e8d2ab4a8e3e2dae297cebaff6dd862efe0476a5d64ee37fa932b8fe44"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-2026/predictions.json",
       "original_sha256": "f4fcd0005ab4bc93d97b8f6835ecc75ac8528f6d3838ef52f27a0233aeb0d801",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-2026/predictions.json",
-      "sha256": "f79c00430c6fa64d37514159a74ca636e2ed10b258cea8027ae291e5bd12793b"
+      "sha256": "6de241c0e244675e03ffb30b600ae5f05e39160b699d110347aba1a81665e2c6"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-2026/registration.json",
       "original_sha256": "676b5b8fd09353e20770c01cbfe4d1f8f4702a5d3814e2e0662d6a491537a49e",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-2026/registration.json",
-      "sha256": "11a159ca9ebefbdfa06397ae1e6b2bad3c26271418d33cb4941fd39cf4ebb6e0"
+      "sha256": "a42cb43f84b77d25d9caab1a59a4f5727399e096f0e0d017d35724b019ac5789"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-2026/training.json",
       "original_sha256": "4895b76c696fc3a5bdd97f50731789ff40ec92098ce8a4cfeeba9fa7c9406dcb",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-2026/training.json",
-      "sha256": "11588f355f41cca93c1db217cd28734cb536f92f6ddcbeb3fade1dd180fc5f5c"
+      "sha256": "330a5878c603df3e533f7491cd56161ee20fecd850dccb3801ff131943c15c6e"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-42/conditions.csv",
@@ -4121,28 +4128,28 @@
       "original_sha256": "c826ed7f5c951d4c458ed9abdc970d875424e337c8bacd5bd9b07c5633a5b311",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-42/manifest.json",
-      "sha256": "c4c676757b9d1efb44441d3ad91d5345f16e6b6ebb9d8519b40cdd4264ca7013"
+      "sha256": "57b8b6beb8693a7e3fefeb751b64133fc9b9b3749be54d50152c810ed84e4352"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-42/predictions.json",
       "original_sha256": "380cdf8048d5f5dfe12028e9f8d521025c1f78788fc707a9afb24c4fab4dd9a5",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-42/predictions.json",
-      "sha256": "7b8a25f51dd5b2da72202338ca035a06b654670811daa9c28a3249dc88b0bc00"
+      "sha256": "a554e561816a91f083e09971a64bba0419fc44d3ffa599579b9dfcb6eb740024"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-42/registration.json",
       "original_sha256": "781b0abe95647a4ddf3c40ec287d65bd1aca6c092285fa245d2baa57a7a0dc00",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-42/registration.json",
-      "sha256": "c4e234e0b56baf7c6e150a7c685415d8377cfe087127864fa79c4505460815c7"
+      "sha256": "26a47d5ec778b68ef48d185bd80bab676bf8719ee0c5625c650be5e80e868707"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-42/training.json",
       "original_sha256": "826d4fba5bf7d23d2564d34bc98ca70f5e68a91a8eca1af66e3d814be2254475",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-0/seed-42/training.json",
-      "sha256": "b4187e8edb6a30415d7d361253eac358ecc1c04d6d896a8c1a5e9b47cf127ada"
+      "sha256": "1c9225474cea987c5f63d687a03d74dd1fc13990a4d8f382f2aec540e9f22255"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-17/conditions.csv",
@@ -4177,28 +4184,28 @@
       "original_sha256": "15206ebb5d824ea017c52f39d7218cbbc53ad90befb179114881b1b5f9d89337",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-17/manifest.json",
-      "sha256": "86ff8ab67b98af6ba0b475a1da2fe85057b4d19737e9c1d1837ae8bac584228e"
+      "sha256": "a727aedc53ff575f79872db154ff28c6d79cbcf425f18c91d9fd12446b510e0e"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-17/predictions.json",
       "original_sha256": "2323b7cfc93d4f9441b386fbba689cc7779d254168e05d17e470ccfea12b7f80",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-17/predictions.json",
-      "sha256": "53b273d4491fad486e89f22fb56d48287b3c5e77ba4168563377eb974a728494"
+      "sha256": "6cffb6bb05ece2ffb6fd266ff38fe74419e1bd508af3083258a734a327bd55ff"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-17/registration.json",
       "original_sha256": "455606256c9aa61cb9a1d10ad3089b13fe17fa75911516430b9a50bba8d1a14d",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-17/registration.json",
-      "sha256": "b7ee6a85b32946c7d22f1e2d06326cfe100ac88128e8da70f840c53fd2f4d768"
+      "sha256": "635652b52fbb63e0e756ec6a5dad611755cd9f683adf2d6e53e6cd08bddf756d"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-17/training.json",
       "original_sha256": "5a25e68c24b8111729dfac42ea20b19bdd7e0d1eb3b7915256509bd73917641a",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-17/training.json",
-      "sha256": "5fefb4a0397f0354552c5fd3763f0bcff6a6b833de6584b7d2efb88f4f65af73"
+      "sha256": "86c51d5d616b2431ffb203f321cc74e6a58092afd8e2ec1f7ceb0dd914d43a5e"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-2026/conditions.csv",
@@ -4233,28 +4240,28 @@
       "original_sha256": "83c722b5197e74c6578c138e7b4ba588ae4414fee7c9ed4a039335ea21543f92",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-2026/manifest.json",
-      "sha256": "3c00ca42f70d463f19073eee2ac9c952e6f6eac07d5eab46181e89367c9df8fa"
+      "sha256": "4b4b95eef8e6dfb93e02899812012fd799d4c550372374f2acc651148be2d084"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-2026/predictions.json",
       "original_sha256": "13d2e1a25a6738ac4656a146d132fbee1d14fbd7220fe82bc7c0e05b5cb0322e",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-2026/predictions.json",
-      "sha256": "ad5cfb6df87779e4c8fc6a9e02e47ba5672e77e09e2e0b5338a1d38e0bf58c55"
+      "sha256": "d80866885473adfe548b6dafd0744d11fcd3b6312cbd8d2a8a742f7d91cdb9e4"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-2026/registration.json",
       "original_sha256": "694a7f064de7e057bdfb74409b31469dd44923021c870f842e6a166aebc67f6b",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-2026/registration.json",
-      "sha256": "aec30a76e4b28a276daf50283559d533281c901e7331cc6b2c482c1842abea93"
+      "sha256": "e25fb28cdb7860f355c2b2b0f7085f02fc66d98056c27c06233dcdb50d2fbddf"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-2026/training.json",
       "original_sha256": "3cb7bfd69fd852a42ba3c2a392902cd8afe24b2b84c7d4b7db749f681a0171fb",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-2026/training.json",
-      "sha256": "c90d3fd9047bc17a59663b7a2142effc296866311568ca201e3503c4260801f9"
+      "sha256": "71f445a26a5e96d27fcae48d8f43764e910d1d95cc2d06b65305684f283de3ab"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-42/conditions.csv",
@@ -4289,28 +4296,28 @@
       "original_sha256": "a9824ee8a321079b41b35cbd490884a7f0c5dfe815c028d2cc3bcffd234dc1e9",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-42/manifest.json",
-      "sha256": "0ab52ab216178c9145f962b054f86ba30dd605ab3a7c4015c46516c65366bccf"
+      "sha256": "02a212b097e9b718b79e4bff48398e6e07fc2ac4ec77150c0b9f9d8b8bca4d62"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-42/predictions.json",
       "original_sha256": "9487640cb3f7c1c9ecc308aab99c20368922a04ad64be52fae7a2ba9b46b2171",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-42/predictions.json",
-      "sha256": "d8a030501db1bfb4c5ae351fd6132e215d551b1041f812b518d4e9d5ed379c52"
+      "sha256": "a528de87e97e69bb3202c1a04312b8cfd536f31b08a280025ff3f940fb296529"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-42/registration.json",
       "original_sha256": "4d0b42da94d2e3a6c70f2bc292e55fe4e5e48dbc9c89065aff3dd5bee5506c96",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-42/registration.json",
-      "sha256": "bbcc2cc7de10257fe88759e4f5c45030b6e804d37c09bde146b06099c3967bfd"
+      "sha256": "4a0d74ef7d3081c6b090823dcdc09562ea5b2f88f96715e7b906114b204524e5"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-42/training.json",
       "original_sha256": "94817b481bfe31ca0748f651247ef21de3d531cdea068061717d41666eea2fb7",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-1/seed-42/training.json",
-      "sha256": "5676e65f47014a3f6d6bf0513a79971c4d0034842a8b0ab510959314064503a4"
+      "sha256": "4966aca8b4e3599b1cbc8186c3cc150d7ec97ff694e4e1e5686c85be12b1812d"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-17/conditions.csv",
@@ -4345,28 +4352,28 @@
       "original_sha256": "2c77f00a7c9dd6dfd2143970bc500547010f1ec24bcef22e2a1eda5c3785942c",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-17/manifest.json",
-      "sha256": "cb739f1f7ba869c022a0a46e572160beefaea5b0f1fa426226e73da1b4da400b"
+      "sha256": "2dbf50093f716dfe287a3a088d1e190c44c843ce32244553aaa045cee762a79c"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-17/predictions.json",
       "original_sha256": "6c75aa55d3fb3b90fc9d58bbed72c6410a0b541da6bd7c2122e62b8ef6795adc",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-17/predictions.json",
-      "sha256": "63ae574f11d9f15969b8b82cac8b17550442543e58a7dfed887961d45cb71aaa"
+      "sha256": "eb645fa8fcfe3286a52384ea5d9e898ba55568b88b56cb85f32d16ce20b6886b"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-17/registration.json",
       "original_sha256": "07d0bcb92baf6acef85e8507cf57692b715ba97ea1da46ce88ac99cd9a3ab784",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-17/registration.json",
-      "sha256": "9f7d310124e64d07c876192274a9bde7036bdc508a196860d04edc2121e7b2e8"
+      "sha256": "dd2471c44a4916a5d2ed5520a10ebb6a0b9f243da26daf27b667f382ff5157bf"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-17/training.json",
       "original_sha256": "9eaf1d2cd2a7a0e890d9de8ba2f0e68abb882ca42e95dc8500152f9e5a73ccb2",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-17/training.json",
-      "sha256": "1043c40a925715129f0278921f3cf3f54236589bb01fb31dbdfc64a2c080abb7"
+      "sha256": "575600f5cc35d545b046c0c4a9013a787735284e1700766f76ee90575cda0741"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-2026/conditions.csv",
@@ -4401,28 +4408,28 @@
       "original_sha256": "88947b9fb2f308f3e4412e0bdacacedb5cc88d7c5b0b3ce3ee177beb346f60b7",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-2026/manifest.json",
-      "sha256": "b026b0483b6c6f0deff255ac54c32a9ade8220dc29a3ff73bb45198059990e35"
+      "sha256": "61dd0ced9d664bb4832d99f5c88f97ec26054e59048b62e9f59ffc79bf64cc27"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-2026/predictions.json",
       "original_sha256": "b81f9545aa4973fa256dcd620c234640d9280f428cc859cac414a75c3ef43b98",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-2026/predictions.json",
-      "sha256": "ad6d6cd3a19dbab677e1b07d93f3ecf80eedc2a051baca9b447f60e38a941450"
+      "sha256": "f41b25ed6b12882b50301f906391d13dbf62e32f0fc8238d4d4aac2a6ee2a81f"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-2026/registration.json",
       "original_sha256": "322994eafca375b0a7124360a99968b40a047be2f891945dd1ac7f958b803a70",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-2026/registration.json",
-      "sha256": "78526121f51b9433ef2966589eeb504c92be384adbf815e3eef921b80350b4df"
+      "sha256": "b843d70dc9acb1751b5bb43290f6107c727fb7bca9fd944df584557a6df241c3"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-2026/training.json",
       "original_sha256": "b4d74699907897544cbc6e2628968ae3e5c2f92f2437158ed0d43eca40452c18",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-2026/training.json",
-      "sha256": "d481376cab11f3b4d5636b8a43284bc035b236376a2cf35aac8c8a8eb76e03ba"
+      "sha256": "d7c6f1c9161e0d2339544f0976a4d6f66a7016f356d05ab0eb98f6c308fefbeb"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-42/conditions.csv",
@@ -4457,28 +4464,28 @@
       "original_sha256": "abc5e68d971cec3a19dc16e39805c30844823a4984ff4424ea3f8bdc016af9b7",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-42/manifest.json",
-      "sha256": "16512240e2c4413119a542a0109190d7c91fdd32504a57b67e7fae75c760cb93"
+      "sha256": "a3546e92a240626a8115c44116adf748a8edd8d40ced8c52f471d0f2c9381221"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-42/predictions.json",
       "original_sha256": "8a5d7e79a2107a0845b07f8947ab9968ed324459b1f6044e7c4d65524301b09e",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-42/predictions.json",
-      "sha256": "f17d46f9f182bfafc0e618ed5b6a5975b903ecea4346fdc0485a413429731cfa"
+      "sha256": "4a8631f22a74b1514000de18daa093898efe65884baf8b8e743a1487d62895c6"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-42/registration.json",
       "original_sha256": "a5f5b648ece232c665b71e38705aac89ec6ba8eb9f83faba816f446b309cb623",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-42/registration.json",
-      "sha256": "57bd50e3cb1a4fe3b90acba4e59a5f70ad5f8ff01542d49cf8f7c5a853ba0210"
+      "sha256": "0a3584c65d2e3790911b1acf68ee2a73cf912551ff4c8aa429b372b4ea0eb21e"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-42/training.json",
       "original_sha256": "354b31f8f8c0fa1dce551bb10e079f25ce47ac3905dd0ea098dc8591b640fc1a",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-3k/fold-2/seed-42/training.json",
-      "sha256": "954edea7f4e0d340b6dd16a4d36a7cdea943a626dba2aeec70e783f610addb22"
+      "sha256": "6b8ba163d20d7033b4dc55fb30bdef6a6097fa38d47618575a7a0f0ba12d2d04"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-17/conditions.csv",
@@ -4513,28 +4520,28 @@
       "original_sha256": "4bca5577e1b148c44722ff247e6dfb8d4bd2370a1d59c31930deefa262f67c3d",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-17/manifest.json",
-      "sha256": "8b70121f2ed86874a6342a2570d56ac4ab323e8131feba3582452e0f78b2ecf2"
+      "sha256": "9368c6db8d85f18a26179f02778838cb78b773f3be8ed2dcf62d1e5049a84fd3"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-17/predictions.json",
       "original_sha256": "979ab152142f386e9c89e235f9b498f5c55aef3123bb22160b4c862392a8a912",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-17/predictions.json",
-      "sha256": "bd38be709b02a3eb44dc1da7672b6db89ebeeff2d828c0924199763a6b6a8133"
+      "sha256": "a06d7c4ad1ed0ab0ca83ba5b1b6c314484235ffa7df21b97272f076cc5193184"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-17/registration.json",
       "original_sha256": "4a32db6f7690dc4d5cece6731a5e453d86157583c53034fae06cc834ebee2d3e",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-17/registration.json",
-      "sha256": "934a545531c60dc3b4cf4e096547c6d2df4eeb55d08b4e4cd0617e7c3021a354"
+      "sha256": "915ba323ab34b0ccf6421592f0f25ec66aff6a57e4038483485db82c01f11da2"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-17/training.json",
       "original_sha256": "c0a2624ddfa232c7eeebdc02e04a78be8d2bf262e2f86ce9efc4db72b87bfbb7",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-17/training.json",
-      "sha256": "87b7d7efcd7d2c7e8fd02d3d18df9aeeb13d93a730cab73065ea58aab8b211c4"
+      "sha256": "1f2ea1aefb52af6a38ba3ed15d626f0ff6ec484decd609d908b812a20f5b54b5"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-2026/conditions.csv",
@@ -4569,28 +4576,28 @@
       "original_sha256": "1919658ee3ac5c86a95f7d64776d83bc8b6488f4c5f13513802786fbebbf4ebd",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-2026/manifest.json",
-      "sha256": "676e2d3ac7dd11ced82828abd4c88a723fe5a51fc5abcee0c18f0d53411a1492"
+      "sha256": "dc967de6ebe4bc6a3e5a4a05be72fdef69e9e6c20dfb14e0d395c6a13e1aea1a"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-2026/predictions.json",
       "original_sha256": "16f8f9030d2cee22d223bcae22da91965b821e370eca98eb31d10931b9aff581",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-2026/predictions.json",
-      "sha256": "98ca4aa882efd2efe3fc5a190797924d62d0d8c8b4931b06e23d666ee90faa92"
+      "sha256": "eb976c72844c12b81762f82adc7eb4d03f3f750a7229ddcc61adc0870c01ab86"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-2026/registration.json",
       "original_sha256": "c6467d35c540b67ffa5b4a12a3e75c671339b0578c4674a3a2a556d0ccfe9561",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-2026/registration.json",
-      "sha256": "3f6424cc9594fe02a3d0717f346413418dfa3ac56f3bd1384d855265147402e8"
+      "sha256": "136a3f13adaa6dc3269119e670e6f98ab05ecfc303f2743bdb606f654f14fddc"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-2026/training.json",
       "original_sha256": "42891304fea38a041797193f95bafbbf26538f2add5d0c88e3732265ffcf8fb6",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-2026/training.json",
-      "sha256": "0370c144bba7a3e498be1113e3df1f22f9edf86d38f575c908191432c68b312c"
+      "sha256": "f0c60428320712e1b7a0dda2780c9aa46a1301237d072fa49d0650b3516c9211"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-42/conditions.csv",
@@ -4625,28 +4632,28 @@
       "original_sha256": "0a42ad8211beceb6ab06d444a319ec3ddabc61a9077010045891efee9de2e418",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-42/manifest.json",
-      "sha256": "b57cf7541d428ee801b81de7b2b066f27dfd646f1a68cfd623cf2eb2f3ffcb05"
+      "sha256": "7ff8844dfb6383e129cb7f7bca0fc01ba10aecdc0db333702a4d6cd46efb913b"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-42/predictions.json",
       "original_sha256": "2f3406c4c6724c0a8e2f4c01a9a1be2c51ecac853feb22edb9a0681628ada91f",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-42/predictions.json",
-      "sha256": "829ac3610903be6b706d505f9f88c1b2b4ff6248795f24660f95babaa80d068f"
+      "sha256": "aa96e1ff38cd0bd2cf16c48bb2e6859caea7c97ffb8e4976772e9fd6148bdf8e"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-42/registration.json",
       "original_sha256": "2c811dfe4c792a1160857cd5dcfac8a06fee21263810c1dc45a08797efa6a780",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-42/registration.json",
-      "sha256": "ce78eecf80cd662ecf89a8b4fcec1c0c86de96e0c6124a0c296ba314a1da079a"
+      "sha256": "f64e072b74e9e3e744e306272e266fab328142970e257ad839353c8a0cd4c554"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-42/training.json",
       "original_sha256": "4a0961c8f6d6b57483a718d4537a7eeec551dbe70ddd2e2e2978457b4440ee95",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-0/seed-42/training.json",
-      "sha256": "eb488dce510cd8096ec3e281f8e7ca25eb04b4927725dadd657da0bfdd4560a3"
+      "sha256": "988e7e3f064fa4764c965a29bcc1819bdb26a5904d511748253f078aa7e69af4"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-17/conditions.csv",
@@ -4681,28 +4688,28 @@
       "original_sha256": "0e7112b7922c71f670c45447ab7c8e57e11b45c0f9380a8d219c25ad774d5565",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-17/manifest.json",
-      "sha256": "f3a5881b32e47ea8fa3a2f8ef429c0fa65a0c3c2f324a4654101955ae021a496"
+      "sha256": "d3e52db6889adbc8a0e8ed2dccfdfcfecf6cdf25d9beb7b08bdfd6143bb74766"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-17/predictions.json",
       "original_sha256": "47a2889284e13305de6b35693ee16df763a69483f9a4928de64669fb0fae8108",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-17/predictions.json",
-      "sha256": "d242e4d44c384554a66cad5a29e82d116259e2cfc02a8ce4ba1d01f91df017c3"
+      "sha256": "830b7e6d1cce158f6b8fbccd9d4ddb0b9db2e8ad92602e80a0bdddef079fd22d"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-17/registration.json",
       "original_sha256": "61401e1107c51ec86be6a31d809f593b6ce40e424cf5f7e7a4ec16ef69f09723",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-17/registration.json",
-      "sha256": "aff727ed8b8a3a2bec34421741e72e88adb6b5c24091b9c9e9465b904c49d375"
+      "sha256": "bc1cb7126d9062f27f0968f5007fbe0ed9d1fbdeb13cad9b3f04654c68484992"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-17/training.json",
       "original_sha256": "84ec977777af1584a2cc48d9fe4687e03f93e20f775b0001c945368f1ed4f95f",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-17/training.json",
-      "sha256": "7a523b0a1e0179495522db5aff73a4c607dd4fd769d8a8ade9bb60d28796d7b0"
+      "sha256": "08bc0981e189d0684c41c3f43385935c3cab16f4e6342885be3b545cb2eecf73"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-2026/conditions.csv",
@@ -4737,28 +4744,28 @@
       "original_sha256": "e0680f537c1ccb3485eb2c0f7dcb5f00c4f8b215e851d3ba840b1f8077a2e4fb",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-2026/manifest.json",
-      "sha256": "c480936e48590b15299d8a41669b2aaddd68043ebc2c86e361c95cb4c871cac6"
+      "sha256": "e6186c68664f041e152078f943676cd52f9fd4438a9b2c5eb9aa0787f8134ad8"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-2026/predictions.json",
       "original_sha256": "f81a97fed9254d432dfcfc0eda233bb5bb2574ee28638acab774423cab698a7b",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-2026/predictions.json",
-      "sha256": "df8448fd80b5c63dd13402562b4377a520de643171efc5e649fbcbd6da064d7a"
+      "sha256": "c163fc1fe536f0aede98a642f7e7fbc36f76c51ff32499a49697c5fcb44b897e"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-2026/registration.json",
       "original_sha256": "8c5747b2937a149ce82e3d106bcc733bebf216865f604650b87a11669a0753d0",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-2026/registration.json",
-      "sha256": "a1930245ed770587875f9d278488c4bcc43a20f0a8ee0550b85e972b74e01fda"
+      "sha256": "3caea4fb808b2628f4faf5a3f5db79a71c86794545d1db4c7a5b18297c87bcac"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-2026/training.json",
       "original_sha256": "147ecb7d26b04363f78a20a7c142a866fab8f1d450b9b769c3839edc7e88e8c7",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-2026/training.json",
-      "sha256": "a0e808a64953fcff876d6f8a7aaf6aed1853cfa223686b9d027ca2437dfada08"
+      "sha256": "825a9fcf86614fcb6fb107ebf6525c85d38c6c3be543a0492966747a8a511c54"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-42/conditions.csv",
@@ -4793,28 +4800,28 @@
       "original_sha256": "04aebcd52402a7b72d28f1893976c104b47772480b599964bd06da9905c9c7e3",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-42/manifest.json",
-      "sha256": "5c91ca6281e1e2496263f9f1b1d2b598fd125c21f1e09bf8ad1e5747b6a976dd"
+      "sha256": "5827242a7c22193142e8a9721c4fbb7ff2ff5b457fb1fad426004c865060c927"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-42/predictions.json",
       "original_sha256": "98733184a9f7d3efc484265bd7b3935cc68f18317998d742f07fed6689548168",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-42/predictions.json",
-      "sha256": "746f20084ec84eccadeb894eb9154ce84e4e3f776f3f65cc15ce678eff7fa41a"
+      "sha256": "e6514497c62c8ba6511ceac0c27231df5d8a4c5e1afcdcfbe1d22670953afd02"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-42/registration.json",
       "original_sha256": "a7b3643c018db0f23fec78618fca2f4b5ec2860d6f78994fe64af1bbae941eba",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-42/registration.json",
-      "sha256": "c074d02e24f86c7ac8766f6a9ed0a1466328424049f72612148ceb6f59e4aa8a"
+      "sha256": "6d5f2457795cb7fb370b5adc0938e784a4fd7d94b6ae7244a853d64d2efbe8f2"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-42/training.json",
       "original_sha256": "851db19c50bd51a879b925499c14e7005306c41ea89c67e7f50dae894cf08b8a",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-1/seed-42/training.json",
-      "sha256": "1537d2919b74d4ad8aa108fa1def52224f96f343184a0a841b1e5300c8c52295"
+      "sha256": "d906e6a627191c98395cc0eb226c53ace6a681969c877d9f8f6f4f06c9a6d0de"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-17/conditions.csv",
@@ -4849,28 +4856,28 @@
       "original_sha256": "cc931ca18a4965dc9d5548c9a84af3065a56e96015062d785a14e4a24bb4aeee",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-17/manifest.json",
-      "sha256": "28a31fedce989429442e6c5e9d55e333e58b8571883b1e264caa1e7985ae3ef8"
+      "sha256": "7b216e59944d03cea005babe45fe637f7480fc3e1c0edffac4a512c358fa0076"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-17/predictions.json",
       "original_sha256": "34839fd6d2be1fb0688237866b3f996c4b155201af5a1654077704029d1f8908",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-17/predictions.json",
-      "sha256": "c6699ca68c3c9c9a5229358ce0e2210be8c035d875287e28c462836f617d6185"
+      "sha256": "9c13e212a13fa4e96cae3a6d37d8e6d3747df7660570a4094aa71be4b241c74a"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-17/registration.json",
       "original_sha256": "610a0aba0a9a4d2a7c98a9939d104db4ba8297bf00f418a6f70e29dfb52dc6c8",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-17/registration.json",
-      "sha256": "60ec4ebc163cbbcbed2ff4895613b7bdc1a958143de5a88fc370d2d3047cbf8a"
+      "sha256": "2d4a5d73d3ba2fbc04f2639d525f5c1c45562227dbc68ebd2f7819c67a50e6d2"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-17/training.json",
       "original_sha256": "53564509d948783839d6c0fc439c8c30dff3b20441de7bb7e35712f2e3efb09a",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-17/training.json",
-      "sha256": "16df8a250e07eba7e01bb3aac8d4974273955fee745843eb92707e869a67c9c7"
+      "sha256": "70f8c7dcb5f5dc5b9bcd19b9da1f1849361a0ef2cef41de463f87027a4de4c2b"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-2026/conditions.csv",
@@ -4905,28 +4912,28 @@
       "original_sha256": "e2754e7d0c20d88b1862fd2db102997845fcef3e371324f841a0ee55a79de649",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-2026/manifest.json",
-      "sha256": "c1e0409d18274b42ed0d778c115364c0c357758dbb0bd400b33e17c43dace702"
+      "sha256": "d2bfd968f53587d0a66527166a70ddadfb4e21cb1a3a68fe258a90978be879d2"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-2026/predictions.json",
       "original_sha256": "82483dd6bef09ba27472d13f28f79913512ea07ce4316012c70e211bf6d95025",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-2026/predictions.json",
-      "sha256": "53afe41e541d0d41d2fa8dc94d14c37a526820c1076cbbf415087407d4dad8e7"
+      "sha256": "be20e5f019e983ec8f905239797ae41e9b79eda903a1b67e7b42a821d80af4d2"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-2026/registration.json",
       "original_sha256": "a6c433f4aca7b3290961b85e7fe2666b06436d9dde34f33180bc3e5ac4474952",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-2026/registration.json",
-      "sha256": "115751a431481a0ad3d730f97f95f40e2a3ae6c9bfd9519bdffde9fc634e7c22"
+      "sha256": "a87720163e255f470c1c31415d7dd9a768565e79ab7365c058688a5bf47f90c0"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-2026/training.json",
       "original_sha256": "1278d058f1919346fbc184fd1c8c4a11417afebcd2b164e600f3bb26e7cef9c4",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-2026/training.json",
-      "sha256": "ea989d007681ab985b3e69e12892493755225a2509ac0be8e0f394740aee8832"
+      "sha256": "ec0f26be19ff6d3a27ba68cfeb69727a7b6a34aafcbb8a918bc9cd8a9aa45751"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-42/conditions.csv",
@@ -4961,28 +4968,28 @@
       "original_sha256": "d21c86a8c846e11f40535128aa470c4c9408e459de43119de1e481328896ad68",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-42/manifest.json",
-      "sha256": "b997ad05b5c5d55755e32e0e455de0939e9b37e4276d093b7a2633f3de6a6e4b"
+      "sha256": "cf4a3810c2d9892bb20c2282412a9dd7574790f2562a817c73917eaa3ead1178"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-42/predictions.json",
       "original_sha256": "2d3e32a48e2301b28188e9ebcf3bffb4b6c1350102e9073259841c6d5cca2f2d",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-42/predictions.json",
-      "sha256": "70e01c8e1b32f91554d94a78d266b7d35e7bab11b247421e34e2fcfeb93bc69e"
+      "sha256": "25d53c379ff3f732ce65c3ca1f6627de91fa653410cf81bfa516d46bd4feecda"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-42/registration.json",
       "original_sha256": "2e414da12a82bea5e6e2e6b62adc30b6cb9c2c812308b13c2e2329c60c008168",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-42/registration.json",
-      "sha256": "f64493131e3b7cb2817bcad78e638ee868589bf100f6fce3ee250412cb24cbda"
+      "sha256": "1b8e7d53edd3ebc10a3aef0c6fa43e1d0adc7c55da499eba72b1708c1e7b1e67"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-42/training.json",
       "original_sha256": "5ab32ec91e599d89edf5eee6de6d4679f2046516e91012683d3a96f9c98ebb79",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/matrix/runs/denoise-4k/fold-2/seed-42/training.json",
-      "sha256": "bc57e5d2bade8d5ae224320b34fb99b704e34304949506bc3b03a08e59effa86"
+      "sha256": "cb76af3f151815582db9e2cc0659fb5230c9d0dca76d824f9c8ad3226b3b5cad"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/matrix/runs/hvg-2k/fold-0/seed-17/conditions.csv",
@@ -7012,35 +7019,35 @@
       "original_sha256": "56048e90921ecb4cf3c4ec5397cae6619763f129ba797b34de56f1b60369db59",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/report/condition-scores.csv",
-      "sha256": "aa5a9e8a0aa417c24ddf6ce7d3137814f27d8590354bc9b0384f7a6ee91b3bd6"
+      "sha256": "8bf9e816b535ca1a2799dd8282bc045d49dedcb51332735f70978210d1639328"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/report/epoch-objectives.csv",
       "original_sha256": "2eff469daaff239de32467fa8f970d0ffe2a41aef56bdc31f4af3c7d004dbc48",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/report/epoch-objectives.csv",
-      "sha256": "a1fde1109be13adab213210e22d8a2b1b3d7966db1e6f06458aca396ebf3b6c2"
+      "sha256": "c0715fff781603efeaa6668abaf8460781841100ed3debd70436715200c457c4"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/report/fold-scores.csv",
       "original_sha256": "a41d95c17645ebf0b7e2b6604b1234cafb6eed8c263d8733286dbd72e84ea02e",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/report/fold-scores.csv",
-      "sha256": "99f3e010591621d87244ac38c9e7069f0f91e036c279b7c4e9298657c4b065fc"
+      "sha256": "bf6b7edfbcfc75411c24ad44d8ff362efbea030d7db6146173cfe214b5e122c1"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/report/manifest.json",
       "original_sha256": "a0013e391f8903eb60c7fefe1afd7fada2fe6714b5e0165cb76af9a7552edc37",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/report/manifest.json",
-      "sha256": "4ae1457c7059c4a4e2eb0fc310b9a0f121030349fb6351c3f4caf7b2fa2ffb9e"
+      "sha256": "5de600036580d02f352134853fa96fb58733e15bbdbf32ac2972447bf37b7e65"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/report/runs.csv",
       "original_sha256": "871c90b9f5be4385abfa7b705aaa956ea209d6795e85e05a9b16126f53779f95",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/report/runs.csv",
-      "sha256": "203d4572fa141af45885d420f5cd36b3f1ce9cb1d1c7c092a52da9f01f744360"
+      "sha256": "2d4bfb8af43c5b6b2372455e384ea6b81a355afa6eb7c624edbb8055b77f0796"
     },
     {
       "original_path": "stage2_CarPS-VAE/09_cpsv_axis/output/formal/report/summary.csv",
@@ -7054,7 +7061,7 @@
       "original_sha256": "e2e86b309936940d609b8fda083e32d31c668a2836f470578e72f7e115456d3a",
       "original_source": "sealed_archive",
       "path": "cpst/09_cpst_axis/output/formal/reuse-preflight.json",
-      "sha256": "801cf97e892abb22a232b5dff242007a68f3d5070c10ad45f7db6fc8d889f24e"
+      "sha256": "664cd5a9b13f360ac5f9fa7e28fc973b966047bf4b1a0c6c2632de1b18e5b872"
     },
     {
       "original_path": "stage2_CarPS-VAE/10_cpsv_dose/figure/data/learning-curve.csv",
@@ -11667,7 +11674,7 @@
       "original_sha256": "7487dc505339860026c9a169654b7b36a17f4c84488dba72207a0f383e348574",
       "original_source": "git",
       "path": "cpst/util/training/cpst-receipts.sha256",
-      "sha256": "e9ca2288278b36a5de0212603f1cbc7ccfc9608dc0b6a75d19af589f43e37e8b"
+      "sha256": "1546d07e78a12eeac0ff34ae621aeccc1405047b2e58ef90040febe6c1e5e3a7"
     },
     {
       "original_path": "stage2_CarPS-VAE/util/training/formal-receipts.sha256",

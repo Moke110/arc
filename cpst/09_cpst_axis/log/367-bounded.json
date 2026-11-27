@@ -608,9 +608,9 @@
       "peak_rss_kib": 839252
     }
   },
-  "reference_plan_sha256": "6d7aa8fda1bc3e750138f4245aad18721ae781b0e8f121b0dd654b2a0b8ab9a5",
+  "reference_plan_sha256": "815c24ecdef761de027eef1a9b60d3f465062f115bbf08f5138b808f0a779d94",
   "report_sha256": "1f627981a1a5da533b48412fb7de187e7699f47303f2ef747d010bf0f1c55ada",
   "status": "PASS",
-  "step08_acceptance_sha256": "23dca95c178fc2c03dd2b44c02db1ad5254cd51aadc5e307b97de0ae9b2f0573",
+  "step08_acceptance_sha256": "feb3d9a0a4bddf3f66258ec8bc99c91b9f68de14671dd073325a0a09c0dc462c",
   "ticket": 367
 }
