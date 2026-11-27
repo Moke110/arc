@@ -1,0 +1,41 @@
+{
+  "csv_files_sha256": {
+    "figure/data/learning-curve.csv": "58e87fa86c68c5377462adf55d365d555293acb1f446d7f5ad9f11073c08e6f4",
+    "figure/data/metrics-paired.csv": "dea2e6e3d21bf2eee08cbbc33bf96fcda32ac0948636b5b2e2c5c4c2812ee5b4",
+    "figure/data/metrics.csv": "135a60e52bb77e406c38b836d084098284d79a002df246e8a3d4502f419ff0f1"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13"
+  },
+  "evidence": {
+    "acceptance_receipt_sha256": "5cb8c81e1052b4648db6cb25d7c0a695e5890033eb5851b5d7ede78ef2462d0e",
+    "build_sha256": "f7ee8defcfb530e748ab901e057936605ec865ea2038b55fe2c76ab8fdea3503",
+    "fits": 18,
+    "fixed_jaccard_code_sha256": "66011526374d4405c137ba5f07f291ebad8a86c3bd8e97b8aba8ff9c540eb062",
+    "matched_controls_sha256": "97bb9f1b792efd81eeeca65a0318324680f509ecac74bb04acd22ba4523c109e",
+    "matrix_manifest_sha256": "a467b5df448ecc23cff4093f59009d019d2e7be91b15f64834353c75979daa0b",
+    "reference": "0",
+    "report_manifest_sha256": "b5a616ad84baf33725015a86a08b1583b222ee1381c75e5314965efb8d03b400",
+    "sealed_jac_top200_parity": true,
+    "shared_metrics_sha256": "0a16f66b0b02b5fb21462b5b8ae94667ca7247398372d44a54be679372a451b6"
+  },
+  "independent_renders": 2,
+  "png_files_sha256": {
+    "figure/learning-curve.png": "4ae2710ff47dae2daf84a26a575eb95c9849028be1f4f477006e1957fb7e30d8",
+    "figure/metrics-paired.png": "7c568efa5fc012595eda3a3fce8a58e6d5b1beb6274b026c738e9a62a8a5c186",
+    "figure/metrics.png": "0cd3d982f769649ac9d2fc411f12f6940c0a2a48e8b7b3cf84d7c51373ff5415"
+  },
+  "renderer_files_sha256": {
+    "05_tsg_loss/05.4_mse-l1_pcc/figure/script/render_comparison.py": "b6a59896f24d86276590007525c8b628b5a79960b9f19659b1a74e60c80ccb2d",
+    "05_tsg_loss/figure/script/loss_comparison.py": "1e7ce2676ac834b1eb6a773c0a8b767903712beef23678e73567ba07c8e9f28a",
+    "util/output/api/stage2_util/comparison.py": "4b18733f177d09a3eb1b25861e18c8383f2505eb9746966fa7f75bb83f4f2572",
+    "util/output/api/stage2_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
+    "util/output/api/stage2_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
+  },
+  "schema": "stage2-figure-render-v1",
+  "status": "PASS",
+  "step": "05.4_mse-l1_pcc"
+}

@@ -36,11 +36,20 @@ reconstruction weight and fixed Delta L1 weight from Step 05.3.
 
 ## Verify the current figures
 
-The [figure render receipt](log/343-figure-render.json) binds all 15 current
-PNGs to the 15 plotted CSVs from the accepted study reports. The following command
-compares two fresh CSV-only renders with the published PNGs and checks every
-input hash against its original formal receipt. It uses the `arc` rendering
-environment and requires neither model checkpoints nor prediction matrices.
+Each study publishes `learning-curve.png`, `metrics.png` and
+`metrics-paired.png`. Each metrics figure shows the same eight panels and
+includes zero. The bars show means, the dots show individual folds and seeds,
+and the error bars show sample SD. Paired scores subtract the study's
+reference within the same fold and seed.
+
+[05.1 receipt](05.1_loss_metrics/log/figure-render.json) ·
+[05.2 receipt](05.2_mse_l1/log/figure-render.json) ·
+[05.3 receipt](05.3_mse-l1_mse-x/log/figure-render.json) ·
+[05.4 receipt](05.4_mse-l1_pcc/log/figure-render.json) ·
+[05.5 receipt](05.5_mse-l1_cos/log/figure-render.json)
+
+In the `arc` environment, verify all 15 PNGs with two independent renders
+from the plotted CSVs.
 
 ```bash
 mkdir -p "$PWD/tmp"
@@ -48,13 +57,32 @@ WORK=$(mktemp -d "$PWD/tmp/tsg-loss-figure-check.XXXXXX")
 python stage2_CarPS-VAE/05_tsg_loss/figure/script/verify_figures.py --work "$WORK/replay"
 ```
 
-Bars show the group mean, dots show the individual fold/seed runs, and error
-bars show one sample standard deviation in each direction. Signed differences
-pair each run with its matching reference before aggregation. Up and down
-arrows identify the preferred direction of each metric. Learning curves show
-one model per panel and one training and validation line per run.
+## Rebuild the current comparisons from accepted fits
 
-## Reproduce the formal Delta similarity sweeps
+From the materialized checkout, run the same `arc` environment and define
+the [Step 04 capped runtime](../04_tsg_axis/README.md#prepare-the-capped-runtime).
+The builder verifies each fit and report manifest, checks that fixed predictions
+and matched controls reproduce the sealed Delta arrays, and confirms JAC-top200
+parity before adding wJAC-2000. It checks the complete train and validation
+traces and writes verified PNGs, plot CSVs and receipts to a candidate directory.
+
+```bash
+mkdir -p "$PWD/tmp"
+WORK=$(mktemp -d "$PWD/tmp/tsg-loss-rebuild.XXXXXX")
+mkdir "$WORK/scratch" "$WORK/matplotlib"
+export TMPDIR="$WORK/scratch" MPLCONFIGDIR="$WORK/matplotlib"
+capped_step04 python stage2_CarPS-VAE/05_tsg_loss/execution/build_comparison.py \
+  --output "$WORK/candidate"
+```
+
+Use `--evidence-root` if the frozen releases are materialized in another
+checkout, or `--step` to rebuild an individual study. The remaining renderers
+serve bounded diagnostics and the original scientific report commands. The
+prior figure set
+and the original formal publication commands are recorded at the
+[original revision](https://github.com/Moke110/carps/tree/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/05_tsg_loss).
+
+## Reproduce the original formal Delta similarity sweeps
 
 Run from the materialized checkout with the `arc` environment and define
 the capped launcher. [Step 04 capped runtime](../04_tsg_axis/README.md#prepare-the-capped-runtime)

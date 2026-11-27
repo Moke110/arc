@@ -57,7 +57,7 @@ Use `--training`, `--representations` and `--source` for materialized inputs
 in another checkout. The evaluator also accepts `--bandwidth-training` for
 HVG-DEG 5k. Input digests and ordered conditions must match the registered runs.
 
-## Run the formal matrix
+## Reproduce the original formal matrix
 
 The formal driver registers all 36 fits before the first training run and
 checks their ordered train, validation and test populations against the frozen
@@ -87,22 +87,21 @@ atomic rename.
 
 ## Held-out scores and learning curves
 
-[Raw scores](figure/delta-metrics.png) and
-[signed score differences](figure/delta-metrics-improvement.png) each have
-one panel per Step 04 held-out metric. The [metric CSV](figure/data/delta-metrics.csv)
-includes the equal-fold score, the corresponding MSE at alpha 1 score and
-their signed difference. The bars show means, the dots show individual runs,
-and the error bars show sample SD. Differences are paired by fold and seed.
-The [plotted fold scores](figure/data/fold-scores.csv) preserve eligibility counts and
+[Raw scores](figure/metrics.png) and
+[signed score differences](figure/metrics-paired.png) each show eight metrics. The wJAC-2000 panel uses the
+sealed predictions and matched controls. The [paired CSV](figure/data/metrics-paired.csv) gives the
+score for MSE at alpha 1 and the corresponding difference for every fold
+and seed. Bars show means, dots show individual runs, and error bars show sample SD.
+The [sealed fold scores](figure/data/fold-scores.csv) preserve eligibility counts and
 [bandwidths](log/bandwidths.csv) record the frozen Step 04 values.
 The accepted matrix contains 36 fits and 324 fold scores. All three MSE at
 alpha 1 fits match Step 04 exactly on the selected and stopping epochs,
 native objective trace columns, validation and test predictions, and Delta
 arrays. All 27 native fold scores and eligibility counts match Step 04.
 
-[Learning curves](figure/learning-curves.png) show one model per loss and
+[Learning curves](figure/learning-curve.png) show one model per loss and
 coefficient panel. Each fold/seed run contributes one training and one validation
-line through its stopping epoch. The [epoch CSV](figure/data/epoch-objectives.csv)
+line through its stopping epoch. The [sealed objective CSV](figure/data/epoch-objectives.csv)
 contains 4,920 observed epochs, and the [run ledger](log/runs.csv) records
 the selected checkpoint for each fit.
 
@@ -111,15 +110,17 @@ anchors, the [resource samples](log/330-resources.jsonl) and the
 local products under `output/formal/{matrix,matrix-audit,report}`.
 The scoped monitor recorded 166 samples on a ten-second schedule. It logged
 33 intervals longer than 12 seconds and a maximum sample gap of 14.373 seconds.
-The [current figure verification](../README.md#verify-the-current-figures)
+The [render receipt](log/figure-render.json) binds the figures to the
+accepted release.
+[Current figure verification](../README.md#verify-the-current-figures)
 compares the refreshed PNGs with two independent CSV-only renders.
 
-Render all three PNGs using only the published CSVs.
+Render all three PNGs from the published CSVs alone.
 
 ```bash
 STEP="$PWD/stage2_CarPS-VAE/05_tsg_loss/05.1_loss_metrics"
+mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/tsg-loss-figures.XXXXXX")
 export TMPDIR="$WORK" MPLCONFIGDIR="$WORK"
-python "$STEP/figure/script/render_metrics.py" --data "$STEP/figure/data" --output "$WORK"
-python "$STEP/figure/script/render_learning_curves.py" --data "$STEP/figure/data" --output "$WORK"
+python "$STEP/figure/script/render_comparison.py" --data "$STEP/figure/data" --output "$WORK"
 ```
