@@ -16,9 +16,9 @@
     "fits": 63,
     "fixed_jaccard_code_sha256": "66011526374d4405c137ba5f07f291ebad8a86c3bd8e97b8aba8ff9c540eb062",
     "matched_controls_sha256": "97bb9f1b792efd81eeeca65a0318324680f509ecac74bb04acd22ba4523c109e",
-    "matrix_manifest_sha256": "d3b67f7b4246320afcc5883a8fda85718d43a36fc6e19875c2d7a12b51c99cb8",
+    "matrix_manifest_sha256": "1f3a95b8694a64c18e9a378ce42500af75541f59580aeef9bfddade5e1e31f85",
     "reference": "KPGT",
-    "report_manifest_sha256": "aec6ae16246ad741b89c651e85c27067503562f273cfed931a23f322870ca5f7",
+    "report_manifest_sha256": "ca1353c3b841a8c69e2b842b4e70e079cb3c28d517fba052e30c7f9d71777ef7",
     "reuse_plan_sha256": "cf7d9e00d649d2817a99a8a02a2f04f62e96f1ce2b839fbf9585157cbd76c27b",
     "reused_kpgt": 9,
     "sealed_jac_top200_parity": true,
@@ -39,7 +39,7 @@
     "util/output/api/cpst_util/representations.py": "fec0c7fad052dde89c8c57d1b0ba26acdd5243d9db3aa8459416245dfbb2fddf"
   },
   "schema": "cpst-figure-render-v1",
-  "scientific_receipt_sha256": "23dca95c178fc2c03dd2b44c02db1ad5254cd51aadc5e307b97de0ae9b2f0573",
+  "scientific_receipt_sha256": "feb3d9a0a4bddf3f66258ec8bc99c91b9f68de14671dd073325a0a09c0dc462c",
   "status": "PASS",
   "step": "08_cpst_chem-emb"
 }

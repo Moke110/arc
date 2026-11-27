@@ -112,12 +112,13 @@ def main():
     for child in ("matplotlib", "scratch"):
         (work / child).mkdir()
     env = {**os.environ, "MPLCONFIGDIR": str(work / "matplotlib"), "TMPDIR": str(work / "scratch")}
+    axis_env = {name: value for name, value in env.items() if name != "PYTHONPATH"}
     paths = [str(STAGE / "util/output/api")]
     if inherited := env.get("PYTHONPATH"):
         paths.append(inherited)
     env["PYTHONPATH"] = os.pathsep.join(paths)
     axis_count = verify_report(STAGE / "02_gene_axis", "342-figure-render.json",
-                               AXIS_RENDERERS, work / "02_gene_axis", env)
+                               AXIS_RENDERERS, work / "02_gene_axis", axis_env)
     if axis_count != 5:
         raise ValueError(f"expected five Step 02 figures, verified {axis_count}")
     for step, script in COMPARISON_RENDERERS.items():

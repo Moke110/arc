@@ -38,7 +38,7 @@ fits and replay, and pinned Git revisions accessible. For a linked worktree, use
 formal fit commands, `--step08` for reference and formal commands, and
 `--step03` and `--step04` for scoring, build and verification. Use the original
 provenance when reconstructing the ignored payloads.
-[Migration receipt](../util/execution/385-release-migration.json)
+[Migration receipt](../util/log/385-release-migration.json)
 
 ## Set up a measured run
 

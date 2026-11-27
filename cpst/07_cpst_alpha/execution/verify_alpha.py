@@ -14,6 +14,7 @@ STEP = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(STEP / "output/api"))
 
 from cpst_alpha import AlphaAdapter, KPGT_WIDTH, MEASURED_SHARED, PROJECTION_WIDTH, ROUND_FOUR, axis_run, objective
+from cpst_util.release_names import original_axis_manifest_sha256
 from measured_roster import SEEDS, fit_coordinates
 from run_measured import (AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING,
                           bind)
@@ -128,6 +129,8 @@ def verify_protocol(config, data, vectors, source):
     """Rebind relocatable inputs and compare the complete non-path protocol."""
     options = {**config["arguments"], "source": str(source)}
     observed = bind(options, data, vectors)
+    if config["axis_family_manifest_sha256"] != observed["axis_family_manifest_sha256"]:
+        observed["axis_family_manifest_sha256"] = original_axis_manifest_sha256(observed["axis_family_manifest_sha256"])
     ignored = {"arguments", "nonce", "code_sha256", "experiment"}
     if {key: value for key, value in observed.items() if key not in ignored} != {
             key: value for key, value in config.items() if key not in ignored}:

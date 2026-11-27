@@ -24,7 +24,7 @@
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },
   "schema": "cpst-figure-render-v1",
-  "scientific_receipt_sha256": "3d76bc0498bb2d26b4bd48f1fb299169468c949475b6e364454103f40f927185",
+  "scientific_receipt_sha256": "0e2694ecfa30b8f2743d4055f219f031f9ca15b2832852fcc7ec1fcbd13c304b",
   "status": "PASS",
   "step": "09_cpst_axis"
 }

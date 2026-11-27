@@ -4,7 +4,8 @@ from functools import lru_cache
 from hashlib import sha256
 import subprocess
 
-from cpst_util.release_names import historical_path, original_alpha_release_sha256
+from cpst_util.release_names import (historical_path, original_alpha_release_sha256,
+                                     original_axis_manifest_sha256)
 
 
 @lru_cache
@@ -54,6 +55,8 @@ def historical_gate_configuration(config):
     for name in ("schema", "protocol"):
         if name in prior:
             prior[name] = prior[name].replace("cpst", "carps-vae")
+    if "axis_family_manifest_sha256" in prior:
+        prior["axis_family_manifest_sha256"] = original_axis_manifest_sha256(prior["axis_family_manifest_sha256"])
     if "alpha_release_sha256" in prior:
         prior["alpha_release_sha256"] = original_alpha_release_sha256()
     return prior

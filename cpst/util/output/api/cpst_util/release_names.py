@@ -48,27 +48,24 @@ def migrate_names(contents):
 
 
 @lru_cache(maxsize=1)
-def _release_migration():
-    evidence = Path(__file__).resolve().parents[3] / "execution/385-release-migration.json"
-    migration = json.loads(evidence.read_bytes())
-    if migration["schema"] != "cpst-release-migration-v1":
-        raise ValueError("unknown CPST registration migration schema")
-    return migration["metadata"]
-
-
-@lru_cache(maxsize=1)
-def _original_registrations():
-    return {entry["sha256"]: entry["original_sha256"] for entry in _release_migration()
-            if entry["path"].endswith("/registration.json")}
+def _registration_hashes():
+    evidence = Path(__file__).with_name("registration-hashes.json")
+    lookup = json.loads(evidence.read_bytes())
+    if lookup["schema"] != "cpst-registration-hashes-v1":
+        raise ValueError("unknown CPST registration hash schema")
+    return lookup
 
 
 def original_alpha_release_sha256():
     """The exact alpha file digest embedded in the accepted pre-rename gates."""
-    [entry] = [entry for entry in _release_migration()
-               if entry["path"] == "cpst/07_cpst_alpha/output/release.json"]
-    return entry["original_sha256"]
+    return _registration_hashes()["alpha_original_release_sha256"]
+
+
+def original_axis_manifest_sha256(manifest_sha256):
+    """Resolve the path-only Denoise-DEG manifest reissue for sealed input checks."""
+    return _registration_hashes()["denoise_manifest_sha256"].get(manifest_sha256, manifest_sha256)
 
 
 def checkpoint_registration_sha256(registration_sha256):
     """Resolve a reissued registration to the original digest stored in its checkpoint."""
-    return _original_registrations().get(registration_sha256, registration_sha256)
+    return _registration_hashes()["registrations_sha256"].get(registration_sha256, registration_sha256)

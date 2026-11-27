@@ -117,12 +117,13 @@ def render_coverage(data_path, output, drawing):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--repo", type=Path, default=STEP.parents[2])
+    repo = next(parent for parent in STEP.parents if (parent / ".git").exists())
+    parser.add_argument("--repo", type=Path, default=repo)
     parser.add_argument("--step", type=Path, default=STEP)
     parser.add_argument("--data", type=Path)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    sys.path.insert(0, str(args.repo / "stage2/util/output/api"))
+    sys.path.insert(0, str(args.repo / "cpst/util/output/api"))
     from cpst_util import plotting
 
     figure_path = args.step / "figure"

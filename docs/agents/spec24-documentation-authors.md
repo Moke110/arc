@@ -9,7 +9,7 @@ identifies the accepted material and interfaces checked for each assignment.
 
 CPST evidence can be traced through the linked studies' `log/` receipts, the
 [shared verification records](../../cpst/util/README.md) and the
-[release migration inventory](../../cpst/util/execution/385-release-migration.json).
+[release migration inventory](../../cpst/util/log/385-release-migration.json).
 CPSP evidence is recorded in the
 [corpus manifest](../../cpsp/01_corpus/output/manifest.json) and the
 [Morgan release record](../../cpsp/02_base_morgan/execution/release_record.json).

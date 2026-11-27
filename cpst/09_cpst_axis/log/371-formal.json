@@ -1,5 +1,5 @@
 {
-  "bounded_gate_sha256": "5afeadda218b2a0449e140194dadb3ddb61fb2fabab391a767f8f9b177d554cf",
+  "bounded_gate_sha256": "635e4dc94a0e3b9ea058f85cfc76ce6ba316893b338548175778131643129e86",
   "cold_drug_folds": [
     0,
     1,
@@ -50,7 +50,7 @@
       }
     }
   ],
-  "matrix_sha256": "5bbf1a6b0215877c07c29ecc371446bf3bc90702436d7c7464a03bd82f542ed8",
+  "matrix_sha256": "84e7673cd0c057710909ec0e813b511a24ac0199431691d5ea4748af92de2690",
   "new_exact_replays": 63,
   "numerical_audit": {
     "condition_rows": 33192,
@@ -66,13 +66,13 @@
     "figure/data/metrics-paired.csv": "692142c571bdfcf3a0e9200f2105323711ae29ccae024c82f9bb6aed9d7f6571",
     "figure/data/metrics.csv": "96018d66f1dddcf122ec68a35985865f8354f5e8415ba53e9f973c0e4549174f",
     "log/368-coordinator-resources.jsonl": "19b6ca5f7db0efdf05654e1e201dbba7c7330b8f726a4002651329188e522dac",
-    "log/368-reference.json": "801cf97e892abb22a232b5dff242007a68f3d5070c10ad45f7db6fc8d889f24e",
+    "log/368-reference.json": "664cd5a9b13f360ac5f9fa7e28fc973b966047bf4b1a0c6c2632de1b18e5b872",
     "log/368-resources.jsonl": "dba81c0f748b130c00ff5b11436aa40e2813f94010b4ffb4a16440efd49e3e11",
     "log/bandwidths.csv": "192722c5e569b24dd5ebb302d74a247130e4e65f1cfd27f2a13605846ff87f23",
-    "log/runs.csv": "203d4572fa141af45885d420f5cd36b3f1ce9cb1d1c7c092a52da9f01f744360",
+    "log/runs.csv": "2d4bfb8af43c5b6b2372455e384ea6b81a355afa6eb7c624edbb8055b77f0796",
     "log/summary.csv": "5e940d53f98d547e09c6eaa62ddc39a96d25c59d253f0d7e38132010fa61ce4c"
   },
-  "report_sha256": "4ae1457c7059c4a4e2eb0fc310b9a0f121030349fb6351c3f4caf7b2fa2ffb9e",
+  "report_sha256": "5de600036580d02f352134853fa96fb58733e15bbdbf32ac2972447bf37b7e65",
   "resources": {
     "coordinator": {
       "gaps_over_12_seconds": 0,
@@ -610,14 +610,14 @@
     "scope_swap_max_bytes": 8589934592,
     "status": "PASS"
   },
-  "reuse_plan_sha256": "801cf97e892abb22a232b5dff242007a68f3d5070c10ad45f7db6fc8d889f24e",
+  "reuse_plan_sha256": "664cd5a9b13f360ac5f9fa7e28fc973b966047bf4b1a0c6c2632de1b18e5b872",
   "schema": "cpst-unimol-axis-formal-v2",
   "score_process_peak_rss_kib": {
     "independent_audit": 911628,
     "scoring": 1580348
   },
   "status": "PASS",
-  "step08_acceptance_sha256": "23dca95c178fc2c03dd2b44c02db1ad5254cd51aadc5e307b97de0ae9b2f0573",
+  "step08_acceptance_sha256": "feb3d9a0a4bddf3f66258ec8bc99c91b9f68de14671dd073325a0a09c0dc462c",
   "step08_exact_reuses": 9,
   "ticket": 371,
   "training_manifest_sha256": {

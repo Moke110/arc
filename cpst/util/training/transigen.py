@@ -14,7 +14,7 @@ import torch
 
 from cpst_util.derivation.release import check_outputs, read_json, sha256 as digest, write_json
 from cpst_util.publication import publication_lock
-from cpst_util.release_names import checkpoint_registration_sha256
+from cpst_util.release_names import checkpoint_registration_sha256, original_axis_manifest_sha256
 from tsg_axis import model as kpgt
 from tsg_axis.inputs import open_inputs, score_fixed_prediction
 from tsg_axis.learning import EarlyStopping, fixed_rng
@@ -236,6 +236,9 @@ def execute_phase(output, phase, paths, *, bind, build_model, fit,
             identity = bind(args, data, vectors)
             saved_identity = {key: value for key, value in config.items()
                               if key not in {"arguments", "nonce"}}
+            axis = "axis_family_manifest_sha256"
+            if sealed is not None and identity[axis] != saved_identity[axis]:
+                identity[axis] = original_axis_manifest_sha256(identity[axis])
             if identity != saved_identity:
                 raise ValueError("registered experiment, inputs, code or runtime changed")
             torch.use_deterministic_algorithms(True)

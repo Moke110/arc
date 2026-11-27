@@ -38,13 +38,16 @@ release. The shared figure gate rendered all 45 current PNGs twice from the
 published CSVs and matched the tracked receipts, covering 13 comparisons,
 five Step 02 figures and the palette.
 
-The installed scientific verifiers passed exactly. Step 08 verified 567
-scores and receipt `56b8983678f72adc2deb9a34613561428b3bd77507f44b0ae091b1bc7d40a6f2`.
-Step 09 verified 720 scores, 33,192 condition rows and receipt
-`b8d20c28479c49348a90ef7d6c2071d5c741451fc8f5bd3ee4568de5f09472eb`.
-Step 10 verified 900 scores, 13,830 condition rows and receipt
-`c39a2d6a4b08c6b8c22b2d45fa79e7a72fd28f925301e8b23bec68ebe1dbbd1d`.
-Each verifier also reproduced its accepted CSV-only figures.
+The pre-migration scientific verifiers reproduced the accepted scores and
+CSV-only figures. The current receipts bind the reissued metadata in the
+[checksum ledger](cpst-receipts.sha256) and the
+[original-to-current inventory](../log/385-release-migration.json).
+
+| Step | Scores | Condition rows | Original receipt SHA-256 | Current receipt SHA-256 |
+| --- | ---: | ---: | --- | --- |
+| 08 | 567 | — | `56b8983678f72adc2deb9a34613561428b3bd77507f44b0ae091b1bc7d40a6f2` | `feb3d9a0a4bddf3f66258ec8bc99c91b9f68de14671dd073325a0a09c0dc462c` |
+| 09 | 720 | 33,192 | `b8d20c28479c49348a90ef7d6c2071d5c741451fc8f5bd3ee4568de5f09472eb` | `0e2694ecfa30b8f2743d4055f219f031f9ca15b2832852fcc7ec1fcbd13c304b` |
+| 10 | 900 | 13,830 | `c39a2d6a4b08c6b8c22b2d45fa79e7a72fd28f925301e8b23bec68ebe1dbbd1d` | `3549fafc89188d7d626d8890543e4433481e3464203ac04249ca83a2c0d35eee` |
 
 The Step 08 registry and preflight validated the original code with the pinned
 Git revision on the first pass. Its score reader still bound the working-tree
