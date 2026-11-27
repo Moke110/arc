@@ -19,7 +19,7 @@ comparison bundles are immutable inputs.
   Materialize the representation bundle and the author source before fitting.
   Match same-shaped initialized parameters and training random streams across
   CarPS-Transcriptome arms within fold and seed.
-  [Alpha release](../07_cpst_alpha/output/release.json) · [Representation pins](../util/output/api/cpst_util/representations.py) · [Author source manifest](../../pert_model/TranSiGen/manifest.sha256) · [Protocol](execution/dose_protocol.py) · [Model adapter](execution/dose_model.py)
+  [Alpha release](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/output/release.json) · [Representation pins](../util/output/api/cpst_util/representations.py) · [Author source manifest](../../pert_model/TranSiGen/manifest.sha256) · [Protocol](execution/dose_protocol.py) · [Model adapter](execution/dose_model.py)
 - Select each checkpoint by minimum validation objective. Require exact
   independent replay of the validation objective and both validation and
   held-out predictions. For scoring, subtract measured same-plate DMSO from
@@ -44,7 +44,7 @@ Run the heavy phases serially. Use a fresh scratch directory for each recipe.
 set -e
 STEP="$PWD/cpst/10_cpst_dose"
 EXECUTION="$STEP/execution"
-SAMPLER="$PWD/cpst/06_tsg_shape/06.1_round1/execution/sample_resources.py"
+SAMPLER="$PWD/cpst/06_tsg_module/06.1_round1/execution/sample_resources.py"
 MATERIALIZED="${MATERIALIZED:-$PWD}"
 STEP03="$MATERIALIZED/cpst/03_data_train"
 REPRESENTATIONS="$MATERIALIZED/cpst/util/output/representations"
@@ -64,7 +64,7 @@ For each CUDA matrix, start the coordinator sampler in a second terminal with
 the same `WORK` and `SAMPLER` paths. Wait for its first sample before starting
 preflight and keep it active until the first sample after the measured matrix
 command exits. The gate checks the ten-second cadence and coverage.
-[Coordinator sampler](../06_tsg_shape/06.1_round1/execution/sample_resources.py)
+[Coordinator sampler](../06_tsg_module/06.1_round1/execution/sample_resources.py)
 
 ```bash
 python "$SAMPLER" --output "$WORK/coordinator.jsonl"

@@ -17,7 +17,7 @@ from training_data import open_tenv_training
 from tsg_axis.comparison_evidence import read_fixed_jaccard
 from tsg_axis.inputs import AxisInputs
 from tsg_axis.metrics import summarize_conditions
-from verify_alpha import verify_reference, verify_reference_release, verify_release
+from util.training.cpst_reference import verify_reference, verify_reference_release, verify_release
 
 TRACE = ["epoch", "train_loss", "validation_loss"]
 IDENTITY = ["arm", "fold", "seed"]

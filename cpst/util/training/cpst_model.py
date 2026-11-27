@@ -1,9 +1,14 @@
-"""CarPS-Transcriptome alpha model and its fixed KPGT default."""
+"""CarPS-Transcriptome model and its fixed KPGT default."""
 
 from operator import index
+from pathlib import Path
+import sys
 
 import torch
 from torch import nn
+
+_STAGE = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(_STAGE / path) for path in ("04_tsg_axis/output/api", "util/output/api")]
 
 from .measured_model import MeasuredAdapter, configure_objective, objective_identity
 from .measured_roster import MEASURED_SHARED
@@ -12,8 +17,8 @@ from tsg_axis.model import WIDTH as KPGT_WIDTH
 PROJECTION_WIDTH = 400
 
 
-class AlphaAdapter(MeasuredAdapter):
-    """Construct the shared signed Δ model configured with the alpha objective.
+class CPSTAdapter(MeasuredAdapter):
+    """Construct the shared signed Δ model configured with the incumbent objective.
 
     The default constructor uses the original KPGT initialization and forward.
     An experiment may supply a native chemical width and a host linear-layer
@@ -67,5 +72,5 @@ class AlphaAdapter(MeasuredAdapter):
 
 
 def objective():
-    """Return the inherited alpha objective weights and target identity."""
+    """Return the inherited objective weights and target identity."""
     return objective_identity(MEASURED_SHARED)

@@ -26,14 +26,14 @@
   },
   "independent_renders": 2,
   "png_files_sha256": {
-    "figure/learning-curve.png": "bc237b3ca05a58b2d71bb8078abff421a1ec85867f1337c3ebf69079d5df0dca",
+    "figure/learning-curve.png": "8e0c3990fc0760060247dc5870188d4d36f13a09e34a59334d809338479bfbbe",
     "figure/metrics-paired.png": "abd593a6d06a6e444abbc1ad145008e764015ae6cc9900552f29e48344bd4ac2",
     "figure/metrics.png": "7c6739de7ed3b531d219ac06b3541356a79ff8a5f44c3a91a7a732f76dd2ed64"
   },
   "renderer_files_sha256": {
     "05_tsg_loss/05.2_mse_l1/figure/script/render_comparison.py": "b6a59896f24d86276590007525c8b628b5a79960b9f19659b1a74e60c80ccb2d",
     "05_tsg_loss/figure/script/loss_comparison.py": "edc4916b5fcb819ace06c19d3aa5e7998927482df5466a6af2974105603a6336",
-    "util/output/api/cpst_util/comparison.py": "4806e7c3d331637ba2d0d9310fd833ed9d2135c40bf62a2034cba38773eae65c",
+    "util/output/api/cpst_util/comparison.py": "78bb29a6621e1ad4565c3201b2618f630355cf49653afe70b5688372362ad3b7",
     "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },

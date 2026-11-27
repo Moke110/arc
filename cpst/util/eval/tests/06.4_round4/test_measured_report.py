@@ -9,7 +9,7 @@ import unittest
 import pandas as pd
 
 REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-sys.path.insert(0, str(REPO / "cpst/06_tsg_shape/06.4_round4/execution"))
+sys.path.insert(0, str(REPO / "cpst/06_tsg_module/06.4_round4/execution"))
 
 from measured_scores import paired_report
 from prior_measured import RECEIPT, ROUND_THREE, verify_release, verify_source_scores

@@ -22,13 +22,13 @@
   },
   "independent_renders": 2,
   "png_files_sha256": {
-    "figure/learning-curve.png": "2d816718a8766842134ebfa25b24533793b7f03b90d4ef225f9e2284fabb8299",
+    "figure/learning-curve.png": "d024d200fdcec8aba7c270c95116ecb1779be0850213766aed4021df523f477e",
     "figure/metrics-paired.png": "b3e3eeb6c0bec257c03f2c3b38e5a42e334b04eb67aab0b470e352c59553ba5c",
     "figure/metrics.png": "5609d143dabfd774da7eae4554c21f473165a6707c9dfafbc48a65e53d72f153"
   },
   "renderer_files_sha256": {
     "04_tsg_axis/figure/script/render.py": "cb7efd683ee6337224cb1ea1c2f109cf9335a41d67f5afeba2052180a945dfcf",
-    "util/output/api/cpst_util/comparison.py": "4806e7c3d331637ba2d0d9310fd833ed9d2135c40bf62a2034cba38773eae65c",
+    "util/output/api/cpst_util/comparison.py": "78bb29a6621e1ad4565c3201b2618f630355cf49653afe70b5688372362ad3b7",
     "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },

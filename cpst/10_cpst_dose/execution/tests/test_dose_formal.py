@@ -8,7 +8,8 @@ from tempfile import TemporaryDirectory
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from dose_formal import REPORT_TABLES, build, checked_report
+from dose_formal import REPORT_METRICS, REPORT_TABLES, build, checked_report
+from dose_protocol import coordinates
 
 
 class FormalReportTests(unittest.TestCase):
@@ -32,7 +33,8 @@ class FormalReportTests(unittest.TestCase):
                 (report / file).write_text("original\n", encoding="utf-8")
             record = {
                 "schema": "cpst-dose-report-v1", "bounded": False,
-                "primary_metrics": ["Δ PCC", "Δ RMSE"], "scores": 900,
+                "primary_metrics": ["Δ PCC", "Δ RMSE"],
+                "scores": len(coordinates()) * len(REPORT_METRICS),
                 "outputs": {name: sha256(b"original\n").hexdigest() for name in REPORT_TABLES},
             }
             (report / "manifest.json").write_text(json.dumps(record), encoding="utf-8")

@@ -90,7 +90,7 @@ compared eight axes with CarPS-Transcriptome and UniMol and selected
 Denoise-DEG 5k under that protocol as well.
 [Step 03.7 training release](../03_data_train/03.7_tenv_denoise-5k/README.md) ·
 [Step 05 loss studies](../05_tsg_loss/README.md) ·
-[Step 06 architecture studies](../06_tsg_shape/README.md) ·
+[Step 06 architecture studies](../06_tsg_module/README.md) ·
 [Step 09 selection](../09_cpst_axis/README.md#formal-results)
 
 ## Figures and evidence

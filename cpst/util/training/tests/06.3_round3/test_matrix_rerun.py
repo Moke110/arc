@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 
 REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-sys.path.insert(0, str(REPO / "cpst/06_tsg_shape/06.3_round3/execution"))
+sys.path.insert(0, str(REPO / "cpst/06_tsg_module/06.3_round3/execution"))
 
 import matrix_composition as matrix
 from composition_roster import coordinates, fit_coordinates

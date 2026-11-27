@@ -15,8 +15,8 @@ Use the numbered guides to materialize inputs and verify releases.
 | [03 Training data](03_data_train/AGENTS.md) | Eight tenv plate-pooled releases, frozen folds and the Tahoe well-level HVG-DEG 5k release. |
 | [04 TranSiGen axis comparison](04_tsg_axis/AGENTS.md) | The six-axis tenv study, run through [matrix.py](04_tsg_axis/execution/matrix.py) and [evaluate.py](04_tsg_axis/execution/evaluate.py). |
 | [05 TranSiGen loss](05_tsg_loss/AGENTS.md) | Δ loss and reconstruction objective studies on Denoise-DEG 5k. |
-| [06 TranSiGen architecture](06_tsg_shape/AGENTS.md) | Expression widths, depths, prediction paths and measured encoder targets. |
-| [07 CarPS-Transcriptome alpha](07_cpst_alpha/AGENTS.md) | The fixed KPGT, standardized log-dose alpha entry point and exact checkpoint verification. |
+| [06 TranSiGen modules](06_tsg_module/AGENTS.md) | Expression widths, depths, prediction paths and measured encoder targets. |
+| [07 CarPS-Transcriptome loss](07_cpst_loss/AGENTS.md) | The additive loss comparison on the shared signed Δ model. |
 | [08 Chemical representations](08_cpst_chem-emb/AGENTS.md) | The comparison of seven frozen representations on the fixed alpha. |
 | [09 CarPS-Transcriptome axes](09_cpst_axis/AGENTS.md) | The eight-axis UniMol comparison with the study's standardized log dose. |
 | [10 CarPS-Transcriptome dose](10_cpst_dose/AGENTS.md) | The cold-dose-drug comparison and selected `no-dose` configuration. |
@@ -115,7 +115,7 @@ capped_step04 python cpst/04_tsg_axis/execution/verify_active_inputs.py
 
 Keep sealed inputs read-only. For replay, copy the fit to scratch and use its
 original registered source revision and protocol. Use the
-[pinned Step 06.4 replay](06_tsg_shape/06.4_round4/AGENTS.md#replay-a-sealed-step-064-fit)
+[pinned Step 06.4 replay](06_tsg_module/06.4_round4/AGENTS.md#replay-a-sealed-step-064-fit)
 for registrations that bind the original `stage2/` layout. Use the
 [TranSiGen verification inventory](util/training/verification.md) for
 Steps 04–06 and the [CarPS-Transcriptome verification inventory](util/training/cpst-verification.md)

@@ -111,6 +111,9 @@ def _format_panel(axis):
     axis.set_axisbelow(True)
 
 
+LOSS_LABEL = "Loss"
+
+
 def _curve_figure(plt, curves, arms, title):
     count = len(arms)
     ncols = min(3, count)
@@ -127,7 +130,7 @@ def _curve_figure(plt, curves, arms, title):
         learning_curve(axis, runs)
         axis.set_title(label)
         axis.set_xlabel("Epoch")
-        axis.set_ylabel("Objective")
+        axis.set_ylabel(LOSS_LABEL)
         axis.legend(loc="upper right", fontsize=7, frameon=False)
         _format_panel(axis)
     for axis in list(axes.flat)[count:]:

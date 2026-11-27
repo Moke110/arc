@@ -18,10 +18,10 @@ AXIS_RENDERERS = (
 )
 COMPARISON_RENDERERS = {
     "04_tsg_axis": "render.py",
-    "06_tsg_shape/06.1_round1": "render_comparison.py",
-    "06_tsg_shape/06.2_round2": "render_comparison.py",
-    "06_tsg_shape/06.3_round3": "render_comparison.py",
-    "06_tsg_shape/06.4_round4": "render_comparison.py",
+    "06_tsg_module/06.1_round1": "render_comparison.py",
+    "06_tsg_module/06.2_round2": "render_comparison.py",
+    "06_tsg_module/06.3_round3": "render_comparison.py",
+    "06_tsg_module/06.4_round4": "render_comparison.py",
     "08_cpst_chem-emb": "render_comparison.py",
     "09_cpst_axis": "render_axes.py",
     "10_cpst_dose": "render_doses.py",

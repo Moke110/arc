@@ -77,6 +77,8 @@ class ComparisonTests(unittest.TestCase):
 
         def check_saved_figure(figure, path, **_):
             if path.name == "learning-curve.png":
+                self.assertTrue(figure.axes)
+                self.assertEqual({axis.get_ylabel() for axis in figure.axes}, {"Loss"})
                 return
             self.assertNotIn(path.name, checked)
             checked.add(path.name)

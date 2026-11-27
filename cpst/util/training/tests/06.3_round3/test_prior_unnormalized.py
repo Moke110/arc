@@ -6,7 +6,7 @@ import sys
 import unittest
 
 REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-sys.path.insert(0, str(REPO / "cpst/06_tsg_shape/06.3_round3/execution"))
+sys.path.insert(0, str(REPO / "cpst/06_tsg_module/06.3_round3/execution"))
 from prior_unnormalized import select_reusable
 
 

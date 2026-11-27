@@ -9,7 +9,7 @@ from torch.nn import functional as F
 
 from .measured_roster import CONTROL_ONLY, DIRECT_DELTA, MEASURED_DELTA, MEASURED_SHARED, SHAPES, SOURCE_SHAPES
 
-STEP = Path(__file__).resolve().parents[2] / "06_tsg_shape/06.4_round4"
+STEP = Path(__file__).resolve().parents[2] / "06_tsg_module/06.4_round4"
 ROUND_THREE = STEP.with_name("06.3_round3")
 sys.path.insert(0, str(ROUND_THREE / "execution"))
 
