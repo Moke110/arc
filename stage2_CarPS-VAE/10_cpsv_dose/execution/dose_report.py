@@ -3,21 +3,19 @@
 import argparse
 import json
 from pathlib import Path
-import sys
 
 import numpy as np
 import pandas as pd
 
 from dose_inputs import open_inputs
 from dose_matrix import verify_matrix
-from dose_protocol import DEFAULT_STEP03, REFERENCE, STAGE, TRANSIGEN, coordinates
+from dose_protocol import DEFAULT_STEP03, REFERENCE, TRANSIGEN, coordinates
 from dose_runs import axis_run, input_identity
 from chem_runs import axis_evaluate
 from stage2_util.comparison import METRIC_NAMES
 from tsg_axis.inputs import score_fixed_prediction
 
-sys.path.insert(0, str(STAGE / "09_cpsv_axis/execution"))
-from axis_scores import REPORT_METRICS, score_deltas
+from util.eval.axis_delta import REPORT_METRICS, score_deltas
 
 SCHEMA = "carps-vae-dose-report-v1"
 PLOT_TABLES = ("learning-curve.csv", "metrics.csv", "metrics-paired.csv")

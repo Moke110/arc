@@ -115,57 +115,17 @@ its installed full-axis report with the sealed fits and full-axis inputs.
 [Step 09 reproduction](09_cpsv_axis/README.md#reproduce-and-verify) ·
 [Original comparison publication](https://github.com/Moke110/carps/tree/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE)
 
-## Local history
+## Historical evidence and active-input checks
 
-[ADR 0087](../docs/adr/0087-stage2-active-steps-and-history.md) defines the archive
-cutover. The materialized checkout keeps superseded raw and training releases,
-prior comparisons, the archived Step 05–09 studies and rollback materials in
-`stage2_CarPS-VAE/history`. The local `archive-manifest.json` records original
-paths, archived paths and replay revisions. The duplicate render bundle
-for the current Step 04 report was removed from the installed archive.
-The manifest retains the original `stage2/` archive-relative paths. Normal readers, builds and comparisons use the active releases. In an archive-isolated checkout with the
-active inputs materialized, run `python stage2_CarPS-VAE/04_tsg_axis/execution/verify_active_inputs.py`
-to verify the Step 01–03 readers, projections, and fold population.
+[ADR 0105](../docs/adr/0105-stage-cleanup.md) retires the local Stage 2 archive.
+Use the original Git revisions for tracked historical code, figures and receipts.
+The [pinned ADR 0087 cutover](https://github.com/Moke110/carps/blob/99078e6f/stage2/README.md#deploy-the-adr-0087-cutover)
+and [original CarPS path migration](https://github.com/Moke110/carps/blob/ac62a177a54aa99e6ac626728af12394f3e0d940/stage2_CarPS-VAE/README.md#deploy-the-carps-stage-2-path)
+document their original deployments.
 
-The [cutover smoke receipt](04_tsg_axis/log/323-archive-isolated-smoke.json)
-records the archive-isolated acceptance.
-
-The [pinned archive cutover instructions](https://github.com/Moke110/carps/blob/99078e6f/stage2/README.md#deploy-the-adr-0087-cutover)
-record the migration procedure for its original deployment revision.
-
-## Deploy the CarPS Stage 2 path
-
-[ADR 0099](../docs/adr/0099-carps-vae-alpha-and-chemical-representations.md)
-moves the materialized `stage2/` tree to `stage2_CarPS-VAE/`. Set the Git
-remote to the canonical repository with
-`git remote set-url origin https://github.com/Moke110/carps`.
-
-For the first fast-forward across the rename, execute the migration script
-from an integration worktree that contains the successor code. Run from the
-materialized `main` checkout after the integrated deployment passes
-acceptance. Set `SUCCESSOR_WT` to the integration worktree path and
-`TARGET` to the accepted `dev` tip.
-
-```bash
-ROOT=$(git rev-parse --show-toplevel)
-python "$SUCCESSOR_WT/script/migrate_carps_stage2.py" --root "$ROOT" \
-  --work "$ROOT/tmp/carps-stage2-cutover" deploy --target "$TARGET"
-```
-
-The script parks the old directory on the checkout filesystem while Git
-fast-forwards, renames it to the canonical path and installs changed tracked
-files from the target tree. It records the pre/post inventory under the
-specified work directory. It verifies the identities of preserved files and
-directories, hashes small files and checks each external symlink target.
-Use the same arguments with `resume` if interrupted after a plan has been
-recorded. Run `verify` to compare the just-installed checkout against that
-plan. Use `resume` and `verify` before installing the new Step 08
-`output/formal` bundle. After installing the bundle, run the
-[Step 08 scientific verifier](08_cpsv_chem-emb/README.md#formal-scientific-reproduction).
-For a later checkout-root move, repair the Git metadata for each
-relocated linked worktree with `git worktree repair <linked-worktree-path>`
-from the moved primary checkout. Working-tree payload locations and Git
-worktree registrations are separate.
-
+With Steps 01–03 materialized, run
+`python stage2_CarPS-VAE/04_tsg_axis/execution/verify_active_inputs.py`
+from a checkout without the local archive. It checks active corpus windows,
+ordered projections, training folds and both tenv and Tahoe training readers.
 Use the [pinned Step 06.4 replay](06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit)
-for registrations whose recorded code keys start with `stage2/`.
+for registrations whose source keys start with `stage2/`.

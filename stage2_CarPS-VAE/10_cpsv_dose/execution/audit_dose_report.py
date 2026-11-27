@@ -6,15 +6,18 @@ from hashlib import sha256
 import json
 import math
 from pathlib import Path
+import sys
 
 import numpy as np
 from scipy.spatial.distance import pdist
 
 from dose_inputs import SMOKE_LIMITS
 from dose_matrix import verify_matrix
-from dose_protocol import AXIS, DEFAULT_STEP03, HELD_DOSES, REFERENCE, SCENARIO, TRANSIGEN, coordinates
+from dose_protocol import STAGE, AXIS, DEFAULT_STEP03, HELD_DOSES, REFERENCE, SCENARIO, TRANSIGEN, coordinates
 from dose_report import PLOT_TABLES, REPORT_METRICS
 from dose_runs import axis_run
+sys.path.insert(0, str(STAGE / "09_cpsv_axis/execution"))
+
 from audit_axis_report import (audit_fold, check_statistics, ordered_condition_ids, read_table, same,
                               treatment_rows, value)
 from stage2_util.comparison import METRIC_NAMES

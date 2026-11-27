@@ -2,8 +2,8 @@
 # check_stage2_paths.sh — assert stage2_CarPS-VAE/ executable code has no retired step paths.
 #
 # Scan tracked Stage 2 executable code for retired or archived paths.
-# The layout guard allows Steps 01–08, util, routing docs, and the ignored local
-# history directory. STAGE2_PATH_AUDIT_ROOT supplies a fixture layout.
+# The layout guard allows Steps 01–10, util and routing docs.
+# STAGE2_PATH_AUDIT_ROOT supplies a fixture layout.
 # No network or dataset access. Exit 0 clean, 1 stale/layout failure, 2 usage error.
 
 set -uo pipefail
@@ -96,12 +96,6 @@ main() {
       echo "RESULT: FAIL — previous Stage 2 root remains: stage2" >&2
       return 1
     fi
-    local archived_files
-    archived_files="$(git ls-files -- stage2_CarPS-VAE/history)" || return 2
-    if [ -n "$archived_files" ] || ! git check-ignore -q -- stage2_CarPS-VAE/history/.archive-probe; then
-      echo "RESULT: FAIL — Stage 2 history must be ignored and untracked" >&2
-      return 1
-    fi
   fi
   local entry root active
   for entry in "$stage2_root"/* "$stage2_root"/.[!.]* "$stage2_root"/..?*; do
@@ -117,8 +111,6 @@ main() {
     case "$entry" in
       "$stage2_root/AGENTS.md" | "$stage2_root/README.md")
         [ -f "$entry" ] && [ ! -L "$entry" ] && continue ;;
-      "$stage2_root/history")
-        [ -d "$entry" ] && [ ! -L "$entry" ] && continue ;;
     esac
     echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
     return 1

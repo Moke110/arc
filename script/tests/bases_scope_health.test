@@ -4,9 +4,9 @@ set -euo pipefail
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 tmp="$(mktemp -d)"
 trap 'rm -rf -- "$tmp"' EXIT
-mkdir -p "$tmp/script" "$tmp/.worktrees/worker" "$tmp/stage2_CarPS-VAE/history/stage2/07_tsg_dose"
+mkdir -p "$tmp/script" "$tmp/.worktrees/worker"
 cp "$root/script/check_stage2_paths.sh" "$root/script/check_tracked.sh" "$tmp/script/"
-for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} 06_tsg_shape 06_tsg_shape/{06.1_round1,06.2_round2,06.3_round3,06.4_round4} 07_cpsv_alpha 08_cpsv_chem-emb; do
+for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} 06_tsg_shape 06_tsg_shape/{06.1_round1,06.2_round2,06.3_round3,06.4_round4} 07_cpsv_alpha 08_cpsv_chem-emb 09_cpsv_axis 10_cpsv_dose; do
   mkdir -p "$tmp/stage2_CarPS-VAE/$step"
   printf '%s\n' "$step" > "$tmp/stage2_CarPS-VAE/$step/AGENTS.md"
   printf '%s\n' "$step" > "$tmp/stage2_CarPS-VAE/$step/README.md"
@@ -17,16 +17,15 @@ printf 'x = 1\n' > "$tmp/.worktrees/worker/run.py"
 printf 'Stage 2\n' >"$tmp/stage2_CarPS-VAE/AGENTS.md"
 printf 'Stage 2\n' >"$tmp/stage2_CarPS-VAE/README.md"
 printf '/stage2_CarPS-VAE/history/\n' >"$tmp/.gitignore"
-printf 'x = 1\n' >"$tmp/stage2_CarPS-VAE/history/stage2/07_tsg_dose/run.py"
 git -C "$tmp" init -q
 git -C "$tmp" add script stage2_CarPS-VAE .gitignore
 bash "$tmp/script/check_stage2_paths.sh" >/dev/null
 bash "$tmp/script/check_tracked.sh" >/dev/null
-git -C "$tmp" add -f stage2_CarPS-VAE/history/stage2/07_tsg_dose/run.py
+mkdir "$tmp/stage2_CarPS-VAE/history"
 if bash "$tmp/script/check_stage2_paths.sh" >/dev/null 2>&1; then
-  echo 'FAIL: tracked Stage 2 history must fail' >&2; exit 1
+  echo 'FAIL: retired Stage 2 history must fail' >&2; exit 1
 fi
-git -C "$tmp" rm --cached --force -q stage2_CarPS-VAE/history/stage2/07_tsg_dose/run.py
+rmdir "$tmp/stage2_CarPS-VAE/history"
 mkdir "$tmp/stage2_CarPS-VAE/evaluation"
 if bash "$tmp/script/check_stage2_paths.sh" >/dev/null 2>&1; then
   echo 'FAIL: an extra Stage 2 entry must fail' >&2; exit 1

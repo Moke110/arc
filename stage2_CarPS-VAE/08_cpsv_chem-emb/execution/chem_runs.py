@@ -8,10 +8,7 @@ from itertools import product
 import json
 import os
 from pathlib import Path
-import resource
 import sys
-from tempfile import TemporaryDirectory
-import time
 
 import numpy as np
 import pandas as pd
@@ -25,17 +22,20 @@ sys.path[:0] = [str(ALPHA / "output/api"), str(ALPHA / "execution"), str(ROUND_F
 
 from carps_vae_alpha import AlphaAdapter, PROJECTION_WIDTH
 from run_measured import AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING
-from run_measured import PHASES, SEALED_FILES, PHASE_FILES, axis_run, bind as bind_measured, fit_loss
+from run_measured import PHASES, SEALED_FILES, PHASE_FILES, axis_run, bind as bind_measured
 from evaluate_loss import axis_evaluate, check_trace
 from evaluate_sweep import TRACE_COLUMNS
-from run_shape import kl_diagnostics
+from run_shape import fit_with_diagnostics, kl_diagnostics
 from measured_roster import MEASURED_SHARED, SEEDS
 from stage2_util.representations import ARMS, WIDTHS
 from verify_alpha import verify_release
+from util.training import registered
+from util.training.provenance import verify_replay_configuration, verify_sealed_code
 
 SCHEMA = "carps-vae-alpha-chemical-run-v1"
 PROTOCOL = "tenv-matched-control-carps-vae-alpha-chemical-v1"
 REFERENCE = "KPGT"
+ORIGINAL_CODE = "ac62a177a54aa99e6ac626728af12394f3e0d940"
 ALPHA_MANIFEST = ALPHA / "output/release.json"
 
 
@@ -122,20 +122,18 @@ def bind(coordinate, data, vectors, source, smoke):
             for item in model["adaptations"]
         ]
     config["code_sha256"][Path(__file__).relative_to(axis_run.REPO).as_posix()] = axis_run.digest(Path(__file__))
-    return config
+    return axis_run.transigen.bind_experiment(args, config)
 
 
 def register(output, coordinate, training, representations, source, smoke):
     verify_release()
-    with axis_run.publication_lock(output) as root:
-        if root.exists():
-            raise ValueError("run registration requires an unused output directory")
+
+    def definition():
         with open_inputs(training, representations) as (data, vectors):
             config = bind(coordinate, data, vectors, source, smoke)
-        root.mkdir()
-        path = root / "registration.json"
-        axis_run.write_json(path, {**config, "arguments": arguments(coordinate, smoke), "nonce": axis_run.PROCESS})
-        return axis_run.digest(path)
+        return {**config, "arguments": arguments(coordinate, smoke)}
+
+    return registered.register(output, definition)
 
 
 def initialization(model, arm):
@@ -156,72 +154,41 @@ def initialization(model, arm):
 
 
 def execute(output, phase, training, representations, source):
-    started = time.monotonic()
     verify_release()
-    with axis_run.publication_lock(output) as root:
-        registration = root / "registration.json"
-        config = axis_run.read_json(registration)
-        registration_sha = axis_run.digest(registration)
+    with registered.phase(output, phase, PHASE_FILES) as run:
+        config = run.config
         args = config["arguments"]
         coordinate = args["arm"], args["fold"], args["seed"]
         if args != arguments(coordinate, args["smoke"]):
             raise ValueError("run arguments differ from its coordinate")
-        receipt = root / PHASES[phase]
-        if receipt.exists() and phase != "replay":
-            raise ValueError(f"run phase already recorded: {phase}")
-        sealed = (axis_run.verified_receipt(root, receipt.name, registration_sha, SEALED_FILES)
-                  if receipt.exists() else None)
-        trained = (axis_run.verified_receipt(root, PHASES["train"], registration_sha, PHASE_FILES["train"])
-                   if phase != "train" else None)
-        if phase == "replay":
-            axis_run.verified_receipt(root, PHASES["predict"], registration_sha, PHASE_FILES["predict"])
         os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
         torch.use_deterministic_algorithms(True)
         axis_run.kpgt.configure_backend("cuda")
         with open_inputs(training, representations) as (data, vectors):
             identity = {key: value for key, value in config.items() if key not in {"arguments", "nonce"}}
-            if identity != bind(coordinate, data, vectors, source, args["smoke"]):
-                raise ValueError("registered study, inputs, runtime or code changed")
-            arm, fold, seed = coordinate
-            native = AlphaAdapter(source, config["model"]["transform"], chemical_width=WIDTHS[arm])
-            model = native.build(seed, "cuda", n_genes=len(data.genes))
+            current = bind(coordinate, data, vectors, source, args["smoke"])
+            verify_replay_configuration(identity, current, replay=run.sealed is not None,
+                                        repo=axis_run.REPO, revision=ORIGINAL_CODE)
+            arm, _, seed = coordinate
+            adapter = AlphaAdapter(source, config["model"]["transform"], chemical_width=WIDTHS[arm])
+            model = adapter.build(seed, "cuda", n_genes=len(data.genes))
             model_data = ChemicalInputs(data, vectors, arm)
-            with TemporaryDirectory(prefix=".phase-", dir=root) as temporary:
-                scratch = Path(temporary)
-                if phase == "train":
-                    paired = initialization(model, arm)
-                    details = fit_loss(scratch, native, model, model_data, config, registration_sha)
-                    trace = pd.read_csv(scratch / "learning_curve.csv", float_precision="round_trip")
-                    kl_diagnostics(trace, config["model"]["n_latent"]).to_csv(scratch / "kl-diagnostics.csv", index=False)
-                    details["initialization"] = paired
-                else:
-                    values, test = axis_run.predict_test(root, native, model, model_data, config, registration_sha, trained)
-                    details = axis_run.record_predictions(root, scratch, values, test, model_data, config,
-                                                          replay=phase == "replay")
-                if sealed is not None:
-                    return sealed
-                files = PHASE_FILES[phase]
-                if phase == "replay":
-                    details["test_replay"] = "exact"
-                    hashes = axis_run.file_hashes(root, files)
-                else:
-                    hashes = axis_run.file_hashes(scratch, files)
-                    for name in files:
-                        (scratch / name).replace(root / name)
-                record = {**details, **args, "schema": SCHEMA, "protocol": PROTOCOL, "objective": config["objective"],
-                          "outputs": hashes, "registration_sha256": registration_sha,
-                          "process_token": axis_run.PROCESS, "pid": os.getpid(),
-                          "wall_seconds": round(time.monotonic() - started, 3),
-                          "peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
-                          "cuda_peak_allocated_bytes": torch.cuda.max_memory_allocated()}
-                axis_run.write_json(scratch / receipt.name, record)
-                (scratch / receipt.name).replace(receipt)
-    return record
+            if phase == "train":
+                paired = initialization(model, arm)
+                details = fit_with_diagnostics(run.scratch, adapter, model, model_data, config, run.registration_sha)
+                details["initialization"] = paired
+            else:
+                values, rows = axis_run.predict_test(run.root, adapter, model, model_data, config,
+                                                     run.registration_sha, run.training)
+                details = axis_run.record_predictions(run.root, run.scratch, values, rows, model_data, config,
+                                                      replay=phase == "replay")
+        return run.publish(details, {**args, "schema": SCHEMA, "protocol": PROTOCOL, "objective": config["objective"]})
 
 
 def read_run(path, smoke):
     registration = path / "registration.json"
     config = axis_run.read_json(registration)
+    verify_sealed_code(config, axis_run.REPO, ORIGINAL_CODE)
     args = config["arguments"]
     key = args["arm"], args["fold"], args["seed"]
     registration_sha = axis_run.digest(registration)

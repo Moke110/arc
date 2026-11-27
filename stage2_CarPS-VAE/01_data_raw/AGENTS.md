@@ -8,9 +8,7 @@ Delta and training exclusions. The prediction-axis step owns gene selection.
 - `output/api/native_corpus.py` provides the bounded corpus API.
 - `output/manifest.json` inventories seven per-dataset releases beside `output/api/`.
 - `execution/build_corpus.py` publishes and independently replays candidates.
-  Use `migrate --predecessor <sealed-v1> --output <candidate>` to rehearse
-  migration away from the accepted output.
-- Pass `--predecessor` to replay an archived migration explicitly.
+  Pass an explicit sealed predecessor and a separate scratch output to rehearse a legacy migration.
 - `execution/checkpoints/` holds disposable build state.
 - `log/` records build and replay acceptance evidence.
 

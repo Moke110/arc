@@ -9,7 +9,8 @@ import sys
 import time
 
 from axis_protocol import AXES, REFERENCE_AXIS, STEP, coordinates
-from axis_runs import PHASES, add_inputs, arguments, axis_run, bind, read_run, step08_config
+from axis_runs import ORIGINAL_CODE, PHASES, add_inputs, arguments, axis_run, bind, read_run, step08_config
+from util.training.provenance import legacy_configuration
 from chem_runs import open_inputs
 from matrix import SAMPLE_SECONDS, ResourceMonitor, digest_values, enforce_record, register_coordinate
 from matrix_measured import MEMORY_CAP, SWAP_CAP, scope_directory
@@ -59,8 +60,11 @@ def verify_bounded_gate(log=STEP / "log", *, formal_preflight=None):
             or gate["fresh_sealed_unimol_replays"] != len(reference)
             or prior["step08_acceptance_sha256"] != gate["step08_acceptance_sha256"]):
         raise ValueError("Step 09 bounded gate roster or predecessor replay differs")
-    if formal_preflight is not None and any(preflight[field] != formal_preflight[field] for field in GATE_EVIDENCE):
-        raise ValueError("formal preflight differs from the verified Step 09 bounded gate")
+    if formal_preflight is not None:
+        bound = {**formal_preflight, "formal_configs_sha256": formal_preflight.get(
+            "gate_configs_sha256", formal_preflight["formal_configs_sha256"])}
+        if any(preflight[field] != bound[field] for field in GATE_EVIDENCE):
+            raise ValueError("formal preflight differs from the verified Step 09 bounded gate")
     return preflight, axis_run.digest(gate_path)
 
 
@@ -96,6 +100,7 @@ def preflight(step03, representations, source, bounded):
                 enrolled[key] = bind(key, data, vectors, source, False, reference_configs[fold, seed, False])
                 if bounded and key in bounded_keys:
                     registered[key] = bind(key, data, vectors, source, True, reference_configs[fold, seed, True])
+    historical = (legacy_configuration(config, axis_run.REPO, ORIGINAL_CODE) for config in enrolled.values())
     configs = registered if bounded else enrolled
     populations = [{part: {"count": len(ids), "conditions_sha256": digest_values(ids)}
                     for part, ids in enrolled[REFERENCE_AXIS, fold, 17]["conditions"].items()}
@@ -106,6 +111,7 @@ def preflight(step03, representations, source, bounded):
         "step08_reference_roster": [list(key) for key in references],
         "registered_roster": [list(key) for key in configs],
         "formal_configs_sha256": digest_values(list(enrolled.values())),
+        "gate_configs_sha256": digest_values(list(historical)),
         "registered_configs_sha256": digest_values(list(configs.values())),
         "folds": populations, "membership_sha256": membership,
         "training_manifests_sha256": {axis: enrolled[axis, 0, 17]["training_sha256"] for axis in AXES},

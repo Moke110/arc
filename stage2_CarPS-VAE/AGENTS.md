@@ -1,6 +1,6 @@
 # AGENTS.md — Stage 2
 
-Before working in a step, read its `AGENTS.md` and `README.md`, ADRs 0062 and 0087,
+Before working in a step, read its `AGENTS.md` and `README.md`, ADRs 0062 and 0105,
 and the scientific ADRs it names. Apply the repository execution-environment rules.
 
 ## Active steps
@@ -26,7 +26,7 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 - [10_cpsv_dose](10_cpsv_dose/AGENTS.md) compares dose inputs on the cold-dose-drug folds.
 
 Use Step 04's `execution/matrix.py` and `execution/evaluate.py` for the axis comparison.
-Steps 04–06 use the [shared training and evaluation APIs](util/README.md#transigen-training-and-evaluation) through their numbered run and report commands.
+Steps 04–10 use the [shared training and evaluation APIs](util/README.md#transigen-training-and-evaluation) through their numbered run and report commands.
 
 ## CarPS-VAE configuration
 
@@ -34,13 +34,6 @@ Use the [selected CarPS-VAE configuration](README.md#selected-carps-vae-configur
 for the model release and its successors. Replay each sealed TranSiGen study
 with its pinned protocol. Use the [pinned Step 06.4 route](06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit)
 when a registration binds the prior source layout.
-
-## Local history
-
-Put retired releases, study steps and rollback material in the Git-ignored
-`history/` archive. Preserve sealed bytes and record original paths and replay
-revisions in its `archive-manifest.json`. Verify the archive and active entry
-points with history unavailable before completing a cutover.
 
 ## Step contract
 - `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,
@@ -82,6 +75,5 @@ points with history unavailable before completing a cutover.
 Build candidates outside formal output, verify structure/data constraints, scientific
 criteria, downstream reads and CSV-only figure reproduction, then replace stable paths.
 Record metric tolerances for stochastic results and hashes for file integrity. A failed
-candidate leaves the accepted products available. Keep accepted final products active and
-archive superseded scientific payloads after acceptance and reference migration.
+candidate leaves the accepted products available. Keep accepted final products active and preserve superseded tracked evidence through Git revisions.
 Treat external `source/` trees as read-only.

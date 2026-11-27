@@ -1,13 +1,11 @@
 """Register, fit and independently replay a Step 10 dose coordinate."""
 
 import argparse
+from functools import partial
 import json
 import os
 from pathlib import Path
 import platform
-import resource
-from tempfile import TemporaryDirectory
-import time
 
 import numpy as np
 import pandas as pd
@@ -20,8 +18,12 @@ from dose_protocol import (ARMS, AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, 
 from chem_runs import ALPHA_MANIFEST, axis_run, verify_release
 from tsg_axis.learning import EarlyStopping, fixed_rng
 from tsg_axis.protocol import MAX_EPOCHS, PATIENCE
+from util.training import registered
+from util.training.provenance import verify_replay_configuration, verify_sealed_code
+from util.training.transigen import fit_epochs, replay_validation
 
 SCHEMA = "carps-vae-dose-run-v1"
+ORIGINAL_CODE = "b8be1ad9244c9a3e03eba3e0c77ec64a59ed695d"
 PHASES = {"train": "training.json", "predict": "predictions.json", "replay": "manifest.json"}
 TRAINING_FILES = axis_run.TRAINING_FILES
 PREDICTION_FILES = axis_run.PREDICTION_FILES
@@ -61,12 +63,13 @@ def bind(key, data, vectors, source, bounded):
         raise ValueError("TranSiGen author source differs from the frozen model and configuration")
     step = Path(__file__).resolve().parent
     dependencies = tuple(step / name for name in ("dose_runs.py", "dose_model.py", "dose_inputs.py", "dose_protocol.py"))
-    return {
+    shared = sorted((axis_run.STAGE / "util/training").glob("*.py"))
+    config = {
         **input_identity(data, fold, bounded),
         "schema": SCHEMA, "scenario": SCENARIO, "seed": seed,
         "alpha_release_sha256": axis_run.digest(ALPHA_MANIFEST),
         "native_sha256": native,
-        "code_sha256": {path.relative_to(axis_run.REPO).as_posix(): axis_run.digest(path) for path in dependencies},
+        "code_sha256": {path.relative_to(axis_run.REPO).as_posix(): axis_run.digest(path) for path in (*dependencies, *shared)},
         "representation": {"name": chemistry, "width": vectors.width(chemistry),
                            "manifest_sha256": vectors.manifest_sha256,
                            "vectors_sha256": vectors.manifest["files"][f"{chemistry}.npy"]},
@@ -78,19 +81,18 @@ def bind(key, data, vectors, source, bounded):
                         "torch_threads": torch.get_num_threads(), "hardware": torch.cuda.get_device_name()},
         "arguments": args,
     }
+    conditioning = arm if config["model"]["transform"] is not None else None
+    return axis_run.transigen.bind_experiment(args, config, dose_conditioning=conditioning)
 
 
 def register(output, key, bounded, step03, representations, source):
     verify_release()
-    with axis_run.publication_lock(output) as root:
-        if root.exists():
-            raise ValueError("run registration requires an unused output directory")
+
+    def definition():
         with open_inputs(step03, representations) as (data, vectors):
-            config = bind(key, data, vectors, source, bounded)
-        root.mkdir()
-        registration = root / "registration.json"
-        axis_run.write_json(registration, {**config, "nonce": axis_run.PROCESS})
-        return axis_run.digest(registration)
+            return bind(key, data, vectors, source, bounded)
+
+    return registered.register(output, definition)
 
 
 def evaluate(model, inputs, config, phase, rows):
@@ -159,111 +161,63 @@ def train_epoch(adapter, model, inputs, rows, optimizer, rng):
 
 def fit(root, adapter, model, inputs, config, registration_sha):
     train, valid = (np.asarray(config["partitions"][part]) for part in ("train", "valid"))
-    stopper = EarlyStopping(patience=config["patience"], max_epochs=config["max_epochs"])
     optimizer = adapter.optimizer(model)
     rng = np.random.default_rng(config["seed"])
-    history, streams = [], []
-    for epoch in range(1, config["max_epochs"] + 1):
+    streams = []
+
+    def train_step():
         loss = train_epoch(adapter, model, inputs, train, optimizer, rng)
         streams.append(epoch_streams(adapter.device, rng))
-        values, validation, mse = evaluate(model, inputs, config, "valid", valid)
-        if stopper.observe(validation, epoch):
-            torch.save({"registration_sha256": registration_sha, "state_dict": model.state_dict(),
-                        "epoch": epoch, "validation_loss": validation, "validation_mse": mse},
-                       root / "checkpoint.pt")
-            np.save(root / "validation_prediction.npy", values)
-        history.append((epoch, loss, validation, mse))
-        if stopper.stopped:
-            break
-    pd.DataFrame(history, columns=TRACES).to_csv(root / "learning_curve.csv", index=False)
-    return {"best_epoch": stopper.best_epoch, "validation_loss": stopper.best,
-            "validation_mse": history[stopper.best_epoch - 1][-1], "epochs": len(history),
-            "parameters": sum(p.numel() for p in model.parameters()), "epoch_streams": streams}
+        return {"train_loss": loss}
+
+    def validate_step():
+        values, objective, mse = evaluate(model, inputs, config, "valid", valid)
+        return values, {"validation_loss": objective, "validation_mse": mse}
+
+    details = fit_epochs(root, model, config, registration_sha, train_step, validate_step)
+    return {**details, "epoch_streams": streams}
 
 
 def predict_test(root, model, inputs, config, registration_sha, training):
-    checkpoint = torch.load(root / "checkpoint.pt", map_location="cpu", weights_only=True)
-    metrics = ("validation_loss", "validation_mse")
-    if (checkpoint["registration_sha256"] != registration_sha or checkpoint["epoch"] != training["best_epoch"]
-            or any(checkpoint[key] != training[key] for key in metrics)):
-        raise ValueError("checkpoint differs from its minimum-validation-objective receipt")
-    model.load_state_dict(checkpoint["state_dict"])
-    del checkpoint
     valid, test = (np.asarray(config["partitions"][part]) for part in ("valid", "test"))
-    validation, value, mse = evaluate(model, inputs, config, "valid", valid)
-    if (value, mse) != tuple(training[key] for key in metrics):
-        raise ValueError("fresh process did not exactly replay the validation objective")
-    if not np.array_equal(validation, np.load(root / "validation_prediction.npy", allow_pickle=False)):
-        raise ValueError("fresh process did not exactly replay validation predictions")
+    checkpoint_validation = partial(evaluate, model, inputs, config, "valid", valid)
+    replay_validation(root, model, registration_sha, training, checkpoint_validation)
     predictions, _, _ = evaluate(model, inputs, config, "test", test)
     return predictions, test
 
 
 def execute(output, phase, step03, representations, source):
-    started = time.monotonic()
     os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     torch.use_deterministic_algorithms(True)
     axis_run.kpgt.configure_backend("cuda")
     verify_release()
-    with axis_run.publication_lock(output) as root:
-        registration = root / "registration.json"
-        config = axis_run.read_json(registration)
-        nonce = config.pop("nonce")
-        registration_sha = axis_run.digest(registration)
+    with registered.phase(output, phase, PHASE_FILES, separate_registration=True) as run:
+        config = {name: value for name, value in run.config.items() if name != "nonce"}
         args = config["arguments"]
         key = args["arm"], args["fold"], args["seed"]
-        if nonce == axis_run.PROCESS:
-            raise ValueError("run phase must be separate from registration")
-        receipt = root / PHASES[phase]
-        if receipt.exists() and phase != "replay":
-            raise ValueError(f"run phase already recorded: {phase}")
-        sealed = (axis_run.verified_receipt(root, receipt.name, registration_sha, PHASE_FILES[phase])
-                  if receipt.exists() else None)
-        trained = (axis_run.verified_receipt(root, PHASES["train"], registration_sha, TRAINING_FILES)
-                   if phase != "train" else None)
-        if phase == "replay":
-            axis_run.verified_receipt(root, PHASES["predict"], registration_sha, PREDICTION_FILES)
         with open_inputs(step03, representations) as (data, vectors):
-            if config != bind(key, data, vectors, source, args["bounded"]):
-                raise ValueError("registered Step 10 study, inputs, code or runtime changed")
+            current = bind(key, data, vectors, source, args["bounded"])
+            verify_replay_configuration(config, current, replay=run.sealed is not None,
+                                        repo=axis_run.REPO, revision=ORIGINAL_CODE)
             adapter = DoseAdapter(source, key[0])
             model = adapter.build(key[2], "cuda", n_genes=len(data.genes))
             inputs = features_for(data, vectors, key[0])
-            with TemporaryDirectory(prefix=".phase-", dir=root) as temporary:
-                scratch = Path(temporary)
-                if phase == "train":
-                    initial = initialization(model, key[0])
-                    details = fit(scratch, adapter, model, inputs, config, registration_sha)
-                    details["initialization"] = initial
-                else:
-                    predictions, test = predict_test(root, model, inputs, config, registration_sha, trained)
-                    details = axis_run.record_predictions(root, scratch, predictions, test, data, config,
-                                                          replay=phase == "replay")
-                files = PHASE_FILES[phase]
-                if phase == "replay":
-                    details["test_replay"] = "exact"
-                    hashes = axis_run.file_hashes(root, files)
-                else:
-                    hashes = axis_run.file_hashes(scratch, files)
-                    for name in files:
-                        (scratch / name).replace(root / name)
-                record = {
-                    **details, **args, "schema": SCHEMA, "objective": config["objective"], "outputs": hashes,
-                    "registration_sha256": registration_sha, "process_token": axis_run.PROCESS,
-                    "pid": os.getpid(), "wall_seconds": round(time.monotonic() - started, 3),
-                    "peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
-                    "cuda_peak_allocated_bytes": torch.cuda.max_memory_allocated(),
-                }
-                if sealed is not None:
-                    return record
-                axis_run.write_json(scratch / receipt.name, record)
-                (scratch / receipt.name).replace(receipt)
-    return record
+            if phase == "train":
+                initial = initialization(model, key[0])
+                details = fit(run.scratch, adapter, model, inputs, config, run.registration_sha)
+                details["initialization"] = initial
+            else:
+                predictions, rows = predict_test(run.root, model, inputs, config, run.registration_sha, run.training)
+                details = axis_run.record_predictions(run.root, run.scratch, predictions, rows, data, config,
+                                                      replay=phase == "replay")
+        return run.publish(details, {**args, "schema": SCHEMA, "objective": config["objective"]},
+                           report_replay_resources=True)
 
 
 def read_run(path, bounded):
     registration = path / "registration.json"
     config = axis_run.read_json(registration)
+    verify_sealed_code(config, axis_run.REPO, ORIGINAL_CODE)
     args = config["arguments"]
     key = args["arm"], args["fold"], args["seed"]
     registration_sha = axis_run.digest(registration)

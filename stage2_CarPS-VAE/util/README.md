@@ -94,6 +94,16 @@ PYTHONPATH=stage2_CarPS-VAE/util/output/api python -m unittest discover -s stage
 
 ## TranSiGen training and evaluation
 
+Steps 07–10 use the same runtime. `util/training/alpha_model.py` implements the fixed
+CarPS-VAE alpha. `util/training/transigen.py` owns shared epoch selection,
+minimum-validation checkpointing and exact replay. Compare the study-owned rows,
+dose transforms, evaluation seeds and metric definitions when using these APIs.
+`util/training/registered.py` handles locked phase receipts for Steps 08–10.
+`util/eval/axis_delta.py` adds the weighted signed Jaccard to the shared scoring
+kernels for the Step 09 and 10 full-axis comparisons. Compare the two studies'
+distinct populations, bandwidths and full-axis versus common-axis reporting.
+
+
 `training/transigen.py` owns registration, fit, checkpoint validation, prediction
 and independent replay for Steps 04–06. Each study supplies its roster, model
 builder and objective. New registrations explicitly identify architecture,

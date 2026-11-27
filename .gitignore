@@ -308,9 +308,5 @@ tmp/
 !/stage2_CarPS-VAE/util/output/gene-identity/**/*.csv
 /stage2_CarPS-VAE/util/output/representations/
 
-# Retained local historical view payloads.
-/stage2_CarPS-VAE/03_data_train/03.1_hvg-deg-5k/historical/tsg_view/execution/freezes/
-/stage2_CarPS-VAE/03_data_train/03.1_hvg-deg-5k/historical/tsg_view/execution/checkpoints/
-
-# Stage 2 local historical handoff (ADR 0087).
+# Quarantine any pre-ADR 0105 local Stage 2 archive pending removal.
 /stage2_CarPS-VAE/history/

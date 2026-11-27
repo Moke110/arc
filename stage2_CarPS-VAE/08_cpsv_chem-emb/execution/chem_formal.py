@@ -74,7 +74,10 @@ def score(args):
     if set(fresh) != set(coordinates()) - reused.keys():
         raise ValueError("fresh matrix and KPGT decisions do not cover exactly 63 coordinates")
     paths = run_paths(matrix, fresh)
-    expected, plan = preflight(args.training, args.representations, args.source, False)
+    schemas = {"experiment" in run[1] for run in fresh.values()}
+    if len(schemas) != 1:
+        raise ValueError("formal matrix mixes historical and current runtime registrations")
+    expected, plan = preflight(args.training, args.representations, args.source, False, legacy=schemas == {False})
     if axis_run.read_json(matrix / "preflight.json") != {**plan, "fresh_fits": [list(key) for key in fresh]}:
         raise ValueError("formal matrix preflight differs from current inputs, runtime or partitions")
     verify_registrations(paths, expected, False)

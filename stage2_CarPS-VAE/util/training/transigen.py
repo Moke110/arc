@@ -70,39 +70,55 @@ def validate(model, data, rows, config):
     return values, objective, mse
 
 
+def fit_epochs(root, model, config, registration_sha, train_epoch, validate_epoch):
+    """Fit a registered coordinate and retain its minimum-objective checkpoint."""
+    stopper = EarlyStopping(patience=config["patience"], max_epochs=config["max_epochs"])
+    history = []
+    for epoch in range(1, config["max_epochs"] + 1):
+        train = train_epoch()
+        values, validation = validate_epoch()
+        objective, mse = validation["validation_loss"], validation["validation_mse"]
+        if stopper.observe(objective, epoch):
+            torch.save({"registration_sha256": registration_sha, "state_dict": model.state_dict(),
+                        "epoch": epoch, "validation_loss": objective, "validation_mse": mse}, root / "checkpoint.pt")
+            np.save(root / "validation_prediction.npy", values)
+        # Keep the sealed trace's base columns ahead of study-specific components.
+        history.append({"epoch": epoch, "train_loss": train["train_loss"],
+                        "validation_loss": objective, "validation_mse": mse, **train, **validation})
+        if stopper.stopped:
+            break
+    pd.DataFrame(history).to_csv(root / "learning_curve.csv", index=False)
+    return {"best_epoch": stopper.best_epoch, "validation_loss": stopper.best,
+            "validation_mse": history[stopper.best_epoch - 1]["validation_mse"], "epochs": len(history),
+            "parameters": sum(parameter.numel() for parameter in model.parameters())}
+
+
 def fit(root, native, model, data, config, registration_sha, *, trace_factory=None):
     training = np.asarray(config["partitions"]["train"])
     valid = np.asarray(config["partitions"]["valid"])
     training_inputs = data.model_input("train")
     rng = np.random.default_rng(config["seed"])
     optimizer = native.optimizer(model)
-    stopper = EarlyStopping(patience=config["patience"], max_epochs=config["max_epochs"])
-    history = []
     trace = trace_factory(model.loss) if trace_factory is not None else None
     if trace is not None:
         model.loss = trace
-    for epoch in range(1, config["max_epochs"] + 1):
+
+    def train_epoch():
         loss = native.train_epoch(model, training_inputs, training, optimizer, rng)
-        train_components = trace.per_condition("train") if trace is not None else {}
-        values, objective, mse = validate(model, data, valid, config)
-        valid_components = trace.per_condition("validation") if trace is not None else {}
         if trace is None and not np.isfinite(loss):
             raise ValueError("nonfinite native training loss")
-        if stopper.observe(objective, epoch):
-            torch.save({"registration_sha256": registration_sha, "state_dict": model.state_dict(),
-                        "epoch": epoch, "validation_loss": objective, "validation_mse": mse}, root / "checkpoint.pt")
-            np.save(root / "validation_prediction.npy", values)
-        history.append({"epoch": epoch, "train_loss": loss, "validation_loss": objective, "validation_mse": mse,
-                        **train_components, **valid_components})
-        if stopper.stopped:
-            break
-    pd.DataFrame(history).to_csv(root / "learning_curve.csv", index=False)
-    return {"best_epoch": stopper.best_epoch, "validation_loss": stopper.best,
-            "validation_mse": history[stopper.best_epoch - 1]["validation_mse"], "epochs": len(history),
-            "parameters": sum(p.numel() for p in model.parameters())}
+        return {"train_loss": loss, **(trace.per_condition("train") if trace is not None else {})}
+
+    def validate_epoch():
+        values, objective, mse = validate(model, data, valid, config)
+        components = trace.per_condition("validation") if trace is not None else {}
+        return values, {"validation_loss": objective, "validation_mse": mse, **components}
+
+    return fit_epochs(root, model, config, registration_sha, train_epoch, validate_epoch)
 
 
-def predict_test(root, native, model, data, config, registration_sha, training):
+def replay_validation(root, model, registration_sha, training, validate_checkpoint):
+    """Restore the selected state and independently replay the validation pass."""
     checkpoint = torch.load(root / "checkpoint.pt", map_location="cpu", weights_only=True)
     metrics = ("validation_loss", "validation_mse")
     if (checkpoint["registration_sha256"] != registration_sha or checkpoint["epoch"] != training["best_epoch"]
@@ -110,13 +126,17 @@ def predict_test(root, native, model, data, config, registration_sha, training):
         raise ValueError("validation checkpoint identity differs from its training receipt")
     model.load_state_dict(checkpoint["state_dict"])
     del checkpoint
-    valid = np.asarray(config["partitions"]["valid"])
-    test = np.asarray(config["partitions"]["test"])
-    validation, objective, mse = validate(model, data, valid, config)
+    validation, objective, mse = validate_checkpoint()
     if (objective, mse) != tuple(training[key] for key in metrics):
         raise ValueError("fresh process did not exactly replay the validation objective")
     if not np.array_equal(validation, np.load(root / "validation_prediction.npy", allow_pickle=False)):
         raise ValueError("fresh process did not exactly replay validation predictions")
+
+
+def predict_test(root, native, model, data, config, registration_sha, training):
+    valid = np.asarray(config["partitions"]["valid"])
+    test = np.asarray(config["partitions"]["test"])
+    replay_validation(root, model, registration_sha, training, lambda: validate(model, data, valid, config))
     values = prediction(native, model, data, "test", test, config["test_seed"])
     return values, test
 
@@ -150,8 +170,8 @@ def verified_receipt(root, name, registration_sha, files):
     return record
 
 
-def bind_experiment(args, config):
-    config["experiment"] = experiment_configuration(args, config)
+def bind_experiment(args, config, **settings):
+    config["experiment"] = experiment_configuration(args, config, **settings)
     return config
 
 

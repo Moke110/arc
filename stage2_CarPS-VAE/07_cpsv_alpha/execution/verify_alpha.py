@@ -2,13 +2,10 @@
 
 import argparse
 import csv
-from functools import lru_cache
-import hashlib
 from itertools import product
 import json
 import os
 from pathlib import Path
-import subprocess
 import sys
 
 import torch
@@ -21,6 +18,8 @@ from measured_roster import SEEDS, fit_coordinates
 from run_measured import (AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING,
                           bind)
 from verify_measured import read_run
+from util.training.provenance import git_code_hashes
+from util.training.transigen import predict_test, record_predictions
 
 RELEASE = STEP / "output/release.json"
 ACCEPTANCE = STEP / "log/362-alpha.json"
@@ -44,31 +43,19 @@ def defaults():
             "test_seed": axis_run.TEST_SEED, "folds": list(range(3)), "training_seeds": list(SEEDS)}
 
 
-@lru_cache(maxsize=1)
-def original_hashes(revision, files):
-    """Resolve the old path-keyed code hashes against the pinned Git tree."""
-    return {
-        path: hashlib.sha256(subprocess.run(
-            ["git", "cat-file", "blob", f"{revision}:{path}"], cwd=axis_run.REPO,
-            check=True, stdout=subprocess.PIPE,
-        ).stdout).hexdigest()
-        for path in files
-    }
-
-
 def verify_release():
     """Verify the fixed defaults and historical Git code behind the alpha release."""
     release = axis_run.read_json(RELEASE)
     if (release["schema"], release["release"], release["default"]) != (RELEASE_SCHEMA, RELEASE_ID, defaults()):
         raise ValueError("alpha defaults differ from the fixed CarPS-VAE alpha release")
     pinned = release["runtime_sha256"]
-    actual = original_hashes(ALPHA_RUNTIME_REVISION, tuple(sorted(pinned)))
+    actual = git_code_hashes(axis_run.REPO, ALPHA_RUNTIME_REVISION, tuple(sorted(pinned)))
     if actual != pinned:
         changed = sorted(path for path in actual.keys() | pinned.keys() if actual.get(path) != pinned.get(path))
         raise ValueError(f"alpha runtime dependencies differ: {changed}")
     reference = release["step_06_4"]
     original = reference["code_sha256"]
-    if original_hashes(reference["matrix_code_revision"], tuple(sorted(original))) != original:
+    if git_code_hashes(axis_run.REPO, reference["matrix_code_revision"], tuple(sorted(original))) != original:
         raise ValueError("Step 06.4 source differs from its original registered Git revision")
     return release
 
@@ -162,8 +149,8 @@ def replay_alpha(round_four, training, representations, source):
             adapter = AlphaAdapter(source, config["model"]["transform"])
             model = adapter.build(seed, "cuda", n_genes=len(data.genes))
             registration_sha = replay["registration_sha256"]
-            values, test = axis_run.predict_test(path, adapter, model, data, config, registration_sha, trained)
-            result = axis_run.record_predictions(path, None, values, test, data, config, replay=True)
+            values, test = predict_test(path, adapter, model, data, config, registration_sha, trained)
+            result = record_predictions(path, None, values, test, data, config, replay=True)
             coordinates.append({"fold": fold, "seed": seed, "registration_sha256": registration_sha,
                                 "checkpoint_sha256": replay["outputs"]["checkpoint.pt"],
                                 "validation_prediction_sha256": replay["outputs"]["validation_prediction.npy"],

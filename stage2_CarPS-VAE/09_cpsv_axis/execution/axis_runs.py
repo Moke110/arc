@@ -3,13 +3,9 @@
 import argparse
 from copy import deepcopy
 from pathlib import Path
-from tempfile import TemporaryDirectory
 import json
 import os
-import resource
-import time
 
-import pandas as pd
 import torch
 
 from axis_protocol import ARM, AXES, REFERENCE_AXIS, SEEDS, coordinates
@@ -18,12 +14,15 @@ import chem_runs
 from chem_runs import ChemicalInputs, PHASES, PHASE_FILES, SEALED_FILES, axis_run
 from evaluate_loss import axis_evaluate, check_trace
 from evaluate_sweep import TRACE_COLUMNS
-from run_measured import DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, fit_loss
-from run_shape import kl_diagnostics
+from run_measured import DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE
+from run_shape import fit_with_diagnostics, kl_diagnostics
 import tenv_axes
+from util.training import registered
+from util.training.provenance import verify_replay_configuration, verify_sealed_code
 
 SCHEMA = "carps-vae-unimol-axis-run-v1"
 PROTOCOL = "tenv-matched-control-carps-vae-unimol-axis-v1"
+ORIGINAL_CODE = "d3395ca0e0a055dc28e8e431740f5ec640ee4247"
 INHERITED_IDENTITIES = ("raw_sha256", "folds", "native_sha256", "partitions", "conditions", "environment",
                         "scenario", "validation_seed", "test_seed", "max_epochs", "patience")
 
@@ -64,7 +63,7 @@ def bind(key, data, vectors, source, bounded, reference):
     for path in (Path(__file__), Path(__file__).with_name("axis_model.py"),
                  Path(__file__).with_name("axis_protocol.py"), Path(tenv_axes.__file__)):
         config["code_sha256"][path.relative_to(axis_run.REPO).as_posix()] = axis_run.digest(path)
-    return config
+    return axis_run.transigen.bind_experiment(args, config)
 
 
 def configure_cuda():
@@ -74,87 +73,52 @@ def configure_cuda():
 
 
 def register(output, key, bounded, step03, representations, source):
-    with axis_run.publication_lock(output) as root:
-        if root.exists():
-            raise ValueError("run registration requires an unused output directory")
+    def definition():
         args = arguments(key, bounded)
         reference = step08_config(key[1], key[2], step03, representations, source, bounded)
         training = tenv_axes.tenv_axis_output(key[0], step03)
         with chem_runs.open_inputs(training, representations) as (data, vectors):
             config = bind(key, data, vectors, source, bounded, reference)
-        root.mkdir()
-        registration = root / "registration.json"
-        axis_run.write_json(registration, {**config, "arguments": args, "nonce": axis_run.PROCESS})
-        return axis_run.digest(registration)
+        return {**config, "arguments": args}
+
+    return registered.register(output, definition)
 
 
 def execute(output, phase, step03, representations, source):
-    start = time.monotonic()
     configure_cuda()
-    with axis_run.publication_lock(output) as root:
-        registration = root / "registration.json"
-        config = axis_run.read_json(registration)
-        registration_sha = axis_run.digest(registration)
+    with registered.phase(output, phase, PHASE_FILES) as run:
+        config = run.config
         args = config["arguments"]
         key = args["axis"], args["fold"], args["seed"]
         if args != arguments(key, args["smoke"]):
             raise ValueError("run arguments differ from its coordinate")
-        receipt = root / PHASES[phase]
-        if receipt.exists() and phase != "replay":
-            raise ValueError(f"run phase already recorded: {phase}")
-        sealed = (axis_run.verified_receipt(root, receipt.name, registration_sha, SEALED_FILES)
-                  if receipt.exists() else None)
-        trained = (axis_run.verified_receipt(root, PHASES["train"], registration_sha, PHASE_FILES["train"])
-                   if phase != "train" else None)
-        if phase == "replay":
-            axis_run.verified_receipt(root, PHASES["predict"], registration_sha, PHASE_FILES["predict"])
         reference = step08_config(key[1], key[2], step03, representations, source, args["smoke"])
         training = tenv_axes.tenv_axis_output(key[0], step03)
         with chem_runs.open_inputs(training, representations) as (data, vectors):
             identity = {name: value for name, value in config.items() if name not in ("arguments", "nonce")}
-            if identity != bind(key, data, vectors, source, args["smoke"], reference):
-                raise ValueError("registered Step 09 study, inputs or code changed")
+            current = bind(key, data, vectors, source, args["smoke"], reference)
+            verify_replay_configuration(identity, current, replay=run.sealed is not None,
+                                        repo=axis_run.REPO, revision=ORIGINAL_CODE)
             adapter = AxisAdapter(source, config["model"]["transform"])
             model = adapter.build(key[2], "cuda", n_genes=len(data.genes))
             model_data = ChemicalInputs(data, vectors, ARM)
-            with TemporaryDirectory(prefix=".phase-", dir=root) as temporary:
-                scratch = Path(temporary)
-                if phase == "train":
-                    initial = paired_initialization(model)
-                    details = fit_loss(scratch, adapter, model, model_data, config, registration_sha)
-                    trace = pd.read_csv(scratch / "learning_curve.csv", float_precision="round_trip")
-                    kl_diagnostics(trace, config["model"]["n_latent"]).to_csv(scratch / "kl-diagnostics.csv", index=False)
-                    details.update(initialization=initial, epoch_streams=adapter.epoch_streams)
-                else:
-                    values, test = axis_run.predict_test(root, adapter, model, model_data, config, registration_sha, trained)
-                    details = axis_run.record_predictions(root, scratch, values, test, model_data, config,
-                                                          replay=phase == "replay")
-                if sealed is not None:
-                    return sealed
-                files = PHASE_FILES[phase]
-                if phase == "replay":
-                    details["test_replay"] = "exact"
-                    hashes = axis_run.file_hashes(root, files)
-                else:
-                    hashes = axis_run.file_hashes(scratch, files)
-                    for name in files:
-                        (scratch / name).replace(root / name)
-                record = {
-                    **details, **args, "schema": SCHEMA, "protocol": PROTOCOL, "objective": config["objective"],
-                    "outputs": hashes, "registration_sha256": registration_sha, "process_token": axis_run.PROCESS,
-                    "pid": os.getpid(), "wall_seconds": round(time.monotonic() - start, 3),
-                    "peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
-                    "cuda_peak_allocated_bytes": torch.cuda.max_memory_allocated(),
-                }
-                axis_run.write_json(scratch / receipt.name, record)
-                (scratch / receipt.name).replace(receipt)
-    return record
+            if phase == "train":
+                initial = paired_initialization(model)
+                details = fit_with_diagnostics(run.scratch, adapter, model, model_data, config, run.registration_sha)
+                details.update(initialization=initial, epoch_streams=adapter.epoch_streams)
+            else:
+                values, rows = axis_run.predict_test(run.root, adapter, model, model_data, config,
+                                                     run.registration_sha, run.training)
+                details = axis_run.record_predictions(run.root, run.scratch, values, rows, model_data, config,
+                                                      replay=phase == "replay")
+        return run.publish(details, {**args, "schema": SCHEMA, "protocol": PROTOCOL, "objective": config["objective"]})
 
 
 def read_run(path, bounded):
     """Read and validate all independently generated run evidence."""
     registration = path / "registration.json"
     config = axis_run.read_json(registration)
+    verify_sealed_code(config, axis_run.REPO, ORIGINAL_CODE)
     args = config["arguments"]
     key = args["axis"], args["fold"], args["seed"]
     registration_sha = axis_run.digest(registration)

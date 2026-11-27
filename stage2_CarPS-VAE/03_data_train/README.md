@@ -76,4 +76,4 @@ corpus and selected axis. The `cold_dose_drug_*` columns leave held-parent and
 held-dose strips unassigned and record their separate reasons.
 
 The earlier ADR 0085 paired release and combined well-level view are in the
-[Stage 2 local archive](../README.md#local-history).
+[Stage 2 historical evidence](../README.md#historical-evidence-and-active-input-checks).

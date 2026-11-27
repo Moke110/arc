@@ -61,9 +61,9 @@ installed digest. Stage 2 training pins the whole corpus manifest. Use an
 unused `--output <scratch>` to build a different candidate and validate its
 consumer releases together before any generation cutover.
 
-Default `verify` checks the installed migrated release without its archive. Pass `--predecessor <sealed-v1>` to replay a migrated
-generation from an explicit archived input. To migrate over a legacy directory,
-first preserve it in a verified archive handoff with an inventory. Migration compares native matrices,
+Default `verify` checks the installed migrated release. Pass
+`--predecessor <sealed-v1>` to replay a migrated generation using an explicit
+input and use a separate scratch output for migration. Migration compares native matrices,
 observations and gene mappings for the six equivalent datasets. Active tenv
 training pins the current corpus digest. The source replay verifies newly
 published native builds. A separately staged native Tahoe build can be read

@@ -6,3 +6,5 @@ Follow [ADR 0102](../../docs/adr/0102-stage2-axis-selection-and-comparison-figur
 Build and verify the two 2k views under Step 03 ownership. Verify the full roster with a bounded CUDA gate before fitting the formal matrix. Audit each reference reuse, pair only by fold and seed, and verify the three full-axis figures independently from their plotted CSVs.
 
 Use the [formal reproduction commands](README.md#reproduce-and-verify) to fit in a capped scope and verify a staged comparison before installation. Keep the coordinator sampler live through the final matrix sample. The formal bundle is materialized locally at `output/formal`. The tracked acceptance receipt and figure files are published with the study code.
+
+For model, fit or replay changes, use the [shared APIs](../util/README.md#transigen-training-and-evaluation).

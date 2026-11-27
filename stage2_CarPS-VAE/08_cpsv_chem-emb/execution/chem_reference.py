@@ -16,7 +16,7 @@ from verify_alpha import (ACCEPTANCE, RELEASE, REFERENCE_ROSTER, verify_protocol
                           verify_reference_release, verify_release)
 
 SCORE_COLUMNS = ["value", "n_conditions", "n_eligible", "n_undefined"]
-HISTORY_FIELDS = {"arguments", "nonce", "code_sha256", "schema", "protocol"}
+HISTORY_FIELDS = {"arguments", "nonce", "code_sha256", "schema", "protocol", "experiment"}
 ADDED_FIELDS = {"alpha_release_sha256", "representation"}
 REUSE_SCHEMA = "carps-vae-alpha-chemical-reference-v1"
 GATE = STEP / "log/363-gate.json"
@@ -45,24 +45,10 @@ def verify_reference_scores(observed, recorded, registration_sha):
         raise ValueError("rescored KPGT metrics, eligibility or registration do not exactly match Step 06.4")
 
 
-def verify_live_alpha_dependencies(stage, release):
-    """Check inherited loss modules against the code hashes in the frozen alpha release."""
-    original = release["step_06_4"]["code_sha256"]
-    paths = (
-        "05_tsg_loss/05.1_loss_metrics/execution/objective.py",
-        "05_tsg_loss/05.2_mse_l1/execution/additive_objective.py",
-        "05_tsg_loss/05.2_mse_l1/execution/run_sweep.py",
-    )
-    for path in paths:
-        if axis_run.digest(stage / path) != original[f"stage2/{path}"]:
-            raise ValueError(f"inherited alpha runtime dependency differs from the pinned source: {path}")
-
-
 def reference_plan(round_four, training, representations, source, bandwidth_training, *, accepted_plan=None):
     """Independently replay and score each valid reference, and return its verified fit and decision."""
     verify_bounded_gate()
     release = verify_release()
-    verify_live_alpha_dependencies(STEP.parent, release)
     accepted = axis_run.read_json(ACCEPTANCE)
     release_sha = axis_run.digest(RELEASE)
     release_receipt = release["step_06_4"]["receipt_sha256"]

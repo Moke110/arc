@@ -163,7 +163,9 @@ if run_root "$fixture_root" "$tmp/list_unknown_round" >/dev/null; then
   fail "an unregistered shape round literal must fail the runtime audit"
 fi
 mkdir -p "$fixture_root/history/stage2/07_tsg_dose"
-run_root "$fixture_root" "$tmp/list_clean" >/dev/null || fail "the local archive must pass"
+if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
+  fail "the retired local archive must fail"
+fi
 mv "$fixture_root/history" "$tmp/archive"
 ln -s "$tmp/archive" "$fixture_root/history"
 if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then

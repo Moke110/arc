@@ -128,7 +128,6 @@ SUPPLEMENTS = {
     "dtoxs_primary": (PRIMARY_MEMBERSHIP,),
 }
 DEFAULT = STEP / "output"
-HISTORY = STEP.parent / "history"
 AXES = Path("02_gene_axis/02.1_hvg-deg")
 TRAINING = Path("03_data_train")
 TAHOE_VIEW = TRAINING / "03.2_tahoe_hvg-5k"
@@ -187,47 +186,9 @@ def verify_product(root):
         return corpus.manifest_sha256
 
 
-def _select_predecessor(output, explicit):
-    active = output / "native"
-    if (active / "manifest.json").is_file():
-        if explicit is not None and sha256(explicit / "manifest.json") != sha256(active / "manifest.json"):
-            raise CorpusError("selected predecessor differs from the installed legacy corpus")
-        return active
-    return explicit
-
-
-def verify_archived_legacy(legacy):
-    """Require a verified local archive handoff before replacing a legacy directory."""
-    inventory = HISTORY / "archive-manifest.json"
-    error = "replacing the installed legacy corpus requires a verified archive handoff"
-    if not legacy.is_relative_to(REPO) or not inventory.is_file() or inventory.is_symlink():
-        raise CorpusError(error)
-    original = legacy.relative_to(REPO)
-    handoff = release.read_json(inventory)
-    destination = Path(handoff.get("path_map", {}).get(original.as_posix(), "."))
-    archive = REPO / destination
-    if (handoff.get("schema") != "stage2-local-history-v1" or not archive.is_relative_to(HISTORY)
-            or not archive.resolve().is_relative_to(HISTORY.resolve())
-            or not (archive / "manifest.json").is_file() or not (legacy / "manifest.json").is_file()
-            or sha256(archive / "manifest.json") != sha256(legacy / "manifest.json")):
-        raise CorpusError(error)
-    record = release.read_json(legacy / "manifest.json")
-    declared = set(release.output_digests(record)) | {"manifest.json"}
-    if {path.relative_to(legacy).as_posix() for path in legacy.rglob("*")
-            if path.is_file() or path.is_symlink()} != declared:
-        raise CorpusError(f"{error}: unexpected legacy files")
-    entries = handoff.get("entries", {})
-    for name in declared:
-        entry = entries.get((original / name).as_posix(), {})
-        if (entry.get("destination") != (destination / name).as_posix()
-                or (archive / name).is_symlink()):
-            raise CorpusError(f"{error}: missing archived entry {name}")
-    release.check_manifest(archive, record)
-
-
 def verify_downstream(candidate, output):
     """Check the active training releases before replacing the accepted corpus."""
-    if not ((output / "manifest.json").is_file() or (output / "native/manifest.json").is_file()):
+    if not (output / "manifest.json").is_file():
         return
     stage2 = output.parent.parent
     sys.path[:0] = [str(STEP.parent / directory / "output/api")
@@ -348,10 +309,10 @@ def main():
             print(installed)
             return
 
-        previous = _select_predecessor(output, args.predecessor)
         legacy = output / "native"
-        if args.action != "verify" and legacy.exists():
-            verify_archived_legacy(legacy)
+        if args.action != "verify" and (legacy.exists() or legacy.is_symlink()):
+            raise CorpusError("the installed legacy corpus requires a separate scratch output")
+        previous = args.predecessor
         if args.action == "migrate" and previous is None:
             parser.error("migration requires a sealed v1 release")
 

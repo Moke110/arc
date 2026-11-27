@@ -180,9 +180,8 @@ retires that snapshot along with the other sibling screens.
 ## Stage 2 — published products and comparison payloads
 
 The [Stage 2 routing](../stage2_CarPS-VAE/AGENTS.md) identifies the active product
-owners. The materialized [local archive](../stage2_CarPS-VAE/README.md#local-history)
-keeps superseded releases and study payloads at their original relative paths
-under `stage2_CarPS-VAE/history/`.
+owners. [ADR 0105](adr/0105-stage-cleanup.md) retires the local Stage 2 archive.
+Original code, tracked receipts and figures remain at their published Git revisions.
 
 | Owner | Accepted products |
 | --- | --- |

@@ -10,7 +10,8 @@ import time
 
 from dose_inputs import open_inputs
 from dose_protocol import REFERENCE, STEP, TRANSIGEN, coordinates
-from dose_runs import PHASES, add_inputs, axis_run, bind, read_run, verify_release
+from dose_runs import ORIGINAL_CODE, PHASES, add_inputs, axis_run, bind, read_run, verify_release
+from util.training.provenance import legacy_configuration
 from matrix import ResourceMonitor, SAMPLE_SECONDS, digest_values, enforce_record, register_coordinate
 from matrix_measured import MEMORY_CAP, SWAP_CAP, scope_directory
 from matrix_sweep import signal_process_group
@@ -85,6 +86,7 @@ def preflight(step03, representations, source, bounded):
         formal = {key: bind(key, data, vectors, source, False) for key in coordinates()}
         selected = ({key: bind(key, data, vectors, source, True) for key in coordinates(True)}
                     if bounded else formal)
+    historical = (legacy_configuration(config, axis_run.REPO, ORIGINAL_CODE) for config in formal.values())
     folds = []
     for fold in range(3):
         config = formal[(REFERENCE, fold, 17)]
@@ -95,6 +97,7 @@ def preflight(step03, representations, source, bounded):
         "schema": SCHEMA, "bounded": bounded, "formal_roster": [list(key) for key in formal],
         "registered_roster": [list(key) for key in selected],
         "formal_configs_sha256": digest_values([json.dumps(config, sort_keys=True) for config in formal.values()]),
+        "gate_configs_sha256": digest_values([json.dumps(config, sort_keys=True) for config in historical]),
         "registered_configs_sha256": digest_values([json.dumps(config, sort_keys=True) for config in selected.values()]),
         "folds": folds,
     }
@@ -135,7 +138,7 @@ def verify_bounded_gate(evidence):
             or any(set(row["replay"].values()) != {"exact"} for row in receipt["bounded_fit_lineage"])
             or receipt["figures"]["status"] != "PASS"
             or receipt["formal_coordinates"] != len(coordinates())
-            or receipt["formal_configs_sha256"] != evidence["formal_configs_sha256"]
+            or receipt["formal_configs_sha256"] != evidence.get("gate_configs_sha256", evidence["formal_configs_sha256"])
             or receipt["full_folds"] != evidence["folds"]):
         raise ValueError("formal fit does not match the accepted Step 10 CUDA gate")
 

@@ -8,10 +8,11 @@ import subprocess
 import sys
 import time
 
-from chem_runs import PHASES, add_inputs, arguments, axis_run, bind, coordinates, open_inputs, read_run
+from chem_runs import ORIGINAL_CODE, PHASES, add_inputs, arguments, axis_run, bind, coordinates, open_inputs, read_run
 from matrix import SAMPLE_SECONDS, ResourceMonitor, digest_values, enforce_record, register_coordinate
 from matrix_measured import MEMORY_CAP, SWAP_CAP, scope_directory
 from matrix_sweep import signal_process_group
+from util.training.provenance import legacy_configuration
 
 SCHEMA = "carps-vae-alpha-chemical-matrix-v1"
 RUNNER = Path(__file__).with_name("chem_runs.py")
@@ -53,10 +54,13 @@ def invoke(logs, resources, coordinate, phase, args):
         raise RuntimeError(f"{coordinate}: {phase} failed, see {attempt.with_suffix('.log')}")
 
 
-def preflight(training, representations, source, smoke):
+def preflight(training, representations, source, smoke, *, legacy=False):
     roster = coordinates(smoke)
     with open_inputs(training, representations) as (data, vectors):
         expected = {key: bind(key, data, vectors, source, smoke) for key in roster}
+        if legacy:
+            expected = {key: legacy_configuration(config, axis_run.REPO, ORIGINAL_CODE)
+                        for key, config in expected.items()}
         populations = []
         for fold in range(3):
             ids = {phase: list(data.condition_ids(data.rows(fold, phase))) for phase in axis_run.PARTITIONS}

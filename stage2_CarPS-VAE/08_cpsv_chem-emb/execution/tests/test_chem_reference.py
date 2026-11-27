@@ -1,45 +1,32 @@
 """Exercise the exact KPGT score gate used before reference fit reuse."""
 
-import json
 from pathlib import Path
 import sys
-from tempfile import TemporaryDirectory
 import unittest
 
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from chem_reference import verify_live_alpha_dependencies, verify_reference_scores
+from chem_reference import verify_reference_scores
+from chem_runs import ORIGINAL_CODE, axis_run
+from util.training.provenance import git_code_hashes, verify_replay_configuration
 from chem_report import METRICS
 
 
 class ReferenceTest(unittest.TestCase):
-    def test_live_alpha_dependencies_match_the_frozen_release(self):
-        stage = Path(__file__).resolve().parents[3]
-        release = json.loads((stage / "07_cpsv_alpha/output/release.json").read_text())
-        scratch = stage.parent / "tmp"
-        scratch.mkdir(exist_ok=True)
-        dependencies = (
-            "05_tsg_loss/05.1_loss_metrics/execution/objective.py",
-            "05_tsg_loss/05.2_mse_l1/execution/additive_objective.py",
-            "05_tsg_loss/05.2_mse_l1/execution/run_sweep.py",
-        )
-        with TemporaryDirectory(dir=scratch) as work:
-            candidate = Path(work)
-            for name in dependencies:
-                path = candidate / name
-                path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_bytes((stage / name).read_bytes())
-            verify_live_alpha_dependencies(candidate, release)
-            for name in dependencies:
-                with self.subTest(dependency=name):
-                    path = candidate / name
-                    original = path.read_bytes()
-                    path.write_bytes(original + b"\n# changed\n")
-                    with self.assertRaisesRegex(ValueError, path.name):
-                        verify_live_alpha_dependencies(candidate, release)
-                    path.write_bytes(original)
+    def test_sealed_runtime_pin_keeps_the_scientific_registration_exact(self):
+        path = "stage2_CarPS-VAE/08_cpsv_chem-emb/execution/chem_runs.py"
+        pins = git_code_hashes(axis_run.REPO, ORIGINAL_CODE, (path,))
+        current = {"code_sha256": {path: "new-code"}, "experiment": {"fold": 0}, "partitions": {"test": [8]}}
+        sealed = {"code_sha256": pins, "partitions": {"test": [8]}}
+        options = {"repo": axis_run.REPO, "revision": ORIGINAL_CODE}
+
+        verify_replay_configuration(sealed, current, replay=True, **options)
+        for invalid, replay in ((sealed, False), ({**sealed, "partitions": {"test": [9]}}, True),
+                                ({**sealed, "code_sha256": {path: "wrong-code"}}, True)):
+            with self.assertRaisesRegex(ValueError, "registered study"):
+                verify_replay_configuration(invalid, current, replay=replay, **options)
 
     def test_changed_score_rejects_reuse(self):
         recorded = pd.DataFrame({

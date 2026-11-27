@@ -9,3 +9,5 @@ comparison evidence unchanged. Run the bounded CUDA gate before the formal
 matrix. Keep the coordinator sampler live from preflight until after the
 last fit measurement. Verify the report against the frozen data and replay
 figures from their CSVs before accepting a publication.
+
+For model, fit or replay changes, use the [shared APIs](../util/README.md#transigen-training-and-evaluation).

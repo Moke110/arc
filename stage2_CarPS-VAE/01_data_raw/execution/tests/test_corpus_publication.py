@@ -29,8 +29,7 @@ class CorpusPublicationTest(unittest.TestCase):
                 "--staging", str(self.root / "staging"), *options]
         with (patch.object(sys, "argv", argv),
               patch.object(build_corpus, "DEFAULT", self.output),
-              patch.object(build_corpus, "REPO", self.root),
-              patch.object(build_corpus, "HISTORY", self.root / "history")):
+              patch.object(build_corpus, "REPO", self.root)):
             build_corpus.main()
 
     def migrate(self, predecessor):
@@ -75,60 +74,16 @@ class CorpusPublicationTest(unittest.TestCase):
             build_corpus.main()
         verify.assert_called_once_with(self.output)
 
-    def test_different_predecessor_cannot_replace_the_accepted_legacy_release(self):
-        with (patch.object(build_corpus, "migrate") as build,
-              self.assertRaisesRegex(CorpusError, "installed legacy corpus")):
-            self.migrate(self.predecessor)
-        build.assert_not_called()
-        self.assertTrue((self.legacy / "manifest.json").is_file())
-
-    def test_unarchived_legacy_refuses_migration_before_build(self):
-        with (patch.object(build_corpus, "migrate") as build,
-              self.assertRaisesRegex(CorpusError, "verified archive handoff")):
-            self.migrate(self.legacy)
-        build.assert_not_called()
-        self.assertTrue(self.legacy.exists())
-        self.assertFalse((self.root / "history").exists())
-
-    def test_failed_downstream_read_leaves_accepted_legacy_release_and_api(self):
-        self.archived_legacy()
-        api = self.output / "api"
-        api.mkdir()
-        reader = api / "reader.py"
-        reader.write_text("# accepted reader\n")
-        with (patch.object(build_corpus, "migrate"),
-              patch.object(build_corpus, "verify_product"),
-              patch.object(build_corpus, "verify_equivalence"),
-              patch.object(build_corpus, "verify_downstream",
-                           side_effect=CorpusError("failed downstream read")),
-              self.assertRaisesRegex(CorpusError, "failed downstream read")):
-            self.migrate(self.legacy)
-        self.assertTrue((self.legacy / "manifest.json").is_file())
-        self.assertEqual(reader.read_text(), "# accepted reader\n")
-
-    def test_verified_archive_allows_migration_and_keeps_archive_read_only(self):
+    def test_archive_cannot_authorize_replacement_of_an_installed_legacy_corpus(self):
         archive = self.archived_legacy()
-        self.predecessor.joinpath("manifest.json").write_bytes((archive / "manifest.json").read_bytes())
-        inventory = self.root / "history/archive-manifest.json"
-        before = {path: sha256(path) for path in (inventory, *archive.iterdir())}
-        api = self.output / "api"
-        api.mkdir()
-        reader = api / "reader.py"
-        reader.write_text("# accepted reader\n")
-
-        def stage(predecessor, candidate):
-            self.assertEqual(predecessor.root, self.legacy)
-            (candidate / "manifest.json").write_text("successor")
-
-        with (patch.object(build_corpus, "migrate", side_effect=stage),
-              patch.object(build_corpus, "verify_product", return_value="successor"),
-              patch.object(build_corpus, "verify_equivalence"),
-              patch.object(build_corpus, "verify_downstream") as downstream):
-            self.migrate(self.predecessor)
-        downstream.assert_called_once()
-        self.assertFalse(self.legacy.exists())
-        self.assertEqual({path: sha256(path) for path in before}, before)
-        self.assertEqual(reader.read_text(), "# accepted reader\n")
+        manifest = self.legacy / "manifest.json"
+        saved = sha256(manifest)
+        with (patch.object(build_corpus, "publish_candidate") as build,
+              self.assertRaisesRegex(CorpusError, "installed legacy corpus.*scratch output")):
+            self.migrate(self.legacy)
+        build.assert_not_called()
+        self.assertEqual(sha256(manifest), saved)
+        self.assertEqual(sha256(archive / "manifest.json"), saved)
 
     def test_installed_publish_verifies_pinned_generation_without_build(self):
         self.legacy.rename(self.root / "unavailable-legacy")

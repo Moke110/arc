@@ -9,11 +9,12 @@ import numpy as np
 import pandas as pd
 
 from chem_matrix import verify_matrix
-from chem_runs import REFERENCE, add_inputs, axis_run, bind, coordinates, open_inputs, read_run
+from chem_runs import ORIGINAL_CODE, REFERENCE, add_inputs, axis_run, bind, coordinates, open_inputs, read_run
 from evaluate_loss import axis_evaluate, score_run
 from training_data import TENV_DEFAULT, open_tenv_training
 from tsg_axis.inputs import AxisInputs
 from tsg_axis.metrics import METRICS
+from util.training.provenance import verify_replay_configuration
 
 PRIMARY_METRICS = ("Δ PCC", "Δ RMSE")
 SCORE_KEYS = ["arm", "fold", "seed", "metric"]
@@ -90,11 +91,10 @@ def report_tables(fresh, reused, training, representations, source, bandwidth_tr
             arm, fold, seed = key
             reused_fit = key in reused
             path, config, replay, trained, trace = (reused if reused_fit else fresh)[key]
-            if not reused_fit and (
-                {name: value for name, value in config.items() if name not in ("arguments", "nonce")}
-                != bind(key, data, vectors, source, smoke)
-            ):
-                raise ValueError(f"fresh fit registration differs from current run inputs: {key}")
+            if not reused_fit:
+                identity = {name: value for name, value in config.items() if name not in ("arguments", "nonce")}
+                verify_replay_configuration(identity, bind(key, data, vectors, source, smoke), replay=True,
+                                            repo=axis_run.REPO, revision=ORIGINAL_CODE)
             if fold not in bandwidths:
                 bandwidths[fold] = axis_evaluate._bandwidth(base, fold)
             condition, metrics = score_run(path, config, replay, data, base, fold, smoke,

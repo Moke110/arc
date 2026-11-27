@@ -249,5 +249,5 @@ historical six ID mappings and sealed table hashes.
 The [previous routing](https://github.com/Moke110/carps/blob/59b188ec0fe6386f2c916e062eaad310c20f00f8/stage2/04_tsg_axis/README.md)
 records the original inputs and pinned replay commands for the single-dose and
 axis-wide-control comparisons and the subsequent dose and width studies.
-The [local archive inventory](../README.md#local-history) maps their
-original paths to the preserved materialized files.
+Use the [original tracked evidence](../README.md#historical-evidence-and-active-input-checks)
+for the earlier comparisons.

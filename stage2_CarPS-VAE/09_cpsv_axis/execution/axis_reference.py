@@ -8,6 +8,7 @@ from axis_protocol import ARM, REFERENCE_AXIS, coordinates
 from axis_model import AxisAdapter, paired_initialization
 from axis_runs import add_inputs, axis_run, configure_cuda
 import chem_runs
+from util.training.provenance import verify_replay_configuration
 from tenv_axes import tenv_axis_output
 
 DEFECTS = (OSError, ValueError, KeyError, RuntimeError)
@@ -53,12 +54,14 @@ def check_reference(key, data, vectors, source, matrix, rows, table):
     observed, (_, config, replay, training, _) = chem_runs.read_run(path, False)
     expected = chem_runs.bind(historical, data, vectors, source, False)
     current = {field: value for field, value in config.items() if field not in ("arguments", "nonce")}
+    verify_replay_configuration(current, expected, replay=True, repo=axis_run.REPO,
+                                revision=chem_runs.ORIGINAL_CODE)
     manifest_sha = axis_run.digest(path / "manifest.json")
     hashes = {"registration_sha256": replay["registration_sha256"], "manifest_sha256": manifest_sha,
               "checkpoint_sha256": replay["outputs"]["checkpoint.pt"],
               "prediction_sha256": replay["outputs"]["prediction.npy"],
               "trace_sha256": replay["outputs"]["learning_curve.csv"]}
-    if (observed != historical or current != expected or fit["path"] != relative.as_posix()
+    if (observed != historical or fit["path"] != relative.as_posix()
             or any(record[field] != value for field, value in hashes.items())
             or any(fit[field] != hashes[field] for field in ("registration_sha256", "manifest_sha256"))
             or fit["initialization"] != training["initialization"]
