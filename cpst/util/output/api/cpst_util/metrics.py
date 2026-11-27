@@ -35,10 +35,6 @@ def vector_metrics(truth, prediction):
     }
 
 
-JACCARD_CUTOFFS = (200, 500, 1000, 2000)
-JACCARD_WEIGHTS = (0.125, 0.25, 0.5, 1.0)
-
-
 def _rank_by_sign(values, genes, sign):
     magnitude = sign * values
     nonzero = np.flatnonzero(magnitude > 0)
@@ -69,14 +65,3 @@ def signed_jaccard(truth, predicted, gene_indices, *, limit=100):
     rankings = _signed_rankings(truth, predicted, gene_indices)
     hits, totals = zip(*_direction_counts(rankings, limit), strict=True)
     return _jaccard(sum(hits), sum(totals)), *map(_jaccard, hits, totals)
-
-
-def signed_jaccard_scores(truth, predicted, gene_indices):
-    """Return JAC-top200 and wJAC-2000 for one matched-control Delta pair."""
-    rankings = _signed_rankings(truth, predicted, gene_indices)
-    scores = []
-    for cutoff in JACCARD_CUTOFFS:
-        hits, totals = zip(*_direction_counts(rankings, cutoff // 2), strict=True)
-        scores.append(_jaccard(sum(hits), sum(totals)))
-    weighted = math.fsum(weight * score for weight, score in zip(JACCARD_WEIGHTS, scores, strict=True))
-    return scores[0], weighted / math.fsum(JACCARD_WEIGHTS)

@@ -8,7 +8,7 @@ import pandas as pd
 from axis_protocol import REFERENCE_AXIS, STAGE
 
 sys.path.insert(0, str(STAGE))
-from util.eval.axis_delta import REPORT_CONDITION, REPORT_METRICS, WEIGHTED, score_deltas
+from util.eval.axis_delta import REPORT_CONDITION, REPORT_METRICS, score_deltas
 
 
 def paired_scores(scores, roster, *, metrics=REPORT_METRICS):

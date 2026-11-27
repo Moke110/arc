@@ -10,13 +10,13 @@ from scipy.spatial.distance import pdist
 
 from axis_protocol import ARM, REFERENCE_AXIS, coordinates
 from axis_report import PLOT_TABLES
-from axis_scores import REPORT_CONDITION, REPORT_METRICS, WEIGHTED
+from axis_scores import REPORT_CONDITION, REPORT_METRICS
 from axis_runs import axis_run
 from audit_measured_scores import check_statistics, read_table, same, value
 from chem_runs import SCHEMA as STEP08_SCHEMA
 from tenv_axes import open_tenv_axis_training
 from cpst_util.comparison import METRIC_NAMES
-from tsg_axis.metrics import DISTRIBUTION, METRICS, condition_scores, distribution_scores, signed_jaccard
+from tsg_axis.metrics import DISTRIBUTION, METRICS, condition_scores, distribution_scores
 
 IDENTITY = ("axis", "fold", "seed")
 SCORE_FIELDS = (*IDENTITY, "metric")
@@ -100,11 +100,6 @@ def audit_fold(key, genes, truth, prediction, identities, conditions, scores, ba
     for condition_id, measured, estimated in zip(identities, truth, prediction, strict=True):
         row = conditions.pop((*key, condition_id))
         recalculated = condition_scores(measured, estimated, genes)
-        cutoffs = ((100, 1), (250, 2), (500, 4), (1000, 8))
-        recalculated[WEIGHTED] = sum(
-            weight * signed_jaccard(measured, estimated, genes, limit=cutoff)[0]
-            for cutoff, weight in cutoffs
-        ) / 15
         for metric in REPORT_CONDITION:
             number = recalculated[metric]
             expected = float(number) if math.isfinite(number) else None

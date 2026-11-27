@@ -15,7 +15,7 @@ sys.path[:0] = [str(STEP / "output/api"), str(STAGE / "util/output/api")]
 from cpst_util.comparison import CURVE_FIELDS, FIGURES, METRIC_FIELDS, METRIC_NAMES, write_paired_metrics
 from cpst_util.comparison_publication import render_receipt
 from cpst_util.derivation.release import check_outputs, read_json, sha256, write_json
-from cpst_util.metrics import signed_jaccard_scores
+from cpst_util.metrics import signed_jaccard
 from tsg_axis.metrics import summarize_conditions
 
 ARMS = ("hvg-3k", "hvg-4k", "hvg-5k", "denoise-3k", "denoise-4k", "denoise-5k")
@@ -63,8 +63,8 @@ def _scored_run(run, fit, sealed, reference):
     if (measured.shape != predicted.shape or measured.shape != (fit["test_conditions"], len(genes))
             or not np.isfinite(measured).all() or not np.isfinite(predicted).all()):
         raise ValueError(f"invalid sealed matched-control Delta arrays: {identity}")
-    jaccard, weighted = zip(*(signed_jaccard_scores(y, yhat, genes)
-                              for y, yhat in zip(measured, predicted, strict=True)), strict=True)
+    jaccard = [signed_jaccard(y, yhat, genes)[0]
+               for y, yhat in zip(measured, predicted, strict=True)]
     if not np.array_equal(jaccard, sealed.JAC_top200, equal_nan=True):
         raise ValueError(f"held-out JAC-top200 differs from the sealed conditions: {identity}")
     top200 = summarize_conditions(jaccard)
@@ -74,7 +74,7 @@ def _scored_run(run, fit, sealed, reference):
     for name in ("n_conditions", "n_eligible", "n_undefined"):
         if top200[name] != top200_ref[name]:
             raise ValueError(f"JAC-top200 eligibility differs for {identity}: {name}")
-    return trace, summarize_conditions(weighted)["value"]
+    return trace
 
 
 def write_plot_data(report, matrix, fits, data):
@@ -95,9 +95,9 @@ def write_plot_data(report, matrix, fits, data):
         run = matrix / "runs" / fit["axis"] / f"fold-{fold}"
         sealed = condition.loc[condition.axis.eq(fit["axis"]) & condition.fold.eq(fold)]
         reference = folds.loc[folds.axis.eq(fit["axis"]) & folds.fold.eq(fold)].set_index("metric")
-        trace, weighted = _scored_run(run, fit, sealed, reference)
+        trace = _scored_run(run, fit, sealed, reference)
         curves.extend(trace)
-        metrics.extend((arm, fold, 42, metric, weighted if metric == "wJAC-2000" else reference.loc[metric, "value"])
+        metrics.extend((arm, fold, 42, metric, reference.loc[metric, "value"])
                        for metric in METRIC_NAMES)
     data.mkdir()
     pd.DataFrame(curves, columns=CURVE_FIELDS).to_csv(data / "learning-curve.csv", index=False)

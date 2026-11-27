@@ -41,7 +41,7 @@ comparison.
 [Step 05 selected objective](../README.md#selected-objective) ·
 [Step 06.1 architecture comparison](../../06_tsg_shape/06.1_round1/README.md)
 
-The current comparison figures include wJAC-2000. Paired differences
+The current comparison figures show seven metrics. Paired differences
 subtract the fresh zero-weight score from the same fold and seed. The
 learning curves show training and validation through each fit's stopping epoch.
 [Metric scores](figure/metrics.png) ·

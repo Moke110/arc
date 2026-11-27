@@ -61,9 +61,8 @@ KPGT and standardized log-dose protocol.
 ## Rebuild the comparison figures
 
 The four rounds publish learning curves, held-out scores and differences
-from the reference within each fold and seed. The weighted signed Jaccard
-scores use accepted held-out predictions and matched controls. The other
-scores come from the accepted reports. Use the study guide for candidate
+from the reference within each fold and seed. The scores come from the accepted reports. The rebuild checks JAC-top200
+against the held-out predictions and matched controls. Use the study guide for candidate
 rebuilds and round-specific replay routes, and the current figure receipts
 for CSV-only verification.
 [Study guide](AGENTS.md#rebuild-the-comparison-figures) ·

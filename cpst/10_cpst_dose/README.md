@@ -47,6 +47,10 @@ Two independent CSV-only renders reproduced the three figures. The learning curv
 
 ## Reproduce and verify
 
-The installed `output/formal` bundle holds the sealed fit matrix, audit evidence and full scored report. The formal receipt and shared checksum ledger bind its manifests to the published tables and figures. [Release checksum ledger](../util/training/cpst-receipts.sha256)
+The active figures and score tables retain the accepted values for the
+current metrics. Use the pinned publication for full scientific replay.
+[Sealed publication](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/10_cpst_dose/README.md)
+
+The installed `output/formal` bundle holds the sealed fit matrix, audit evidence and full scored report. The formal receipt and shared checksum ledger bind its manifests to the original tables and figures. [Release checksum ledger](../util/training/cpst-receipts.sha256)
 
 The operating guide covers fitting, report reconstruction and CSV-only figure replay. [Run the bounded CUDA gate](AGENTS.md#run-the-bounded-cuda-gate) · [Reproduce and verify the formal study](AGENTS.md#reproduce-and-verify-the-formal-study) · [Rebuild a report from sealed fits](AGENTS.md#rebuild-a-report-from-sealed-fits) · [Verify the installed release](AGENTS.md#verify-the-installed-release)

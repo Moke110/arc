@@ -51,7 +51,7 @@ read-only. [Capped runtime](../04_tsg_axis/AGENTS.md#prepare-the-capped-runtime)
 The builder checks accepted manifest and fit identities and the complete
 train and validation traces. It verifies that fixed predictions and their
 matched DMSO controls reproduce the sealed Delta arrays, and checks sealed
-JAC-top200 parity before adding wJAC-2000. It writes plot CSVs, verified
+JAC-top200 parity. It writes plot CSVs, verified
 PNGs and receipts to a fresh candidate. Pass `--evidence-root` for a
 different materialized checkout, or `--step` with a numbered study
 directory name to rebuild just that study.

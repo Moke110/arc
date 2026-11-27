@@ -103,8 +103,7 @@ predecessor matrix. The #353 receipt records the fit revision and resource check
 The current figures show training and validation objectives, held-out
 scores, and paired differences from `original` within fold and seed.
 The score and difference panels use fold dots, means, and sample SD.
-They include wJAC-2000 from the accepted predictions and matched controls
-alongside JAC-top200 and the six Δ metrics.
+They show JAC-top200 and the six Δ metrics.
 [Learning curves](figure/learning-curve.png) ·
 [Held-out scores](figure/metrics.png) ·
 [Paired differences](figure/metrics-paired.png) ·

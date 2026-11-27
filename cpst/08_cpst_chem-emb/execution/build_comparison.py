@@ -117,7 +117,7 @@ def score_fit(key, fit, record, sealed, folds, epochs, data):
             or trace.epoch.tolist() != list(range(1, record.stopping_epoch + 1))
             or not trace.equals(epochs[TRACE].reset_index(drop=True))):
         raise ValueError(f"accepted train and validation trace differs for {key}")
-    conditions, top200, weighted = read_fixed_jaccard(path, config, manifest, data)
+    conditions, top200 = read_fixed_jaccard(path, config, manifest, data)
     if (conditions != tuple(sealed.condition_id)
             or not np.array_equal(top200, sealed.JAC_top200, equal_nan=True)):
         raise ValueError(f"held-out JAC-top200 differs from the accepted conditions: {key}")
@@ -127,10 +127,9 @@ def score_fit(key, fit, record, sealed, folds, epochs, data):
     if (not np.isclose(existing.value, summary["value"], rtol=0, atol=1e-15, equal_nan=True)
             or any(existing[name] != summary[name] for name in ("n_conditions", "n_eligible", "n_undefined"))):
         raise ValueError(f"held-out JAC-top200 fold score differs for {key}")
-    mean = summarize_conditions(weighted)["value"]
     return (
         [(*key, *row) for row in trace.itertuples(index=False, name=None)],
-        [(*key, metric, mean if metric == "wJAC-2000" else folds.at[metric, "value"])
+        [(*key, metric, folds.at[metric, "value"])
          for metric in METRIC_NAMES],
     )
 

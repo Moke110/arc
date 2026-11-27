@@ -1,8 +1,8 @@
 {
   "csv_files_sha256": {
     "figure/data/learning-curve.csv": "751346aa9b0203428e4f3c5f8339a7d26eecb4c600c0966c24fa795e0e7eae72",
-    "figure/data/metrics-paired.csv": "1b1cfc01f9d835e687613dce1623b6ed9cbbf8efacb74b73a9fd16191e062003",
-    "figure/data/metrics.csv": "c515a10716023cea31d04bd08fe99a834e8d0b4dcec156bf9398903298c5b1f1"
+    "figure/data/metrics-paired.csv": "2fa494fda3f62e06e1f6bbd8a00e83d94c06f7cf11d6218ac10f8d25bde414e0",
+    "figure/data/metrics.csv": "311302bc60fcbb99c8d1401f25d688334c026c20ef99bc3917a620142db63969"
   },
   "environment": {
     "matplotlib": "3.10.9",
@@ -17,6 +17,8 @@
     "fixed_jaccard_code_sha256": "66011526374d4405c137ba5f07f291ebad8a86c3bd8e97b8aba8ff9c540eb062",
     "matched_controls_sha256": "97bb9f1b792efd81eeeca65a0318324680f509ecac74bb04acd22ba4523c109e",
     "matrix_manifest_sha256": "1f3a95b8694a64c18e9a378ce42500af75541f59580aeef9bfddade5e1e31f85",
+    "predecessor_figure_receipt_sha256": "8d0b0c3c7f22fb93c87ca82e7c6a03153f8092c22e3f122e51f4251223988e92",
+    "predecessor_revision": "a7613b74fc23f9f48d8ea0d4479542c008d701db",
     "reference": "KPGT",
     "report_manifest_sha256": "ca1353c3b841a8c69e2b842b4e70e079cb3c28d517fba052e30c7f9d71777ef7",
     "reuse_plan_sha256": "cf7d9e00d649d2817a99a8a02a2f04f62e96f1ce2b839fbf9585157cbd76c27b",
@@ -28,12 +30,12 @@
   "independent_renders": 2,
   "png_files_sha256": {
     "figure/learning-curve.png": "9174aa7912a8fbbe9f8a2b26bfb18f863ff6faf7fe2475f98d2d64381f42327b",
-    "figure/metrics-paired.png": "827ff6997540726b11fb308282a620900fbc0faea53e6397ec95544373a25d65",
-    "figure/metrics.png": "93ee06a61a2ce2d2ea891dbd5622bf6eed5e576447a67ed7e25096e5183e6c4c"
+    "figure/metrics-paired.png": "9225de3061355dc3c41ad89787204c50b6e7916c397dfd406a1f30c539ef6402",
+    "figure/metrics.png": "3c2202e8385f518cf4b3fc96d8a5c98628ccce603a0cb494c54b1e20addda24c"
   },
   "renderer_files_sha256": {
     "08_cpst_chem-emb/figure/script/render_comparison.py": "aa27b634f8dfffcb655c5aae9e47869f6b539e25258560c26406b159a6331746",
-    "util/output/api/cpst_util/comparison.py": "4b18733f177d09a3eb1b25861e18c8383f2505eb9746966fa7f75bb83f4f2572",
+    "util/output/api/cpst_util/comparison.py": "9871e70086caef331284093682f2dd1946fc658756f3ab989d68bc17144fc570",
     "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e",
     "util/output/api/cpst_util/representations.py": "fec0c7fad052dde89c8c57d1b0ba26acdd5243d9db3aa8459416245dfbb2fddf"

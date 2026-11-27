@@ -28,7 +28,7 @@ The accepted comparison covers all 63 coordinates across folds 0–2 and trainin
 
 ## Comparison figures
 
-The learning curves show the accepted training and validation traces for all 63 coordinates, including the nine KPGT reuses. The two metric figures show eight held-out metrics and their paired differences from KPGT. The exporter checks JAC-top200 against the sealed condition and fold scores before deriving wJAC-2000 from the fixed held-out predictions and matched controls. The accepted receipt records two independent CSV-only renders. [Figure protocol in ADR 0102](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md) · [Figure receipt](log/figure-render.json)
+The learning curves show the accepted training and validation traces for all 63 coordinates, including the nine KPGT reuses. The two metric figures show seven held-out metrics and their paired differences from KPGT. The exporter checks that JAC-top200 from fixed predictions and matched controls agrees with the sealed condition and fold scores. The accepted receipt records two independent CSV-only renders. [Figure protocol in ADR 0109](../../docs/adr/0109-cpst-seven-metric-comparison-figures.md) · [Figure receipt](log/figure-render.json)
 
 | Figure | Plot data |
 | --- | --- |

@@ -104,12 +104,10 @@ Denoise-DEG 5k under that protocol as well.
 | [Paired differences](figure/metrics-paired.png) | Each other axis minus Denoise-DEG 5k within the same fold and seed.
 [Plotted data](figure/data/metrics-paired.csv) |
 
-The metrics figures include zero and add wJAC-2000, computed as a weighted
-mean of signed Jaccard at cutoffs 200, 500, 1,000 and 2,000 for each
-condition before fold aggregation. The current figure receipt binds all
+The seven metric panels include zero in both figures. The current figure receipt binds all
 three CSVs and three PNGs to the sealed fit and report manifests. The
 historical publication retains the disease F1 figure.
-[Figure policy and metric definition](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md) ·
+[Current panel layout](../../docs/adr/0109-cpst-seven-metric-comparison-figures.md) ·
 [Current rendering receipt](log/figure-render.json) ·
 [Historical disease F1 figure](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/04_tsg_axis/figure/disease-f1.png)
 

@@ -120,11 +120,10 @@ two improvements. Follow ADR 0100 for the downstream configuration.
 [Paired summary](figure/data/paired-summary.csv) · [ADR 0100](../../docs/adr/0100-carps-vae-unimol.md)
 
 Build the canonical figures from the accepted bundle, matched controls and
-registered Step 06.4 reuses. The exporter checks the sealed JAC-top200 scores
-before deriving wJAC-2000. For a CSV-only check of installed PNGs, run the
+registered Step 06.4 reuses. The exporter checks the sealed JAC-top200 scores. For a CSV-only check of installed PNGs, run the
 second command by itself. Require two identical renders and matching PNG
 hashes. Keep the formal evidence available for Step 09 replay.
-[Comparison exporter](execution/build_comparison.py) · [Figure verifier](execution/chem_figures.py) · [Figure receipt](log/figure-render.json) · [ADR 0102](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
+[Comparison exporter](execution/build_comparison.py) · [Figure verifier](execution/chem_figures.py) · [Figure receipt](log/figure-render.json) · [ADR 0109](../../docs/adr/0109-cpst-seven-metric-comparison-figures.md)
 
 ```bash
 capped python "$STEP/execution/build_comparison.py" \

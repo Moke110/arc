@@ -42,8 +42,7 @@ available for reused fits.
 
 The builder verifies the formal receipts, fit identities and learning
 curves. It checks the signed Δ arrays against the held-out predictions
-and matched controls, requires parity with the sealed JAC-top200 scores,
-and adds wJAC-2000 to the accepted fold metrics. It subtracts the study
+and matched controls and requires parity with the sealed JAC-top200 scores. It subtracts the study
 reference within each fold and seed. Require `PASS` for every requested
 round and a candidate `log/figure-render.json` recording two matching
 renders from its plotted CSVs. The candidate receipt records current

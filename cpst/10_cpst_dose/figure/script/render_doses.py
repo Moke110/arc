@@ -83,7 +83,7 @@ def draw_curves(curves):
 
 
 def draw_metrics(table, arms, title):
-    figure, axes = plt.subplots(3, 3, figsize=(15, 10.4), layout="constrained")
+    figure, axes = plt.subplots(2, 4, figsize=(18, 7.4), layout="constrained")
     for axis, (metric, label) in zip(axes.flat, METRIC_PANELS):
         data = table.loc[table.metric.eq(metric)]
         groups = [data.loc[data.arm.eq(arm), "value"].dropna().to_numpy() for arm in arms]
@@ -99,7 +99,7 @@ def draw_metrics(table, arms, title):
         focus_y(axis, groups, reference=0)
         format_axis(axis)
         axis.set_title(label)
-    axes[2, 2].remove()
+    axes[1, 3].remove()
     figure.suptitle(title)
     return figure
 

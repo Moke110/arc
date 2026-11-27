@@ -8,7 +8,7 @@ from pathlib import Path
 from .plotting import focus_y, learning_curve, replicate_bar, save_figure
 
 METRIC_PANELS = (
-    ("Δ Spearman", "ΔSpearman"), ("wJAC-2000", "wJAC-2000"), ("JAC_top200", "JAC-top200"),
+    ("Δ Spearman", "ΔSpearman"), ("JAC_top200", "JAC-top200"),
     ("Δ PCC", "ΔPCC"), ("Δ RMSE", "ΔRMSE"), ("Δ R²", "ΔR²"),
     ("Δ E-distance", "ΔE-distance"), ("Δ MMD", "ΔMMD"),
 )
@@ -137,7 +137,7 @@ def _curve_figure(plt, curves, arms, title):
 
 
 def _metric_figure(plt, scores, arms, title):
-    figure, axes = plt.subplots(3, 3, figsize=(13.2, 10.4), layout="constrained")
+    figure, axes = plt.subplots(2, 4, figsize=(16, 7.4), layout="constrained")
     labels = [style[0] for style in arms.values()]
     for axis, (metric, label) in zip(axes.flat, METRIC_PANELS):
         groups = []
@@ -156,7 +156,7 @@ def _metric_figure(plt, scores, arms, title):
         focus_y(axis, groups, reference=0)
         _format_panel(axis)
         axis.set_title(label)
-    axes[2, 2].remove()
+    axes[1, 3].remove()
     figure.suptitle(title)
     return figure
 

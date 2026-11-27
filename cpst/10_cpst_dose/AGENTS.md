@@ -2,9 +2,9 @@
 
 Read the study report and ADR 0103 before changing the model or protocol.
 Use the shared training and evaluation APIs for fits and replay, and follow
-ADR 0102 for comparison figures. The Step 07 alpha release and accepted
+ADR 0109 for comparison figures. The Step 07 alpha release and accepted
 comparison bundles are immutable inputs.
-[Study report](README.md) · [Dose design](../../docs/adr/0103-carps-vae-dose-inputs.md) · [Figure contract](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md) · [Shared APIs](../util/README.md#transigen-training-and-evaluation)
+[Study report](README.md) · [Dose design](../../docs/adr/0103-carps-vae-dose-inputs.md) · [Figure contract](../../docs/adr/0109-cpst-seven-metric-comparison-figures.md) · [Shared APIs](../util/README.md#transigen-training-and-evaluation)
 
 ## Prepare the inputs
 
@@ -152,17 +152,14 @@ cp "$STEP/log/378-coordinator-resources.jsonl" "$WORK/coordinator.jsonl"
 
 ## Verify the installed release
 
-Use the materialized formal bundle and the tracked figure and log files.
-`verify` independently recomputes the report audit and reproduces the
-published PNGs twice. For a figure-only check, run `dose_figures.py verify`
-on the plotted CSVs. That route requires only the figure data and renderer.
-[Formal receipt](log/378-formal.json) · [Figure verifier](execution/dose_figures.py)
+Use the original checkout at `a7613b74fc23f9f48d8ea0d4479542c008d701db`
+with the materialized `output/formal` bundle for the full scientific rescore. The pinned guide contains the command
+and the sealed report is validated against its original tracked receipts.
+The active figure receipt records the projection of those accepted score tables.
+Run the active CSV-only figure check from this checkout.
+[Historical verification](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/10_cpst_dose/AGENTS.md#verify-the-installed-release) · [Active figure receipt](log/figure-render.json)
 
 ```bash
-capped /usr/bin/time -v -o "$WORK/verify.resources" \
-  python "$EXECUTION/dose_formal.py" verify \
-  --bundle "$MATERIALIZED/cpst/10_cpst_dose/output/formal" --publication "$STEP" \
-  --scratch "$WORK/scratch" --step03 "$STEP03"
 python "$EXECUTION/dose_figures.py" verify --data "$STEP/figure/data" \
   --output "$STEP/figure" --scratch "$WORK/scratch"
 ```

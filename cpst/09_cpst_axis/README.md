@@ -29,7 +29,7 @@ The active report uses full-axis scoring under ADR 0102. The original disease-ov
 
 ## Figures
 
-The scoring follows the Step 04 condition eligibility and foldwise distribution metrics. Step 09 verified the Step 04 full-axis MMD bandwidth for each fold and held it fixed across axes and seeds. Signed wJAC-2000 combines Jaccard scores at cutoffs 200, 500, 1,000 and 2,000 within each condition before aggregation. The metric figures plot eight held-out metrics with replicate dots, means, sample SD and zero visible in every panel. Two independent renders reproduced the three figures from the plotted CSVs. [Step 04 comparison](../04_tsg_axis/README.md) · [MMD calibration](log/bandwidths.csv) · [Figure receipt](log/figure-render.json)
+The scoring follows the Step 04 condition eligibility and foldwise distribution metrics. Step 09 verified the Step 04 full-axis MMD bandwidth for each fold and held it fixed across axes and seeds. The metric figures plot seven held-out metrics with replicate dots, means, sample SD and zero visible in every panel. Two independent renders reproduced the three figures from the plotted CSVs. [Step 04 comparison](../04_tsg_axis/README.md) · [MMD calibration](log/bandwidths.csv) · [Figure receipt](log/figure-render.json)
 
 | Figure | Plot data |
 | --- | --- |
@@ -38,5 +38,9 @@ The scoring follows the Step 04 condition eligibility and foldwise distribution 
 | [Paired full-axis metrics](figure/metrics-paired.png) | [Differences from Denoise-DEG 5k by axis, fold and seed](figure/data/metrics-paired.csv) |
 
 ## Reproduce and verify
+
+The active figures and score tables retain the accepted values for the
+current metrics. Use the pinned publication for full scientific replay.
+[Sealed publication](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/09_cpst_axis/README.md)
 
 The installed `output/formal` bundle holds the sealed fit matrix, reuse plan and audited report. Their manifests are bound by the [formal acceptance receipt](log/371-formal.json). The owning guide has the procedures to [run the bounded CUDA gate](AGENTS.md#run-the-bounded-cuda-gate), [reproduce and publish the formal study](AGENTS.md#reproduce-and-publish-the-formal-study), [verify the installed release](AGENTS.md#verify-the-installed-release), and [rebuild the report from sealed fits](AGENTS.md#rebuild-the-report-from-sealed-fits).

@@ -36,7 +36,7 @@ three Step 05.2 fits at its unit-weight reference.
 [Step 05.3 report](../05.3_mse-l1_mse-x/README.md) ·
 [Step 05 selected objective](../README.md#selected-objective)
 
-The current figures show eight metrics, including wJAC-2000. Bars show
+The current figures show seven metrics. Bars show
 means, dots mark individual folds and error bars show sample SD. Paired
 scores subtract the zero-weight score within each fold and seed. The learning
 curves cover training and validation through each fit's stopping epoch.

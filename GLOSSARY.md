@@ -756,11 +756,6 @@ control, then give each sample equal weight within a reported population.
 This is the ADR 0078 evaluation unit for both sources. The historical ADR 0076
 comparison retains parent-equal evaluation.
 
-**Weighted signed Jaccard at top 2000** (`wJAC-2000`):
-A held-out condition score for the overlap of the strongest measured and
-predicted signed Delta responses. It combines signed top-200, top-500,
-top-1000 and top-2000 Jaccard with normalized weights 1:2:4:8.
-
 **Parent–dose response**:
 The mean transcriptional response of repeated treated wells for one drug
 parent at one measured dose, retaining that dose as a distinct evaluation unit.
