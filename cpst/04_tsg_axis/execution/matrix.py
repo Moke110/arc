@@ -110,7 +110,7 @@ def check_registrations(paths, rosters, preflight_record):
     return registrations
 
 
-def verify_run(path, axis, fold, seed, registration, *, output_check=check_outputs):
+def verify_run(path, axis, fold, seed, registration):
     config = read(path / "registration.json")
     manifest = read(path / "manifest.json")
     training, prediction = (read(path / PHASES[phase]) for phase in ("train", "predict"))
@@ -127,7 +127,7 @@ def verify_run(path, axis, fold, seed, registration, *, output_check=check_outpu
         or any(record["registration_sha256"] != registration for record in (training, prediction, manifest))
         or len({record["process_token"] for record in (training, prediction, manifest)}) != 3):
         raise ValueError(f"{axis} fold {fold} lacks distinct, exact fresh-process evidence")
-    output_check(path, manifest)
+    check_outputs(path, manifest)
     return {"axis": axis, "fold": fold, "seed": seed, "registration_sha256": registration,
             "run_manifest_sha256": file_sha256(path / "manifest.json"),
             "epochs": training["epochs"], "best_epoch": training["best_epoch"],

@@ -13,7 +13,7 @@ mean Δ RMSE (0.2472 ± 0.0046). The best dose-input arm, `Zdose-MLP`, scored
 0.3700 ± 0.0324 and 0.2511 ± 0.0041. Its paired differences relative to
 `no-dose` were −0.0212 ± 0.0254 in Δ PCC and +0.0039 ± 0.0056 in Δ RMSE.
 Values are means ± sample SD across nine fold and seed coordinates.
-[Original Step 10 formal results](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/10_cpst_dose/README.md#formal-results)
+[Step 10 formal results](../../cpst/10_cpst_dose/README.md#formal-results)
 
 The evidence covers simultaneous generalization to unseen drug parents and
 doses on the frozen tenv Denoise-DEG 5k release. Each held dose is paired

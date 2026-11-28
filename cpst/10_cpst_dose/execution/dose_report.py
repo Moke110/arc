@@ -9,7 +9,7 @@ import pandas as pd
 
 from dose_inputs import open_inputs
 from dose_matrix import verify_matrix
-from dose_protocol import DEFAULT_STEP03, REFERENCE, TRANSIGEN, coordinates, fold_identity
+from dose_protocol import DEFAULT_STEP03, REFERENCE, TRANSIGEN, coordinates
 from dose_runs import axis_run, input_identity
 from chem_runs import axis_evaluate
 from cpst_util.comparison import METRIC_NAMES
@@ -17,7 +17,7 @@ from tsg_axis.inputs import score_fixed_prediction
 
 from util.eval.axis_delta import REPORT_METRICS, score_deltas
 
-SCHEMA = "cpst-dose-report-v2"
+SCHEMA = "cpst-dose-report-v1"
 PLOT_TABLES = ("learning-curve.csv", "metrics.csv", "metrics-paired.csv")
 PRIMARY_METRICS = ("Δ PCC", "Δ RMSE")
 
@@ -88,7 +88,7 @@ def report_tables(runs, step03, bounded):
     with open_inputs(step03) as (data, _):
         gene_indices = ";".join(map(str, data.genes.gene_index))
         bandwidths = {
-            fold: {**axis_evaluate._bandwidth(data, fold), **fold_identity(fold), "gene_indices": gene_indices,
+            fold: {**axis_evaluate._bandwidth(data, fold), "gene_indices": gene_indices,
                    "train_rows": ";".join(map(str, data.rows(fold, "train")))}
             for fold in sorted({fold for _, fold, _ in roster})
         }
@@ -97,7 +97,7 @@ def report_tables(runs, step03, bounded):
             run = runs[key]
             by_condition, by_fold = score_run(key, run, data, bounded, bandwidths[fold]["bandwidth"])
             path, config, replay, trained, trace = run
-            identity = dict(arm=arm, fold=fold, seed=seed, **fold_identity(fold),
+            identity = dict(arm=arm, fold=fold, seed=seed, held_dose_um=config["population"]["held_dose_um"],
                             registration_sha256=replay["registration_sha256"])
             scores.append(by_fold.assign(**identity))
             conditions.append(by_condition.assign(**identity))
@@ -115,8 +115,6 @@ def report_tables(runs, step03, bounded):
                 "parameters": trained["parameters"],
             })
     paired, foldwise, summary = summarize_scores(pd.concat(scores, ignore_index=True), roster)
-    for field in ("parent_group", "held_dose_um", "protocol_sha256"):
-        foldwise[field] = foldwise.fold.map(lambda fold: fold_identity(fold)[field])
     return {
         "fold-scores.csv": paired, "foldwise-summary.csv": foldwise, "summary.csv": summary,
         "condition-scores.csv": pd.concat(conditions, ignore_index=True),

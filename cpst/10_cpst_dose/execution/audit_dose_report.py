@@ -11,9 +11,9 @@ import sys
 import numpy as np
 from scipy.spatial.distance import pdist
 
-from dose_inputs import SMOKE_LIMITS, cold_dose_partitions
+from dose_inputs import SMOKE_LIMITS
 from dose_matrix import verify_matrix
-from dose_protocol import STAGE, AXIS, DEFAULT_STEP03, REFERENCE, TRANSIGEN, coordinates, fold_identity
+from dose_protocol import STAGE, AXIS, DEFAULT_STEP03, HELD_DOSES, REFERENCE, SCENARIO, TRANSIGEN, coordinates
 from dose_report import PLOT_TABLES, REPORT_METRICS
 from dose_runs import axis_run
 sys.path.insert(0, str(STAGE / "09_cpst_axis/execution"))
@@ -62,33 +62,13 @@ def matched_deltas(release, controls, rows):
     return control, treatment_rows(release, rows, "treatment") - control
 
 
-def check_fold_identity(row, fold):
-    return all(row[field] == str(expected) for field, expected in fold_identity(fold).items())
-
-
-def audit_partitions(treatments, fold):
-    identity = fold_identity(fold)
-    old_roles = treatments[f"cold_drug_{identity['parent_group']}"]
-    held_parents = old_roles.eq("test")
-    held_dose = treatments.dose_um.eq(identity["held_dose_um"])
-    neither = ~held_parents & ~held_dose
-    masks = {"train": neither & old_roles.eq("train"), "valid": neither & old_roles.eq("valid"),
-             "test": held_parents & held_dose, "excluded-held-parent": held_parents & ~held_dose,
-             "excluded-held-dose": ~held_parents & held_dose}
-    rows = {phase: np.flatnonzero(mask.to_numpy()) for phase, mask in masks.items()}
-    declared = cold_dose_partitions(treatments, fold)
-    if any(not np.array_equal(actual, declared[phase]) for phase, actual in rows.items()):
-        raise ValueError(f"independent crossed partition audit disagrees for fold {fold}")
-    return rows
-
-
-def audit_bandwidth(release, controls, fold, record, genes, rows):
+def audit_bandwidth(release, controls, fold, record, genes):
+    rows = np.flatnonzero(release.treatments[f"{SCENARIO}_{fold}"].eq("train").to_numpy())
     _, delta = matched_deltas(release, controls, rows)
     bandwidth = np.median(pdist(delta)) / math.sqrt(len(genes))
     identities = release.treatments.iloc[rows][["plate", "drug_parent", "dose_um"]].copy()
     identities.insert(0, "condition_id", ordered_condition_ids(release, rows))
-    if (not check_fold_identity(record, fold)
-            or delta.shape != (int(record["rows"]), int(record["width"]))
+    if (delta.shape != (int(record["rows"]), int(record["width"]))
             or int(record["pair_count"]) != math.comb(len(rows), 2)
             or tuple(map(int, record["train_rows"].split(";"))) != tuple(rows)
             or tuple(map(int, record["gene_indices"].split(";"))) != tuple(genes)
@@ -103,7 +83,7 @@ def audit_bandwidth(release, controls, fold, record, genes, rows):
 def audit_lineage(key, run, row):
     path, config, replay, trained, _ = run
     identity = {
-        **fold_identity(key[1]), "registration_sha256": replay["registration_sha256"],
+        "held_dose_um": HELD_DOSES[key[1]], "registration_sha256": replay["registration_sha256"],
         "training_sha256": config["training_sha256"], "axis_sha256": config["axis_sha256"],
         "representation": config["representation"]["name"],
         "representation_sha256": config["representation"]["vectors_sha256"],
@@ -148,7 +128,7 @@ def audit_plots(data, report, runs, scores):
             plotted = curves.pop(coordinate, None)
             row = reported[coordinate]
             if (plotted is None or row["registration_sha256"] != replay["registration_sha256"]
-                    or not check_fold_identity(row, key[1])
+                    or float(row["held_dose_um"]) != HELD_DOSES[key[1]]
                     or any(not same(value(row, source), value(trace, source)) for source in
                            (*OBJECTIVES.values(), "validation_mse"))
                     or any(not same(value(plotted, field), value(trace, source))
@@ -176,9 +156,8 @@ def audit_report(report, data, runs, step03, *, bounded=False):
         controls = release.read_controls(0, len(release.controls))
         genes = release.genes.gene_index.to_numpy()
         for fold in sorted(folds):
-            partitions = audit_partitions(release.treatments, fold)
-            bandwidth = audit_bandwidth(release, controls, fold, calibrations[fold,], genes, partitions["train"])
-            rows = partitions["test"]
+            bandwidth = audit_bandwidth(release, controls, fold, calibrations[fold,], genes)
+            rows = np.flatnonzero(release.treatments[f"{SCENARIO}_{fold}"].eq("test").to_numpy())
             if bounded:
                 rows = rows[:SMOKE_LIMITS["test"]]
             ids = ordered_condition_ids(release, rows)
@@ -187,18 +166,14 @@ def audit_report(report, data, runs, step03, *, bounded=False):
                 audit_lineage(key, runs[key], ledger[key])
                 path, config, replay, _, _ = runs[key]
                 for row in (scores[(*key, metric)] for metric in REPORT_METRICS):
-                    if not check_fold_identity(row, fold) or row["registration_sha256"] != replay["registration_sha256"]:
+                    if float(row["held_dose_um"]) != HELD_DOSES[fold] or row["registration_sha256"] != replay["registration_sha256"]:
                         raise ValueError(f"incorrect score lineage for {key}")
                 for name in ids:
                     row = conditions[(*key, name)]
-                    if not check_fold_identity(row, fold) or row["registration_sha256"] != replay["registration_sha256"]:
+                    if float(row["held_dose_um"]) != HELD_DOSES[fold] or row["registration_sha256"] != replay["registration_sha256"]:
                         raise ValueError(f"incorrect condition score lineage for {key}")
                 predicted = np.load(path / "prediction.npy", mmap_mode="r", allow_pickle=False) - control
-                expected_excluded = {reason: list(ordered_condition_ids(release, partitions[f"excluded-{reason}"]))
-                                     for reason in ("held-parent", "held-dose")}
-                if (config["population"]["excluded_conditions"] != expected_excluded
-                        or tuple(config["partitions"]["test"]) != tuple(rows)
-                        or tuple(config["conditions"]["test"]) != tuple(ids)
+                if (tuple(config["partitions"]["test"]) != tuple(rows) or tuple(config["conditions"]["test"]) != tuple(ids)
                         or config["population"]["control_sha256"]["test"] != sha256(control.tobytes()).hexdigest()
                         or len(ids) != replay["test_conditions"]
                         or tuple(read_table(path / "conditions.csv", ("condition_id",))) != tuple((name,) for name in ids)
@@ -213,8 +188,6 @@ def audit_report(report, data, runs, step03, *, bounded=False):
         raise ValueError("Step 10 report contains unregistered held-out conditions")
     foldwise = read_table(report / "foldwise-summary.csv", ("arm", "fold", "metric"))
     overall = read_table(report / "summary.csv", ("arm", "metric"))
-    if any(not check_fold_identity(row, key[1]) for key, row in foldwise.items()):
-        raise ValueError("incorrect crossed fold summary lineage")
     audit_aggregates(scores, foldwise, overall)
     audit_plots(data, report, runs, scores)
     return {"status": "PASS", "coordinates": len(roster), "score_rows": len(scores), "condition_rows": condition_count,

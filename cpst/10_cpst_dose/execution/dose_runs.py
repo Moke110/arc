@@ -14,7 +14,7 @@ import torch
 from dose_inputs import features_for, open_inputs
 from dose_model import DoseAdapter, configuration, epoch_streams, initialization, objective
 from dose_protocol import (ARMS, AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_STEP03,
-                           SCENARIO, coordinates, fold_numbers, protocol, representation)
+                           SCENARIO, SEEDS, coordinates, representation)
 from chem_runs import alpha_release_digest, axis_run, verify_release
 from tsg_axis.learning import EarlyStopping, fixed_rng
 from tsg_axis.protocol import MAX_EPOCHS, PATIENCE
@@ -22,7 +22,7 @@ from util.training import registered
 from util.training.provenance import verify_replay_configuration, verify_sealed_code
 from util.training.transigen import fit_epochs, replay_validation
 
-SCHEMA = "cpst-dose-run-v2"
+SCHEMA = "cpst-dose-run-v1"
 ORIGINAL_CODE = "b8be1ad9244c9a3e03eba3e0c77ec64a59ed695d"
 DOSE_CODE = tuple(
     Path(__file__).resolve().with_name(name).relative_to(axis_run.REPO).as_posix()
@@ -49,8 +49,7 @@ def input_identity(data, fold, bounded):
     return {
         "training_sha256": release.manifest_sha256,
         "raw_sha256": release.manifest["inputs"]["raw_sha256"],
-        "source_folds": release.manifest["inputs"]["folds"],
-        "protocol_sha256": protocol().release_sha256,
+        "folds": release.manifest["inputs"]["folds"],
         "axis_sha256": release.manifest["outputs"]["genes.csv"],
         "population": data.fold_population(fold, bounded),
         "partitions": {phase: rows.tolist() for phase, rows in positions.items()},
@@ -66,7 +65,6 @@ def code_hashes():
         "cpst/util/training/cpst_reference.py",
         "cpst/08_cpst_chem-emb/execution/chem_runs.py",
         "cpst/03_data_train/output/api/fold_ledger.py",
-        "cpst/util/output/api/cpst_util/tenv_folds.py",
         "cpst/03_data_train/output/api/tenv_axes.py",
         "cpst/util/output/api/cpst_util/derivation/release.py",
         "cpst/util/output/api/cpst_util/publication.py",
@@ -232,7 +230,7 @@ def execute(output, phase, step03, representations, source):
                            report_replay_resources=True)
 
 
-def read_run(path, bounded, *, read_receipt=axis_run.verified_receipt):
+def read_run(path, bounded):
     registration = path / "registration.json"
     config = axis_run.read_json(registration)
     verify_sealed_code(config, axis_run.REPO, ORIGINAL_CODE, historical_paths=DOSE_CODE)
@@ -244,7 +242,7 @@ def read_run(path, bounded, *, read_receipt=axis_run.verified_receipt):
             or config["model"] != configuration(key[0])):
         raise ValueError(f"invalid sealed Step 10 registration: {path}")
     training, prediction, replay = (
-        read_receipt(path, PHASES[phase], registration_sha, PHASE_FILES[phase]) for phase in PHASES
+        axis_run.verified_receipt(path, PHASES[phase], registration_sha, PHASE_FILES[phase]) for phase in PHASES
     )
     receipts = (training, prediction, replay)
     if (len({config["nonce"], *(receipt["process_token"] for receipt in receipts)}) != 4
@@ -284,8 +282,8 @@ def main():
     commands = parser.add_subparsers(dest="phase", required=True)
     registration = commands.add_parser("register")
     registration.add_argument("--arm", choices=ARMS, required=True)
-    registration.add_argument("--fold", choices=fold_numbers(), type=int, required=True)
-    registration.add_argument("--seed", choices=protocol().seeds, type=int, required=True)
+    registration.add_argument("--fold", choices=range(3), type=int, required=True)
+    registration.add_argument("--seed", choices=SEEDS, type=int, required=True)
     registration.add_argument("--bounded", action="store_true")
     for phase in PHASES:
         commands.add_parser(phase)

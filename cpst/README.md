@@ -97,11 +97,12 @@ regularize the two encoder distributions against the standard normal prior
    after parity checks.
    [Step 09 formal results](09_cpst_axis/README.md#formal-results) ·
    [Axis decision](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
-7. **Step 10 retained `no-dose` for the current configuration.** The successor
-   crossed three held-parent groups with three doses and exactly replayed all
-   270 fits. `no-dose` led the mean full-axis Δ PCC (0.3886 ± 0.0537) and
-   Δ RMSE (0.2454 ± 0.0076) across 27 fold and seed coordinates per arm.
-   Dose remains part of measured condition identity and the holdout protocol.
+7. **Step 10 selected `no-dose` for the current configuration.** On the
+   three frozen cold-dose-drug folds, `no-dose` led all comparison arms in
+   mean full-axis Δ PCC (0.3913 ± 0.0235) and Δ RMSE (0.2472 ± 0.0046)
+   across nine fold and seed coordinates. Dose remains part of measured
+   condition identity and the holdout protocol. The Step 10 release
+   contains the accepted formal fits and audit evidence for this selection.
    [Step 10 formal results](10_cpst_dose/README.md#formal-results) ·
    [No-dose decision](../docs/adr/0104-carps-vae-no-dose.md)
 

@@ -9,11 +9,9 @@ comparison bundles are immutable inputs.
 ## Prepare the inputs
 
 - Use the frozen ordered Denoise-DEG 5k axis, measured same-plate DMSO and the
-  nine folds from the shared `tenv-cold-dose-drug-v1` protocol. Cross the three
-  historical held-parent groups with 0.2, 1 and 10 µM. Test the intersection of
-  held parent and held dose. Retain the historical training and validation
-  parent assignments at the other doses. Exclude both single-holdout strips.
-  [Shared fold reader](../util/README.md#shared-tenv-evaluation)
+  three `cold_dose_drug` folds. Test the intersection of held parent and held
+  dose. Train and validate on other parents at the other doses. Exclude both
+  single-holdout strips.
   [Training release manifest](../03_data_train/03.7_tenv_denoise-5k/output/manifest.json) · [Step 03 guide](../03_data_train/AGENTS.md) · [Input verifier](execution/dose_inputs.py)
 - Use the Step 07 `XΔ-XΔ` backbone and its selected objective with frozen UniMol
   for the nine CarPS-Transcriptome arms. The TranSiGen reference uses the
@@ -74,11 +72,11 @@ python "$SAMPLER" --output "$WORK/coordinator.jsonl"
 
 ## Run the bounded CUDA gate
 
-Exercise all ten arms on crossed fold 1 (parent group 0, held dose 1 µM) and seed 17 for two epochs using the first
+Exercise all ten arms on fold 0 and seed 17 for two epochs using the first
 64 training, 24 validation and 24 test conditions. After the post-matrix
 coordinator sample, score the sealed fits, reproduce the three figures twice
 from their plotted CSVs and require a `PASS` gate receipt.
-[Matrix runner](execution/dose_matrix.py) · [Gate assembler](execution/dose_gate.py)
+[Matrix runner](execution/dose_matrix.py) · [Gate assembler](execution/dose_gate.py) · [Accepted gate](log/377-bounded.json)
 
 ```bash
 capped /usr/bin/time -v -o "$WORK/command.resources" \
@@ -92,21 +90,22 @@ capped /usr/bin/time -v -o "$WORK/report.resources" \
 capped /usr/bin/time -v -o "$WORK/figure.resources" \
   python "$EXECUTION/dose_figures.py" build --data "$WORK/figure/data" \
   --output "$WORK/figure" --scratch "$WORK/scratch" > "$WORK/figure-replay.json"
-capped python "$EXECUTION/dose_gate.py" --bundle "$WORK" --output "$WORK/405-bounded.json" --step03 "$STEP03"
+capped python "$EXECUTION/dose_gate.py" --bundle "$WORK" --output "$WORK/377-bounded.json"
 ```
 
-Place the passing successor receipt at `log/405-bounded.json`. Formal preflight
-checks its configuration digest and fold identities against the new roster.
+Keep the scratch receipt with the bounded evidence. Formal preflight reads
+the accepted `log/377-bounded.json` and checks its configuration digest against
+the historical configuration identity reconstructed for the current roster.
 
 ## Reproduce and verify the formal study
 
 Set up a fresh `WORK` and start a new sampler. Fit all ten arms across folds
-0–8 and seeds 17, 42 and 2026. After the post-matrix sample, build and verify
+0–2 and seeds 17, 42 and 2026. After the post-matrix sample, build and verify
 the candidate. The publisher scores in a fresh process and independently
 audits all held-out Δ values, metric eligibility, fold and seed statistics,
 and plotted values against the report and sealed learning traces. Numeric
 audit tolerances are 10⁻¹² absolute and relative. Figure replay is exact.
-[Formal publisher](execution/dose_formal.py)
+[Formal publisher](execution/dose_formal.py) · [Accepted formal receipt](log/378-formal.json)
 
 ```bash
 capped /usr/bin/time -v -o "$WORK/command.resources" \
@@ -121,9 +120,10 @@ capped /usr/bin/time -v -o "$WORK/verify.resources" \
   --publication "$WORK/publication" --scratch "$WORK/scratch" --step03 "$STEP03"
 ```
 
-Require `PASS` for all 270 exact checkpoint replays, all registered scores and all three
+Require `PASS` for all 90 exact checkpoint replays, all 900 scores and all three
 CSV-only figures before accepting a publication. Install the verified bundle
-at `output/formal-crossed-v1`.
+at `output/formal` when that path is free. Use an unused `--destination` for a
+candidate with a different identity while the accepted bundle remains active.
 Keep the bundle and install destination on the same filesystem. The installer
 hardlinks immutable fit files, copies the phase audit and report tables, and
 installs them atomically after checking the passing receipts. Publish the
@@ -132,7 +132,7 @@ candidate's `figure/` and `log/` files together under this step.
 
 ```bash
 capped python "$EXECUTION/dose_formal.py" install --bundle "$WORK" \
-  --publication "$WORK/publication" --destination "$STEP/output/formal-crossed-v1"
+  --publication "$WORK/publication" --destination "$STEP/output/formal"
 ```
 
 ## Rebuild a report from sealed fits
@@ -141,82 +141,25 @@ For report-only work, use a fresh scratch bundle and the original coordinator
 samples. Point the bundle at the accepted matrix and per-phase audits, then
 use the same formal `build` and `verify` commands with this `WORK`. The publisher
 writes the rebuilt report to scratch.
+[Accepted coordinator samples](log/378-coordinator-resources.jsonl)
 
 ```bash
-SEALED="$MATERIALIZED/cpst/10_cpst_dose/output/formal-crossed-v1"
+SEALED="$MATERIALIZED/cpst/10_cpst_dose/output/formal"
 ln -s "$SEALED/matrix" "$WORK/matrix"
 ln -s "$SEALED/matrix-audit" "$WORK/matrix-audit"
-cp "$STEP/log/405-coordinator-resources.jsonl" "$WORK/coordinator.jsonl"
+cp "$STEP/log/378-coordinator-resources.jsonl" "$WORK/coordinator.jsonl"
 ```
 
 ## Verify the installed release
 
-Run the exact numerical audit and figure replay on the installed successor
-under the capped runtime.
+Use the original checkout at `a7613b74fc23f9f48d8ea0d4479542c008d701db`
+with the materialized `output/formal` bundle for the full scientific rescore. The pinned guide contains the command
+and the sealed report is validated against its original tracked receipts.
+The active figure receipt records the projection of those accepted score tables.
+Run the active CSV-only figure check from this checkout.
+[Historical verification](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/10_cpst_dose/AGENTS.md#verify-the-installed-release) · [Active figure receipt](log/figure-render.json)
 
 ```bash
-capped /usr/bin/time -v -o "$WORK/verify.resources" \
-  python "$EXECUTION/dose_formal.py" verify --bundle "$STEP/output/formal-crossed-v1" \
-  --publication "$STEP" --scratch "$WORK/scratch" --step03 "$STEP03"
+python "$EXECUTION/dose_figures.py" verify --data "$STEP/figure/data" \
+  --output "$STEP/figure" --scratch "$WORK/scratch"
 ```
-
-## Verify the prediction archive
-
-Complete the installed full acceptance and record the exact replay receipt
-digest before disposing of any crossed-dose checkpoints. Preserve the pinned
-fit runtime and its source hash roster. The archive command uses the original
-acceptance, matrix and trial receipts, verifies retained files, independently
-rescores saved predictions and renders each accepted figure twice from CSV.
-The strict verifier and exact checkpoint replay continue to require weights.
-
-First exercise the archive on a disposable copy with immutable files
-hardlinked from the accepted installation. Keep the alias inventory and
-confirm the complete Step 10 roster is eligible. The operation below
-quarantines the selected weight paths while it audits the retained evidence.
-No new fit in this study serves as a successor reference.
-
-```bash
-capped /usr/bin/time -v -o "$WORK/archive.resources" \
-  python "$EXECUTION/dose_prediction_archive.py" dispose --bundle "$ARCHIVE" \
-  --publication "$STEP" --scratch "$WORK/scratch" --step03 "$STEP03" \
-  --acceptance-sha256 "$ACCEPTED_SHA256"
-
-capped /usr/bin/time -v -o "$WORK/archive-verify.resources" \
-  python "$EXECUTION/dose_prediction_archive.py" verify --bundle "$ARCHIVE" \
-  --publication "$STEP" --scratch "$WORK/scratch" --step03 "$STEP03" \
-  --acceptance-sha256 "$ACCEPTED_SHA256" --disposition-sha256 "$DISPOSITION_SHA256"
-```
-
-Use the acceptance digest from the installed acceptance gate and the
-disposition digest returned by `dispose`. Use the same `dispose` request
-after an interruption. After successful archive verification, retire only
-candidate weight hardlinks with a verified inventory and the same checkpoint
-inode identities. Keep all historical weights, retained prediction evidence,
-and the accepted receipts.
-
-## Replay the original study
-
-The original 90-coordinate comparison uses the materialized `output/formal`
-bundle with its pinned source revision and tracked receipts. The pinned guide
-provides the full scientific verification command.
-[Historical verification](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/10_cpst_dose/AGENTS.md#verify-the-installed-release)
-
-## Verify a resource-monitored interruption
-
-The formal build defaults to continuous coordinator coverage. For the
-evidenced two-scope recovery of the crossed-dose matrix, only the build
-accepts `--recovery-sha256`. Pin `matrix-audit/interruption/receipt.json`
-after independently checking the two systemd scope journals, original
-launcher, resumed scope settings, coordinator observations and matrix
-preflight. Preserve both raw coordinator logs separately. Seal the last
-coordinator copy through its first observed sample after scope completion.
-
-The recovery receipt binds each journal to the matrix monitor session that
-ran in that scope. The audit checks ten-second coordinator cadence inside
-each scope, measures the idle period from the journal endpoints, and requires
-every measured phase interval to fit wholly inside one active scope. The
-interrupted scope provides observed maximum memory and the pinned launcher
-and pre-observation cgroup guard. The completed scope additionally provides a
-kernel peak. Installation retains the raw evidence under `matrix-audit/`.
-Later verification checks the recovery pin in the accepted scientific
-receipt and revalidates its evidence.

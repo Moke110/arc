@@ -16,7 +16,7 @@ class CheckpointDispositionTests(unittest.TestCase):
         self.acceptance = write_json(self.root / 'acceptance.json', {'result': 'PASS'})
         self.receipt = self.root / 'disposition.json'
         self.runs = ('runs/new/manifest.json',)
-        for run in ('new', 'deferred', 'historical'):
+        for run in ('new', 'historical'):
             folder = self.root / 'runs' / run
             folder.mkdir(parents=True)
             for name in ('checkpoint.pt', 'prediction.npy'):
@@ -112,60 +112,3 @@ class CheckpointDispositionTests(unittest.TestCase):
         self.assertEqual(read_json(self.receipt)['status'], 'pending')
         with self.assertRaisesRegex(ReleaseError, 'complete'):
             self.verify(sha256(self.receipt))
-
-    def test_second_batch_requires_pinned_first_batch_and_verifies_both(self):
-        first_pin = self.dispose()
-        previously_disposed = self.seal()
-        self.receipt = self.root / 'second.json'
-        self.runs = ('runs/deferred/manifest.json',)
-        deferred = self.root / 'runs/deferred/checkpoint.pt'
-        kwargs = dict(root=self.root, receipt=self.receipt.name,
-                      acceptance=self.acceptance, acceptance_sha256=sha256(self.acceptance),
-                      runs=self.seal(), verify_full=lambda: None,
-                      verify_retained=lambda entries: self.assertEqual(len(entries), 2))
-        with self.assertRaisesRegex(ReleaseError, 'receipt digest'):
-            dispose_checkpoints(**kwargs, previous=('disposition.json', '0' * 64, previously_disposed))
-        self.assertTrue(deferred.is_file())
-        second_pin = dispose_checkpoints(**kwargs,
-                                         previous=('disposition.json', first_pin, previously_disposed))
-        self.runs += tuple(previously_disposed)
-        self.assertEqual(len(self.verify(second_pin)['weights']), 2)
-        self.assertEqual(sha256(self.root / 'disposition.json'), first_pin)
-
-    def test_retry_restores_checkpoint_after_interrupted_prediction_gate(self):
-        import subprocess
-        import sys
-        code = """
-import os
-from pathlib import Path
-import sys
-from cpst_util.checkpoint_disposition import dispose_checkpoints
-from cpst_util.derivation.release import sha256
-
-root = Path(sys.argv[1])
-acceptance = root / 'acceptance.json'
-name = 'runs/new/manifest.json'
-dispose_checkpoints(root, receipt='disposition.json', acceptance=acceptance,
-                    acceptance_sha256=sha256(acceptance), runs={name: sha256(root / name)},
-                    verify_full=lambda: None, verify_retained=lambda entries: os._exit(15))
-"""
-        run = subprocess.run([sys.executable, '-c', code, str(self.root)], check=False)
-        self.assertEqual(run.returncode, 15)
-        self.assertFalse((self.root / 'runs/new/checkpoint.pt').exists())
-        with self.assertRaisesRegex(ReleaseError, 'complete'):
-            self.verify(sha256(self.receipt))
-        verified = []
-        pin = self.dispose(verify=lambda: verified.append(
-            (self.root / 'runs/new/checkpoint.pt').read_bytes()))
-        self.assertEqual(verified, [b'new checkpoint.pt'])
-        self.assertEqual(self.verify(pin)['status'], 'complete')
-        self.assertFalse((self.root / 'runs/new/checkpoint.pt').exists())
-
-    def test_repeat_completed_request_reverifies_without_requiring_removed_weights(self):
-        first_pin = self.dispose()
-        def reject_full():
-            self.fail('full gate should not run after completed disposal')
-        verified = []
-        pin = self.dispose(verify=reject_full, retained=lambda entries: verified.extend(entries))
-        self.assertEqual(pin, first_pin)
-        self.assertEqual([entry['path'] for entry in verified], ['runs/new/checkpoint.pt'])

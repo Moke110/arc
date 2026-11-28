@@ -8,15 +8,13 @@ from tempfile import TemporaryDirectory
 import time
 
 from build_comparison import FIGURES, write_plot_data
-from evaluate import evaluate_report
-from cpst_util.derivation.release import check_outputs
 from matrix import SCHEMA, STAGE, STEP, file_sha256, read, run_paths, verify_run
 from tsg_axis.protocol import PROTOCOL, REPORT_SCHEMA
 
 PLOT_CSVS = ("learning-curve.csv", "metrics.csv", "metrics-paired.csv")
 
 
-def matrix_inputs(matrix, audit, *, output_check=check_outputs):
+def matrix_inputs(matrix, audit):
     """Verify the full matrix receipt before providing runs to the evaluator."""
     receipt = read(matrix / "manifest.json")
     paths = run_paths(matrix)
@@ -28,9 +26,7 @@ def matrix_inputs(matrix, audit, *, output_check=check_outputs):
         raise ValueError("formal matrix manifest must bind the exact 150-fit inventory")
     for (axis, fold, seed), path in paths.items():
         registration = file_sha256(path / "registration.json")
-        if records[axis, fold, seed] != verify_run(
-            path, axis, fold, seed, registration, output_check=output_check,
-        ):
+        if records[axis, fold, seed] != verify_run(path, axis, fold, seed, registration):
             raise ValueError(f"formal matrix fit identity differs: {axis}, fold {fold}")
     logs = {path.relative_to(audit).as_posix(): file_sha256(path)
             for path in sorted((audit / "logs").rglob("*")) if path.is_file()}
@@ -47,11 +43,8 @@ def command(script, args, logs, name):
                        stdout=output, stderr=subprocess.STDOUT, check=True)
 
 
-def report(args, *, archive_check=None):
-    if archive_check is not None and args.command != "verify":
-        raise ValueError("prediction archive requires report verification")
-    paths = matrix_inputs(args.matrix, args.matrix_audit or args.matrix,
-                          output_check=archive_check or check_outputs)
+def report(args):
+    paths = matrix_inputs(args.matrix, args.matrix_audit or args.matrix)
     args.logs.mkdir(parents=True, exist_ok=True)
     evaluate = STEP / "execution/evaluate.py"
     render = STEP / "figure/script/render.py"
@@ -62,12 +55,7 @@ def report(args, *, archive_check=None):
         if args.figures.exists():
             raise ValueError("report building requires an unused figures directory")
         command(evaluate, ["score", *options], args.logs, "score")
-    if archive_check is None:
-        command(evaluate, ["verify", *options], args.logs, "verify")
-    else:
-        evaluate_report(argparse.Namespace(command="verify", run=paths.values(), smoke=False,
-                                           output=args.report, step03=args.step03, raw=args.raw),
-                        output_check=archive_check)
+    command(evaluate, ["verify", *options], args.logs, "verify")
     report_manifest = read(args.report / "manifest.json")
     if report_manifest["schema"] != REPORT_SCHEMA or report_manifest.get("protocol") != PROTOCOL:
         raise ValueError("formal report differs from the matched-control protocol")
@@ -81,12 +69,11 @@ def report(args, *, archive_check=None):
         write_plot_data(args.report, args.matrix, matrix_manifest["fits"], csvs)
         command(render, ["--data", str(csvs), "--output", str(figures)], args.logs, "csv-render")
         hashes = {name: file_sha256(figures / name) for name in FIGURES}
-        if args.command == "build" or archive_check is not None:
+        if args.command == "build":
             replay = scratch / "replay"
             command(render, ["--data", str(csvs), "--output", str(replay)], args.logs, "csv-replay")
             if any(file_sha256(replay / name) != digest for name, digest in hashes.items()):
                 raise ValueError("independent CSV-only PNG renders differ")
-        if args.command == "build":
             csvs.rename(figures / "data")
             figures.rename(args.figures)
         else:

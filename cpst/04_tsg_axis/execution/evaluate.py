@@ -43,7 +43,7 @@ def _file_hashes(root):
             for path in sorted(root.rglob("*")) if path.is_file()}
 
 
-def _run_inputs(paths, smoke, *, output_check=check_outputs):
+def _run_inputs(paths, smoke):
     protocol = shared_protocol()
     runs = {}
     for path in paths:
@@ -64,7 +64,7 @@ def _run_inputs(paths, smoke, *, output_check=check_outputs):
                 or manifest["registration_sha256"] != sha256(config_path)
                 or set(manifest["outputs"]) != RUN_OUTPUTS):
             raise ValueError(f"not an exactly replayed run for this report: {path}")
-        output_check(path, manifest)
+        check_outputs(path, manifest)
         if (axis, fold, seed) in runs:
             raise ValueError(f"duplicate run coordinate: {axis} fold {fold}")
         runs[axis, fold, seed] = (path, config, manifest)
@@ -171,8 +171,16 @@ def _build_report(root, runs, step03, raw, smoke):
     })
 
 
-def evaluate_report(args, *, output_check=check_outputs):
-    runs = _run_inputs(args.run, args.smoke, output_check=output_check)
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("command", choices=("score", "verify"))
+    parser.add_argument("--run", action="append", type=Path, required=True, help="exactly replayed run, repeat per coordinate")
+    parser.add_argument("--step03", type=Path, default=STAGE / "03_data_train")
+    parser.add_argument("--raw", type=Path, default=STAGE / "01_data_raw/output")
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--smoke", action="store_true", help="score one bounded HVG-DEG 5k run")
+    args = parser.parse_args()
+    runs = _run_inputs(args.run, args.smoke)
     with publication_lock(args.output) as output:
         if args.command == "score" and output.exists():
             raise ValueError("score requires an unused output directory")
@@ -186,19 +194,7 @@ def evaluate_report(args, *, output_check=check_outputs):
                 for name in ("manifest.json", *manifest["outputs"]):
                     if sha256(output / name) != sha256(candidate / name):
                         raise ValueError(f"evaluation replay differs: {name}")
-    return {"result": "PASS", "manifest_sha256": sha256(output / "manifest.json")}
-
-
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("score", "verify"))
-    parser.add_argument("--run", action="append", type=Path, required=True, help="exactly replayed run, repeat per coordinate")
-    parser.add_argument("--step03", type=Path, default=STAGE / "03_data_train")
-    parser.add_argument("--raw", type=Path, default=STAGE / "01_data_raw/output")
-    parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--smoke", action="store_true", help="score one bounded HVG-DEG 5k run")
-    args = parser.parse_args()
-    print(json.dumps(evaluate_report(args), sort_keys=True))
+    print(json.dumps({"result": "PASS", "manifest_sha256": sha256(output / "manifest.json")}, sort_keys=True))
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 {
   "csv_files_sha256": {
-    "figure/data/learning-curve.csv": "8895862a50f45e4f219bf8c1158d0d4dcb8428089dd3f26bc35039f03b8f384f",
-    "figure/data/metrics-paired.csv": "292cdef3a10fa55879d2746a1e439f1ac7d9537e379c4bb31f0e80d1fcee1788",
-    "figure/data/metrics.csv": "54b48cc2c206c9b4b14de41fe6c8262f242a6de09b73fd785bc63b63306f4b8a"
+    "figure/data/learning-curve.csv": "959a80f0af51fe6271e169baba5f50df372b284447a2825921054d50be7a3337",
+    "figure/data/metrics-paired.csv": "44b8b50b58d033a423ee594c87e979e82f8ab41a767e22d79f7628567fb1412d",
+    "figure/data/metrics.csv": "304f4109d71d02d561335793001f11430a3b7060c8a977fecadb26782467b792"
   },
   "environment": {
     "matplotlib": "3.10.9",
@@ -10,21 +10,30 @@
     "pandas": "2.3.3",
     "python": "3.13.13"
   },
+  "evidence": {
+    "predecessor_figure_receipt_sha256": "5e57ec87ec4f287f7239196e05915418645f8be0b27691344f2bc4d9a22a74d7",
+    "predecessor_revision": "a7613b74fc23f9f48d8ea0d4479542c008d701db",
+    "projected_scientific_tables_sha256": {
+      "log/fold-scores.csv": "52d8ac2a5d69bc2944d2cfcb28b02cf286069a9e6091211ca8c9ff7f412d160c",
+      "log/foldwise-summary.csv": "4360b640c74bf822e7589a7dda8e9bda20390748718a755c5dc835a19ba5654c",
+      "log/summary.csv": "411278f51fbefeff351f75bfff9ff825a99c7183cd04d7ab114f3017d4a56231"
+    }
+  },
   "independent_renders": 2,
   "png_files_sha256": {
-    "figure/learning-curve.png": "08e0535c7c49338189ce16eb5dacb7ea596daf57300ee86f1929639355d5175c",
-    "figure/metrics-paired.png": "0c189297640a6ea7e114af23a862e17b29e8693ba48d453e1100eccd07aecf65",
-    "figure/metrics.png": "13f1aeca126bcbac969af8f3428a7dd14d8c86a66b263cfc06b7a6fd59874b4a"
+    "figure/learning-curve.png": "8ef0b55588dbf0f5a921028c3110c0b12d8e2a112bb609813b3d94e540cfeae7",
+    "figure/metrics-paired.png": "5a0a2567f49f13da2635a7af290db44dd05d1da04df7158cb9f7fc12eb74022e",
+    "figure/metrics.png": "dfd60c651554ce0ce6750b3c5aad86db6c5832062d0436c48e4e3aad49001222"
   },
   "renderer_files_sha256": {
-    "10_cpst_dose/execution/dose_protocol.py": "cb9969600d432596ade374bca6a8d9e54ca68818f0883242e89365148074122f",
+    "10_cpst_dose/execution/dose_protocol.py": "0a470e4e1c42ee38d7ef3add56f82b80cf08202691fec4a709e526859fe61642",
     "10_cpst_dose/figure/script/render_doses.py": "1d4ec96bd9214f535f195429e481af547ded8a3c5943e23b1c57facf34faad7d",
     "util/output/api/cpst_util/comparison.py": "78bb29a6621e1ad4565c3201b2618f630355cf49653afe70b5688372362ad3b7",
     "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },
   "schema": "cpst-figure-render-v1",
-  "scientific_receipt_sha256": "1e209d14dd8cdbabab4f8c16933130a761e603d58225f61b1386d0694f543894",
+  "scientific_receipt_sha256": "3549fafc89188d7d626d8890543e4433481e3464203ac04249ca83a2c0d35eee",
   "status": "PASS",
   "step": "10_cpst_dose"
 }

@@ -182,12 +182,12 @@ def record_predictions(root, output, values, test, data, config, *, replay):
     return {"test_conditions": len(test), "validation_replay": "exact", "validation_objective_replay": "exact"}
 
 
-def verified_receipt(root, name, registration_sha, files, *, output_check=check_outputs):
+def verified_receipt(root, name, registration_sha, files):
     record = read_json(root / name)
     if (record["registration_sha256"] != registration_sha or record["process_token"] == PROCESS
             or set(record["outputs"]) != set(files)):
         raise ValueError(f"run receipt changed or is not from a separate process: {name}")
-    output_check(root, record)
+    check_outputs(root, record)
     return record
 
 
