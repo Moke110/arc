@@ -48,13 +48,13 @@ recipes, start the coordinator sampler in a second terminal with the same
 `WORK` path. Confirm its first sample before the matrix starts and keep it
 running through the first post-matrix sample. Retain the phase timings and
 sampler records with the candidate.
-[Execution limits](../../docs/agents/execution-environment.md) · [Coordinator sampler](../06_tsg_module/06.1_round1/execution/sample_resources.py)
+[Execution limits](../../docs/agents/execution-environment.md) · [Coordinator sampler](../util/training/sample_resources.py)
 
 ```bash
 set -e
 STEP="$PWD/cpst/09_cpst_axis"
 FORMAL="$STEP/execution/axis_formal.py"
-SAMPLER="$STEP/../06_tsg_module/06.1_round1/execution/sample_resources.py"
+SAMPLER="$STEP/../util/training/sample_resources.py"
 SOURCE="$PWD/pert_model/TranSiGen/source"
 mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/carps-axis.XXXXXX")

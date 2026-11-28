@@ -24,7 +24,7 @@ raw counts, frozen folds and all eight output files.
 Step 04 selected Denoise-DEG 5k from six axes for held-out Δ prediction with
 TranSiGen. Steps 05 and 06 held the release fixed for the loss and architecture
 studies. [Step 04 selection](../../04_tsg_axis/README.md#gene-axis-selection) ·
-[Step 05 loss studies](../../05_tsg_loss/README.md) · [Step 06 architecture studies](../../06_tsg_module/README.md)
+[Step 05 module comparison](../../05_tsg_module/README.md)
 
 Step 07 used the release for the CarPS-Transcriptome alpha, and Step 08 kept
 it fixed for the chemical representation comparison. Step 09 selected

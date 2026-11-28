@@ -44,7 +44,7 @@ Run the heavy phases serially. Use a fresh scratch directory for each recipe.
 set -e
 STEP="$PWD/cpst/10_cpst_dose"
 EXECUTION="$STEP/execution"
-SAMPLER="$PWD/cpst/06_tsg_module/06.1_round1/execution/sample_resources.py"
+SAMPLER="$PWD/cpst/util/training/sample_resources.py"
 MATERIALIZED="${MATERIALIZED:-$PWD}"
 STEP03="$MATERIALIZED/cpst/03_data_train"
 REPRESENTATIONS="$MATERIALIZED/cpst/util/output/representations"
@@ -64,7 +64,7 @@ For each CUDA matrix, start the coordinator sampler in a second terminal with
 the same `WORK` and `SAMPLER` paths. Wait for its first sample before starting
 preflight and keep it active until the first sample after the measured matrix
 command exits. The gate checks the ten-second cadence and coverage.
-[Coordinator sampler](../06_tsg_module/06.1_round1/execution/sample_resources.py)
+[Coordinator sampler](../util/training/sample_resources.py)
 
 ```bash
 python "$SAMPLER" --output "$WORK/coordinator.jsonl"

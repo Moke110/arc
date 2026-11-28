@@ -12,7 +12,7 @@ from axis_protocol import ARM, REFERENCE_AXIS, coordinates
 from axis_report import PLOT_TABLES
 from axis_scores import REPORT_CONDITION, REPORT_METRICS
 from axis_runs import axis_run
-from audit_measured_scores import check_statistics, read_table, same, value
+from legacy_score_tables import check_statistics, read_table, same, value
 from chem_runs import SCHEMA as STEP08_SCHEMA
 from tenv_axes import open_tenv_axis_training
 from cpst_util.comparison import METRIC_NAMES

@@ -14,7 +14,7 @@ from dose_protocol import REFERENCE, STEP, TRANSIGEN, coordinates
 from dose_runs import DOSE_CODE, ORIGINAL_CODE, PHASES, add_inputs, axis_run, bind, read_run, verify_release
 from util.training.provenance import historical_gate_configuration, legacy_configuration
 from matrix import ResourceMonitor, SAMPLE_SECONDS, digest_values, enforce_record, register_coordinate
-from matrix_measured import MEMORY_CAP, SWAP_CAP, scope_directory
+from legacy_matrix_resources import MEMORY_CAP, SWAP_CAP, scope_directory
 from matrix_sweep import signal_process_group
 
 SCHEMA = "cpst-dose-matrix-v1"
