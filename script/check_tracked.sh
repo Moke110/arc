@@ -24,6 +24,7 @@
 #          (ADR 0030)
 #        - workspace/archive trees that are not repository content:
 #          .scratch/, .worktrees/ (separate Git checkouts), tmp/, reference/, wet_data/, .uploads/
+#          archived/spec27-retained-worktrees/ (preserved independent checkouts)
 #        - the root Stage 1 local predecessor workflow (ADR 0106)
 #   2. Compares that list with `git ls-files`.
 #   3. Groups every untracked file by the .gitignore rule that hides it, flags any
@@ -104,7 +105,7 @@ main() {
   # 1. Code files on disk (find prunes, NUL-safe for odd path names).
   if ! find . \
     \( -path './.git' -o -path './.worktrees' -o -path './.scratch' -o -path './tmp' -o -path './reference' \
-       -o -path './stage1' \
+       -o -path './archived/spec27-retained-worktrees' -o -path './stage1' \
        -o -path './wet_data' -o -path './.uploads' -o -path './cpst/history' \
        -o -name '_envs' -o -name '.venv' -o -name 'venv' -o -name 'source' \
        -o -name 'local' -o -name '__pycache__' \) -prune \

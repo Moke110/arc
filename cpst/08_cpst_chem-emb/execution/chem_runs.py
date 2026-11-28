@@ -7,7 +7,7 @@ from hashlib import sha256
 from itertools import product
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import sys
 
 import numpy as np
@@ -27,8 +27,9 @@ from evaluate_loss import axis_evaluate, check_trace
 from evaluate_sweep import TRACE_COLUMNS
 from util.training.transigen import fit_with_diagnostics, kl_diagnostics
 from measured_roster import MEASURED_SHARED, SEEDS
+from cpst_util.release_names import current_path
 from cpst_util.representations import ARMS, WIDTHS
-from util.training.cpst_reference import alpha_release_digest, verify_release
+from util.training.cpst_reference import RELEASE, alpha_release_digest, historical_json, verify_release
 from util.training import registered
 from util.training.chemical import aligned_features
 from util.training.provenance import verify_replay_configuration, verify_sealed_code
@@ -37,6 +38,32 @@ SCHEMA = "cpst-alpha-chemical-run-v1"
 PROTOCOL = "tenv-matched-control-cpst-alpha-chemical-v1"
 REFERENCE = "KPGT"
 ORIGINAL_CODE = "ac62a177a54aa99e6ac626728af12394f3e0d940"
+# The sealed preflight hashes JSON in the original runtime's insertion order.
+ALPHA_SOURCE_ORDER = (
+    "run.py", "prediction_axis.py", "inputs.py", "protocol.py", "model.py", "native_import.py",
+    "learning.py", "training_data.py", "representations.py",
+    "run_sweep.py", "additive_objective.py", "objective.py",
+    "shape_model.py", "shape_roster.py", "run_shape.py",
+    "run_architecture.py", "architecture_model.py", "architecture_roster.py",
+    "run_composition.py", "composition_model.py", "composition_roster.py",
+    "run_measured.py", "measured_model.py", "measured_roster.py",
+)
+
+
+def historical_code_paths():
+    """Read the inherited code roster from the sealed pre-retirement alpha release."""
+    sources = historical_json(RELEASE)["step_06_4"]["code_sha256"]
+    paths = tuple(PurePosixPath(path).relative_to("stage2") for path in sources)
+    by_filename = {path.name: path.as_posix() for path in paths}
+    if len(paths) != len(ALPHA_SOURCE_ORDER) or by_filename.keys() != set(ALPHA_SOURCE_ORDER):
+        raise ValueError("Sealed alpha source roster differs from the original registration order")
+    inherited = tuple(f"cpst/{current_path(by_filename[name])}" for name in ALPHA_SOURCE_ORDER)
+    return (*inherited, Path(__file__).relative_to(axis_run.REPO).as_posix())
+
+
+def verify_configuration(recorded, live, *, replay):
+    verify_replay_configuration(recorded, live, replay=replay, repo=axis_run.REPO, revision=ORIGINAL_CODE,
+                                historical_paths=historical_code_paths())
 
 
 def coordinates(smoke=False):
@@ -158,8 +185,7 @@ def execute(output, phase, training, representations, source):
         with open_inputs(training, representations) as (data, vectors):
             identity = {key: value for key, value in config.items() if key not in {"arguments", "nonce"}}
             current = bind(coordinate, data, vectors, source, args["smoke"])
-            verify_replay_configuration(identity, current, replay=run.sealed is not None,
-                                        repo=axis_run.REPO, revision=ORIGINAL_CODE)
+            verify_configuration(identity, current, replay=run.sealed is not None)
             arm, _, seed = coordinate
             adapter = CPSTAdapter(source, config["model"]["transform"], chemical_width=WIDTHS[arm])
             model = adapter.build(seed, "cuda", n_genes=len(data.genes))
@@ -179,7 +205,7 @@ def execute(output, phase, training, representations, source):
 def read_run(path, smoke):
     registration = path / "registration.json"
     config = axis_run.read_json(registration)
-    verify_sealed_code(config, axis_run.REPO, ORIGINAL_CODE)
+    verify_sealed_code(config, axis_run.REPO, ORIGINAL_CODE, historical_paths=historical_code_paths())
     args = config["arguments"]
     key = args["arm"], args["fold"], args["seed"]
     registration_sha = axis_run.digest(registration)
