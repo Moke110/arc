@@ -95,7 +95,9 @@ the measured scope.
 
 Before removal, the two unique baseline proof files were copied byte for
 byte to the ignored local evidence directory
-`.worktrees/spec23-retained-provenance/`, outside the cleaned roots.
+`.worktrees/spec23-retained-provenance/`, outside the cleaned roots at the
+time. Spec 27 relocated the directory to
+`archived/spec27-retained-worktrees/spec23-retained-provenance/`.
 `SHA256SUMS` verified both copies before and after cleanup. The same directory
 holds the exact before and remaining WSL inventories and cleanup measurements.
 
