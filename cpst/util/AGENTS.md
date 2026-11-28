@@ -19,7 +19,7 @@ through the [public API](README.md). Follow the parent
   Keep fold validation, calibration, aggregation and report tables with the study.
   Use the original source revisions for sealed registrations and preserve the
   recorded files. Follow the receipt and replay routes for
-  [Steps 04–06](training/verification.md) and [Steps 07–10](training/cpst-verification.md).
+  [Steps 04–05](training/verification.md) and [Steps 07–10](training/cpst-verification.md).
 - **Derivation and publication.** Reuse `cpst_util.derivation` for DEG, ranking,
   R-worker resolution and manifest verification. Build and verify a candidate
   outside the accepted output before replacing it under the destination lock.
@@ -47,6 +47,7 @@ PYTHONPATH=cpst:cpst/util/output/api python -m unittest discover -s cpst/util/ex
 Run the affected training or evaluation test groups one at a time. For example
 
 ```sh
-python -m unittest discover -s cpst/util/training/tests/06.4_round4
+PYTHONPATH=cpst:cpst/util/output/api python -m unittest discover \
+  -s cpst/05_tsg_module/execution -p test_module_objective.py
 python -m unittest discover -s cpst/util/eval/tests/04_tsg_axis
 ```
