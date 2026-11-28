@@ -143,3 +143,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 - [0107](0107-cpst-tahoe-module-transfer.md) Compare Tahoe-to-tenv module transfer with matched plate-level training data.
 - [0108](0108-cpst-loss-and-shared-evaluation.md) Compare CPST loss terms on shared tenv evaluation folds.
 - [0109](0109-cpst-seven-metric-comparison-figures.md) Retire wJAC-2000 and standardize CPST comparison panels.
+- [0110](0110-cpst-transigen-module-rerun.md) Consolidate the TranSiGen module comparison in CPST Step 05 and revise comparison figure centering.

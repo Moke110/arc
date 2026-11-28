@@ -3,11 +3,10 @@
 from fractions import Fraction
 import math
 from pathlib import Path
-import sys
 
 import torch
 
-LOSS_COMPARISON = Path(__file__).resolve().parents[2] / "05_tsg_loss/05.1_loss_metrics/execution"
+LOSS_COMPARISON = Path(__file__).resolve().parents[2] / "util/training/legacy_transigen/loss/loss_metrics/execution"
 
 from .delta_objective import delta_loss
 

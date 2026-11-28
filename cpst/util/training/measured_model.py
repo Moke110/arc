@@ -9,8 +9,8 @@ from torch.nn import functional as F
 
 from .measured_roster import CONTROL_ONLY, DIRECT_DELTA, MEASURED_DELTA, MEASURED_SHARED, SHAPES, SOURCE_SHAPES
 
-STEP = Path(__file__).resolve().parents[2] / "06_tsg_module/06.4_round4"
-ROUND_THREE = STEP.with_name("06.3_round3")
+STEP = Path(__file__).resolve().parents[2] / "util/training/legacy_transigen/modules/measured_targets"
+ROUND_THREE = STEP.with_name("composition")
 sys.path.insert(0, str(ROUND_THREE / "execution"))
 
 from .composition_model import CompositionAdapter

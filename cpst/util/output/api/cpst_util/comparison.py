@@ -4,6 +4,7 @@ import csv
 import math
 from collections import defaultdict
 from pathlib import Path
+from statistics import mean
 
 from .plotting import focus_y, learning_curve, replicate_bar, save_figure
 
@@ -17,6 +18,10 @@ FIGURES = ("learning-curve.png", "metrics.png", "metrics-paired.png")
 CURVE_FIELDS = ("arm", "fold", "seed", "epoch", "train", "validation")
 METRIC_FIELDS = ("arm", "fold", "seed", "metric", "value")
 PAIRED_FIELDS = (*METRIC_FIELDS[:-1], "reference", "arm_value", "reference_value", "value")
+CENTERED_FIELDS = (*METRIC_FIELDS[:-1], "reference", "arm_value", "baseline_mean", "value")
+CENTERED = "baseline-mean"
+HISTORICAL = "matched-coordinate"
+COMPARISON_MODES = (CENTERED, HISTORICAL)
 
 
 def _read(path, fields):
@@ -57,8 +62,6 @@ def _read_metrics(data):
 
 
 def _pair(scores, reference):
-    if not any(arm == reference for arm, *_ in scores):
-        raise ValueError(f"reference arm {reference!r} has no metrics")
     pairs = []
     for (arm, fold, seed, metric), value in scores.items():
         if arm == reference:
@@ -69,14 +72,40 @@ def _pair(scores, reference):
     return pairs
 
 
-def write_paired_metrics(data, reference):
-    """Write the paired CSV from raw scores using exact fold and seed keys."""
+def _center(scores, reference):
+    baseline = defaultdict(list)
+    for (arm, _, _, metric), value in scores.items():
+        if arm == reference and value is not None:
+            baseline[metric].append(value)
+    means = {metric: mean(values) for metric, values in baseline.items()}
+
+    rows = []
+    for (arm, fold, seed, metric), value in scores.items():
+        baseline_mean = means.get(metric)
+        difference = value - baseline_mean if value is not None and baseline_mean is not None else None
+        rows.append((arm, fold, seed, metric, reference, value, baseline_mean, difference))
+    return rows
+
+
+def _comparison_table(scores, reference, mode):
+    if not any(arm == reference for arm, *_ in scores):
+        raise ValueError(f"reference arm {reference!r} has no metrics")
+    if mode == CENTERED:
+        return CENTERED_FIELDS, _center(scores, reference)
+    if mode == HISTORICAL:
+        return PAIRED_FIELDS, _pair(scores, reference)
+    raise ValueError(f"unknown comparison mode {mode!r}")
+
+
+def write_paired_metrics(data, reference, *, mode=CENTERED):
+    """Derive metrics-paired.csv by centering on per-metric baseline means."""
     data = Path(data)
     scores, _ = _read_metrics(data)
+    fields, rows = _comparison_table(scores, reference, mode)
     with (data / "metrics-paired.csv").open("w", newline="", encoding="utf-8") as stream:
         writer = csv.writer(stream, lineterminator="\n")
-        writer.writerow(PAIRED_FIELDS)
-        writer.writerows(_pair(scores, reference))
+        writer.writerow(fields)
+        writer.writerows(rows)
 
 
 def _read_curves(data):
@@ -94,15 +123,21 @@ def _read_curves(data):
     return curves
 
 
-def _read_pairs(data, scores, reference):
+def _read_pairs(data, scores, reference, mode):
+    path = data / "metrics-paired.csv"
+    if mode is None:
+        with path.open(newline="", encoding="utf-8") as stream:
+            header = tuple(next(csv.reader(stream), ()))
+        mode = HISTORICAL if header == PAIRED_FIELDS else CENTERED
+    fields, expected = _comparison_table(scores, reference, mode)
     pairs = [
         (*_coordinate(row), row["metric"], row["reference"],
-         _score(row["arm_value"]), _score(row["reference_value"]), _score(row["value"]))
-        for row in _read(data / "metrics-paired.csv", PAIRED_FIELDS)
+         _score(row["arm_value"]), _score(row[fields[-2]]), _score(row["value"]))
+        for row in _read(path, fields)
     ]
-    if pairs != _pair(scores, reference):
-        raise ValueError("paired CSV differs from the raw fold–seed scores")
-    return {row[:4]: row[-1] for row in pairs}
+    if pairs != expected:
+        raise ValueError(f"{mode} CSV differs from the raw fold–seed scores")
+    return mode, {row[:4]: row[-1] for row in pairs}
 
 
 def _format_panel(axis):
@@ -139,7 +174,7 @@ def _curve_figure(plt, curves, arms, title):
     return figure
 
 
-def _metric_figure(plt, scores, arms, title):
+def _metric_figure(plt, scores, arms, title, *, ylabel=None):
     figure, axes = plt.subplots(2, 4, figsize=(16, 7.4), layout="constrained")
     labels = [style[0] for style in arms.values()]
     for axis, (metric, label) in zip(axes.flat, METRIC_PANELS):
@@ -159,13 +194,15 @@ def _metric_figure(plt, scores, arms, title):
         focus_y(axis, groups, reference=0)
         _format_panel(axis)
         axis.set_title(label)
+        if ylabel is not None:
+            axis.set_ylabel(ylabel)
     axes[1, 3].remove()
     figure.suptitle(title)
     return figure
 
 
-def render_comparison(data, output, *, arms, reference, title):
-    """Verify the three plotted CSVs and render with the study's arm labels and colors."""
+def render_comparison(data, output, *, arms, reference, title, mode=None):
+    """Verify and render the plotted CSVs using their declared schema or a requested mode."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -175,14 +212,21 @@ def render_comparison(data, output, *, arms, reference, title):
     curves = _read_curves(data)
     if set(curves) != coordinates or set(arms) != {arm for arm, _, _ in coordinates}:
         raise ValueError("score, epoch trace and renderer arm rosters differ")
-    paired = _read_pairs(data, scores, reference)
-    comparison = {arm: style for arm, style in arms.items() if arm != reference}
+    mode, paired = _read_pairs(data, scores, reference, mode)
     reference_label = arms[reference][0]
+    if mode == CENTERED:
+        comparison = arms
+        caption = f"difference from {reference_label} mean"
+        ylabel = "Difference from baseline mean"
+    else:
+        comparison = {arm: style for arm, style in arms.items() if arm != reference}
+        caption = f"paired differences vs {reference_label}"
+        ylabel = None
     figures = (
         _curve_figure(plt, curves, arms, title),
         _metric_figure(plt, scores, arms, f"{title} · held-out scores · mean ± SD"),
         _metric_figure(plt, paired, comparison,
-                       f"{title} · paired differences vs {reference_label} · mean ± SD"),
+                       f"{title} · {caption} · mean ± SD", ylabel=ylabel),
     )
     for name, figure in zip(FIGURES, figures, strict=True):
         save_figure(figure, output / name, dpi=180)

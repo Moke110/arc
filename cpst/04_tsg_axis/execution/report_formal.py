@@ -9,6 +9,7 @@ import time
 
 from build_comparison import FIGURES, write_plot_data
 from evaluate import evaluate_report
+from cpst_util.comparison import CENTERED, COMPARISON_MODES
 from cpst_util.derivation.release import check_outputs
 from matrix import SCHEMA, STAGE, STEP, file_sha256, read, run_paths, verify_run
 from tsg_axis.protocol import PROTOCOL, REPORT_SCHEMA
@@ -47,7 +48,7 @@ def command(script, args, logs, name):
                        stdout=output, stderr=subprocess.STDOUT, check=True)
 
 
-def report(args, *, archive_check=None):
+def report(args, *, archive_check=None, figure_mode=CENTERED):
     if archive_check is not None and args.command != "verify":
         raise ValueError("prediction archive requires report verification")
     paths = matrix_inputs(args.matrix, args.matrix_audit or args.matrix,
@@ -78,7 +79,7 @@ def report(args, *, archive_check=None):
         figures = scratch / "figures"
         csvs = scratch / "csv"
         matrix_manifest = read(args.matrix / "manifest.json")
-        write_plot_data(args.report, args.matrix, matrix_manifest["fits"], csvs)
+        write_plot_data(args.report, args.matrix, matrix_manifest["fits"], csvs, mode=figure_mode)
         command(render, ["--data", str(csvs), "--output", str(figures)], args.logs, "csv-render")
         hashes = {name: file_sha256(figures / name) for name in FIGURES}
         if args.command == "build" or archive_check is not None:
@@ -115,8 +116,9 @@ def main():
     parser.add_argument("--logs", type=Path, required=True)
     parser.add_argument("--step03", type=Path, default=STAGE / "03_data_train")
     parser.add_argument("--raw", type=Path, default=STAGE / "01_data_raw/output")
+    parser.add_argument("--figure-mode", choices=COMPARISON_MODES, default=CENTERED)
     args = parser.parse_args()
-    print(json.dumps(report(args), sort_keys=True))
+    print(json.dumps(report(args, figure_mode=args.figure_mode), sort_keys=True))
 
 
 if __name__ == "__main__":

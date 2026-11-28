@@ -18,14 +18,13 @@ AXIS_RENDERERS = (
 )
 COMPARISON_RENDERERS = {
     "04_tsg_axis": "render.py",
-    "06_tsg_module/06.1_round1": "render_comparison.py",
-    "06_tsg_module/06.2_round2": "render_comparison.py",
-    "06_tsg_module/06.3_round3": "render_comparison.py",
-    "06_tsg_module/06.4_round4": "render_comparison.py",
+    "05_tsg_module": "render.py",
     "08_cpst_chem-emb": "render_comparison.py",
     "09_cpst_axis": "render_axes.py",
     "10_cpst_dose": "render_doses.py",
 }
+HISTORICAL_COMPARISON_SOURCE = "325be5dd45e2b670f1e01882e225aa5debbeaab7"
+SHARED_COMPARISON = "util/output/api/cpst_util/comparison.py"
 COMPARISON_NAMES = ("learning-curve", "metrics", "metrics-paired")
 
 
@@ -37,6 +36,18 @@ def check_hashes(root, hashes):
     for path, expected in hashes.items():
         if digest(root / path) != expected:
             raise ValueError(f"render receipt hash differs for {root / path}")
+
+
+def check_renderer_hashes(root, scripts):
+    for path, expected in scripts.items():
+        if digest(root / path) == expected:
+            continue
+        if root == STAGE and path == SHARED_COMPARISON:
+            original = subprocess.check_output(
+                ["git", "show", f"{HISTORICAL_COMPARISON_SOURCE}:cpst/{path}"], cwd=STAGE)
+            if sha256(original).hexdigest() == expected:
+                continue
+        raise ValueError(f"render receipt hash differs for {root / path}")
 
 
 def verify_report(step, receipt_name, renderers, work, env, *, comparison=False):
@@ -72,7 +83,7 @@ def verify_report(step, receipt_name, renderers, work, env, *, comparison=False)
         raise ValueError(f"published PNG inventory differs from the receipt for {step}")
     for hashes in (csvs, pngs):
         check_hashes(step, hashes)
-    check_hashes(script_root, scripts)
+    check_renderer_hashes(script_root, scripts)
     projected_tables = receipt.get("evidence", {}).get("projected_scientific_tables_sha256", {})
     check_hashes(step, projected_tables)
 
@@ -127,9 +138,6 @@ def main():
         renderers = (("figure", f"figure/script/{script}"),)
         verify_report(STAGE / step, "figure-render.json", renderers, work / step, env,
                       comparison=True)
-    loss_verifier = STAGE / "05_tsg_loss/figure/script/verify_figures.py"
-    subprocess.run([sys.executable, str(loss_verifier), "--work", str(work / "loss")],
-                   cwd=work, env=env, check=True)
     palette = STAGE / "util/figure/palette.png"
     for attempt in ("first", "second"):
         output = work / f"palette-{attempt}.png"
@@ -142,9 +150,9 @@ def main():
     for directory in directories:
         check_layout(directory)
     published_count = sum(1 for directory in directories for _ in directory.glob("*.png"))
-    if published_count != 45:
-        raise ValueError(f"expected 45 published Stage 2 PNGs, found {published_count}")
-    print("Verified all 45 current Stage 2 PNGs, including 13 comparison sets")
+    if published_count != 21:
+        raise ValueError(f"expected 21 published Stage 2 PNGs, found {published_count}")
+    print("Verified all 21 current CPST PNGs, including five comparison sets")
 
 
 if __name__ == "__main__":

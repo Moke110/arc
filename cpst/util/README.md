@@ -111,13 +111,17 @@ Current registrations and receipts use `cpst` paths. The release migration maps
 reissued registration digests to the originals embedded in unchanged checkpoints.
 The [runtime lookup](output/api/cpst_util/registration-hashes.json) holds that
 projection and the accepted Denoise-DEG manifest reissue. The provenance reader
-checks historical source digests at each experiment’s pinned Git revision. [Migration inventory](log/385-release-migration.json) · [Pinned Step 06.4 replay](../06_tsg_module/06.4_round4/README.md#replay-a-sealed-step-064-fit)
+checks historical source digests at each experiment’s pinned Git revision. [Migration inventory](log/385-release-migration.json) · [Pinned Step 06.4 replay](training/verification.md#historical-transigen-loss-and-module-studies)
 
 ## Comparison figures
 
 [`comparison`](output/api/cpst_util/comparison.py) renders `learning-curve.png`,
-`metrics.png` and `metrics-paired.png` from the published CSVs. Its paired scores
-subtract the reference within the same fold and seed. Studies compute
+`metrics.png` and `metrics-paired.png` from the published CSVs. The default comparison
+subtracts the per-metric mean of all defined displayed baseline fold-and-seed
+scores from every defined displayed score, including baseline scores. The
+baseline group shows its centered dots and sample SD, when defined. The
+historic matched-coordinate plot subtracts the reference within the same
+fold and seed. Studies compute
 JAC-top200 per held-out condition before aggregating at their established
 boundaries. Both metric figures use the seven-panel layout in ADR 0109.
 [Current panel layout](../../docs/adr/0109-cpst-seven-metric-comparison-figures.md)
@@ -131,15 +135,19 @@ The Step 09 and 10 receipts also bind the projected scientific tables.
 | --- | --- |
 | `learning-curve.csv` | `arm,fold,seed,epoch,train,validation` |
 | `metrics.csv` | `arm,fold,seed,metric,value` |
-| `metrics-paired.csv` | `arm,fold,seed,metric,reference,arm_value,reference_value,value` |
+| `metrics-paired.csv` | `arm,fold,seed,metric,reference,arm_value,baseline_mean,value` |
+| Historical `metrics-paired.csv` | `arm,fold,seed,metric,reference,arm_value,reference_value,value` |
 
 Use `comparison.METRIC_NAMES` for metric IDs and leave undefined values blank.
-`write_paired_metrics(data, reference)` derives the paired CSV.
+`write_paired_metrics(data, reference)` derives the baseline-mean CSV. Use
+`mode="matched-coordinate"` to reproduce an original matched-coordinate
+CSV. The renderer recognizes either CSV header, or can enforce an explicit
+`mode="baseline-mean"` or `mode="matched-coordinate"`.
 `render_comparison(data, output, arms=..., reference=..., title=...)` takes an
 ordered mapping from arm IDs to `(label, hue, depth)`. The renderer checks fit
 coverage, epoch order and pair values. `render_receipt(stage, step, output,
 renderer, dependencies=...)` runs the renderer twice and records the input CSV,
-PNG and renderer hashes. The shared figure gate covers 45 PNGs across the 13
+PNG and renderer hashes. The shared figure gate covers 21 PNGs across the five
 comparisons, Step 02 and the palette. [Figure receipt API](output/api/cpst_util/comparison_publication.py) · [Figure verifier](figure/script/verify_report_figures.py)
 
 ## Plotting
@@ -181,4 +189,4 @@ execution guide gives the commands for these tests and the study-specific
 training and scoring test groups. [Utility test commands](AGENTS.md#verify-the-utility-apis)
 
 Use the materialized release checkout for full receipt and scientific verification.
-[Steps 04–06 verification](training/verification.md) · [Steps 07–10 verification](training/cpst-verification.md)
+[TranSiGen training and replay verification](training/verification.md) · [Steps 07–10 verification](training/cpst-verification.md)

@@ -1,7 +1,7 @@
 {
   "csv_files_sha256": {
     "figure/data/learning-curve.csv": "4c26ce40f0d864d0fbe855f47b55496f762897f75426d8f7b1ff5dfef928dd9f",
-    "figure/data/metrics-paired.csv": "604b02d96dcb6011c72f11e37e9900b4399206b09569fc842e14349152a0c6da",
+    "figure/data/metrics-paired.csv": "12dbb2f19f66f5df1096db690fbd7e180d1b76956fa93e0b1e965efde2490997",
     "figure/data/metrics.csv": "68838434be323b3ab443d368793d8099a4ea838a06f60ad90da1b4e47289dcff"
   },
   "environment": {
@@ -23,12 +23,12 @@
   "independent_renders": 2,
   "png_files_sha256": {
     "figure/learning-curve.png": "ae979a3d4eda5417a522f23c6d4ab289931ea1533f394de3f0c1b1d2ca6d0f32",
-    "figure/metrics-paired.png": "a91b9f10bd83b6f814339f9b86f9dc51acdbcde8fec6dc13101400a55e41ad02",
+    "figure/metrics-paired.png": "635b531b4017555440cd4ece97416f3cd5b77292eed2f1b5fe1c87ca9a9a7d2a",
     "figure/metrics.png": "5e31b2a4c64e742884f7ad95f0806d24a9de6c301fe71e3f4a71a02b4bc586fc"
   },
   "renderer_files_sha256": {
-    "04_tsg_axis/figure/script/render.py": "cb7efd683ee6337224cb1ea1c2f109cf9335a41d67f5afeba2052180a945dfcf",
-    "util/output/api/cpst_util/comparison.py": "78bb29a6621e1ad4565c3201b2618f630355cf49653afe70b5688372362ad3b7",
+    "04_tsg_axis/figure/script/render.py": "b3226e5f76bb9c87645bb748e556a52fe2e61bffecb747fabdbc3ae112c94361",
+    "util/output/api/cpst_util/comparison.py": "8197916b0c1950cf16761f9bf45f591bf0586ceff0f120f688a567477ea33b92",
     "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },

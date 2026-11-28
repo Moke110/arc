@@ -28,7 +28,7 @@ Use a fresh scratch directory for each recipe. Run heavy commands within the
 ```bash
 set -e
 STEP="$PWD/cpst/08_cpst_chem-emb"
-SAMPLER="$STEP/../06_tsg_module/06.1_round1/execution/sample_resources.py"
+SAMPLER="$STEP/../util/training/sample_resources.py"
 mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/carps-chemical.XXXXXX")
 mkdir "$WORK/scratch" "$WORK/matplotlib"
@@ -47,7 +47,7 @@ for two epochs with 64 train, 24 validation and 24 held-out conditions. Start
 `python "$SAMPLER" --output "$WORK/coordinator.jsonl"` in a second terminal,
 with the paths from the setup above. Confirm a first ten-second sampler
 reading before training and retain measurements through completion.
-[Coordinator sampler](../06_tsg_module/06.1_round1/execution/sample_resources.py) · [Gate receipt](log/363-gate.json)
+[Coordinator sampler](../util/training/sample_resources.py) · [Gate receipt](log/363-gate.json)
 
 ```bash
 capped env PYTHONPATH="$STEP/.." python -m util.training.cpst_reference > "$WORK/alpha-before.json"
@@ -82,7 +82,7 @@ against the frozen alpha, then independently replays the checkpoint and
 rescores all nine metrics and eligibility counts exactly. It saves the reuse
 plan and fits any coordinate that fails the gate. For standalone replay with
 the original Step 06.4 runner, follow its pinned checkout procedure.
-[Reference runner](execution/chem_reference.py) · [Pinned Step 06.4 replay](../06_tsg_module/06.4_round4/README.md#replay-a-sealed-step-064-fit) · [Formal runner](execution/chem_formal.py)
+[Reference runner](execution/chem_reference.py) · [Pinned Step 06.4 replay](https://github.com/Moke110/carps/blob/f387f2c370eb87cd27c02502aa98f165851491a7/stage2/06_tsg_shape/06.4_round4/README.md) · [Formal runner](execution/chem_formal.py)
 
 ```bash
 mkdir "$WORK/formal"

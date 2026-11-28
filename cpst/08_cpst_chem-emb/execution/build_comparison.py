@@ -160,7 +160,7 @@ def build(bundle, round_four, training, output, scratch):
     plotted.mkdir(parents=True)
     pd.DataFrame(curves, columns=CURVE_FIELDS).to_csv(plotted / "learning-curve.csv", index=False)
     pd.DataFrame(metrics, columns=METRIC_FIELDS).to_csv(plotted / "metrics.csv", index=False)
-    write_paired_metrics(plotted, REFERENCE)
+    write_paired_metrics(plotted, REFERENCE, mode="matched-coordinate")
     picture = replay(plotted, figure, scratch, comparison=True)
     write_json(output / FIGURE_RECEIPT, {
         **figure_receipt(picture, sha256(receipt_path), comparison=True),

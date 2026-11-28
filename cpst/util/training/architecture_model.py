@@ -9,8 +9,8 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-STEP = Path(__file__).resolve().parents[2] / "06_tsg_module/06.2_round2"
-ROUND_ONE = STEP.with_name("06.1_round1")
+STEP = Path(__file__).resolve().parents[2] / "util/training/legacy_transigen/modules/prediction_path"
+ROUND_ONE = STEP.with_name("expression_shape")
 sys.path.insert(0, str(ROUND_ONE / "execution"))
 
 from . import native

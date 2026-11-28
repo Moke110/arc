@@ -4,7 +4,7 @@ from itertools import product
 
 from chem_report import METRICS
 from chem_runs import REFERENCE, coordinates
-from audit_measured_scores import check_statistics, read_table, same, value
+from legacy_score_tables import check_statistics, read_table, same, value
 
 
 def audit(report, smoke=False):

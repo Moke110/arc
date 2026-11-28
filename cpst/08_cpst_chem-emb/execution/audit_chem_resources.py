@@ -1,8 +1,8 @@
 """Verify formal CUDA phase measurements and ten-second coordinator coverage."""
 
 from chem_runs import PHASES, axis_run
-from matrix_measured import GIB, MEMORY_CAP, SWAP_CAP
-from report_shape import gaps_summary, read_samples
+from legacy_matrix_resources import GIB, MEMORY_CAP, SWAP_CAP
+from util.training.resource_samples import gaps_summary, read_samples
 
 
 def audit_resources(activity, coordinator, fresh, *, bracket=False):

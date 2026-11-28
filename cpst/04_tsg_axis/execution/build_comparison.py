@@ -12,7 +12,7 @@ STEP = Path(__file__).resolve().parents[1]
 STAGE = STEP.parent
 sys.path[:0] = [str(STEP / "output/api"), str(STAGE / "util/output/api")]
 
-from cpst_util.comparison import CURVE_FIELDS, FIGURES, METRIC_FIELDS, METRIC_NAMES, write_paired_metrics
+from cpst_util.comparison import CENTERED, CURVE_FIELDS, FIGURES, HISTORICAL, METRIC_FIELDS, METRIC_NAMES, write_paired_metrics
 from cpst_util.comparison_publication import render_receipt
 from cpst_util.derivation.release import check_outputs, read_json, sha256, write_json
 from cpst_util.metrics import signed_jaccard
@@ -85,7 +85,7 @@ def rows_for_coordinate(table, axis, fold, seed, legacy):
     return table.loc[selected]
 
 
-def write_plot_data(report, matrix, fits, data):
+def write_plot_data(report, matrix, fits, data, *, mode=CENTERED):
     """Publish plotted values from verified fit files and sealed scientific report tables."""
     score_manifest = read_json(report / "manifest.json")
     legacy = score_manifest["schema"] != REPORT_SCHEMA
@@ -116,7 +116,7 @@ def write_plot_data(report, matrix, fits, data):
     data.mkdir()
     pd.DataFrame(curves, columns=CURVE_FIELDS).to_csv(data / "learning-curve.csv", index=False)
     pd.DataFrame(metrics, columns=METRIC_FIELDS).to_csv(data / "metrics.csv", index=False)
-    write_paired_metrics(data, REFERENCE)
+    write_paired_metrics(data, REFERENCE, mode=mode)
 
 
 def build_accepted(matrix, report, output):
@@ -136,7 +136,7 @@ def build_accepted(matrix, report, output):
     figure = output / "figure"
     figure.mkdir()
     data = figure / "data"
-    write_plot_data(report, matrix, matrix_records["fits"], data)
+    write_plot_data(report, matrix, matrix_records["fits"], data, mode=HISTORICAL)
     renderer = STEP / "figure/script/render.py"
     receipt = {
         **render_receipt(STAGE, STEP.name, output, renderer),

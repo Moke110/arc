@@ -29,7 +29,7 @@ The first two MSE terms measure control and measured Δ reconstruction. The
 prediction MSE and L1 compare predicted Δ with measured Δ. The KL terms
 regularize the two encoder distributions against the standard normal prior
 `N` and align the predicted Gaussian with the measured Δ Gaussian.
-[Objective lineage](05_tsg_loss/README.md#selected-objective) ·
+[Objective lineage](https://github.com/Moke110/carps/blob/325be5dd45e2b670f1e01882e225aa5debbeaab7/cpst/05_tsg_loss/README.md#selected-objective) ·
 [Shared CPST model](util/training/cpst_model.py) · [Step 07 loss design](07_cpst_loss/README.md)
 
 ## Evidence in experiment order
@@ -43,27 +43,13 @@ regularize the two encoder distributions against the standard normal prior
    [Native counts](01_data_raw/README.md#accepted-corpus) ·
    [Axis selection evidence](02_gene_axis/README.md#axis-selection-evidence) ·
    [Training releases](03_data_train/README.md)
-2. **Steps 04–05 established the TranSiGen reference axis and loss.** Step 04
-   chose Denoise-DEG 5k from six tenv axes because it led held-out Δ PCC,
-   Δ RMSE and Δ MMD under the matched-control protocol. HVG-DEG variants
-   led signed DEG F1 for the four disease references. The loss studies
-   selected predicted Δ MSE plus Δ L1 at weight 1.75, with unit reconstruction
-   weights. Zero added weight led both primary metrics in the PCC and cosine
-   sweeps.
-   [Step 04 selection](04_tsg_axis/README.md#gene-axis-selection) ·
-   [Step 05 results](05_tsg_loss/README.md#loss-studies)
-3. **Step 06 selected the shared signed Δ architecture.** The four rounds
-   tested network shapes, signed Δ readouts and chemical conditioning. Round 3
-   accepted normalized FiLM after non-finite prediction KL blocked the
-   unnormalized combinations. Round 4 kept the native Gaussian prediction head.
-   Its `XΔ-XΔ` arm had the lowest mean Δ RMSE (0.240752). The arm with an
-   independent Δ decoder had the highest mean Δ PCC (0.429835 versus 0.428830
-   for the shared arm). The sample SD of the paired differences
-   exceeded the absolute mean difference on both metrics. The architecture
-   decision chose the shared decoder for CarPS-Transcriptome.
-   [Four-round evidence](06_tsg_module/README.md) ·
-   [Step 06.4 formal results](06_tsg_module/06.4_round4/README.md#formal-results) ·
-   [Architecture decision](../docs/adr/0099-carps-vae-alpha-and-chemical-representations.md)
+2. **Step 04 compared prediction axes.** TranSiGen used measured same-plate
+   DMSO, KPGT and training-fold standardized log dose across six axes.
+   [Prediction axis comparison](04_tsg_axis/README.md)
+3. **Step 05 compared five TranSiGen modules.** All 125 fresh fits across
+   the shared five cold-drug folds and five seeds used a common objective on
+   Denoise-DEG 5k. `XX-XX` led mean Δ Spearman and Δ PCC, and `X-XΔ` led
+   mean JAC-top200 and Δ RMSE. [Module study](05_tsg_module/README.md#formal-results)
 4. **Step 07 compares losses on the shared signed Δ model.** The published
    alpha predecessor retains the
    Step 06.4 `XΔ-XΔ` backbone, Denoise-DEG 5k, frozen KPGT features and
@@ -125,11 +111,13 @@ frozen phenotype benchmark remain pending.
 ## Verify the current figures
 
 The current verifier checks the render receipts and independently redraws all
-45 published PNGs twice from their plot data. The inventory includes 13
+21 published PNGs twice from their plot data. The inventory includes five
 comparison sets, five Step 02 figures and the palette preview. Each comparison
-publishes learning curves, held-out metrics and same-fold, same-seed
-differences from its reference. The metric panels show defined replicates,
-means, sample SD when at least two values are defined, and zero.
+publishes learning curves, held-out metrics and differences from its reference.
+In Steps 04 and 05, each displayed score is centered on the reference mean for
+that metric. The Steps 08–10 figure sets retain their saved same-fold, same-seed
+differences. The metric panels show defined replicates, means, sample SD when
+at least two values are defined, and zero.
 [Current figure verification guide](AGENTS.md#verify-the-current-figures) ·
 [Shared figure verifier](util/figure/script/verify_report_figures.py) ·
 [Figure standard](../docs/adr/0109-cpst-seven-metric-comparison-figures.md)
@@ -145,7 +133,7 @@ route.
 [Active-input verification guide](AGENTS.md#verify-the-active-inputs) ·
 [CarPS-Transcriptome acceptance](util/training/cpst-verification.md) ·
 [TranSiGen acceptance](util/training/verification.md) ·
-[Pinned Step 06.4 replay](06_tsg_module/06.4_round4/README.md#replay-a-sealed-step-064-fit)
+[Pinned Step 06.4 replay](util/training/verification.md#historical-transigen-loss-and-module-studies)
 
 The public boundary retires the local Stage 2 archive. The original tracked
 code, figures and receipts are available at their pinned Git revisions.

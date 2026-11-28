@@ -14,8 +14,9 @@ from hashlib import sha256
 import torch
 
 STAGE = Path(__file__).resolve().parents[2]
-ROUND_FOUR = STAGE / "06_tsg_module/06.4_round4"
-sys.path.insert(0, str(ROUND_FOUR / "execution"))
+LEGACY_RUNTIME = STAGE / "util/training/legacy_transigen/modules/measured_targets"
+ROUND_FOUR = STAGE.parent / "archived/spec27-transigen/round4"
+sys.path.insert(0, str(LEGACY_RUNTIME / "execution"))
 
 from run_measured import axis_run
 from .cpst_model import CPSTAdapter, KPGT_WIDTH, MEASURED_SHARED, PROJECTION_WIDTH, objective

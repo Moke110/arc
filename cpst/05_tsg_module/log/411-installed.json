@@ -1,0 +1,29 @@
+{
+  "centered_csv_audit": {
+    "baseline_coordinates_per_metric": 25,
+    "dots": 875,
+    "metrics": 7,
+    "sample_sd_preserved": true,
+    "zero_baseline_means": true
+  },
+  "figure_gate": {
+    "comparison_sets": 5,
+    "independent_renders": 2,
+    "pngs": 21
+  },
+  "figure_receipt_sha256": "fe8a65bb6100cab8a5aca2c72c784e3eb5b020dd2df34c508fd5927f70ede405",
+  "formal_verifier": {
+    "formal_receipt_sha256": "14122cc3918bb725574b9ad99a6e99f93518e531d67f73abadd3bb00fc9eb429",
+    "independent_exact_scores": 875,
+    "new_fits": 125,
+    "status": "PASS"
+  },
+  "formal_verifier_peak_rss_kib": 988704,
+  "path_and_tracking_checks": {
+    "check_cpst_paths": "PASS",
+    "check_tracked": "PASS"
+  },
+  "schema": "cpst-tenv-transigen-module-installed-verification-v1",
+  "status": "PASS",
+  "ticket": 411
+}

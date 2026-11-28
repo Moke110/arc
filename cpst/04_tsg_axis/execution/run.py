@@ -57,9 +57,11 @@ def code_hashes():
     return {path.relative_to(REPO).as_posix(): digest(path) for path in paths}
 
 
-def bind(args, data, vectors):
-    protocol = shared_protocol()
-    if (args["fold"], args["seed"]) not in protocol.coordinates:
+def bind(args, data, vectors, *, historical=False):
+    """Bind the current shared folds, with an explicit route for historical consumers."""
+    protocol = None if historical else shared_protocol()
+    seed = 42 if historical else args["seed"]
+    if protocol is not None and (args["fold"], seed) not in protocol.coordinates:
         raise ValueError("coordinate is outside the shared tenv evaluation roster")
     data.bind_protocol(protocol)
     family, width = axis_coordinates(args["axis"])
@@ -95,7 +97,6 @@ def bind(args, data, vectors):
             "training_sha256": data.release.manifest_sha256,
             "raw_sha256": data.release.manifest["inputs"]["raw_sha256"],
             "folds": data.release.manifest["inputs"]["folds"],
-            "fold_release_sha256": protocol.release_sha256,
             "kpgt_manifest_sha256": vectors.manifest_sha256, "kpgt_vectors_sha256": vectors.manifest["files"]["KPGT.npy"],
             "native_sha256": native,
             "code_sha256": code_hashes(), "model": model, "partitions": {key: part.tolist() for key, part in rows.items()},
@@ -103,9 +104,11 @@ def bind(args, data, vectors):
             "environment": {"python": platform.python_version(), "torch": str(torch.__version__),
                             "numpy": np.__version__, "cuda": torch.version.cuda,
                             "torch_threads": torch.get_num_threads(), "hardware": hardware},
-            "scenario": "cold-drug", "seed": args["seed"],
+            "scenario": "cold-drug", "seed": seed,
             "validation_seed": VALIDATION_SEED, "test_seed": TEST_SEED,
             "max_epochs": 2 if args["smoke"] else MAX_EPOCHS, "patience": PATIENCE}
+    if protocol is not None:
+        config["fold_release_sha256"] = protocol.release_sha256
     return transigen.bind_experiment(args, config)
 
 

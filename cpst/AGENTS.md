@@ -14,8 +14,7 @@ Use the numbered guides to materialize inputs and verify releases.
 | [02 Prediction axes](02_gene_axis/AGENTS.md) | Ordered HVG-DEG and Denoise-DEG axes and their selection evidence. |
 | [03 Training data](03_data_train/AGENTS.md) | Eight tenv plate-pooled releases, frozen folds and the Tahoe well-level HVG-DEG 5k release. |
 | [04 TranSiGen axis comparison](04_tsg_axis/AGENTS.md) | The six-axis tenv study, run through [matrix.py](04_tsg_axis/execution/matrix.py) and [evaluate.py](04_tsg_axis/execution/evaluate.py). |
-| [05 TranSiGen loss](05_tsg_loss/AGENTS.md) | Δ loss and reconstruction objective studies on Denoise-DEG 5k. |
-| [06 TranSiGen modules](06_tsg_module/AGENTS.md) | Expression widths, depths, prediction paths and measured encoder targets. |
+| [05 TranSiGen modules](05_tsg_module/AGENTS.md) | Five measured-encoder and readout arms under a common objective. |
 | [07 CarPS-Transcriptome loss](07_cpst_loss/AGENTS.md) | The additive loss comparison on the shared signed Δ model. |
 | [08 Chemical representations](08_cpst_chem-emb/AGENTS.md) | The comparison of seven frozen representations on the fixed alpha. |
 | [09 CarPS-Transcriptome axes](09_cpst_axis/AGENTS.md) | The eight-axis UniMol comparison with the study's standardized log dose. |
@@ -77,7 +76,7 @@ Activate `arc` at the repository root. Match Python, Matplotlib, NumPy and
 any other package versions in the render receipts' `environment` fields.
 Run the shared gate after figure changes. It checks figure inventory,
 layout and receipt hashes, and requires two independent CSV-only renders
-to match all 45 published PNGs. The comparison tests check panel order,
+to match all 21 published PNGs. The comparison tests check panel order,
 replicate marks and sample SD endpoints against the published tables.
 [Figure verifier](util/figure/script/verify_report_figures.py) ·
 [Comparison tests](util/execution/tests/test_comparison.py) ·
@@ -115,10 +114,10 @@ capped_step04 python cpst/04_tsg_axis/execution/verify_active_inputs.py
 
 Keep sealed inputs read-only. For replay, copy the fit to scratch and use its
 original registered source revision and protocol. Use the
-[pinned Step 06.4 replay](06_tsg_module/06.4_round4/AGENTS.md#replay-a-sealed-step-064-fit)
+[pinned Step 06.4 replay](util/training/verification.md#historical-transigen-loss-and-module-studies)
 for registrations that bind the original `stage2/` layout. Use the
 [TranSiGen verification inventory](util/training/verification.md) for
-Steps 04–06 and the [CarPS-Transcriptome verification inventory](util/training/cpst-verification.md)
+Steps 04–05 and retired TranSiGen studies and the [CarPS-Transcriptome verification inventory](util/training/cpst-verification.md)
 for Steps 07–10. Retrieve tracked historical code, figures and receipts from
 their original Git revisions.
 [ADR 0087 cutover](https://github.com/Moke110/carps/blob/99078e6f/stage2/README.md#deploy-the-adr-0087-cutover) ·
