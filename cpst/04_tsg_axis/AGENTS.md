@@ -98,7 +98,8 @@ and a 1,000-epoch maximum. [Matched-control protocol](../../docs/adr/0086-tenv-a
 ## Verify an accepted prediction archive
 
 Use `execution/prediction_archive.py verify` with the matrix, matrix audit,
-report, figure and scratch-log paths from the formal report verifier. Supply
+report and scratch-log paths from the formal report verifier. For `--figures`,
+use the pinned historical figure directory described below. Supply
 `--disposition-sha256` from the independently pinned completed disposition
 receipt. The command checks the original #399 acceptance, verifies retained
 artifacts, independently rebuilds scores and paired plot data, and renders
@@ -192,8 +193,10 @@ python "$step/execution/export_canonical.py" --output "$work/report"
 ## Rebuild and verify the comparison figures
 
 Use `report_formal.py` to reproduce the successor's plotted tables and PNGs
-from its installed matrix. The paired figure uses `denoise-5k` as the
-within-fold and seed reference. The
+from its installed matrix. For each metric, the comparison figure subtracts
+the mean of all defined displayed `denoise-5k` fold-and-seed scores from
+each defined displayed score. It shows the centered baseline distribution
+with its sample SD. The
 [rendering receipt](log/figure-render.json) binds the active plots and tables.
 For the pinned three-fold matrix and its report, the historical
 [`build_comparison.py`](execution/build_comparison.py) still checks
@@ -212,6 +215,19 @@ three PNGs byte for byte. [CSV-only renderer](figure/script/render.py)
     cmp "$step/figure/$name" "$work/replayed/$name"
   done
 )
+```
+
+The original #399 archive verification binds the historical matched-coordinate
+figures. Extract those PNGs and their CSVs at the pinned revision for
+`prediction_archive.py`, or use the same directory with
+`report_formal.py verify --figure-mode matched-coordinate`. To replay from
+the historical CSVs alone, pass `--mode matched-coordinate` to `render.py`.
+
+```bash
+historical=$(mktemp -d "$PWD/tmp/tsg-axis-historical-figures.XXXXXX")
+git archive 325be5dd45e2b670f1e01882e225aa5debbeaab7 cpst/04_tsg_axis/figure \
+  | tar -x -C "$historical"
+# Set --figures to "$historical/cpst/04_tsg_axis/figure" for archive verification.
 ```
 
 When checking independence from the retired archive, run
