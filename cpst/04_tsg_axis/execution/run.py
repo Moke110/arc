@@ -24,7 +24,7 @@ sys.path[:0] = [str(STEP / "output/api"), str(AXIS_API), str(STAGE)]
 
 from prediction_axis import axis_coordinates, open_axes
 from tsg_axis.inputs import open_inputs, score_fixed_prediction
-from tsg_axis.protocol import MAX_EPOCHS, PATIENCE, PROTOCOL, RUN_SCHEMA
+from tsg_axis.protocol import MAX_EPOCHS, PATIENCE, PROTOCOL, RUN_SCHEMA, shared_protocol
 from tsg_axis import model as kpgt
 from tsg_axis.model import DoseView
 from tsg_axis.learning import EarlyStopping, fixed_rng
@@ -37,7 +37,6 @@ from util.training.transigen import (
     prediction, record_predictions, validate, verified_receipt,
 )
 
-SEED = 42
 VALIDATION_SEED = 22617
 TEST_SEED = 100042
 PARTITIONS = ("train", "valid", "test")
@@ -53,11 +52,16 @@ def code_hashes():
         *(api / name for name in ("inputs.py", "protocol.py", "model.py", "native_import.py", "learning.py")),
         STAGE / "03_data_train/output/api/training_data.py",
         STAGE / "util/output/api/cpst_util/representations.py",
+        STAGE / "util/output/api/cpst_util/tenv_folds.py",
     ]
     return {path.relative_to(REPO).as_posix(): digest(path) for path in paths}
 
 
 def bind(args, data, vectors):
+    protocol = shared_protocol()
+    if (args["fold"], args["seed"]) not in protocol.coordinates:
+        raise ValueError("coordinate is outside the shared tenv evaluation roster")
+    data.bind_protocol(protocol)
     family, width = axis_coordinates(args["axis"])
     axes = open_axes(family=family)
     axis_sha = axes.axis(width).sha256
@@ -91,6 +95,7 @@ def bind(args, data, vectors):
             "training_sha256": data.release.manifest_sha256,
             "raw_sha256": data.release.manifest["inputs"]["raw_sha256"],
             "folds": data.release.manifest["inputs"]["folds"],
+            "fold_release_sha256": protocol.release_sha256,
             "kpgt_manifest_sha256": vectors.manifest_sha256, "kpgt_vectors_sha256": vectors.manifest["files"]["KPGT.npy"],
             "native_sha256": native,
             "code_sha256": code_hashes(), "model": model, "partitions": {key: part.tolist() for key, part in rows.items()},
@@ -98,7 +103,7 @@ def bind(args, data, vectors):
             "environment": {"python": platform.python_version(), "torch": str(torch.__version__),
                             "numpy": np.__version__, "cuda": torch.version.cuda,
                             "torch_threads": torch.get_num_threads(), "hardware": hardware},
-            "scenario": "cold-drug", "seed": SEED,
+            "scenario": "cold-drug", "seed": args["seed"],
             "validation_seed": VALIDATION_SEED, "test_seed": TEST_SEED,
             "max_epochs": 2 if args["smoke"] else MAX_EPOCHS, "patience": PATIENCE}
     return transigen.bind_experiment(args, config)
@@ -122,7 +127,9 @@ def main():
     commands = parser.add_subparsers(dest="phase", required=True)
     registration = commands.add_parser("register")
     registration.add_argument("--axis", choices=TENV_AXIS_STEPS, required=True)
-    registration.add_argument("--fold", choices=range(3), type=int, required=True)
+    protocol = shared_protocol()
+    registration.add_argument("--fold", choices=tuple(fold.number for fold in protocol.folds), type=int, required=True)
+    registration.add_argument("--seed", choices=protocol.seeds, type=int, default=42)
     registration.add_argument("--training", type=Path, required=True)
     registration.add_argument("--representations", type=Path, default=STAGE / "util/output/representations")
     registration.add_argument("--source", type=Path, default=REPO / "pert_model/TranSiGen/source")

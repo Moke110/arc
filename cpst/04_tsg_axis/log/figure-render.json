@@ -1,12 +1,8 @@
 {
-  "build_resources": {
-    "peak_rss_kib": 203024,
-    "wall_seconds": 14.11
-  },
   "csv_files_sha256": {
-    "figure/data/learning-curve.csv": "3dd4e3e7b18df243d18da77ad4f5f97ac57210e6868f8fb0bce818ef3e5b98e0",
-    "figure/data/metrics-paired.csv": "3aaa52086e689ce501fdd519dc1d3e9f96b2da8da7e6a3f63d28976e299a4573",
-    "figure/data/metrics.csv": "976938decc4d1b0a547aed49a3b76ec774156fff3bd0f78280d09ad1df05314b"
+    "figure/data/learning-curve.csv": "4c26ce40f0d864d0fbe855f47b55496f762897f75426d8f7b1ff5dfef928dd9f",
+    "figure/data/metrics-paired.csv": "604b02d96dcb6011c72f11e37e9900b4399206b09569fc842e14349152a0c6da",
+    "figure/data/metrics.csv": "68838434be323b3ab443d368793d8099a4ea838a06f60ad90da1b4e47289dcff"
   },
   "environment": {
     "matplotlib": "3.10.9",
@@ -15,22 +11,24 @@
     "python": "3.13.13"
   },
   "evidence": {
-    "build_sha256": "0307b868cc7964b99870b77f1f69713ed8c9b40112647e09023ec5b29aeac5a7",
-    "fits": 18,
-    "matrix_manifest_sha256": "9e2c01145387794e36336734efd261aa7c80132208d5a51f8eb4074f55830b5e",
-    "report_manifest_sha256": "9627a97200a7276298063a6e8b698372287fc63592bcceb2d4dc622209135a26",
-    "sealed_jac_top200_parity": true,
-    "shared_metrics_sha256": "0a16f66b0b02b5fb21462b5b8ae94667ca7247398372d44a54be679372a451b6"
+    "fits": 150,
+    "fold_release_sha256": "f6a6a9c43ec5e146fd3ee8a06c3aec62b98e686f18a0f0fd3920f6b4469b084c",
+    "matrix_manifest_sha256": "75150bc305a7425fe646ca021a60cf276198370cb9c30c095488e8bcc471a769",
+    "projected_scientific_tables_sha256": {
+      "figure/data/delta-metrics.csv": "370c0fe9a4376c8206b3c63c7f09438c594e5b996a8e1b8ae7180d93b084cd3e",
+      "figure/data/disease-f1.csv": "52e8698e8e58a8853672c13c354fc84cdf743d83262d58be0ba360ec4c246a89"
+    },
+    "report_manifest_sha256": "594eac15150bdb8ad7fffd06d0c0fe44b3198707a0d1832203b9df6edd8e3aab"
   },
   "independent_renders": 2,
   "png_files_sha256": {
-    "figure/learning-curve.png": "2d816718a8766842134ebfa25b24533793b7f03b90d4ef225f9e2284fabb8299",
-    "figure/metrics-paired.png": "688f667c8154391cd834f828f0995c5906bf575a4fa31f39b1143a72b36701fa",
-    "figure/metrics.png": "e7a6193fbfaf214ecc29e3bfa8ed46532ffde7b93e6bfabafb042ba5e6b0dca0"
+    "figure/learning-curve.png": "ae979a3d4eda5417a522f23c6d4ab289931ea1533f394de3f0c1b1d2ca6d0f32",
+    "figure/metrics-paired.png": "a91b9f10bd83b6f814339f9b86f9dc51acdbcde8fec6dc13101400a55e41ad02",
+    "figure/metrics.png": "5e31b2a4c64e742884f7ad95f0806d24a9de6c301fe71e3f4a71a02b4bc586fc"
   },
   "renderer_files_sha256": {
     "04_tsg_axis/figure/script/render.py": "cb7efd683ee6337224cb1ea1c2f109cf9335a41d67f5afeba2052180a945dfcf",
-    "util/output/api/cpst_util/comparison.py": "4b18733f177d09a3eb1b25861e18c8383f2505eb9746966fa7f75bb83f4f2572",
+    "util/output/api/cpst_util/comparison.py": "78bb29a6621e1ad4565c3201b2618f630355cf49653afe70b5688372362ad3b7",
     "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },

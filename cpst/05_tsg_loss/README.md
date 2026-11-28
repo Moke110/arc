@@ -43,13 +43,13 @@ exactly reproduced the three selected Step 05.2 fits with the original
 architecture. The downstream CarPS-Transcriptome alpha kept the unit
 predicted Δ MSE and 1.75 predicted Δ L1 weights with a shared signed Δ
 decoder and a measured Δ reconstruction term.
-[Step 06.1 architecture results](../06_tsg_shape/06.1_round1/README.md#formal-results) ·
-[Fixed CarPS-Transcriptome alpha](../07_cpst_alpha/README.md#fixed-model-and-public-api)
+[Step 06.1 architecture results](../06_tsg_module/06.1_round1/README.md#formal-results) ·
+[Fixed CarPS-Transcriptome alpha](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/README.md#fixed-model-and-public-api)
 
 ## Verify the current figures
 
 The five studies each publish learning curves, held-out scores and paired
-differences. The comparison figures show eight metrics, including wJAC-2000,
+differences. The comparison figures show seven metrics
 and retain zero on every score axis. Bars show means, dots mark
 individual fold and seed values, and error bars show sample SD. Paired
 differences subtract each study's reference on the same fold and seed.
@@ -64,9 +64,9 @@ The receipts record two independent renders of all 15 PNGs from plotted CSVs.
 ## Rebuild the current comparisons from accepted fits
 
 The builder checks accepted fit and report manifests, reconstructs signed Δ
-from fixed predictions and matched controls, and checks JAC-top200 parity
-before adding wJAC-2000. It uses complete training and validation traces to
-produce the comparison CSVs, figures and receipts.
+from fixed predictions and matched controls, and checks JAC-top200 parity. It
+uses complete training and validation traces to produce the comparison CSVs,
+figures and receipts.
 [Accepted-fit rebuild guide](AGENTS.md#rebuild-the-current-comparisons-from-accepted-fits) ·
 [Original publication and figures](https://github.com/Moke110/carps/tree/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/05_tsg_loss)
 

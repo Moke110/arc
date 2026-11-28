@@ -6,7 +6,8 @@ import json
 import torch
 
 from axis_protocol import ARM
-from chem_runs import AlphaAdapter, WIDTHS
+from chem_runs import WIDTHS
+from util.training.cpst_model import CPSTAdapter
 
 REFERENCE_WIDTH = 5000
 RESIZED_PARAMETERS = frozenset({
@@ -32,7 +33,7 @@ def torch_streams(device):
     }
 
 
-class AxisAdapter(AlphaAdapter):
+class AxisAdapter(CPSTAdapter):
     def __init__(self, source, transform):
         super().__init__(source, transform, chemical_width=WIDTHS[ARM])
         self.epoch_streams = []

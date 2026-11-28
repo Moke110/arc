@@ -219,50 +219,47 @@ tmp/
 !/cpst/05_tsg_loss/05.5_mse-l1_cos/log/fold-scores.csv
 !/cpst/05_tsg_loss/05.5_mse-l1_cos/log/runs.csv
 
+# Step 06 publishes three canonical plotted CSVs per module comparison.
+!/cpst/06_tsg_module/06.*_round*/figure/data/learning-curve.csv
+!/cpst/06_tsg_module/06.*_round*/figure/data/metrics.csv
+!/cpst/06_tsg_module/06.*_round*/figure/data/metrics-paired.csv
+
 # Step 06.1 publishes the plotted scores and compact fit diagnostics.
-!/cpst/06_tsg_shape/06.1_round1/figure/data/delta-metrics.csv
-!/cpst/06_tsg_shape/06.1_round1/figure/data/epoch-objectives.csv
-!/cpst/06_tsg_shape/06.1_round1/figure/data/fold-scores.csv
-!/cpst/06_tsg_shape/06.1_round1/log/bandwidths.csv
-!/cpst/06_tsg_shape/06.1_round1/log/kl-diagnostics.csv
-!/cpst/06_tsg_shape/06.1_round1/log/runs.csv
-/cpst/06_tsg_shape/.06.1_round1.publication.lock
+!/cpst/06_tsg_module/06.1_round1/figure/data/delta-metrics.csv
+!/cpst/06_tsg_module/06.1_round1/figure/data/epoch-objectives.csv
+!/cpst/06_tsg_module/06.1_round1/figure/data/fold-scores.csv
+!/cpst/06_tsg_module/06.1_round1/log/bandwidths.csv
+!/cpst/06_tsg_module/06.1_round1/log/kl-diagnostics.csv
+!/cpst/06_tsg_module/06.1_round1/log/runs.csv
+/cpst/06_tsg_module/.06.1_round1.publication.lock
 
 # Step 06.2 publishes the plotted scores and compact fit ledger.
-!/cpst/06_tsg_shape/06.2_round2/figure/data/delta-metrics.csv
-!/cpst/06_tsg_shape/06.2_round2/figure/data/epoch-objectives.csv
-!/cpst/06_tsg_shape/06.2_round2/figure/data/fold-scores.csv
-!/cpst/06_tsg_shape/06.2_round2/log/bandwidths.csv
-!/cpst/06_tsg_shape/06.2_round2/log/runs.csv
-/cpst/06_tsg_shape/.06.2_round2.publication.lock
+!/cpst/06_tsg_module/06.2_round2/figure/data/delta-metrics.csv
+!/cpst/06_tsg_module/06.2_round2/figure/data/epoch-objectives.csv
+!/cpst/06_tsg_module/06.2_round2/figure/data/fold-scores.csv
+!/cpst/06_tsg_module/06.2_round2/log/bandwidths.csv
+!/cpst/06_tsg_module/06.2_round2/log/runs.csv
+/cpst/06_tsg_module/.06.2_round2.publication.lock
 
 # Step 06.3 publishes paired scores, primary contrasts and the fit ledger.
-!/cpst/06_tsg_shape/06.3_round3/figure/data/delta-metrics.csv
-!/cpst/06_tsg_shape/06.3_round3/figure/data/epoch-objectives.csv
-!/cpst/06_tsg_shape/06.3_round3/figure/data/fold-scores.csv
-!/cpst/06_tsg_shape/06.3_round3/figure/data/primary-contrasts.csv
-!/cpst/06_tsg_shape/06.3_round3/figure/data/primary-contrast-summary.csv
-!/cpst/06_tsg_shape/06.3_round3/log/bandwidths.csv
-!/cpst/06_tsg_shape/06.3_round3/log/runs.csv
-/cpst/06_tsg_shape/.06.3_round3.publication.lock
+!/cpst/06_tsg_module/06.3_round3/figure/data/delta-metrics.csv
+!/cpst/06_tsg_module/06.3_round3/figure/data/epoch-objectives.csv
+!/cpst/06_tsg_module/06.3_round3/figure/data/fold-scores.csv
+!/cpst/06_tsg_module/06.3_round3/figure/data/primary-contrasts.csv
+!/cpst/06_tsg_module/06.3_round3/figure/data/primary-contrast-summary.csv
+!/cpst/06_tsg_module/06.3_round3/log/bandwidths.csv
+!/cpst/06_tsg_module/06.3_round3/log/runs.csv
+/cpst/06_tsg_module/.06.3_round3.publication.lock
 # Step 06.4 publishes the plotted data and compact fit ledger.
-!/cpst/06_tsg_shape/06.4_round4/figure/data/delta-metrics.csv
-!/cpst/06_tsg_shape/06.4_round4/figure/data/epoch-objectives.csv
-!/cpst/06_tsg_shape/06.4_round4/figure/data/fold-scores.csv
-!/cpst/06_tsg_shape/06.4_round4/figure/data/primary-contrast-by-fold.csv
-!/cpst/06_tsg_shape/06.4_round4/figure/data/primary-contrast-summary.csv
-!/cpst/06_tsg_shape/06.4_round4/figure/data/primary-contrasts.csv
-!/cpst/06_tsg_shape/06.4_round4/log/bandwidths.csv
-!/cpst/06_tsg_shape/06.4_round4/log/runs.csv
-/cpst/06_tsg_shape/.06.4_round4.publication.lock
-
-# Step 07 exposes the fixed alpha API and its release identity.
-!/cpst/07_cpst_alpha/output/
-/cpst/07_cpst_alpha/output/*
-!/cpst/07_cpst_alpha/output/release.json
-!/cpst/07_cpst_alpha/output/api/
-/cpst/07_cpst_alpha/output/api/*
-!/cpst/07_cpst_alpha/output/api/cpst_alpha.py
+!/cpst/06_tsg_module/06.4_round4/figure/data/delta-metrics.csv
+!/cpst/06_tsg_module/06.4_round4/figure/data/epoch-objectives.csv
+!/cpst/06_tsg_module/06.4_round4/figure/data/fold-scores.csv
+!/cpst/06_tsg_module/06.4_round4/figure/data/primary-contrast-by-fold.csv
+!/cpst/06_tsg_module/06.4_round4/figure/data/primary-contrast-summary.csv
+!/cpst/06_tsg_module/06.4_round4/figure/data/primary-contrasts.csv
+!/cpst/06_tsg_module/06.4_round4/log/bandwidths.csv
+!/cpst/06_tsg_module/06.4_round4/log/runs.csv
+/cpst/06_tsg_module/.06.4_round4.publication.lock
 
 # Stage 2 Step 08 formal report tables
 !/cpst/08_cpst_chem-emb/figure/data/fold-scores.csv
@@ -315,6 +312,12 @@ tmp/
 !/cpst/util/output/api/
 !/cpst/util/output/tables/
 !/cpst/util/output/tables/seeds.csv
+!/cpst/util/output/tenv-folds/
+/cpst/util/output/tenv-folds/*
+!/cpst/util/output/tenv-folds/v1/
+/cpst/util/output/tenv-folds/v1/*
+!/cpst/util/output/tenv-folds/v1/conditions.csv
+!/cpst/util/output/tenv-folds/v1/manifest.json
 !/cpst/util/output/gene-identity/
 !/cpst/util/output/gene-identity/**/*.csv
 /cpst/util/output/representations/

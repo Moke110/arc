@@ -10,7 +10,7 @@ Study-specific input binding, metrics and disease reference code live in
 
 Activate `arc` and work from the repository root with the releases materialized.
 Fit on the six 3k, 4k and 5k HVG-DEG and Denoise-DEG plate-pooled tenv releases
-with their frozen cold-drug folds. Use the Step 02 ordered axis tables, frozen
+with the [shared five-fold tenv evaluation release](../util/README.md#shared-tenv-evaluation). Use the Step 02 ordered axis tables, frozen
 2,304-dimensional tenv KPGT vectors at `cpst/util/output/representations/`, and
 native source at `pert_model/TranSiGen/source/`. Scoring also needs the Step 01
 raw tenv corpus and the Step 02 HVG-DEG disease reference. Follow the owner
@@ -43,7 +43,7 @@ capped_step04() {
 ## Run the formal matrix
 
 [`matrix.py`](execution/matrix.py) checks the ordered condition and fold rosters
-across the six releases, registers all 18 seed-42 coordinates before training,
+across the six releases and registers all 150 axis, fold and seed coordinates before training,
 and runs train, predict and replay in separate processes. Require exact validation
 objective, validation predictions and held-out predictions for each fit.
 [`report_formal.py`](execution/report_formal.py) checks the matrix and process
@@ -51,12 +51,41 @@ receipts, scores and verifies the report, and checks two independent PNG renders
 
 ```bash
 work=$(mktemp -d "$PWD/tmp/tsg-axis-matrix.XXXXXX")
-capped_step04 python "$step/execution/matrix.py" \
-  --output "$work/matrix" --logs "$work/matrix-audit/logs" &&
+matrix=(python "$step/execution/matrix.py"
+  --output "$work/matrix" --logs "$work/matrix-audit/logs")
+capped_step04 "${matrix[@]}" --register-only &&
+capped_step04 "${matrix[@]}" &&
 capped_step04 python "$step/execution/report_formal.py" build \
   --matrix "$work/matrix" --matrix-audit "$work/matrix-audit" \
   --report "$work/report" --figures "$work/figures" --logs "$work/report-logs"
 ```
+
+Run the same matrix command after an interruption with the same inputs and
+output directories. The matrix authenticates the existing registrations
+against the planned axis, fold, seed and partition before fitting any
+coordinate. It continues from verified phase receipts. All 150 are new
+registrations because the pinned three-fold runs use different memberships.
+
+The report binds its per-fold full-axis bandwidth to the shared fold-release
+digest and the actual training rows. Its `bandwidths.csv` is the Step 09
+calibration lineage input. Install accepted successors under
+`output/formal-tenv-v1/` and `output/report-tenv-v1/` while preserving the
+historical releases described below. Keep the process logs beside the matrix
+in `output/formal-tenv-v1-audit/logs/` and keep the coordinator samples with
+that audit. Verify the installed result before replacing the tracked figures.
+
+```bash
+work=$(mktemp -d "$PWD/tmp/tsg-axis-verification.XXXXXX")
+capped_step04 python "$step/execution/report_formal.py" verify \
+  --matrix "$step/output/formal-tenv-v1" \
+  --matrix-audit "$step/output/formal-tenv-v1-audit" \
+  --report "$step/output/report-tenv-v1" --figures "$step/figure" \
+  --logs "$work/report-logs"
+```
+
+Each registered fit records the full runtime and source hashes. Use the
+source commit and environment in the formal receipt to resume or replay a
+fit when the active training code has changed.
 
 The study uses matched same-plate DMSO as the model input in every partition.
 At the fixed-prediction boundary, `prediction.npy` is absolute treated expression.
@@ -66,19 +95,44 @@ measurements for scoring. Select the checkpoint by the lowest per-condition
 native validation objective (MSE + KLD, β = 0.1), with 30 epochs of patience
 and a 1,000-epoch maximum. [Matched-control protocol](../../docs/adr/0086-tenv-axis-matched-plate-control.md)
 
+## Verify an accepted prediction archive
+
+Use `execution/prediction_archive.py verify` with the matrix, matrix audit,
+report, figure and scratch-log paths from the formal report verifier. Supply
+`--disposition-sha256` from the independently pinned completed disposition
+receipt. The command checks the original #399 acceptance, verifies retained
+artifacts, independently rebuilds scores and paired plot data, and renders
+the figures twice. It does not replay checkpoint weights. Full matrix and
+report verification still require the original checkpoint files.
+
+The `dispose` subcommand is for explicitly approved checkpoint paths after
+all required uses of those weights are complete. Supply each eligible run as
+`--run-manifest` with its manifest path relative to the accepted matrix.
+Keep downstream reuse candidates and weights needed for exact replay out of
+the list. The command runs full report verification first and verifies the
+predictions and figures with the selected weights staged on the same
+filesystem. Only after both checks pass does it commit the disposition and
+remove the staged weights. Record the returned disposition SHA-256 separately
+and retain the original full acceptance and run manifests. For a later batch,
+use a new `--receipt` filename and supply `--previous-receipt` and
+`--previous-disposition-sha256` from the pinned prior batch. Use the latest
+`--receipt` with `verify` to check the cumulative archive. Rerun the same
+`dispose` arguments after an interruption to recover the quarantine and
+complete verification.
+
 ## Register and replay one fit
 
 This example runs the bounded HVG-DEG 5k smoke through exact replay and report
 verification. `--smoke` bounds the fit to two epochs and 64 train, 24 validation
 and 24 test conditions. For a full single-coordinate fit, omit `--smoke` at
 registration and stop after `replay`. Formal scoring requires the full matrix.
-[Smoke receipt](log/318-matched-control-smoke.json)
+[Bounded gate evidence](log/399-tenv-v1-formal.json)
 
 ```bash
 work=$(mktemp -d "$PWD/tmp/tsg-axis-smoke.XXXXXX")
 run="$work/run"
 report="$work/report"
-capped_step04 python "$step/execution/run.py" register --axis hvg-5k --fold 0 \
+capped_step04 python "$step/execution/run.py" register --axis hvg-5k --fold 4 --seed 2027 \
   --training cpst/03_data_train/03.1_tenv_hvg-5k/output --device cuda --smoke --output "$run" &&
 capped_step04 python "$step/execution/run.py" train --output "$run" &&
 capped_step04 python "$step/execution/run.py" predict --output "$run" &&
@@ -137,17 +191,13 @@ python "$step/execution/export_canonical.py" --output "$work/report"
 
 ## Rebuild and verify the comparison figures
 
-[`build_comparison.py`](execution/build_comparison.py) verifies the sealed fits
-and report, checks JAC-top200 against the per-condition and fold scores, and adds
-wJAC-2000 to the plotted data. The paired figure uses `denoise-5k` as the
-within-fold reference. Verify all three CSV and PNG hashes against the
-[rendering receipt](log/figure-render.json) before replacing the canonical files.
-
-```bash
-work=$(mktemp -d "$PWD/tmp/tsg-axis-figures.XXXXXX")
-TMPDIR="$work" MPLCONFIGDIR="$work/mpl" \
-  python "$step/execution/build_comparison.py" --output "$work/publication"
-```
+Use `report_formal.py` to reproduce the successor's plotted tables and PNGs
+from its installed matrix. The paired figure uses `denoise-5k` as the
+within-fold and seed reference. The
+[rendering receipt](log/figure-render.json) binds the active plots and tables.
+For the pinned three-fold matrix and its report, the historical
+[`build_comparison.py`](execution/build_comparison.py) still checks
+JAC-top200 parity against the sealed condition and fold scores.
 
 For figure-only verification, render from the published CSVs and compare the
 three PNGs byte for byte. [CSV-only renderer](figure/script/render.py)

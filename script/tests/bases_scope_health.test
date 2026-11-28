@@ -6,7 +6,7 @@ tmp="$(mktemp -d)"
 trap 'rm -rf -- "$tmp"' EXIT
 mkdir -p "$tmp/script" "$tmp/.worktrees/worker"
 cp "$root/script/check_cpst_paths.sh" "$root/script/check_tracked.sh" "$tmp/script/"
-for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} 06_tsg_shape 06_tsg_shape/{06.1_round1,06.2_round2,06.3_round3,06.4_round4} 07_cpst_alpha 08_cpst_chem-emb 09_cpst_axis 10_cpst_dose; do
+for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} 06_tsg_module 06_tsg_module/{06.1_round1,06.2_round2,06.3_round3,06.4_round4} 07_cpst_loss 08_cpst_chem-emb 09_cpst_axis 10_cpst_dose; do
   mkdir -p "$tmp/cpst/$step"
   printf '%s\n' "$step" > "$tmp/cpst/$step/AGENTS.md"
   printf '%s\n' "$step" > "$tmp/cpst/$step/README.md"

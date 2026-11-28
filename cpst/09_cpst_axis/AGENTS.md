@@ -17,7 +17,7 @@ Use the shared training and evaluation APIs for model, fit and replay changes.
   `cpst/util/output/representations` and the author TranSiGen source at
   `pert_model/TranSiGen/source`. For standalone replay of the alpha lineage,
   also materialize the Step 06.4 formal bundle.
-  [Alpha guide](../07_cpst_alpha/AGENTS.md) · [UniMol decision](../../docs/adr/0100-carps-vae-unimol.md) · [Representation pins](../util/output/api/cpst_util/representations.py) · [Author source manifest](../../pert_model/TranSiGen/manifest.sha256) · [Step 08 receipt](../08_cpst_chem-emb/log/364-formal.json)
+  [Alpha guide](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/AGENTS.md) · [UniMol decision](../../docs/adr/0100-carps-vae-unimol.md) · [Representation pins](../util/output/api/cpst_util/representations.py) · [Author source manifest](../../pert_model/TranSiGen/manifest.sha256) · [Step 08 receipt](../08_cpst_chem-emb/log/364-formal.json)
 - Keep the frozen UniMol projection, internal model widths, loss and fit policy.
   Vary the input widths of the control and measured Δ encoders and the output
   widths of the control and shared Δ decoders. Pair the other initialized
@@ -48,13 +48,13 @@ recipes, start the coordinator sampler in a second terminal with the same
 `WORK` path. Confirm its first sample before the matrix starts and keep it
 running through the first post-matrix sample. Retain the phase timings and
 sampler records with the candidate.
-[Execution limits](../../docs/agents/execution-environment.md) · [Coordinator sampler](../06_tsg_shape/06.1_round1/execution/sample_resources.py)
+[Execution limits](../../docs/agents/execution-environment.md) · [Coordinator sampler](../06_tsg_module/06.1_round1/execution/sample_resources.py)
 
 ```bash
 set -e
 STEP="$PWD/cpst/09_cpst_axis"
 FORMAL="$STEP/execution/axis_formal.py"
-SAMPLER="$STEP/../06_tsg_shape/06.1_round1/execution/sample_resources.py"
+SAMPLER="$STEP/../06_tsg_module/06.1_round1/execution/sample_resources.py"
 SOURCE="$PWD/pert_model/TranSiGen/source"
 mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/carps-axis.XXXXXX")
@@ -86,7 +86,7 @@ CSV-only renders and coordinator coverage.
 
 ```bash
 capped /usr/bin/time -v -o "$WORK/alpha.time" \
-  python "$STEP/../07_cpst_alpha/execution/verify_alpha.py" --source "$SOURCE" \
+  env PYTHONPATH="$STEP/.." python -m util.training.cpst_reference --source "$SOURCE" \
   > "$WORK/alpha.json"
 capped /usr/bin/time -v -o "$WORK/gate.time" \
   python "$STEP/execution/axis_matrix.py" --bounded --source "$SOURCE" \
@@ -147,16 +147,14 @@ capped python "$FORMAL" install --bundle "$WORK/bundle" \
 
 ## Verify the installed release
 
-Use the locally materialized `output/formal` bundle with the tracked receipts
-and figures. Run the independent rescore alone under the cap and retain its
-peak RSS. For a figure-only check, run `axis_figures.py verify` by itself. It
-reproduces the three canonical PNGs twice in fresh processes using the plotted
-CSVs alone.
-[Formal receipt](log/371-formal.json) · [Figure verifier](execution/axis_figures.py)
+Use the original checkout at `a7613b74fc23f9f48d8ea0d4479542c008d701db`
+with the materialized `output/formal` bundle for the full scientific rescore. The pinned guide contains the command
+and the sealed report is validated against its original tracked receipts.
+The active figure receipt records the projection of those accepted score tables.
+Run the active CSV-only figure check from this checkout.
+[Historical verification](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/09_cpst_axis/AGENTS.md#verify-the-installed-release) · [Active figure receipt](log/figure-render.json)
 
 ```bash
-capped /usr/bin/time -v -o "$WORK/verify.time" \
-  python "$FORMAL" verify --scratch "$WORK/scratch"
 python "$STEP/execution/axis_figures.py" verify --data "$STEP/figure/data" \
   --output "$STEP/figure" --scratch "$WORK/scratch"
 ```

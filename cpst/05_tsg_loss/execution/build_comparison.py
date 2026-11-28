@@ -24,7 +24,6 @@ from tsg_axis.inputs import AxisInputs
 from tsg_axis.metrics import summarize_conditions
 
 TRACE = ("epoch", "train_loss", "validation_loss")
-OLD_METRICS = tuple(metric for metric in METRIC_NAMES if metric != "wJAC-2000")
 
 
 def _table(path):
@@ -81,22 +80,21 @@ def _score_fit(run, fit, record, sealed, scores, epochs, data):
             or not curve.equals(epochs.loc[:, list(TRACE)].reset_index(drop=True))):
         raise ValueError(f"accepted train and validation traces differ for {identity}")
 
-    conditions, top200, weighted = read_fixed_jaccard(run, config, manifest, data)
+    conditions, top200 = read_fixed_jaccard(run, config, manifest, data)
     if (conditions != tuple(sealed.condition_id)
             or not np.array_equal(top200, sealed.JAC_top200, equal_nan=True)):
         raise ValueError(f"held-out JAC-top200 differs from accepted conditions for {identity}")
     scores = scores.set_index("metric", verify_integrity=True)
-    if not set(OLD_METRICS) <= set(scores.index):
+    if not set(METRIC_NAMES) <= set(scores.index):
         raise ValueError(f"accepted fold metric roster differs for {identity}")
     jacc = scores.loc["JAC_top200"]
     observed = summarize_conditions(top200)
     if (not np.isclose(jacc.value, observed["value"], atol=1e-15, rtol=0, equal_nan=True)
             or any(observed[key] != jacc[key] for key in ("n_conditions", "n_eligible", "n_undefined"))):
         raise ValueError(f"held-out JAC-top200 fold score differs for {identity}")
-    weighted_mean = summarize_conditions(weighted)["value"]
     return (
         [(*identity, *row) for row in curve.itertuples(index=False, name=None)],
-        [(*identity, metric, weighted_mean if metric == "wJAC-2000" else scores.at[metric, "value"])
+        [(*identity, metric, scores.at[metric, "value"])
          for metric in METRIC_NAMES],
     )
 

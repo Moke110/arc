@@ -10,7 +10,7 @@ import torch
 from torch import nn
 
 REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-sys.path.insert(0, str(REPO / "cpst/06_tsg_shape/06.2_round2/execution"))
+sys.path.insert(0, str(REPO / "cpst/06_tsg_module/06.2_round2/execution"))
 
 from architecture_model import ArchitectureAdapter, ShapeAdapter, axis_run, configure_objective
 

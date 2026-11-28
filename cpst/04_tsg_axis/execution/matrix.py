@@ -1,7 +1,6 @@
-"""Preregister, train and exactly replay all 18 formal TranSiGen axis fits."""
+"""Preregister, train and exactly replay all formal TranSiGen axis fits."""
 import argparse
 from hashlib import sha256
-from itertools import product
 import json
 from pathlib import Path
 import subprocess
@@ -16,12 +15,12 @@ STAGE = REPO / "cpst"
 sys.path.insert(0, str(STEP / "output/api"))
 
 from tsg_axis.inputs import AxisInputs
-from tsg_axis.protocol import MAX_EPOCHS, PATIENCE, PROTOCOL, RUN_SCHEMA
+from tsg_axis.protocol import MAX_EPOCHS, PATIENCE, PROTOCOL, RUN_SCHEMA, shared_protocol
 from training_data import TENV_AXIS_STEPS, open_tenv_axis_training, tenv_axis_output
 from cpst_util.derivation.release import check_outputs, read_json as read, sha256 as file_sha256, write_json
 from cpst_util.publication import publication_lock
 
-SCHEMA = "stage2-tenv-transigen-axis-matrix-v2"
+SCHEMA = "stage2-tenv-transigen-axis-matrix-v3"
 PARTITIONS = ("train", "valid", "test")
 PHASES = {"train": "training.json", "predict": "predictions.json", "replay": "manifest.json"}
 
@@ -43,13 +42,14 @@ def roster_digest(values):
 
 
 def preflight(step03):
+    protocol = shared_protocol()
     rosters, releases = {}, {}
     common = None
     for axis in TENV_AXIS_STEPS:
         with open_tenv_axis_training(axis, step03) as release:
-            data = AxisInputs(release)
+            data = AxisInputs(release, protocol=protocol)
             rosters[axis] = [{part: list(data.condition_ids(data.rows(fold, part))) for part in PARTITIONS}
-                             for fold in range(3)]
+                             for fold in range(len(protocol.folds))]
             inputs = release.manifest["inputs"]
             identity = {"raw_sha256": inputs["raw_sha256"], "folds": inputs["folds"],
                         "members_sha256": release.manifest["outputs"]["members.csv"],
@@ -65,14 +65,15 @@ def preflight(step03):
     if any(not count for fold in counts for count in fold.values()):
         raise ValueError("formal folds must contain all three partitions")
     evidence = {"training_manifest_sha256": releases, **common, "fold_counts": counts,
+                "fold_release_sha256": protocol.release_sha256,
                 "ordered_fold_condition_sha256": [{part: roster_digest(values)
                                                    for part, values in fold.items()} for fold in matched]}
     return matched, evidence
 
 
 def run_paths(root):
-    return {(axis, fold): root / "runs" / axis / f"fold-{fold}"
-            for axis, fold in product(TENV_AXIS_STEPS, range(3))}
+    return {(axis, fold, seed): root / "runs" / axis / f"fold-{fold}" / f"seed-{seed}"
+            for axis in TENV_AXIS_STEPS for fold, seed in shared_protocol().coordinates}
 
 
 def invoke(log, phase, args):
@@ -88,15 +89,16 @@ def check_registrations(paths, rosters, preflight_record):
     registrations = {}
     nonces = set()
     code = None
-    for (axis, fold), path in paths.items():
+    for (axis, fold, seed), path in paths.items():
         config = read(path / "registration.json")
         args = config["arguments"]
-        if ((args["axis"], args["fold"], args["smoke"], config["scenario"], config["seed"])
-                != (axis, fold, False, "cold-drug", 42)
+        if ((args["axis"], args["fold"], args["seed"], args["smoke"], config["scenario"], config["seed"])
+                != (axis, fold, seed, False, "cold-drug", seed)
                 or config.get("schema") != RUN_SCHEMA or config.get("protocol") != PROTOCOL
                 or config["conditions"] != rosters[fold] or config["max_epochs"] != MAX_EPOCHS
                 or config["patience"] != PATIENCE or config["training_sha256"] !=
                 preflight_record["training_manifest_sha256"][axis]
+                or config["fold_release_sha256"] != preflight_record["fold_release_sha256"]
                 or config["folds"] != preflight_record["folds"] or config["nonce"] in nonces):
             raise ValueError(f"{axis} fold {fold} differs from the fresh formal registration plan")
         if code is None:
@@ -104,11 +106,11 @@ def check_registrations(paths, rosters, preflight_record):
         if code != config["code_sha256"]:
             raise ValueError("formal registrations use different runtime source")
         nonces.add(config["nonce"])
-        registrations[axis, fold] = file_sha256(path / "registration.json")
+        registrations[axis, fold, seed] = file_sha256(path / "registration.json")
     return registrations
 
 
-def verify_run(path, axis, fold, registration):
+def verify_run(path, axis, fold, seed, registration, *, output_check=check_outputs):
     config = read(path / "registration.json")
     manifest = read(path / "manifest.json")
     training, prediction = (read(path / PHASES[phase]) for phase in ("train", "predict"))
@@ -116,7 +118,7 @@ def verify_run(path, axis, fold, registration):
             for record in (config, manifest))
         or config["patience"] != PATIENCE
         or (manifest["axis"], manifest["fold"], manifest["smoke"], manifest["seed"],
-         manifest["validation_replay"], manifest["test_replay"]) != (axis, fold, False, 42, "exact", "exact")
+         manifest["validation_replay"], manifest["test_replay"]) != (axis, fold, False, seed, "exact", "exact")
         or any(record.get("validation_objective_replay") != "exact" for record in (prediction, manifest))
         or not 1 <= training["best_epoch"] <= training["epochs"] <= MAX_EPOCHS
         or training["epochs"] != min(MAX_EPOCHS, training["best_epoch"] + PATIENCE)
@@ -125,8 +127,8 @@ def verify_run(path, axis, fold, registration):
         or any(record["registration_sha256"] != registration for record in (training, prediction, manifest))
         or len({record["process_token"] for record in (training, prediction, manifest)}) != 3):
         raise ValueError(f"{axis} fold {fold} lacks distinct, exact fresh-process evidence")
-    check_outputs(path, manifest)
-    return {"axis": axis, "fold": fold, "registration_sha256": registration,
+    output_check(path, manifest)
+    return {"axis": axis, "fold": fold, "seed": seed, "registration_sha256": registration,
             "run_manifest_sha256": file_sha256(path / "manifest.json"),
             "epochs": training["epochs"], "best_epoch": training["best_epoch"],
             "validation_loss": training["validation_loss"], "validation_mse": training["validation_mse"],
@@ -134,7 +136,7 @@ def verify_run(path, axis, fold, registration):
             "train_wall_seconds": training["wall_seconds"], "train_peak_rss_kib": training["peak_rss_kib"]}
 
 
-def execute(root, logs, step03, representations, source, device):
+def execute(root, logs, step03, representations, source, device, *, register_only=False):
     if logs.is_relative_to(root) or root.is_relative_to(logs):
         raise ValueError("matrix and process logs require separate directories")
     root.mkdir(parents=True, exist_ok=True)
@@ -142,7 +144,8 @@ def execute(root, logs, step03, representations, source, device):
         paths = run_paths(output)
         rosters, evidence = preflight(step03)
         preflight_path = output / "preflight.json"
-        plan = {"schema": SCHEMA, "protocol": PROTOCOL, "device": device, "seed": 42, "scenario": "cold-drug",
+        plan = {"schema": SCHEMA, "protocol": PROTOCOL, "device": device, "seeds": list(shared_protocol().seeds),
+                "scenario": "cold-drug",
                 "driver_sha256": file_sha256(Path(__file__)), **evidence}
         if preflight_path.exists() and read(preflight_path) != plan:
             raise ValueError("formal matrix preflight changed")
@@ -150,23 +153,25 @@ def execute(root, logs, step03, representations, source, device):
             write_json(preflight_path, plan)
         print(json.dumps({"phase": "preflight", "matched_axes": len(TENV_AXIS_STEPS),
                           "fold_counts": evidence["fold_counts"]}), flush=True)
-        for (axis, fold), path in paths.items():
+        for (axis, fold, seed), path in paths.items():
             if (path / "registration.json").is_file():
                 continue
-            args = ["--axis", axis, "--fold", str(fold), "--device", device,
+            args = ["--axis", axis, "--fold", str(fold), "--seed", str(seed), "--device", device,
                     "--training", str(tenv_axis_output(axis, step03)), "--representations", str(representations),
                     "--source", str(source), "--output", str(path)]
-            invoke(logs / axis / f"fold-{fold}", "register", args)
+            invoke(logs / axis / f"fold-{fold}" / f"seed-{seed}", "register", args)
         registrations = check_registrations(paths, rosters, evidence)
         print(json.dumps({"phase": "registered", "coordinates": len(registrations)}), flush=True)
+        if register_only:
+            return {"result": "PASS", "registrations": len(registrations)}
         completed = []
-        for (axis, fold), path in paths.items():
-            print(json.dumps({"phase": "fit", "axis": axis, "fold": fold,
+        for (axis, fold, seed), path in paths.items():
+            print(json.dumps({"phase": "fit", "axis": axis, "fold": fold, "seed": seed,
                               "completed": len(completed)}), flush=True)
             for phase, receipt in PHASES.items():
                 if not (path / receipt).is_file():
-                    invoke(logs / axis / f"fold-{fold}", phase, ["--output", str(path)])
-            result = verify_run(path, axis, fold, registrations[axis, fold])
+                    invoke(logs / axis / f"fold-{fold}" / f"seed-{seed}", phase, ["--output", str(path)])
+            result = verify_run(path, axis, fold, seed, registrations[axis, fold, seed])
             completed.append(result)
             print(json.dumps({"phase": "complete", "completed": len(completed), **result}), flush=True)
         receipt = {"schema": SCHEMA, "protocol": PROTOCOL,
@@ -185,9 +190,10 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--logs", type=Path, required=True)
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cuda")
+    parser.add_argument("--register-only", action="store_true")
     args = parser.parse_args()
     print(json.dumps(execute(args.output.resolve(), args.logs.resolve(), args.step03.resolve(), args.representations.resolve(),
-                             args.source.resolve(), args.device), sort_keys=True))
+                             args.source.resolve(), args.device, register_only=args.register_only), sort_keys=True))
 
 
 if __name__ == "__main__":

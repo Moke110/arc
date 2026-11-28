@@ -15,17 +15,18 @@ sys.path[:0] = [str(STEP / "output/api"), str(STAGE / "util/output/api")]
 from cpst_util.comparison import CURVE_FIELDS, FIGURES, METRIC_FIELDS, METRIC_NAMES, write_paired_metrics
 from cpst_util.comparison_publication import render_receipt
 from cpst_util.derivation.release import check_outputs, read_json, sha256, write_json
-from cpst_util.metrics import signed_jaccard_scores
+from cpst_util.metrics import signed_jaccard
 from tsg_axis.metrics import summarize_conditions
+from tsg_axis.protocol import REPORT_SCHEMA, shared_protocol
 
 ARMS = ("hvg-3k", "hvg-4k", "hvg-5k", "denoise-3k", "denoise-4k", "denoise-5k")
 REFERENCE = "denoise-5k"
-ROSTER = {(arm, fold) for arm in ARMS for fold in range(3)}
+LEGACY_ROSTER = {(arm, fold, 42) for arm in ARMS for fold in range(3)}
 EVIDENCE = ("conditions.csv", "genes.csv", "measured_delta.npy", "predicted_delta.npy", "learning_curve.csv")
 
 
 def _coordinate(row):
-    return row["axis"].replace("-deg-", "-"), row["fold"]
+    return row["axis"].replace("-deg-", "-"), row["fold"], row.get("seed", 42)
 
 
 def _table(path):
@@ -33,15 +34,15 @@ def _table(path):
 
 
 def _scored_run(run, fit, sealed, reference):
-    arm, fold = _coordinate(fit)
-    identity = arm, fold
+    arm, fold, seed = _coordinate(fit)
+    identity = arm, fold, seed
     manifest_path = run / "manifest.json"
     manifest = read_json(manifest_path)
     registration = run / "registration.json"
     if (sha256(manifest_path) != fit["run_manifest_sha256"]
             or sha256(registration) != fit["registration_sha256"]
             or (manifest["axis"], manifest["fold"], manifest["seed"], manifest["smoke"])
-            != (fit["axis"], fold, 42, False)):
+            != (fit["axis"], fold, seed, False)):
         raise ValueError(f"run differs from accepted fit: {identity}")
     for name in EVIDENCE:
         if sha256(run / name) != manifest["outputs"][name]:
@@ -50,7 +51,7 @@ def _scored_run(run, fit, sealed, reference):
     curve = _table(run / "learning_curve.csv")
     if curve.epoch.tolist() != list(range(1, fit["epochs"] + 1)):
         raise ValueError(f"accepted epoch trace is incomplete: {identity}")
-    trace = [(arm, fold, 42, row.epoch, row.train_loss, row.validation_loss)
+    trace = [(arm, fold, seed, row.epoch, row.train_loss, row.validation_loss)
              for row in curve.itertuples(index=False)]
 
     roster = _table(run / "conditions.csv").condition_id.tolist()
@@ -63,8 +64,8 @@ def _scored_run(run, fit, sealed, reference):
     if (measured.shape != predicted.shape or measured.shape != (fit["test_conditions"], len(genes))
             or not np.isfinite(measured).all() or not np.isfinite(predicted).all()):
         raise ValueError(f"invalid sealed matched-control Delta arrays: {identity}")
-    jaccard, weighted = zip(*(signed_jaccard_scores(y, yhat, genes)
-                              for y, yhat in zip(measured, predicted, strict=True)), strict=True)
+    jaccard = [signed_jaccard(y, yhat, genes)[0]
+               for y, yhat in zip(measured, predicted, strict=True)]
     if not np.array_equal(jaccard, sealed.JAC_top200, equal_nan=True):
         raise ValueError(f"held-out JAC-top200 differs from the sealed conditions: {identity}")
     top200 = summarize_conditions(jaccard)
@@ -74,30 +75,43 @@ def _scored_run(run, fit, sealed, reference):
     for name in ("n_conditions", "n_eligible", "n_undefined"):
         if top200[name] != top200_ref[name]:
             raise ValueError(f"JAC-top200 eligibility differs for {identity}: {name}")
-    return trace, summarize_conditions(weighted)["value"]
+    return trace
+
+
+def rows_for_coordinate(table, axis, fold, seed, legacy):
+    selected = table.axis.eq(axis) & table.fold.eq(fold)
+    if not legacy:
+        selected &= table.seed.eq(seed)
+    return table.loc[selected]
 
 
 def write_plot_data(report, matrix, fits, data):
     """Publish plotted values from verified fit files and sealed scientific report tables."""
     score_manifest = read_json(report / "manifest.json")
+    legacy = score_manifest["schema"] != REPORT_SCHEMA
+    roster = LEGACY_ROSTER if legacy else {
+        (arm, fold, seed) for arm in ARMS for fold, seed in shared_protocol().coordinates
+    }
     report_runs = {_coordinate(row): row for row in score_manifest["runs"]}
-    if ({_coordinate(row) for row in fits} != ROSTER or len(fits) != len(ROSTER)
-            or set(report_runs) != ROSTER or len(score_manifest["runs"]) != len(ROSTER)):
-        raise ValueError("comparison requires the complete 18-fit report and matrix")
+    if ({_coordinate(row) for row in fits} != roster or len(fits) != len(roster)
+            or set(report_runs) != roster or len(score_manifest["runs"]) != len(roster)):
+        raise ValueError("comparison requires the complete report and matrix")
     condition = _table(report / "condition-metrics.csv")
     folds = _table(report / "fold-metrics.csv")
     curves, metrics = [], []
     for fit in fits:
-        arm, fold = _coordinate(fit)
-        published = report_runs[arm, fold]
+        arm, fold, seed = _coordinate(fit)
+        published = report_runs[arm, fold, seed]
         if any(published[name] != fit[name] for name in ("registration_sha256", "run_manifest_sha256")):
-            raise ValueError(f"sealed report uses another fit: {(arm, fold)}")
+            raise ValueError(f"sealed report uses another fit: {(arm, fold, seed)}")
         run = matrix / "runs" / fit["axis"] / f"fold-{fold}"
-        sealed = condition.loc[condition.axis.eq(fit["axis"]) & condition.fold.eq(fold)]
-        reference = folds.loc[folds.axis.eq(fit["axis"]) & folds.fold.eq(fold)].set_index("metric")
-        trace, weighted = _scored_run(run, fit, sealed, reference)
+        if not legacy:
+            run = run / f"seed-{seed}"
+        sealed = rows_for_coordinate(condition, fit["axis"], fold, seed, legacy)
+        reference = rows_for_coordinate(folds, fit["axis"], fold, seed, legacy).set_index("metric")
+        trace = _scored_run(run, fit, sealed, reference)
         curves.extend(trace)
-        metrics.extend((arm, fold, 42, metric, weighted if metric == "wJAC-2000" else reference.loc[metric, "value"])
+        metrics.extend((arm, fold, seed, metric, reference.loc[metric, "value"])
                        for metric in METRIC_NAMES)
     data.mkdir()
     pd.DataFrame(curves, columns=CURVE_FIELDS).to_csv(data / "learning-curve.csv", index=False)

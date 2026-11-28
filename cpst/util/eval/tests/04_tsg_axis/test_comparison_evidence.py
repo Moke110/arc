@@ -50,10 +50,9 @@ class FixedJaccardTest(unittest.TestCase):
                     path.name: sha256(path.read_bytes()).hexdigest() for path in run.iterdir()
                 }}
 
-            conditions, top200, weighted = read_fixed_jaccard(run, config, manifest(), data)
+            conditions, top200 = read_fixed_jaccard(run, config, manifest(), data)
             self.assertEqual(conditions, data.condition_ids([0]))
             np.testing.assert_array_equal(top200, [1.0])
-            np.testing.assert_array_equal(weighted, [1.0])
 
             np.save(run / "predicted_delta.npy", np.array([[0, 1]], dtype=np.float32))
             with self.assertRaisesRegex(ValueError, "matched-control predicted_delta"):

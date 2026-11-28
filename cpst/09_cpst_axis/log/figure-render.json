@@ -1,8 +1,8 @@
 {
   "csv_files_sha256": {
     "figure/data/learning-curve.csv": "405c559db6bcc57d3c2a12bc29d06796af213c3c741370a0e0b11e4069899a00",
-    "figure/data/metrics-paired.csv": "692142c571bdfcf3a0e9200f2105323711ae29ccae024c82f9bb6aed9d7f6571",
-    "figure/data/metrics.csv": "96018d66f1dddcf122ec68a35985865f8354f5e8415ba53e9f973c0e4549174f"
+    "figure/data/metrics-paired.csv": "cc0a959966f20485673770c8b15f626754286922ff02d222534aff3bca494717",
+    "figure/data/metrics.csv": "bc71682d0f543b5ad4b2e36780d55a7842ab98edc8398ac94df72e7cee39d9b7"
   },
   "environment": {
     "matplotlib": "3.10.9",
@@ -10,16 +10,23 @@
     "pandas": "2.3.3",
     "python": "3.13.13"
   },
+  "evidence": {
+    "predecessor_figure_receipt_sha256": "a106fa5e3bd91bb2953b8a38afe6c773ff03cb905def53187b9ece0a8fb68035",
+    "predecessor_revision": "a7613b74fc23f9f48d8ea0d4479542c008d701db",
+    "projected_scientific_tables_sha256": {
+      "log/summary.csv": "3da3e8e684330506895eac3a754e2f5b6f12913f8abc10a79d79139149c1a78b"
+    }
+  },
   "independent_renders": 2,
   "png_files_sha256": {
-    "figure/learning-curve.png": "68b07261e6f9f7c3d2d474ad95a3f39e65bd0c824c1ab69af8c0e8bc3f95f70f",
-    "figure/metrics-paired.png": "93f49fa62146e4fe67416467a5da76ec3e7114ead790ea24e61d809231b79538",
-    "figure/metrics.png": "be800103475b25957cd50c4ebe3717ca24d70fa90539914b262ec8744d20a22a"
+    "figure/learning-curve.png": "8c1a28c8e04aee1a41f73d2253593218e1b4a49d2fa8c6013dc4e6bcc4dd3c41",
+    "figure/metrics-paired.png": "97becee7cbccf5dbbe261b5cadd897bdda06a1e40399e24c02295c35318083d8",
+    "figure/metrics.png": "60c5f11aad005b2cdd3b1a05aef07e1bfc39708ceaab662fd6ebd34a7d1ef7c1"
   },
   "renderer_files_sha256": {
     "09_cpst_axis/execution/axis_protocol.py": "1f0c9db26726b36ceca66069c42a320e4fb1c62a60ebd27f02053edb4145d98a",
     "09_cpst_axis/figure/script/render_axes.py": "c30f595c593631fe907afc89ccf86a78947637deb7c9c5d295bed65d6d98830e",
-    "util/output/api/cpst_util/comparison.py": "4b18733f177d09a3eb1b25861e18c8383f2505eb9746966fa7f75bb83f4f2572",
+    "util/output/api/cpst_util/comparison.py": "78bb29a6621e1ad4565c3201b2618f630355cf49653afe70b5688372362ad3b7",
     "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
     "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
   },

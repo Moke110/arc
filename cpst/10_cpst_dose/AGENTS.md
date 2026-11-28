@@ -2,9 +2,9 @@
 
 Read the study report and ADR 0103 before changing the model or protocol.
 Use the shared training and evaluation APIs for fits and replay, and follow
-ADR 0102 for comparison figures. The Step 07 alpha release and accepted
+ADR 0109 for comparison figures. The Step 07 alpha release and accepted
 comparison bundles are immutable inputs.
-[Study report](README.md) · [Dose design](../../docs/adr/0103-carps-vae-dose-inputs.md) · [Figure contract](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md) · [Shared APIs](../util/README.md#transigen-training-and-evaluation)
+[Study report](README.md) · [Dose design](../../docs/adr/0103-carps-vae-dose-inputs.md) · [Figure contract](../../docs/adr/0109-cpst-seven-metric-comparison-figures.md) · [Shared APIs](../util/README.md#transigen-training-and-evaluation)
 
 ## Prepare the inputs
 
@@ -19,7 +19,7 @@ comparison bundles are immutable inputs.
   Materialize the representation bundle and the author source before fitting.
   Match same-shaped initialized parameters and training random streams across
   CarPS-Transcriptome arms within fold and seed.
-  [Alpha release](../07_cpst_alpha/output/release.json) · [Representation pins](../util/output/api/cpst_util/representations.py) · [Author source manifest](../../pert_model/TranSiGen/manifest.sha256) · [Protocol](execution/dose_protocol.py) · [Model adapter](execution/dose_model.py)
+  [Alpha release](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/output/release.json) · [Representation pins](../util/output/api/cpst_util/representations.py) · [Author source manifest](../../pert_model/TranSiGen/manifest.sha256) · [Protocol](execution/dose_protocol.py) · [Model adapter](execution/dose_model.py)
 - Select each checkpoint by minimum validation objective. Require exact
   independent replay of the validation objective and both validation and
   held-out predictions. For scoring, subtract measured same-plate DMSO from
@@ -44,7 +44,7 @@ Run the heavy phases serially. Use a fresh scratch directory for each recipe.
 set -e
 STEP="$PWD/cpst/10_cpst_dose"
 EXECUTION="$STEP/execution"
-SAMPLER="$PWD/cpst/06_tsg_shape/06.1_round1/execution/sample_resources.py"
+SAMPLER="$PWD/cpst/06_tsg_module/06.1_round1/execution/sample_resources.py"
 MATERIALIZED="${MATERIALIZED:-$PWD}"
 STEP03="$MATERIALIZED/cpst/03_data_train"
 REPRESENTATIONS="$MATERIALIZED/cpst/util/output/representations"
@@ -64,7 +64,7 @@ For each CUDA matrix, start the coordinator sampler in a second terminal with
 the same `WORK` and `SAMPLER` paths. Wait for its first sample before starting
 preflight and keep it active until the first sample after the measured matrix
 command exits. The gate checks the ten-second cadence and coverage.
-[Coordinator sampler](../06_tsg_shape/06.1_round1/execution/sample_resources.py)
+[Coordinator sampler](../06_tsg_module/06.1_round1/execution/sample_resources.py)
 
 ```bash
 python "$SAMPLER" --output "$WORK/coordinator.jsonl"
@@ -152,17 +152,14 @@ cp "$STEP/log/378-coordinator-resources.jsonl" "$WORK/coordinator.jsonl"
 
 ## Verify the installed release
 
-Use the materialized formal bundle and the tracked figure and log files.
-`verify` independently recomputes the report audit and reproduces the
-published PNGs twice. For a figure-only check, run `dose_figures.py verify`
-on the plotted CSVs. That route requires only the figure data and renderer.
-[Formal receipt](log/378-formal.json) · [Figure verifier](execution/dose_figures.py)
+Use the original checkout at `a7613b74fc23f9f48d8ea0d4479542c008d701db`
+with the materialized `output/formal` bundle for the full scientific rescore. The pinned guide contains the command
+and the sealed report is validated against its original tracked receipts.
+The active figure receipt records the projection of those accepted score tables.
+Run the active CSV-only figure check from this checkout.
+[Historical verification](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/10_cpst_dose/AGENTS.md#verify-the-installed-release) · [Active figure receipt](log/figure-render.json)
 
 ```bash
-capped /usr/bin/time -v -o "$WORK/verify.resources" \
-  python "$EXECUTION/dose_formal.py" verify \
-  --bundle "$MATERIALIZED/cpst/10_cpst_dose/output/formal" --publication "$STEP" \
-  --scratch "$WORK/scratch" --step03 "$STEP03"
 python "$EXECUTION/dose_figures.py" verify --data "$STEP/figure/data" \
   --output "$STEP/figure" --scratch "$WORK/scratch"
 ```

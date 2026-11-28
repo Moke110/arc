@@ -61,11 +61,11 @@ architecture also matched its KL diagnostic CSV.
 | --- | --- | --- |
 | `04_tsg_axis/execution/run.py` | `--axis denoise-5k` | `ac42fe759beecd426ca0fed09066cded232c310cdbc41c8fec08ea0b4bb1a34a` |
 | `05_tsg_loss/similarity/run_similarity.py` | `--metric pcc --alpha 0.5` | `c40d12f24adbcce7bc167ec1518a5985788f645146e10602da273557097fda4a` |
-| `06_tsg_shape/06.4_round4/execution/run_measured.py` | `--shape XΔ-XΔ --seed 17` | `c87d38b55c6d1eb36acc6bb1ab76dacc5a546d2066fe8781bd30cc74b27098df` |
+| `06_tsg_module/06.4_round4/execution/run_measured.py` | `--shape XΔ-XΔ --seed 17` | `c87d38b55c6d1eb36acc6bb1ab76dacc5a546d2066fe8781bd30cc74b27098df` |
 
 Also replayed a scratch copy of the sealed `XΔ-XΔ`, fold 0, seed 17
 checkpoint under its original Step 06.4 Git revision using the
-[documented command](../../06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit).
+[documented command](../../06_tsg_module/06.4_round4/README.md#replay-a-sealed-step-064-fit).
 Validation objective, held-out predictions and signed Delta arrays all
 replayed exactly. The current and original evaluators agreed exactly with each
 other and with all nine published fold metrics and their eligible counts.

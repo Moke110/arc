@@ -13,18 +13,17 @@ from axis_scores import score_deltas
 
 
 class HeldOutScores(unittest.TestCase):
-    def test_full_axis_keeps_signed_jaccard_and_adds_weighted_score(self):
+    def test_full_axis_scores_signed_jaccard(self):
         genes = np.array([9, 6, 1, 19])
         measured = np.array([[1., -2., 0., 7.], [0., 0., 0., 0.]])
         predicted = np.array([[2., 1., -4., 9.], [0., 0., 0., 0.]])
         conditions, scores = score_deltas(measured, predicted, genes, 0.3)
         self.assertEqual(conditions["JAC_top200"].iloc[0], 2 / 5)
-        self.assertAlmostEqual(conditions["wJAC-2000"].iloc[0], 2 / 5)
-        self.assertTrue(math.isnan(conditions["wJAC-2000"].iloc[1]))
-        weighted = scores.loc[scores.metric.eq("wJAC-2000")].iloc[0]
-        self.assertEqual(weighted.n_eligible, 1)
-        self.assertEqual(weighted.n_undefined, 1)
-        self.assertEqual(weighted.width, 4)
+        self.assertTrue(math.isnan(conditions["JAC_top200"].iloc[1]))
+        jaccard = scores.loc[scores.metric.eq("JAC_top200")].iloc[0]
+        self.assertEqual(jaccard.n_eligible, 1)
+        self.assertEqual(jaccard.n_undefined, 1)
+        self.assertEqual(jaccard.width, 4)
         self.assertNotIn("scope", conditions.columns)
 
     def test_scores_are_paired_by_fold_and_seed_and_averaged_equally(self):

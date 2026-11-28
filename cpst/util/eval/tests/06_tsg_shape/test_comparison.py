@@ -8,7 +8,7 @@ import unittest
 
 REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
 STAGE = REPO / "cpst"
-sys.path.insert(0, str(STAGE / "06_tsg_shape/execution"))
+sys.path.insert(0, str(STAGE / "06_tsg_module/execution"))
 
 from build_comparison import accepted_fit
 from cpst_util.derivation.release import sha256, write_json

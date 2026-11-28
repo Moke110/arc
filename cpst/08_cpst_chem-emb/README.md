@@ -1,6 +1,6 @@
 # Step 08 CarPS-Transcriptome chemical representations
 
-Step 08 tested whether changing the chemical representation improved held-out perturbation predictions from the fixed [CarPS-Transcriptome alpha](../07_cpst_alpha/README.md). The seven arms were ECFP4C, ECFP6C, FCFP4C, FCFP6C, E3FP, KPGT and UniMol. Each arm used the same 1,383 plate-pooled tenv conditions from 459 parent compounds, the Denoise-DEG 5k axis, measured same-plate DMSO controls, and the alpha dose transform and objective. Frozen vectors entered at their native widths (512 to 2,304) and each first projection produced 400 features. Downstream parameter initialization and the CPU and CUDA random streams were paired within each cold-drug fold and training seed. [Study design in ADR 0099](../../docs/adr/0099-carps-vae-alpha-and-chemical-representations.md)
+Step 08 tested whether changing the chemical representation improved held-out perturbation predictions from the fixed [CarPS-Transcriptome alpha](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/README.md). The seven arms were ECFP4C, ECFP6C, FCFP4C, FCFP6C, E3FP, KPGT and UniMol. Each arm used the same 1,383 plate-pooled tenv conditions from 459 parent compounds, the Denoise-DEG 5k axis, measured same-plate DMSO controls, and the alpha dose transform and objective. Frozen vectors entered at their native widths (512 to 2,304) and each first projection produced 400 features. Downstream parameter initialization and the CPU and CUDA random streams were paired within each cold-drug fold and training seed. [Study design in ADR 0099](../../docs/adr/0099-carps-vae-alpha-and-chemical-representations.md)
 
 ## Bounded CUDA gate
 
@@ -28,7 +28,7 @@ The accepted comparison covers all 63 coordinates across folds 0–2 and trainin
 
 ## Comparison figures
 
-The learning curves show the accepted training and validation traces for all 63 coordinates, including the nine KPGT reuses. The two metric figures show eight held-out metrics and their paired differences from KPGT. The exporter checks JAC-top200 against the sealed condition and fold scores before deriving wJAC-2000 from the fixed held-out predictions and matched controls. The accepted receipt records two independent CSV-only renders. [Figure protocol in ADR 0102](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md) · [Figure receipt](log/figure-render.json)
+The learning curves show the accepted training and validation traces for all 63 coordinates, including the nine KPGT reuses. The two metric figures show seven held-out metrics and their paired differences from KPGT. The exporter checks that JAC-top200 from fixed predictions and matched controls agrees with the sealed condition and fold scores. The accepted receipt records two independent CSV-only renders. [Figure protocol in ADR 0109](../../docs/adr/0109-cpst-seven-metric-comparison-figures.md) · [Figure receipt](log/figure-render.json)
 
 | Figure | Plot data |
 | --- | --- |

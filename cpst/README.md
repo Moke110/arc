@@ -30,7 +30,7 @@ prediction MSE and L1 compare predicted Δ with measured Δ. The KL terms
 regularize the two encoder distributions against the standard normal prior
 `N` and align the predicted Gaussian with the measured Δ Gaussian.
 [Objective lineage](05_tsg_loss/README.md#selected-objective) ·
-[Fixed model and public API](07_cpst_alpha/README.md#fixed-model-and-public-api)
+[Shared CPST model](util/training/cpst_model.py) · [Step 07 loss design](07_cpst_loss/README.md)
 
 ## Evidence in experiment order
 
@@ -61,10 +61,11 @@ regularize the two encoder distributions against the standard normal prior
    for the shared arm). The sample SD of the paired differences
    exceeded the absolute mean difference on both metrics. The architecture
    decision chose the shared decoder for CarPS-Transcriptome.
-   [Four-round evidence](06_tsg_shape/README.md) ·
-   [Step 06.4 formal results](06_tsg_shape/06.4_round4/README.md#formal-results) ·
+   [Four-round evidence](06_tsg_module/README.md) ·
+   [Step 06.4 formal results](06_tsg_module/06.4_round4/README.md#formal-results) ·
    [Architecture decision](../docs/adr/0099-carps-vae-alpha-and-chemical-representations.md)
-4. **Step 07 released and verified the fixed alpha.** The alpha retains the
+4. **Step 07 compares losses on the shared signed Δ model.** The published
+   alpha predecessor retains the
    Step 06.4 `XΔ-XΔ` backbone, Denoise-DEG 5k, frozen KPGT features and
    training-fold standardized log dose. Loading the nine sealed Step 06.4
    checkpoints through the alpha interface exactly reproduced the validation
@@ -72,11 +73,12 @@ regularize the two encoder distributions against the standard normal prior
    and the measured and predicted held-out Δ arrays. This parity evidence
    applies to cold-drug folds 0–2, training seeds 17, 42 and 2026, and
    sampling seeds 22617 for validation and 100042 for the held-out set.
-   The Step 07 release preserves those settings for replay. Steps 08–10 own
-   the evidence for subsequent changes.
-   [Alpha replay evidence](07_cpst_alpha/README.md#checkpoint-and-replay-evidence) ·
-   [Release manifest](07_cpst_alpha/output/release.json) ·
-   [Parity receipt](07_cpst_alpha/log/362-alpha.json)
+   The pinned alpha release preserves those settings for replay. The current
+   Step 07 study registers additive loss terms on the shared tenv protocol.
+   [Step 07 loss study](07_cpst_loss/README.md) ·
+   [Alpha replay evidence](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/README.md#checkpoint-and-replay-evidence) ·
+   [Release manifest](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/output/release.json) ·
+   [Parity receipt](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/log/362-alpha.json)
 5. **Step 08 compared seven representations, then ADR 0100 adopted UniMol for
    the successor configuration.** UniMol led Δ PCC and Δ RMSE across the
    63 fold and seed coordinates. The prespecified rule for changing the
@@ -104,6 +106,13 @@ regularize the two encoder distributions against the standard normal prior
    [Step 10 formal results](10_cpst_dose/README.md#formal-results) ·
    [No-dose decision](../docs/adr/0104-carps-vae-no-dose.md)
 
+## Reporting for the tenv rerun
+
+Read the primary held-out comparison metrics in order of priority. First
+read Δ Spearman, then signed Jaccard at 200 genes (JAC-top200), then Δ PCC. Use each step's
+established baseline model when running the next step. Each step report
+documents the protocol used for its release.
+
 ## Prospective use in CarPS-Phenotype
 
 The planned phenotype predictor would take ordered signed CarPS-Transcriptome
@@ -123,7 +132,7 @@ differences from its reference. The metric panels show defined replicates,
 means, sample SD when at least two values are defined, and zero.
 [Current figure verification guide](AGENTS.md#verify-the-current-figures) ·
 [Shared figure verifier](util/figure/script/verify_report_figures.py) ·
-[Figure standard](../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
+[Figure standard](../docs/adr/0109-cpst-seven-metric-comparison-figures.md)
 
 ## Historical evidence and active-input checks
 
@@ -136,7 +145,7 @@ route.
 [Active-input verification guide](AGENTS.md#verify-the-active-inputs) ·
 [CarPS-Transcriptome acceptance](util/training/cpst-verification.md) ·
 [TranSiGen acceptance](util/training/verification.md) ·
-[Pinned Step 06.4 replay](06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit)
+[Pinned Step 06.4 replay](06_tsg_module/06.4_round4/README.md#replay-a-sealed-step-064-fit)
 
 The public boundary retires the local Stage 2 archive. The original tracked
 code, figures and receipts are available at their pinned Git revisions.

@@ -10,17 +10,21 @@ import torch
 
 from chem_matrix import execute
 from chem_report import METRICS, TENV_DEFAULT, AxisInputs, axis_evaluate, open_tenv_training, score_run
-from chem_runs import (REFERENCE, ROUND_FOUR, STEP, AlphaAdapter, add_inputs, axis_run, bind, coordinates,
+from chem_runs import (REFERENCE, ROUND_FOUR, STEP, add_inputs, axis_run, bind, coordinates,
                        initialization, open_inputs)
 from cpst_util.release_names import original_axis_manifest_sha256
-from verify_alpha import (ACCEPTANCE, RELEASE, REFERENCE_ROSTER, verify_protocol, verify_reference,
-                          verify_reference_release, verify_release)
+from util.training.cpst_model import CPSTAdapter
+from util.training.cpst_reference import (
+    ACCEPTANCE, REFERENCE_ROSTER, alpha_release_digest, historical_digest, historical_json,
+    verify_protocol, verify_reference, verify_reference_release, verify_release,
+)
 
 SCORE_COLUMNS = ["value", "n_conditions", "n_eligible", "n_undefined"]
 HISTORY_FIELDS = {"arguments", "nonce", "code_sha256", "schema", "protocol", "experiment"}
 ADDED_FIELDS = {"alpha_release_sha256", "representation"}
 REUSE_SCHEMA = "cpst-alpha-chemical-reference-v1"
 GATE = STEP / "log/363-gate.json"
+HISTORICAL_GATE_METRIC_COUNT = 9
 
 
 def verify_bounded_gate():
@@ -30,10 +34,10 @@ def verify_bounded_gate():
             or tuple(tuple(fit["coordinate"]) for fit in gate["fits"]) != bounded
             or tuple(map(tuple, gate["preflight"]["formal_roster"])) != formal
             or gate["metrics"]["independent_rescore"] != "exact"
-            or gate["metrics"]["scores"] != len(bounded) * len(METRICS)
+            or gate["metrics"]["scores"] != len(bounded) * HISTORICAL_GATE_METRIC_COUNT
             or gate["figure_replay"]["independent_csv_only_renders"] != 2
-            or gate["alpha"]["before_and_after_replay_sha256"] != axis_run.digest(ACCEPTANCE)
-            or gate["alpha"]["release_sha256"] != axis_run.digest(RELEASE)):
+            or gate["alpha"]["before_and_after_replay_sha256"] != historical_digest(ACCEPTANCE)
+            or gate["alpha"]["release_sha256"] != alpha_release_digest()):
         raise ValueError("formal Step 08 requires the accepted seven-arm bounded CUDA gate")
 
 
@@ -50,8 +54,8 @@ def reference_plan(round_four, training, representations, source, bandwidth_trai
     """Independently replay and score each valid reference, and return its verified fit and decision."""
     verify_bounded_gate()
     release = verify_release()
-    accepted = axis_run.read_json(ACCEPTANCE)
-    release_sha = axis_run.digest(RELEASE)
+    accepted = historical_json(ACCEPTANCE)
+    release_sha = alpha_release_digest()
     release_receipt = release["step_06_4"]["receipt_sha256"]
     if ((accepted["status"], accepted["release_sha256"], accepted["step_06_4_receipt_sha256"],
          accepted["validation_seed"], accepted["test_seed"])
@@ -106,7 +110,7 @@ def reference_plan(round_four, training, representations, source, bandwidth_trai
                         != {name: value for name, value in current.items() if name not in HISTORY_FIELDS | ADDED_FIELDS}):
                     raise ValueError("registered KPGT model or inputs differ in Step 08")
                 stage = "fresh exact alpha checkpoint replay"
-                adapter = AlphaAdapter(source, current["model"]["transform"])
+                adapter = CPSTAdapter(source, current["model"]["transform"])
                 model = adapter.build(seed, "cuda", n_genes=len(data.genes))
                 initial = initialization(model, REFERENCE)
                 registration_sha = replay["registration_sha256"]
@@ -146,7 +150,7 @@ def reference_plan(round_four, training, representations, source, bandwidth_trai
                 print(json.dumps({"coordinate": row["coordinate"], "decision": row["decision"]}), flush=True)
             decisions.append(row)
     return reused, {"schema": REUSE_SCHEMA, "alpha_release_sha256": release_sha,
-                    "alpha_receipt_sha256": axis_run.digest(ACCEPTANCE), "step_06_4_receipt_sha256": release_receipt,
+                    "alpha_receipt_sha256": historical_digest(ACCEPTANCE), "step_06_4_receipt_sha256": release_receipt,
                     "decisions": decisions}
 
 

@@ -9,7 +9,8 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from axis_model import AxisAdapter, RESIZED_PARAMETERS
-from chem_runs import AlphaAdapter, WIDTHS
+from chem_runs import WIDTHS
+from util.training.cpst_model import CPSTAdapter
 from run_measured import DEFAULT_SOURCE
 
 SOURCE = Path(os.environ.get("CARPS_TRANSIGEN_SOURCE", DEFAULT_SOURCE))
@@ -20,7 +21,7 @@ class PairedConstruction(unittest.TestCase):
                          "native TranSiGen source is not materialized")
     def test_gene_width_changes_only_four_projections(self):
         def original():
-            return AlphaAdapter(SOURCE, {"kind": "test"}, chemical_width=WIDTHS["UniMol"])
+            return CPSTAdapter(SOURCE, {"kind": "test"}, chemical_width=WIDTHS["UniMol"])
         old = original().build(17, "cpu")
         old_rng = torch.get_rng_state()
         adapted = AxisAdapter(SOURCE, {"kind": "test"}).build(17, "cpu", n_genes=2000)

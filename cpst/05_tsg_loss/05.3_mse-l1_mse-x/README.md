@@ -42,7 +42,7 @@ that objective as the reference for testing additional Delta similarity terms.
 [Step 05.4 PCC sweep](../05.4_mse-l1_pcc/README.md) ·
 [Step 05.5 cosine sweep](../05.5_mse-l1_cos/README.md)
 
-The current figures include wJAC-2000. Paired differences subtract the fresh
+The current figures show seven metrics. Paired differences subtract the fresh
 unit-weight score for the same fold and seed. The learning curves show training
 and validation through each fit's stopping epoch.
 [Metric scores](figure/metrics.png) ·

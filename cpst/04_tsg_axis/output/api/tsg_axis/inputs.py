@@ -72,7 +72,7 @@ class _ModelInput:
 class AxisInputs:
     """Bind pooled conditions and their frozen partitions to the native adapter."""
 
-    def __init__(self, release, representations=None):
+    def __init__(self, release, representations=None, *, protocol=None):
         self.release = release
         self.genes = release.genes
         self.treatments = release.treatments
@@ -86,6 +86,7 @@ class AxisInputs:
             for start in range(0, len(release.controls), 64)
         ])
         self._controls = _MatchedControlRows(plates, match_rows)
+        self.bind_protocol(protocol)
         self._features = None
         if representations is not None:
             parents, inverse = np.unique(self.parents, return_inverse=True)
@@ -94,7 +95,19 @@ class AxisInputs:
                 raise ValueError("invalid frozen tenv KPGT width")
             self._features = features[inverse]
 
+    def bind_protocol(self, protocol):
+        """Bind optional successor folds, keeping the legacy roster available to pinned consumers."""
+        self.fold_release_sha256 = None if protocol is None else protocol.release_sha256
+        self._folds = None if protocol is None else {
+            fold.number: fold.positions_for_treatments(self.treatments) for fold in protocol.folds
+        }
+
     def rows(self, fold, partition):
+        if self._folds is not None:
+            try:
+                return np.asarray(self._folds[fold][partition], dtype=np.int64)
+            except KeyError as error:
+                raise ValueError("unknown shared tenv fold or partition") from error
         if fold not in range(3) or partition not in {"train", "valid", "test"}:
             raise ValueError("unknown cold-drug partition")
         return np.flatnonzero(self.treatments[f"cold_drug_{fold}"].eq(partition).to_numpy())

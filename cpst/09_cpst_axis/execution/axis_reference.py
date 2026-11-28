@@ -26,7 +26,7 @@ def verify_publication(step08):
     preflight = matrix / "preflight.json"
     if (not isinstance(accepted, dict) or not isinstance(accepted.get("release_files_sha256"), dict)
             or accepted["status"] != "PASS" or accepted["ticket"] != 364
-            or accepted["alpha_release_sha256"] != axis_run.digest(chem_runs.ALPHA_MANIFEST)
+            or accepted["alpha_release_sha256"] != chem_runs.alpha_release_digest()
             or accepted["matrix_sha256"] != axis_run.digest(manifest)
             or accepted["preflight_sha256"] != axis_run.digest(preflight)
             or accepted["release_files_sha256"]["log/runs.csv"] != axis_run.digest(ledger)

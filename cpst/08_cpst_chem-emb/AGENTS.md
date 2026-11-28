@@ -10,7 +10,7 @@ through the numbered commands. [Study report](README.md) · [ADR 0099](../../doc
   the frozen tenv vectors, keyed by desalted parent InChIKey. Fit with the ordered
   gene axis, measured same-plate DMSO, the training-fold dose transform and the
   alpha objective. Calibrate MMD bandwidth separately on the frozen tenv HVG-DEG
-  5k training fold. [Alpha guide](../07_cpst_alpha/AGENTS.md) · [Fit release manifest](../03_data_train/03.7_tenv_denoise-5k/output/manifest.json) · [Bandwidth release manifest](../03_data_train/03.1_tenv_hvg-5k/output/manifest.json) · [Representation manifest pins](../util/output/api/cpst_util/representations.py) · [Author source manifest](../../pert_model/TranSiGen/manifest.sha256)
+  5k training fold. [Alpha guide](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/AGENTS.md) · [Fit release manifest](../03_data_train/03.7_tenv_denoise-5k/output/manifest.json) · [Bandwidth release manifest](../03_data_train/03.1_tenv_hvg-5k/output/manifest.json) · [Representation manifest pins](../util/output/api/cpst_util/representations.py) · [Author source manifest](../../pert_model/TranSiGen/manifest.sha256)
 - Vary only the frozen vectors and their first projection. Use each arm's native
   width and a 400-wide projection output. Pair downstream initialization and
   CPU and CUDA RNG state within each fold and seed. The formal roster covers
@@ -28,7 +28,7 @@ Use a fresh scratch directory for each recipe. Run heavy commands within the
 ```bash
 set -e
 STEP="$PWD/cpst/08_cpst_chem-emb"
-SAMPLER="$STEP/../06_tsg_shape/06.1_round1/execution/sample_resources.py"
+SAMPLER="$STEP/../06_tsg_module/06.1_round1/execution/sample_resources.py"
 mkdir -p "$PWD/tmp"
 WORK=$(mktemp -d "$PWD/tmp/carps-chemical.XXXXXX")
 mkdir "$WORK/scratch" "$WORK/matplotlib"
@@ -47,10 +47,10 @@ for two epochs with 64 train, 24 validation and 24 held-out conditions. Start
 `python "$SAMPLER" --output "$WORK/coordinator.jsonl"` in a second terminal,
 with the paths from the setup above. Confirm a first ten-second sampler
 reading before training and retain measurements through completion.
-[Coordinator sampler](../06_tsg_shape/06.1_round1/execution/sample_resources.py) · [Gate receipt](log/363-gate.json)
+[Coordinator sampler](../06_tsg_module/06.1_round1/execution/sample_resources.py) · [Gate receipt](log/363-gate.json)
 
 ```bash
-capped python "$STEP/../07_cpst_alpha/execution/verify_alpha.py" > "$WORK/alpha-before.json"
+capped env PYTHONPATH="$STEP/.." python -m util.training.cpst_reference > "$WORK/alpha-before.json"
 capped python "$STEP/execution/chem_matrix.py" --smoke \
   --output "$WORK/matrix" --logs "$WORK/matrix-audit"
 for report in report replay-report; do
@@ -60,7 +60,7 @@ done
 diff -r "$WORK/report" "$WORK/replay-report"
 python "$STEP/execution/chem_figures.py" build --data "$WORK/report" \
   --output "$WORK/figures" --scratch "$WORK/scratch"
-capped python "$STEP/../07_cpst_alpha/execution/verify_alpha.py" > "$WORK/alpha-after.json"
+capped env PYTHONPATH="$STEP/.." python -m util.training.cpst_reference > "$WORK/alpha-after.json"
 cmp "$WORK/alpha-before.json" "$WORK/alpha-after.json"
 ```
 
@@ -82,7 +82,7 @@ against the frozen alpha, then independently replays the checkpoint and
 rescores all nine metrics and eligibility counts exactly. It saves the reuse
 plan and fits any coordinate that fails the gate. For standalone replay with
 the original Step 06.4 runner, follow its pinned checkout procedure.
-[Reference runner](execution/chem_reference.py) · [Pinned Step 06.4 replay](../06_tsg_shape/06.4_round4/README.md#replay-a-sealed-step-064-fit) · [Formal runner](execution/chem_formal.py)
+[Reference runner](execution/chem_reference.py) · [Pinned Step 06.4 replay](../06_tsg_module/06.4_round4/README.md#replay-a-sealed-step-064-fit) · [Formal runner](execution/chem_formal.py)
 
 ```bash
 mkdir "$WORK/formal"
@@ -120,11 +120,10 @@ two improvements. Follow ADR 0100 for the downstream configuration.
 [Paired summary](figure/data/paired-summary.csv) · [ADR 0100](../../docs/adr/0100-carps-vae-unimol.md)
 
 Build the canonical figures from the accepted bundle, matched controls and
-registered Step 06.4 reuses. The exporter checks the sealed JAC-top200 scores
-before deriving wJAC-2000. For a CSV-only check of installed PNGs, run the
+registered Step 06.4 reuses. The exporter checks the sealed JAC-top200 scores. For a CSV-only check of installed PNGs, run the
 second command by itself. Require two identical renders and matching PNG
 hashes. Keep the formal evidence available for Step 09 replay.
-[Comparison exporter](execution/build_comparison.py) · [Figure verifier](execution/chem_figures.py) · [Figure receipt](log/figure-render.json) · [ADR 0102](../../docs/adr/0102-stage2-axis-selection-and-comparison-figures.md)
+[Comparison exporter](execution/build_comparison.py) · [Figure verifier](execution/chem_figures.py) · [Figure receipt](log/figure-render.json) · [ADR 0109](../../docs/adr/0109-cpst-seven-metric-comparison-figures.md)
 
 ```bash
 capped python "$STEP/execution/build_comparison.py" \

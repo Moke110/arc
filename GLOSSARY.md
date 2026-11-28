@@ -20,7 +20,7 @@ The CarPS-Transcriptome stage, which develops and evaluates models that predict 
 The selected Stage 2 variational autoencoder for predicting the signed transcriptomic response of cardiomyocytes to a chemical perturbation from matched control expression and chemical representation.
 
 **CarPS-Transcriptome alpha**:
-The initial fixed release of the CarPS-Transcriptome model, derived from the Step 06.4 `XΔ-XΔ` arm and released in Step 07. It is the reference against which subsequent model experiments are evaluated.
+The historical fixed release of the CarPS-Transcriptome model, derived from the Step 06.4 `XΔ-XΔ` arm. It served as the reference for the original Step 08 chemical representation comparison.
 
 **Stage 3 (CPSP)**:
 The CarPS-Phenotype stage, which predicts the direction of change of one cardiomyocyte phenotype under a specified experimental condition from the drug-induced transcriptomic response predicted by CPST.
@@ -630,6 +630,14 @@ from tenv training and validation, while Tahoe may contain those drugs.
 One of the frozen tenv cold-drug folds paired with the shared Tahoe training
 and validation partitions. Tenv test drug blocks can appear in Tahoe.
 
+**CPST transfer cold-drug fold**:
+A tenv fold that keeps each drug parent's doses and plate-level conditions
+together. Tahoe pretraining may include tenv validation and test drug parents.
+
+**CPST Tahoe warm-start split**:
+A Tahoe train/validation split that holds out complete drug-parent–dose
+combinations. Each validation parent has training observations at another dose.
+
 **Stage 2 direction-matched hit**:
 A predicted up- or downregulated CM gene that is significant in the measured
 drug–dose contrast and has the same direction as its measured log2 fold change.
@@ -678,6 +686,10 @@ _Avoid_: combined optimization arm
 **Step 07 transfer pair**:
 Two results for the same model and seed on the shared tenv fold, one from
 the Tahoe-pretrained predictor and one from its tenv-fine-tuned descendant.
+
+**CPST module transfer**:
+Initialization of selected CarPS-Transcriptome modules from a Tahoe-pretrained
+checkpoint, followed by training the full model on tenv.
 
 **Cold-drug-capable model**:
 A model whose drug input is derived from chemical structure (fingerprint, RDKit descriptor, or a structure encoder), so it can score a drug it never saw in training. Stage 2's admission gate.
@@ -743,11 +755,6 @@ Calculate each treated sample's gene-wise Delta metrics with its own matched
 control, then give each sample equal weight within a reported population.
 This is the ADR 0078 evaluation unit for both sources. The historical ADR 0076
 comparison retains parent-equal evaluation.
-
-**Weighted signed Jaccard at top 2000** (`wJAC-2000`):
-A held-out condition score for the overlap of the strongest measured and
-predicted signed Delta responses. It combines signed top-200, top-500,
-top-1000 and top-2000 Jaccard with normalized weights 1:2:4:8.
 
 **Parent–dose response**:
 The mean transcriptional response of repeated treated wells for one drug

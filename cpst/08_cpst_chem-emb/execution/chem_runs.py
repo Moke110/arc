@@ -16,11 +16,10 @@ import torch
 
 STEP = Path(__file__).resolve().parents[1]
 STAGE = STEP.parent
-ALPHA = STAGE / "07_cpst_alpha"
-ROUND_FOUR = STAGE / "06_tsg_shape/06.4_round4"
-sys.path[:0] = [str(ALPHA / "output/api"), str(ALPHA / "execution"), str(ROUND_FOUR / "execution")]
+ROUND_FOUR = STAGE / "06_tsg_module/06.4_round4"
+sys.path[:0] = [str(STAGE), str(ROUND_FOUR / "execution")]
 
-from cpst_alpha import AlphaAdapter, PROJECTION_WIDTH
+from util.training.cpst_model import CPSTAdapter, PROJECTION_WIDTH
 from run_measured import AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING
 from run_measured import PHASES, SEALED_FILES, PHASE_FILES, axis_run, bind as bind_measured
 from evaluate_loss import axis_evaluate, check_trace
@@ -28,7 +27,7 @@ from evaluate_sweep import TRACE_COLUMNS
 from util.training.transigen import fit_with_diagnostics, kl_diagnostics
 from measured_roster import MEASURED_SHARED, SEEDS
 from cpst_util.representations import ARMS, WIDTHS
-from verify_alpha import verify_release
+from util.training.cpst_reference import alpha_release_digest, verify_release
 from util.training import registered
 from util.training.chemical import aligned_features
 from util.training.provenance import verify_replay_configuration, verify_sealed_code
@@ -37,7 +36,6 @@ SCHEMA = "cpst-alpha-chemical-run-v1"
 PROTOCOL = "tenv-matched-control-cpst-alpha-chemical-v1"
 REFERENCE = "KPGT"
 ORIGINAL_CODE = "ac62a177a54aa99e6ac626728af12394f3e0d940"
-ALPHA_MANIFEST = ALPHA / "output/release.json"
 
 
 def coordinates(smoke=False):
@@ -100,7 +98,7 @@ def bind(coordinate, data, vectors, source, smoke):
     arm = args["arm"]
     config = bind_measured({**args, "shape": MEASURED_SHARED, "source": str(source)}, data, vectors)
     width = vectors.width(arm)
-    config.update(schema=SCHEMA, protocol=PROTOCOL, alpha_release_sha256=axis_run.digest(ALPHA_MANIFEST),
+    config.update(schema=SCHEMA, protocol=PROTOCOL, alpha_release_sha256=alpha_release_digest(),
                   representation={"arm": arm, "width": width, "projection_width": PROJECTION_WIDTH,
                                   "manifest_sha256": vectors.manifest_sha256,
                                   "vectors_sha256": vectors.manifest["files"][f"{arm}.npy"]})
@@ -162,7 +160,7 @@ def execute(output, phase, training, representations, source):
             verify_replay_configuration(identity, current, replay=run.sealed is not None,
                                         repo=axis_run.REPO, revision=ORIGINAL_CODE)
             arm, _, seed = coordinate
-            adapter = AlphaAdapter(source, config["model"]["transform"], chemical_width=WIDTHS[arm])
+            adapter = CPSTAdapter(source, config["model"]["transform"], chemical_width=WIDTHS[arm])
             model = adapter.build(seed, "cuda", n_genes=len(data.genes))
             model_data = ChemicalInputs(data, vectors, arm)
             if phase == "train":
@@ -185,7 +183,7 @@ def read_run(path, smoke):
     key = args["arm"], args["fold"], args["seed"]
     registration_sha = axis_run.digest(registration)
     if (args != arguments(key, smoke) or config["schema"] != SCHEMA or config["protocol"] != PROTOCOL
-            or config["seed"] != args["seed"] or config["alpha_release_sha256"] != axis_run.digest(ALPHA_MANIFEST)):
+            or config["seed"] != args["seed"] or config["alpha_release_sha256"] != alpha_release_digest()):
         raise ValueError(f"invalid sealed Step 08 registration: {path}")
     training, prediction, replay = (
         axis_run.verified_receipt(path, PHASES[phase], registration_sha, PHASE_FILES[phase]) for phase in PHASES

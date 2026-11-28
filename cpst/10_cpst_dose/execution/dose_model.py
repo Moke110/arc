@@ -11,8 +11,9 @@ from torch import nn
 from dose_protocol import REFERENCE, STAGE, TRANSIGEN, representation
 
 sys.path.insert(0, str(STAGE / "08_cpst_chem-emb/execution"))
-from chem_runs import AlphaAdapter, PROJECTION_WIDTH, WIDTHS, axis_run
-from cpst_alpha import objective as alpha_objective
+from chem_runs import WIDTHS, axis_run
+from util.training.cpst_model import CPSTAdapter, PROJECTION_WIDTH
+from util.training.cpst_model import objective as alpha_objective
 
 DOSE_WIDTH = 32
 HIDDEN_WIDTH = 64
@@ -72,7 +73,7 @@ def objective(arm):
     return alpha_objective()
 
 
-class DoseAdapter(AlphaAdapter):
+class DoseAdapter(CPSTAdapter):
     """Retain alpha's base construction and alter only the arm's dose interface."""
 
     def __init__(self, source, arm):

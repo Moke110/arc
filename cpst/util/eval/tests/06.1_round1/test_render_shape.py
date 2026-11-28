@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
-STEP = REPO / "cpst/06_tsg_shape/06.1_round1"
+STEP = REPO / "cpst/06_tsg_module/06.1_round1"
 RENDERER = STEP / "execution/render_shape.py"
 SHAPES = ("original", "widen_z-110", "widen_z-120", "widen_z-130",
           "widen_enc-2k", "widen_enc-4k", "widen_enc-6k", "deepen_enc", "deepen_dec", "deepen_both")

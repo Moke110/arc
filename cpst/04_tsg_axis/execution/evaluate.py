@@ -22,7 +22,7 @@ from tsg_axis.disease_reference import disease_gene_sets, write_cm_directions
 from tsg_axis.inputs import AxisInputs, score_fixed_prediction
 from tsg_axis.metrics import (CONDITION, DISTRIBUTION, METRICS, condition_scores, distribution_scores,
                               fold_bandwidth, signed_disease_f1, summarize_conditions, summarize_folds)
-from tsg_axis.protocol import MAX_EPOCHS, PATIENCE, PROTOCOL, REPORT_SCHEMA, RUN_SCHEMA
+from tsg_axis.protocol import MAX_EPOCHS, PATIENCE, PROTOCOL, REPORT_SCHEMA, RUN_SCHEMA, shared_protocol
 from training_data import TENV_AXIS_STEPS, TENV_BASELINE_AXIS, open_tenv_axis_training
 from cpst_util.derivation.release import check_outputs, read_json as _read, sha256, write_json
 from cpst_util.publication import publication_lock
@@ -43,34 +43,36 @@ def _file_hashes(root):
             for path in sorted(root.rglob("*")) if path.is_file()}
 
 
-def _run_inputs(paths, smoke):
+def _run_inputs(paths, smoke, *, output_check=check_outputs):
+    protocol = shared_protocol()
     runs = {}
     for path in paths:
         config_path, manifest_path = (path / name for name in ("registration.json", "manifest.json"))
         config, manifest = _read(config_path), _read(manifest_path)
-        axis, fold = manifest["axis"], manifest["fold"]
+        axis, fold, seed = (manifest[key] for key in ("axis", "fold", "seed"))
         args = config["arguments"]
         if (config["schema"] != RUN_SCHEMA or manifest["schema"] != RUN_SCHEMA
                 or config.get("protocol") != PROTOCOL or manifest.get("protocol") != PROTOCOL
                 or config["patience"] != PATIENCE or config["max_epochs"] != (2 if smoke else MAX_EPOCHS)
-                or axis not in TENV_AXIS_STEPS or type(fold) is not int or fold not in range(3)
-                or (axis, fold, smoke) != (args["axis"], args["fold"], args["smoke"])
+                or axis not in TENV_AXIS_STEPS or (fold, seed) not in protocol.coordinates
+                or config.get("fold_release_sha256") != protocol.release_sha256
+                or (axis, fold, seed, smoke) != (args["axis"], args["fold"], args["seed"], args["smoke"])
                 or manifest["smoke"] is not smoke or manifest["seed"] != config["seed"]
-                or config["seed"] != 42 or config["scenario"] != "cold-drug"
+                or config["scenario"] != "cold-drug"
                 or manifest["validation_replay"] != "exact" or manifest["test_replay"] != "exact"
                 or manifest.get("validation_objective_replay") != "exact"
                 or manifest["registration_sha256"] != sha256(config_path)
                 or set(manifest["outputs"]) != RUN_OUTPUTS):
             raise ValueError(f"not an exactly replayed run for this report: {path}")
-        check_outputs(path, manifest)
-        if (axis, fold) in runs:
+        output_check(path, manifest)
+        if (axis, fold, seed) in runs:
             raise ValueError(f"duplicate run coordinate: {axis} fold {fold}")
-        runs[axis, fold] = (path, config, manifest)
+        runs[axis, fold, seed] = (path, config, manifest)
     if smoke:
-        if len(runs) != 1 or any(axis != TENV_BASELINE_AXIS for axis, _ in runs):
+        if len(runs) != 1 or any(axis != TENV_BASELINE_AXIS for axis, _, _ in runs):
             raise ValueError(f"bounded reporting requires one {TENV_BASELINE_AXIS} smoke run")
-    elif set(runs) != {(axis, fold) for axis in TENV_AXIS_STEPS for fold in range(3)}:
-        raise ValueError("formal reporting requires 18 sealed fits on the six axes and three folds")
+    elif set(runs) != {(axis, fold, seed) for axis in TENV_AXIS_STEPS for fold, seed in protocol.coordinates}:
+        raise ValueError("formal reporting requires 150 sealed fits on the six axes, five folds and five seeds")
     return runs
 
 
@@ -78,6 +80,8 @@ def _score_run(path, config, manifest, data, base, axis, fold, smoke, directions
     conditions, reference_rows, targets = read_paired_prediction(path, config, manifest, data, base, axis, fold, smoke)
     genes = data.genes.gene_index.to_numpy()
     paired, folds = score_paired_prediction(conditions, targets, genes, bandwidth)
+    seed = config["seed"]
+    paired.insert(0, "seed", seed)
     paired.insert(0, "fold", fold)
     paired.insert(0, "axis", axis)
     disease_scores = []
@@ -85,12 +89,12 @@ def _score_run(path, config, manifest, data, base, axis, fold, smoke, directions
                                             targets.predicted_delta, strict=True):
         for name, members in disease.items():
             result = signed_disease_f1(predicted, genes, directions[cm_row], members)
-            disease_scores.append({"axis": axis, "fold": fold, "condition_id": condition,
+            disease_scores.append({"axis": axis, "fold": fold, "seed": seed, "condition_id": condition,
                                    "disease": name, "f1": result.f1, "tp": result.tp,
                                    "fp": result.fp, "fn": result.fn})
     disease_scores = pd.DataFrame(disease_scores)
-    fold_metrics = [{"axis": axis, "fold": fold, **record} for record in folds.to_dict("records")]
-    fold_disease = [{"axis": axis, "fold": fold, "disease": name,
+    fold_metrics = [{"axis": axis, "fold": fold, "seed": seed, **record} for record in folds.to_dict("records")]
+    fold_disease = [{"axis": axis, "fold": fold, "seed": seed, "disease": name,
                      **summarize_conditions(disease_scores.loc[disease_scores.disease.eq(name), "f1"])}
                     for name in disease]
     return paired, disease_scores, fold_metrics, fold_disease
@@ -106,18 +110,19 @@ def _build_report(root, runs, step03, raw, smoke):
     pd.DataFrame([(name, rank, gene) for name, genes in disease.items()
                   for rank, gene in enumerate(genes, start=1)],
                  columns=["disease", "disease_rank", "gene_index"]).to_csv(reference / "deg1000.csv", index=False)
+    protocol = shared_protocol()
     pairs, conditions_disease, metric_folds, disease_folds, provenance = [], [], [], [], []
     with open_tenv_axis_training(TENV_BASELINE_AXIS, step03) as training, open_corpus(raw) as corpus:
         if (corpus.manifest["common_axis"] != {"size": COMMON_SIZE, "sha256": COMMON_SHA256}
                 or corpus.manifest_sha256 != training.manifest["inputs"]["raw_sha256"]
                 or corpus.manifest["sources"]["tenv"]["sha256"] != training.manifest["inputs"]["raw_counts_sha256"]):
             raise ValueError("shared CM truth must use the native tenv counts of the released training data")
-        base = AxisInputs(training)
+        base = AxisInputs(training, protocol=protocol)
         base.condition_table(np.arange(len(training.treatments))).to_csv(reference / "conditions.csv", index=False)
         direction_path = reference / "cm-measured-direction.npy"
         write_cm_directions(corpus.source("tenv"), training, direction_path)
         directions = np.load(direction_path, mmap_mode="r", allow_pickle=False)
-        folds = sorted({fold for _, fold in runs})
+        folds = sorted({fold for _, fold, _ in runs})
         bands = {fold: _bandwidth(base, fold) for fold in folds}
         pd.DataFrame(bands.values()).to_csv(root / "bandwidths.csv", index=False)
         membership = []
@@ -128,26 +133,23 @@ def _build_report(root, runs, step03, raw, smoke):
                 included = np.arange(len(rows)) < size if smoke else True
                 membership.append(table.assign(fold=fold, partition=phase, included_in_run=included))
         pd.concat(membership, ignore_index=True).to_csv(root / "fold-memberships.csv", index=False)
-        for axis in TENV_AXIS_STEPS:
-            for fold in folds:
-                if (axis, fold) not in runs:
-                    continue
-                path, config, manifest = runs[axis, fold]
-                with open_tenv_axis_training(axis, step03) as data:
-                    scores = _score_run(path, config, manifest, AxisInputs(data), base, axis, fold,
-                                        smoke, directions, disease, bands[fold]["bandwidth"])
-                paired, by_disease, fold_metric, fold_disease = scores
-                pairs.append(paired)
-                conditions_disease.append(by_disease)
-                metric_folds.extend(fold_metric)
-                disease_folds.extend(fold_disease)
-                provenance.append({"axis": axis, "fold": fold, "axis_sha256": config["axis_sha256"],
-                                   "registration_sha256": manifest["registration_sha256"],
-                                   "run_manifest_sha256": sha256(path / "manifest.json"),
-                                   "training_manifest_sha256": config["training_sha256"]})
+        for (axis, fold, seed), (path, config, manifest) in sorted(runs.items()):
+            with open_tenv_axis_training(axis, step03) as data:
+                scores = _score_run(path, config, manifest, AxisInputs(data, protocol=protocol), base, axis, fold,
+                                    smoke, directions, disease, bands[fold]["bandwidth"])
+            paired, by_disease, fold_metric, fold_disease = scores
+            pairs.append(paired)
+            conditions_disease.append(by_disease)
+            metric_folds.extend(fold_metric)
+            disease_folds.extend(fold_disease)
+            provenance.append({"axis": axis, "fold": fold, "seed": seed, "axis_sha256": config["axis_sha256"],
+                               "registration_sha256": manifest["registration_sha256"],
+                               "run_manifest_sha256": sha256(path / "manifest.json"),
+                               "training_manifest_sha256": config["training_sha256"]})
 
         common = {"raw_manifest_sha256": corpus.manifest_sha256,
                   "raw_tenv_counts_sha256": training.manifest["inputs"]["raw_counts_sha256"],
+                  "fold_release_sha256": protocol.release_sha256,
                   "common_axis_sha256": COMMON_SHA256, "common_axis_size": COMMON_SIZE,
                   "reference_training_manifest_sha256": training.manifest_sha256,
                   "disease_evidence_sha256": evidence,
@@ -163,22 +165,14 @@ def _build_report(root, runs, step03, raw, smoke):
         "schema": REPORT_SCHEMA, "protocol": PROTOCOL, "smoke": smoke, "reference": common, "runs": provenance,
         "metrics": METRICS, "kernel": "exp(-scaled_euclidean² / (2 * bandwidth²))",
         "bandwidth": "median distinct-row-pair scaled Euclidean distance on full HVG-DEG 5k training measured Delta, per fold",
-        "aggregation": "equal defined conditions per fold, equal defined folds per axis",
+        "aggregation": "equal defined conditions per fold, equal defined fold-seed coordinates per axis",
         "interpretation": "retrospective comparison of published fixed axes conditional on measured matched plate DMSO",
         "outputs": _file_hashes(root),
     })
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("score", "verify"))
-    parser.add_argument("--run", action="append", type=Path, required=True, help="exactly replayed run, repeat per coordinate")
-    parser.add_argument("--step03", type=Path, default=STAGE / "03_data_train")
-    parser.add_argument("--raw", type=Path, default=STAGE / "01_data_raw/output")
-    parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--smoke", action="store_true", help="score one bounded HVG-DEG 5k run")
-    args = parser.parse_args()
-    runs = _run_inputs(args.run, args.smoke)
+def evaluate_report(args, *, output_check=check_outputs):
+    runs = _run_inputs(args.run, args.smoke, output_check=output_check)
     with publication_lock(args.output) as output:
         if args.command == "score" and output.exists():
             raise ValueError("score requires an unused output directory")
@@ -192,7 +186,19 @@ def main():
                 for name in ("manifest.json", *manifest["outputs"]):
                     if sha256(output / name) != sha256(candidate / name):
                         raise ValueError(f"evaluation replay differs: {name}")
-    print(json.dumps({"result": "PASS", "manifest_sha256": sha256(output / "manifest.json")}, sort_keys=True))
+    return {"result": "PASS", "manifest_sha256": sha256(output / "manifest.json")}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("command", choices=("score", "verify"))
+    parser.add_argument("--run", action="append", type=Path, required=True, help="exactly replayed run, repeat per coordinate")
+    parser.add_argument("--step03", type=Path, default=STAGE / "03_data_train")
+    parser.add_argument("--raw", type=Path, default=STAGE / "01_data_raw/output")
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--smoke", action="store_true", help="score one bounded HVG-DEG 5k run")
+    args = parser.parse_args()
+    print(json.dumps(evaluate_report(args), sort_keys=True))
 
 
 if __name__ == "__main__":

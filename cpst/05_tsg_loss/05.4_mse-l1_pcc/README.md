@@ -37,7 +37,7 @@ base objective and its own fresh zero-weight fits.
 [Step 05 selected objective](../README.md#selected-objective) ·
 [Step 05.5 cosine sweep](../05.5_mse-l1_cos/README.md)
 
-The current comparison figures include wJAC-2000. Paired differences
+The current comparison figures show seven metrics. Paired differences
 subtract the fresh zero-weight score for the same fold and seed. The
 learning curves show training and validation through each fit's stopping
 epoch.

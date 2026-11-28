@@ -140,3 +140,6 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 
 - [0105](0105-stage-cleanup.md) Retain the Stage 1 v2 screen and consolidate Stage 2 model experiments.
 - [0106](0106-cpst-and-cpsp-public-release-boundaries.md) Name the public stages CPST and CPSP and define their release and documentation boundaries.
+- [0107](0107-cpst-tahoe-module-transfer.md) Compare Tahoe-to-tenv module transfer with matched plate-level training data.
+- [0108](0108-cpst-loss-and-shared-evaluation.md) Compare CPST loss terms on shared tenv evaluation folds.
+- [0109](0109-cpst-seven-metric-comparison-figures.md) Retire wJAC-2000 and standardize CPST comparison panels.

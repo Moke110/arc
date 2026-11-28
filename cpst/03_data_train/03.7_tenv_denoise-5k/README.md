@@ -24,13 +24,13 @@ raw counts, frozen folds and all eight output files.
 Step 04 selected Denoise-DEG 5k from six axes for held-out Δ prediction with
 TranSiGen. Steps 05 and 06 held the release fixed for the loss and architecture
 studies. [Step 04 selection](../../04_tsg_axis/README.md#gene-axis-selection) ·
-[Step 05 loss studies](../../05_tsg_loss/README.md) · [Step 06 architecture studies](../../06_tsg_shape/README.md)
+[Step 05 loss studies](../../05_tsg_loss/README.md) · [Step 06 architecture studies](../../06_tsg_module/README.md)
 
 Step 07 used the release for the CarPS-Transcriptome alpha, and Step 08 kept
 it fixed for the chemical representation comparison. Step 09 selected
 Denoise-DEG 5k again in the eight-axis comparison with UniMol. Step 10 used
 this release's cold-dose-drug folds to compare dose inputs.
-[Step 07 alpha](../../07_cpst_alpha/README.md) · [Step 08 representations](../../08_cpst_chem-emb/README.md#formal-results) ·
+[Step 07 alpha](https://github.com/Moke110/carps/blob/a7613b74fc23f9f48d8ea0d4479542c008d701db/cpst/07_cpst_alpha/README.md) · [Step 08 representations](../../08_cpst_chem-emb/README.md#formal-results) ·
 [Step 09 selection](../../09_cpst_axis/README.md#formal-results) · [Step 10 dose results](../../10_cpst_dose/README.md#formal-results)
 
 ## Read or reproduce

@@ -18,10 +18,10 @@
 cpst/02_gene_axis/02.1_hvg-deg/execution/tests/test_prediction_axis.py:^stage2/01_bases/output/gene-axis/gene_axis_$
 
 # Shape receipts store code paths in the namespace that registered each fit.
-cpst/06_tsg_shape/06.2_round2/execution/evaluate_architecture.py:^stage2/06_tsg_shape/$
-cpst/06_tsg_shape/06.3_round3/execution/evaluate_composition.py:^stage2/06_tsg_shape/$
-cpst/06_tsg_shape/06.4_round4/execution/evaluate_measured.py:^stage2/06_tsg_shape/$
-cpst/06_tsg_shape/06.3_round3/execution/prior_unnormalized.py:^stage2/06_tsg_shape/06[.]3_round3/execution$
+cpst/06_tsg_module/06.2_round2/execution/evaluate_architecture.py:^stage2/06_tsg_shape/$
+cpst/06_tsg_module/06.3_round3/execution/evaluate_composition.py:^stage2/06_tsg_shape/$
+cpst/06_tsg_module/06.4_round4/execution/evaluate_measured.py:^stage2/06_tsg_shape/$
+cpst/06_tsg_module/06.3_round3/execution/prior_unnormalized.py:^stage2/06_tsg_shape/06[.]3_round3/execution$
 
 # CPST release migration tests verify exact accepted Git paths and path boundaries.
 cpst/util/execution/tests/test_release_migration.py:^stage2_CarPS-VAE/07_cpsv_alpha/output/api/carps_vae_alpha[.]py$
