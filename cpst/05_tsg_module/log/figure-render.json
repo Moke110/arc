@@ -1,0 +1,33 @@
+{
+  "csv_files_sha256": {
+    "figure/data/learning-curve.csv": "17a18ec9c869f886402a275431a09a49a31fd03dc66efdc45fc69c67104fd4c3",
+    "figure/data/metrics-paired.csv": "80fa3f383af2eedd73c7452288cccc94e5e5d29bc58c3c6d5af4f51956382e38",
+    "figure/data/metrics.csv": "1ac2bc0f7db052c92b65fd83ffc6b2d0fac087db04ee92dae37e80b5d34e5141"
+  },
+  "environment": {
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13"
+  },
+  "evidence": {
+    "build_sha256": "03b988476433c4ada72fa046869203e1fa961dc3d10643627c51850b20541771",
+    "fits": 125,
+    "report_manifest_sha256": "f8aba61d5def404491da75197eb89751970cbcacd39371c5bb4f51d462cd3cab"
+  },
+  "independent_renders": 2,
+  "png_files_sha256": {
+    "figure/learning-curve.png": "3517accbd1b40c59a9a03d114231e7f8c361352ca694b638e520d1931f082c6a",
+    "figure/metrics-paired.png": "e0063464032fa8de14e683af68d5ff0cbf23f3f4c2cb865c75782a94c9c07155",
+    "figure/metrics.png": "c810cdaff8be8c7cf2c7d376974a842a25f3d7724300426380ad813e862b6d64"
+  },
+  "renderer_files_sha256": {
+    "05_tsg_module/figure/script/render.py": "10322da3381d866dfc8567a1773a851582b516656919a50f73fbacf0065aa333",
+    "util/output/api/cpst_util/comparison.py": "8197916b0c1950cf16761f9bf45f591bf0586ceff0f120f688a567477ea33b92",
+    "util/output/api/cpst_util/palette.py": "6da673fac5ff8d5390e6442011a93ec7d33ebb67ccced026b2f08957352649ab",
+    "util/output/api/cpst_util/plotting.py": "dc3de07d1d204b4a554657708ab8ad0cb88b5582964fa21404377f4f0b98803e"
+  },
+  "schema": "cpst-figure-render-v1",
+  "status": "PASS",
+  "step": "05_tsg_module"
+}
