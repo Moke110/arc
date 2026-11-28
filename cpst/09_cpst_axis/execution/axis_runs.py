@@ -27,6 +27,17 @@ INHERITED_IDENTITIES = ("raw_sha256", "folds", "native_sha256", "partitions", "c
                         "scenario", "validation_seed", "test_seed", "max_epochs", "patience")
 
 
+def axis_code_paths():
+    return (Path(__file__), Path(__file__).with_name("axis_model.py"),
+            Path(__file__).with_name("axis_protocol.py"), Path(tenv_axes.__file__))
+
+
+def historical_code_paths():
+    """Use the accepted alpha ancestry and Step 09's four axis dependencies."""
+    axis_paths = tuple(path.relative_to(axis_run.REPO).as_posix() for path in axis_code_paths())
+    return (*chem_runs.historical_code_paths(), *axis_paths)
+
+
 def arguments(key, bounded):
     axis, fold, seed = key
     if type(fold) is not int or type(seed) is not int or key not in coordinates(bounded):
@@ -60,8 +71,7 @@ def bind(key, data, vectors, source, bounded, reference):
     model["n_genes"] = width
     model["adaptations"] = [f"{width} gene interface" if item == "5000 gene interface" else item
                             for item in model["adaptations"]]
-    for path in (Path(__file__), Path(__file__).with_name("axis_model.py"),
-                 Path(__file__).with_name("axis_protocol.py"), Path(tenv_axes.__file__)):
+    for path in axis_code_paths():
         config["code_sha256"][path.relative_to(axis_run.REPO).as_posix()] = axis_run.digest(path)
     return axis_run.transigen.bind_experiment(args, config)
 
@@ -98,7 +108,8 @@ def execute(output, phase, step03, representations, source):
             identity = {name: value for name, value in config.items() if name not in ("arguments", "nonce")}
             current = bind(key, data, vectors, source, args["smoke"], reference)
             verify_replay_configuration(identity, current, replay=run.sealed is not None,
-                                        repo=axis_run.REPO, revision=ORIGINAL_CODE)
+                                        repo=axis_run.REPO, revision=ORIGINAL_CODE,
+                                        historical_paths=historical_code_paths())
             adapter = AxisAdapter(source, config["model"]["transform"])
             model = adapter.build(key[2], "cuda", n_genes=len(data.genes))
             model_data = ChemicalInputs(data, vectors, ARM)
@@ -118,7 +129,7 @@ def read_run(path, bounded):
     """Read and validate all independently generated run evidence."""
     registration = path / "registration.json"
     config = axis_run.read_json(registration)
-    verify_sealed_code(config, axis_run.REPO, ORIGINAL_CODE)
+    verify_sealed_code(config, axis_run.REPO, ORIGINAL_CODE, historical_paths=historical_code_paths())
     args = config["arguments"]
     key = args["axis"], args["fold"], args["seed"]
     registration_sha = axis_run.digest(registration)

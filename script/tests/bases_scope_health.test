@@ -4,7 +4,7 @@ set -euo pipefail
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 tmp="$(mktemp -d)"
 trap 'rm -rf -- "$tmp"' EXIT
-mkdir -p "$tmp/script" "$tmp/.worktrees/worker"
+mkdir -p "$tmp/script" "$tmp/.worktrees/worker" "$tmp/archived/spec27-retained-worktrees/worker"
 cp "$root/script/check_cpst_paths.sh" "$root/script/check_tracked.sh" "$tmp/script/"
 for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_module 07_cpst_loss 08_cpst_chem-emb 09_cpst_axis 10_cpst_dose; do
   mkdir -p "$tmp/cpst/$step"
@@ -14,6 +14,7 @@ done
 printf 'x = 1\n' > "$tmp/cpst/01_data_raw/run.py"
 printf 'x = 1\n' > "$tmp/cpst/04_tsg_axis/run.py"
 printf 'x = 1\n' > "$tmp/.worktrees/worker/run.py"
+printf 'x = 1\n' > "$tmp/archived/spec27-retained-worktrees/worker/run.py"
 printf 'Stage 2\n' >"$tmp/cpst/AGENTS.md"
 printf 'Stage 2\n' >"$tmp/cpst/README.md"
 printf '/cpst/history/\n' >"$tmp/.gitignore"
@@ -21,6 +22,12 @@ git -C "$tmp" init -q
 git -C "$tmp" add script cpst .gitignore
 bash "$tmp/script/check_cpst_paths.sh" >/dev/null
 bash "$tmp/script/check_tracked.sh" >/dev/null
+mkdir -p "$tmp/archived/ordinary"
+printf 'x = 1\n' > "$tmp/archived/ordinary/run.py"
+if bash "$tmp/script/check_tracked.sh" >/dev/null 2>&1; then
+  echo 'FAIL: an unrelated archive must still be audited' >&2; exit 1
+fi
+rm "$tmp/archived/ordinary/run.py"
 mkdir "$tmp/cpst/history"
 if bash "$tmp/script/check_cpst_paths.sh" >/dev/null 2>&1; then
   echo 'FAIL: retired Stage 2 history must fail' >&2; exit 1
