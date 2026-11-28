@@ -87,9 +87,8 @@ main() {
   local files_scanned=0 occurrences=0 whitelisted=0 stale=0
 
   local old_alias='03[.][1-7]_(tenv|tahoe)_(hvg|denoise)-deg-[345]k'
-  local step_pattern="(cpst|stage2_CarPS-VAE|stage2)/[[:alnum:]_./+@-]+|(07_cpsv_alpha|08_cpsv_chem-emb|09_cpsv_axis|10_cpsv_dose)/[[:alnum:]_./+@-]+|(06_tsg_drug_emb|07_tsg_dose|08_tsg_width_dose|09_tsg_transfer|03[.]1_hvg-deg-5k|$old_alias|log/316-runs)(/[[:alnum:]_./+@-]*)?"
-  local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 06_tsg_module 07_cpst_loss 08_cpst_chem-emb 09_cpst_axis 10_cpst_dose)
-  local shape_rounds=(06_tsg_module/06.1_round1 06_tsg_module/06.2_round2 06_tsg_module/06.3_round3 06_tsg_module/06.4_round4)
+  local step_pattern="(cpst|stage2_CarPS-VAE|stage2)/[[:alnum:]_./+@-]+|(07_cpsv_alpha|08_cpsv_chem-emb|09_cpsv_axis|10_cpsv_dose)/[[:alnum:]_./+@-]+|(05_tsg_loss|06_tsg_module|06_tsg_drug_emb|07_tsg_dose|08_tsg_width_dose|09_tsg_transfer|03[.]1_hvg-deg-5k|$old_alias|log/316-runs)(/[[:alnum:]_./+@-]*)?"
+  local active_roots=(util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_module 07_cpst_loss 08_cpst_chem-emb 09_cpst_axis 10_cpst_dose)
   local stage2_root="${CPST_PATH_AUDIT_ROOT:-cpst}"
   if [ -z "${CPST_PATH_AUDIT_ROOT:-}" ]; then
     local previous
@@ -118,17 +117,7 @@ main() {
     echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
     return 1
   done
-  for entry in "$stage2_root"/06_tsg_module/06.*; do
-    [ -e "$entry" ] || [ -L "$entry" ] || continue
-    for root in "${shape_rounds[@]}"; do
-      if [ "$entry" = "$stage2_root/$root" ] && [ -d "$entry" ] && [ ! -L "$entry" ]; then
-        continue 2
-      fi
-    done
-    echo "RESULT: FAIL — unexpected Stage 2 shape round: $entry" >&2
-    return 1
-  done
-  for root in "${active_roots[@]}" 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} "${shape_rounds[@]}"; do
+  for root in "${active_roots[@]}"; do
     for entry in "$stage2_root/$root/AGENTS.md" "$stage2_root/$root/README.md"; do
       if [ ! -f "$entry" ]; then
         echo "RESULT: FAIL — missing step routing: $entry" >&2
@@ -189,19 +178,6 @@ main() {
         case "$literal" in "cpst/$root" | "cpst/$root"/*) active_literal=1 ;; esac
       done
       case "$literal" in
-        cpst/06_tsg_module/AGENTS.md | cpst/06_tsg_module/README.md) ;;
-        cpst/06_tsg_module/?*)
-          active_literal=0
-          for root in "${shape_rounds[@]}"; do
-            case "$literal" in "cpst/$root" | "cpst/$root"/*) active_literal=1 ;; esac
-          done ;;
-      esac
-      case "$literal" in
-        cpst/05_tsg_loss/execution | cpst/05_tsg_loss/execution/* | \
-        cpst/05_tsg_loss/output | cpst/05_tsg_loss/output/* | \
-        cpst/05_tsg_loss/log | cpst/05_tsg_loss/log/* | \
-        cpst/05_tsg_loss/figure | cpst/05_tsg_loss/figure/*)
-          active_literal=0 ;;
         */historical | */historical/* | */03.1_hvg-deg-5k | */03.1_hvg-deg-5k/*)
           active_literal=0 ;;
       esac

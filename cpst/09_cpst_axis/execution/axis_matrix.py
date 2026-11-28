@@ -13,7 +13,7 @@ from axis_runs import ORIGINAL_CODE, PHASES, add_inputs, arguments, axis_run, bi
 from util.training.provenance import historical_gate_configuration, legacy_configuration
 from chem_runs import open_inputs
 from matrix import SAMPLE_SECONDS, ResourceMonitor, digest_values, enforce_record, register_coordinate
-from matrix_measured import MEMORY_CAP, SWAP_CAP, scope_directory
+from legacy_matrix_resources import MEMORY_CAP, SWAP_CAP, scope_directory
 from matrix_sweep import signal_process_group
 from tenv_axes import tenv_axis_output
 

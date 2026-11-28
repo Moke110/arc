@@ -16,8 +16,9 @@ import torch
 
 STEP = Path(__file__).resolve().parents[1]
 STAGE = STEP.parent
-ROUND_FOUR = STAGE / "06_tsg_module/06.4_round4"
-sys.path[:0] = [str(STAGE), str(ROUND_FOUR / "execution")]
+LEGACY_RUNTIME = STAGE / "util/training/legacy_transigen/modules/measured_targets"
+ROUND_FOUR = STAGE.parent / "archived/spec27-transigen/round4"
+sys.path[:0] = [str(STAGE), str(LEGACY_RUNTIME / "execution")]
 
 from util.training.cpst_model import CPSTAdapter, PROJECTION_WIDTH
 from run_measured import AXIS, DEFAULT_REPRESENTATIONS, DEFAULT_SOURCE, DEFAULT_TRAINING

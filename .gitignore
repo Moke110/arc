@@ -181,85 +181,10 @@ tmp/
 !/cpst/04_tsg_axis/figure/data/fold-disease-f1.csv
 /cpst/04_tsg_axis/log/319-runs/
 
-# Step 05.1 publishes compact score evidence. Checkpoints stay under ignored output/.
-!/cpst/05_tsg_loss/05.1_loss_metrics/figure/data/delta-metrics.csv
-!/cpst/05_tsg_loss/05.1_loss_metrics/figure/data/epoch-objectives.csv
-!/cpst/05_tsg_loss/05.1_loss_metrics/figure/data/fold-scores.csv
-!/cpst/05_tsg_loss/05.1_loss_metrics/log/bandwidths.csv
-!/cpst/05_tsg_loss/05.1_loss_metrics/log/fold-scores.csv
-!/cpst/05_tsg_loss/05.1_loss_metrics/log/runs.csv
-
-# Step 05.2 publishes the same compact report tables for the additive sweep.
-!/cpst/05_tsg_loss/05.2_mse_l1/figure/data/delta-metrics.csv
-!/cpst/05_tsg_loss/05.2_mse_l1/figure/data/epoch-objectives.csv
-!/cpst/05_tsg_loss/05.2_mse_l1/figure/data/fold-scores.csv
-!/cpst/05_tsg_loss/05.2_mse_l1/log/bandwidths.csv
-!/cpst/05_tsg_loss/05.2_mse_l1/log/fold-scores.csv
-!/cpst/05_tsg_loss/05.2_mse_l1/log/runs.csv
-
-# Step 05.3 publishes compact report tables for the reconstruction sweep.
-!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/delta-metrics.csv
-!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/epoch-objectives.csv
-!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/figure/data/fold-scores.csv
-!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/log/bandwidths.csv
-!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/log/fold-scores.csv
-!/cpst/05_tsg_loss/05.3_mse-l1_mse-x/log/runs.csv
-
-# Steps 05.4 and 05.5 publish compact tables for both bounded similarity sweeps.
-!/cpst/05_tsg_loss/05.4_mse-l1_pcc/figure/data/delta-metrics.csv
-!/cpst/05_tsg_loss/05.4_mse-l1_pcc/figure/data/epoch-objectives.csv
-!/cpst/05_tsg_loss/05.4_mse-l1_pcc/figure/data/fold-scores.csv
-!/cpst/05_tsg_loss/05.4_mse-l1_pcc/log/bandwidths.csv
-!/cpst/05_tsg_loss/05.4_mse-l1_pcc/log/fold-scores.csv
-!/cpst/05_tsg_loss/05.4_mse-l1_pcc/log/runs.csv
-!/cpst/05_tsg_loss/05.5_mse-l1_cos/figure/data/delta-metrics.csv
-!/cpst/05_tsg_loss/05.5_mse-l1_cos/figure/data/epoch-objectives.csv
-!/cpst/05_tsg_loss/05.5_mse-l1_cos/figure/data/fold-scores.csv
-!/cpst/05_tsg_loss/05.5_mse-l1_cos/log/bandwidths.csv
-!/cpst/05_tsg_loss/05.5_mse-l1_cos/log/fold-scores.csv
-!/cpst/05_tsg_loss/05.5_mse-l1_cos/log/runs.csv
-
-# Step 06 publishes three canonical plotted CSVs per module comparison.
-!/cpst/06_tsg_module/06.*_round*/figure/data/learning-curve.csv
-!/cpst/06_tsg_module/06.*_round*/figure/data/metrics.csv
-!/cpst/06_tsg_module/06.*_round*/figure/data/metrics-paired.csv
-
-# Step 06.1 publishes the plotted scores and compact fit diagnostics.
-!/cpst/06_tsg_module/06.1_round1/figure/data/delta-metrics.csv
-!/cpst/06_tsg_module/06.1_round1/figure/data/epoch-objectives.csv
-!/cpst/06_tsg_module/06.1_round1/figure/data/fold-scores.csv
-!/cpst/06_tsg_module/06.1_round1/log/bandwidths.csv
-!/cpst/06_tsg_module/06.1_round1/log/kl-diagnostics.csv
-!/cpst/06_tsg_module/06.1_round1/log/runs.csv
-/cpst/06_tsg_module/.06.1_round1.publication.lock
-
-# Step 06.2 publishes the plotted scores and compact fit ledger.
-!/cpst/06_tsg_module/06.2_round2/figure/data/delta-metrics.csv
-!/cpst/06_tsg_module/06.2_round2/figure/data/epoch-objectives.csv
-!/cpst/06_tsg_module/06.2_round2/figure/data/fold-scores.csv
-!/cpst/06_tsg_module/06.2_round2/log/bandwidths.csv
-!/cpst/06_tsg_module/06.2_round2/log/runs.csv
-/cpst/06_tsg_module/.06.2_round2.publication.lock
-
-# Step 06.3 publishes paired scores, primary contrasts and the fit ledger.
-!/cpst/06_tsg_module/06.3_round3/figure/data/delta-metrics.csv
-!/cpst/06_tsg_module/06.3_round3/figure/data/epoch-objectives.csv
-!/cpst/06_tsg_module/06.3_round3/figure/data/fold-scores.csv
-!/cpst/06_tsg_module/06.3_round3/figure/data/primary-contrasts.csv
-!/cpst/06_tsg_module/06.3_round3/figure/data/primary-contrast-summary.csv
-!/cpst/06_tsg_module/06.3_round3/log/bandwidths.csv
-!/cpst/06_tsg_module/06.3_round3/log/runs.csv
-/cpst/06_tsg_module/.06.3_round3.publication.lock
-# Step 06.4 publishes the plotted data and compact fit ledger.
-!/cpst/06_tsg_module/06.4_round4/figure/data/delta-metrics.csv
-!/cpst/06_tsg_module/06.4_round4/figure/data/epoch-objectives.csv
-!/cpst/06_tsg_module/06.4_round4/figure/data/fold-scores.csv
-!/cpst/06_tsg_module/06.4_round4/figure/data/primary-contrast-by-fold.csv
-!/cpst/06_tsg_module/06.4_round4/figure/data/primary-contrast-summary.csv
-!/cpst/06_tsg_module/06.4_round4/figure/data/primary-contrasts.csv
-!/cpst/06_tsg_module/06.4_round4/log/bandwidths.csv
-!/cpst/06_tsg_module/06.4_round4/log/runs.csv
-/cpst/06_tsg_module/.06.4_round4.publication.lock
+# Step 05 publishes plotted CSVs and compact fit evidence.
+!/cpst/05_tsg_module/figure/data/*.csv
+!/cpst/05_tsg_module/log/*.csv
+/cpst/05_tsg_module/.output.publication.lock
 
 # Stage 2 Step 08 formal report tables
 !/cpst/08_cpst_chem-emb/figure/data/fold-scores.csv

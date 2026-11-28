@@ -74,7 +74,7 @@ for old in 01_bases 01_corpus 03_tsg_dose 04_tsg_transfer 02_models_tenv 02_data
   printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
   if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
 done
-printf 'p = "cpst/01_data_raw/output/x"\nq = "cpst/04_tsg_axis/output/x"\nr = "cpst/03_data_train/03.7_tenv_denoise-5k/output/x"\ns = "cpst/05_tsg_loss/05.1_loss_metrics/output/x"\nt = "cpst/05_tsg_loss/05.2_mse_l1/output/x"\nu = "cpst/05_tsg_loss/05.3_mse-l1_mse-x/output/x"\nv = "cpst/05_tsg_loss/05.4_mse-l1_pcc/output/x"\nw = "cpst/05_tsg_loss/05.5_mse-l1_cos/output/x"\ny = "cpst/06_tsg_module/06.1_round1/output/x"\nz = "cpst/06_tsg_module/06.2_round2/output/x"\naa = "cpst/06_tsg_module/06.3_round3/output/x"\nab = "cpst/06_tsg_module/06.4_round4/output/x"\n' >"$tmp/current.py"
+printf 'p = "cpst/01_data_raw/output/x"\nq = "cpst/04_tsg_axis/output/x"\nr = "cpst/03_data_train/03.7_tenv_denoise-5k/output/x"\ns = "cpst/05_tsg_module/output/x"\n' >"$tmp/current.py"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "active roots/external source must pass"
 printf 'p = "cpst/05_tsg_loss/output/x"\n' >"$tmp/old-loss.py"
@@ -97,7 +97,7 @@ run_root() {
   CPST_PATH_AUDIT_ROOT="$1" CPST_PATH_AUDIT_FILES="$2" bash "$audit"
 }
 fixture_root="$tmp/layout/cpst"
-for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_loss 05_tsg_loss/{05.1_loss_metrics,05.2_mse_l1,05.3_mse-l1_mse-x,05.4_mse-l1_pcc,05.5_mse-l1_cos} 06_tsg_module 06_tsg_module/{06.1_round1,06.2_round2,06.3_round3,06.4_round4} 07_cpst_loss 08_cpst_chem-emb 09_cpst_axis 10_cpst_dose; do
+for step in util 01_data_raw 02_gene_axis 03_data_train 04_tsg_axis 05_tsg_module 07_cpst_loss 08_cpst_chem-emb 09_cpst_axis 10_cpst_dose; do
   mkdir -p "$fixture_root/$step"
   printf '%s\n' "$step" >"$fixture_root/$step/AGENTS.md"
   printf '%s\n' "$step" >"$fixture_root/$step/README.md"
@@ -125,43 +125,25 @@ printf '%s\n' "$out" | grep -q 'unexpected Stage 2 entry: .*01_bases' \
   || fail "the retired root must be named in the failure"
 rmdir "$fixture_root/01_bases"
 # An active root without its routing skeleton is rejected.
-mv "$fixture_root/05_tsg_loss/README.md" "$tmp/successor-README.off"
+mv "$fixture_root/05_tsg_module/README.md" "$tmp/successor-README.off"
 if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
-  fail "the active comparison without README.md must fail the layout guard"
+  fail "the active module comparison without README.md must fail"
 fi
-printf '%s\n' "$out" | grep -q 'missing step routing: .*05_tsg_loss/README.md' \
-  || fail "the missing successor routing file must be named in the failure"
-mv "$tmp/successor-README.off" "$fixture_root/05_tsg_loss/README.md"
-for substep in 05.1_loss_metrics 05.2_mse_l1 05.3_mse-l1_mse-x 05.4_mse-l1_pcc 05.5_mse-l1_cos; do
-  mv "$fixture_root/05_tsg_loss/$substep/README.md" "$tmp/substep-README.off"
-  if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
-    fail "the loss substep without README.md must fail the layout guard"
+printf '%s\n' "$out" | grep -q 'missing step routing: .*05_tsg_module/README.md' \
+  || fail "the missing module routing file must be named in the failure"
+mv "$tmp/successor-README.off" "$fixture_root/05_tsg_module/README.md"
+for retired_root in 05_tsg_loss 06_tsg_module; do
+  mkdir -p "$fixture_root/$retired_root"
+  if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
+    fail "the retired $retired_root must fail the layout audit"
   fi
-  printf '%s\n' "$out" | grep -Fq "05_tsg_loss/$substep/README.md" \
-    || fail "the missing loss substep routing file must be named in the failure"
-  mv "$tmp/substep-README.off" "$fixture_root/05_tsg_loss/$substep/README.md"
+  rmdir "$fixture_root/$retired_root"
+  printf 'p = base / "%s/output/x"\n' "$retired_root" >"$tmp/retired-root.py"
+  printf '%s\n' "$tmp/retired-root.py" >"$tmp/list_retired_root"
+  if run_root "$fixture_root" "$tmp/list_retired_root" >/dev/null 2>&1; then
+    fail "the retired $retired_root literal must fail the runtime audit"
+  fi
 done
-for round in 06.1_round1 06.2_round2 06.3_round3 06.4_round4; do
-  for routing in AGENTS.md README.md; do
-    mv "$fixture_root/06_tsg_module/$round/$routing" "$tmp/shape-routing.off"
-    if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
-      fail "the shape round without $routing must fail the layout guard"
-    fi
-    printf '%s\n' "$out" | grep -Fq "06_tsg_module/$round/$routing" \
-      || fail "the missing shape round routing file must be named in the failure"
-    mv "$tmp/shape-routing.off" "$fixture_root/06_tsg_module/$round/$routing"
-  done
-done
-mkdir -p "$fixture_root/06_tsg_module/06.2_unknown"
-if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
-  fail "an unregistered shape round must fail the layout guard"
-fi
-rmdir "$fixture_root/06_tsg_module/06.2_unknown"
-printf 'p = "cpst/06_tsg_module/06.2_unknown/output/x"\n' >"$tmp/unknown-round.py"
-printf '%s\n' "$tmp/unknown-round.py" >"$tmp/list_unknown_round"
-if run_root "$fixture_root" "$tmp/list_unknown_round" >/dev/null; then
-  fail "an unregistered shape round literal must fail the runtime audit"
-fi
 mkdir -p "$fixture_root/history/stage2/07_tsg_dose"
 if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
   fail "the retired local archive must fail"
@@ -188,11 +170,11 @@ for retired in \
   fi
   rmdir "$fixture_root/$retired"
 done
-mkdir -p "$fixture_root/05_tsg_loss/historical"
+mkdir -p "$fixture_root/05_tsg_module/historical"
 if run_root "$fixture_root" "$tmp/list_clean" >/dev/null 2>&1; then
   fail "step-local history must fail"
 fi
-rmdir "$fixture_root/05_tsg_loss/historical"
+rmdir "$fixture_root/05_tsg_module/historical"
 printf 'p = base / "07_tsg_dose/output/api"\n' >"$tmp/relative.py"
 printf '%s\n' "$tmp/relative.py" >"$tmp/list_relative"
 if run_root "$fixture_root" "$tmp/list_relative" >/dev/null 2>&1; then

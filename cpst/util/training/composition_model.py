@@ -5,8 +5,8 @@ import sys
 
 from torch import nn
 
-STEP = Path(__file__).resolve().parents[2] / "06_tsg_module/06.3_round3"
-ROUND_TWO = STEP.with_name("06.2_round2")
+STEP = Path(__file__).resolve().parents[2] / "util/training/legacy_transigen/modules/composition"
+ROUND_TWO = STEP.with_name("prediction_path")
 sys.path.insert(0, str(ROUND_TWO / "execution"))
 
 from .architecture_model import ArchitectureAdapter, FiLMPrediction
