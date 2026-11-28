@@ -27,6 +27,44 @@ class ComparisonTests(unittest.TestCase):
     def test_metric_roster_matches_adr_0109(self):
         self.assertEqual(METRIC_PANELS, PANELS)
 
+    def test_default_csv_centers_each_metric_on_finite_baseline_samples(self):
+        with TemporaryDirectory(dir=os.environ.get("TMPDIR")) as scratch:
+            data = Path(scratch)
+            arms = {"base": ("Baseline", 20, 2), "model": ("Model", 220, 2)}
+            fits = [("base", 0, 42, 1, None), ("base", 1, 42, 5, 8),
+                    ("base", 2, 42, None, None), ("model", 2, 42, 7, 12),
+                    ("model", 3, 17, 9, None)]
+            with (data / "metrics.csv").open("w", newline="") as stream:
+                writer = csv.writer(stream)
+                writer.writerow(("arm", "fold", "seed", "metric", "value"))
+                writer.writerows((arm, fold, seed, metric, pcc if metric == "Δ PCC" else rest)
+                                 for arm, fold, seed, pcc, rest in fits for metric, _ in METRIC_PANELS)
+            with (data / "learning-curve.csv").open("w", newline="") as stream:
+                writer = csv.writer(stream)
+                writer.writerow(("arm", "fold", "seed", "epoch", "train", "validation"))
+                writer.writerows((arm, fold, seed, 1, 0.25, 0.5)
+                                 for arm, fold, seed, _, _ in fits)
+            write_paired_metrics(data, "base")
+            with (data / "metrics-paired.csv").open(newline="") as stream:
+                rows = list(csv.DictReader(stream))
+            for metric, mean_value, expected in (
+                ("Δ PCC", "3.0", ["-2.0", "2.0", "", "4.0", "6.0"]),
+                ("Δ RMSE", "8.0", ["", "0.0", "", "4.0", ""]),
+            ):
+                metric_rows = [row for row in rows if row["metric"] == metric]
+                self.assertEqual([row["baseline_mean"] for row in metric_rows], [mean_value] * 5)
+                self.assertEqual([row["value"] for row in metric_rows], expected)
+
+            def check_figure(figure, path, **_):
+                if path.name == "metrics-paired.png":
+                    for axis, (metric, _) in zip(figure.axes, METRIC_PANELS, strict=True):
+                        self.assertIn("baseline mean", axis.get_ylabel())
+                        self.check_metric_marks(axis, rows, metric)
+
+            with patch("cpst_util.comparison.save_figure", side_effect=check_figure) as save:
+                render_comparison(data, data / "render", arms=arms, reference="base", title="Fixture")
+            self.assertEqual(save.call_count, 3)
+
     def test_csv_replay_pairs_only_matching_fold_and_seed(self):
         with TemporaryDirectory(dir=os.environ.get("TMPDIR")) as scratch:
             data = Path(scratch)
@@ -43,7 +81,7 @@ class ComparisonTests(unittest.TestCase):
                 writer.writerow(("arm", "fold", "seed", "epoch", "train", "validation"))
                 writer.writerows((arm, fold, seed, epoch, 0.25 / epoch, 0.5 / epoch)
                                  for arm, fold, seed, _ in fits for epoch in (1, 2))
-            write_paired_metrics(data, "base")
+            write_paired_metrics(data, "base", mode="matched-coordinate")
             with (data / "metrics-paired.csv").open(newline="") as stream:
                 rows = [row for row in csv.DictReader(stream) if row["metric"] == "Δ PCC"]
             self.assertEqual(len(rows), 3)
@@ -52,7 +90,7 @@ class ComparisonTests(unittest.TestCase):
             self.assertEqual(rows[2]["value"], "")
             for subdir in ("first", "second"):
                 render_comparison(data, data / subdir, arms=arms,
-                                  reference="base", title="Fixture")
+                                  reference="base", title="Fixture", mode="matched-coordinate")
             self.assertEqual({path.name for path in (data / "first").iterdir()},
                              {"learning-curve.png", "metrics.png", "metrics-paired.png"})
             for figure in (data / "first").iterdir():

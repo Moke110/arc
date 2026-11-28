@@ -142,7 +142,7 @@ def _write_plot_data(report, fits, study, data, output):
     output.mkdir()
     pd.DataFrame(curves, columns=CURVE_FIELDS).to_csv(output / "learning-curve.csv", index=False)
     pd.DataFrame(metrics, columns=METRIC_FIELDS).to_csv(output / "metrics.csv", index=False)
-    write_paired_metrics(output, study.reference)
+    write_paired_metrics(output, study.reference, mode="matched-coordinate")
     return len(runs)
 
 

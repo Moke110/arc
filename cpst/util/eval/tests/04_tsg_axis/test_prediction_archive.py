@@ -62,7 +62,8 @@ class PredictionArchiveTests(unittest.TestCase):
             args = Namespace(matrix=matrix, report=score, run_manifest=[name])
             calls = []
 
-            def report(_args, *, archive_check):
+            def report(_args, *, archive_check, figure_mode):
+                self.assertEqual(figure_mode, "matched-coordinate")
                 calls.append(weight.is_file())
                 (archive_check or check_outputs)(run, read_json(manifest))
                 return result

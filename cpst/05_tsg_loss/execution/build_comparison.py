@@ -141,7 +141,7 @@ def build_study(source, output, data):
     figure.mkdir()
     plotted = figure / "data"
     _write_plot_data(matrix, report, fits, data, plotted)
-    write_paired_metrics(plotted, study.reference)
+    write_paired_metrics(plotted, study.reference, mode="matched-coordinate")
 
     renderer = step / RENDERER
     dependencies = (LOSS / "figure/script/loss_comparison.py",)

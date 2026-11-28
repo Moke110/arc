@@ -144,7 +144,7 @@ def figure_data(tables, output):
     scores = tables["fold-scores.csv"]
     scores = scores.loc[scores.metric.isin(METRIC_NAMES), ["axis", "fold", "seed", "metric", "value"]]
     scores.rename(columns={"axis": "arm"}).to_csv(output / "metrics.csv", index=False)
-    write_paired_metrics(output, REFERENCE_AXIS)
+    write_paired_metrics(output, REFERENCE_AXIS, mode="matched-coordinate")
     curve = tables["epoch-objectives.csv"][["axis", "fold", "seed", "epoch", "train_loss", "validation_loss"]]
     curve.rename(columns={"axis": "arm", "train_loss": "train", "validation_loss": "validation"}).to_csv(
         output / "learning-curve.csv", index=False)

@@ -26,6 +26,8 @@ COMPARISON_RENDERERS = {
     "09_cpst_axis": "render_axes.py",
     "10_cpst_dose": "render_doses.py",
 }
+HISTORICAL_COMPARISON_SOURCE = "325be5dd45e2b670f1e01882e225aa5debbeaab7"
+SHARED_COMPARISON = "util/output/api/cpst_util/comparison.py"
 COMPARISON_NAMES = ("learning-curve", "metrics", "metrics-paired")
 
 
@@ -37,6 +39,18 @@ def check_hashes(root, hashes):
     for path, expected in hashes.items():
         if digest(root / path) != expected:
             raise ValueError(f"render receipt hash differs for {root / path}")
+
+
+def check_renderer_hashes(root, scripts):
+    for path, expected in scripts.items():
+        if digest(root / path) == expected:
+            continue
+        if root == STAGE and path == SHARED_COMPARISON:
+            original = subprocess.check_output(
+                ["git", "show", f"{HISTORICAL_COMPARISON_SOURCE}:cpst/{path}"], cwd=STAGE)
+            if sha256(original).hexdigest() == expected:
+                continue
+        raise ValueError(f"render receipt hash differs for {root / path}")
 
 
 def verify_report(step, receipt_name, renderers, work, env, *, comparison=False):
@@ -72,7 +86,7 @@ def verify_report(step, receipt_name, renderers, work, env, *, comparison=False)
         raise ValueError(f"published PNG inventory differs from the receipt for {step}")
     for hashes in (csvs, pngs):
         check_hashes(step, hashes)
-    check_hashes(script_root, scripts)
+    check_renderer_hashes(script_root, scripts)
     projected_tables = receipt.get("evidence", {}).get("projected_scientific_tables_sha256", {})
     check_hashes(step, projected_tables)
 

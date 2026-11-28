@@ -106,13 +106,14 @@ Denoise-DEG 5k under that protocol as well.
 [Plotted data](figure/data/learning-curve.csv) |
 | [Held-out metrics](figure/metrics.png) | Fold and seed scores, means and sample SDs.
 [Plotted data](figure/data/metrics.csv) |
-| [Paired differences](figure/metrics-paired.png) | Each other axis minus Denoise-DEG 5k within the same fold and seed.
+| [Differences from baseline mean](figure/metrics-paired.png) | Each displayed score minus the mean of all defined Denoise-DEG 5k fold-and-seed scores for that metric. The centered Denoise-DEG 5k dots and sample SD are shown.
 [Plotted data](figure/data/metrics-paired.csv) |
 
 The seven metric panels include zero in both figures. The current figure receipt binds all
 three CSVs and three PNGs to the sealed fit and report manifests. The
 historical publication retains the disease F1 figure.
 [Current panel layout](../../docs/adr/0109-cpst-seven-metric-comparison-figures.md) ·
+[Baseline-mean rule](../../docs/adr/0110-cpst-transigen-module-rerun.md) ·
 [Current rendering receipt](log/figure-render.json) ·
 [Historical disease F1 figure](https://github.com/Moke110/carps/blob/263240e896444197bf045739f5bdb54e23f3be53/stage2_CarPS-VAE/04_tsg_axis/figure/disease-f1.png)
 

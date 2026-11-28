@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from report_formal import STAGE, STEP, report, run_paths
+from cpst_util.comparison import HISTORICAL
 from cpst_util.checkpoint_disposition import WEIGHT, dispose_checkpoints, verify_prediction_archive
 from cpst_util.derivation.release import check_outputs, read_json, sha256
 
@@ -54,7 +55,7 @@ def _retained_output_check(matrix, runs):
 
 
 def _verified_report(args, accepted, *, output_check=None):
-    verified = report(args, archive_check=output_check)
+    verified = report(args, archive_check=output_check, figure_mode=HISTORICAL)
     for key in ('matrix_manifest_sha256', 'report_manifest_sha256', 'csv_only_figure_sha256'):
         if verified[key] != accepted[key]:
             raise ValueError(f'prediction archive differs from the full acceptance: {key}')
