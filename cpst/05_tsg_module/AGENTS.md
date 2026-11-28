@@ -30,3 +30,37 @@ Build figures with `execution/build_comparison.py --report <report> --output <di
 using an unused output directory, with `--smoke` for the bounded report. The
 receipt records two independent CSV-only renders. Use `figure/script/render.py`
 for CSV-only replay with `--data` and `--output`.
+
+## Accept and replay the installed publication
+
+Score the complete formal matrix first. Then run
+[`publish_module.py`](execution/publish_module.py) with `build`,
+`--publication` set to an unused candidate directory in `tmp/`, and the
+sealed matrix, matrix audit, and score report paths. Supply
+`--coordinator-samples` with the ten-second resource log and
+`--code-revision` with the revision used to run the matrix. The command
+checks the preregistration, repeats test scoring in a fresh process, audits
+the objective traces and coordinate-matched tables, and renders all three
+figures twice from CSV. Its formal receipt seals the accepted outputs and
+resource evidence.
+
+Install the accepted matrix, matrix audit and score report as
+`output/formal/`, `output/formal-audit/` and `output/report/` respectively.
+The score report retains the condition-level results and fits retain the
+checkpoint, test predictions and separate-process replay evidence. Publish
+the projected tables, figures and receipts at the step's tracked paths.
+
+In the materialized checkout, rerun verification with the originally pinned
+inputs and environment. Set `TMPDIR` and `MPLCONFIGDIR` to directories under
+checkout-root `tmp/`, and run under the execution guide's memory limits.
+
+```bash
+step="$PWD/cpst/05_tsg_module"
+work=$(mktemp -d "$PWD/tmp/step05-installed.XXXXXX")
+mkdir "$work/matplotlib"
+export TMPDIR="$work" MPLCONFIGDIR="$work/matplotlib"
+python "$step/execution/publish_module.py" verify \
+  --matrix "$step/output/formal" \
+  --matrix-audit "$step/output/formal-audit" \
+  --report "$step/output/report" --scratch "$work"
+```

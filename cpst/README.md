@@ -46,9 +46,10 @@ regularize the two encoder distributions against the standard normal prior
 2. **Step 04 compared prediction axes.** TranSiGen used measured same-plate
    DMSO, KPGT and training-fold standardized log dose across six axes.
    [Prediction axis comparison](04_tsg_axis/README.md)
-3. **Step 05 compares five TranSiGen modules.** The shared five cold-drug
-   folds and five seeds run with a common reconstruction, prediction and KL
-   objective on Denoise-DEG 5k. [Module study](05_tsg_module/README.md)
+3. **Step 05 compared five TranSiGen modules.** All 125 fresh fits across
+   the shared five cold-drug folds and five seeds used a common objective on
+   Denoise-DEG 5k. `XX-XX` led mean Δ Spearman and Δ PCC, and `X-XΔ` led
+   mean JAC-top200 and Δ RMSE. [Module study](05_tsg_module/README.md#formal-results)
 4. **Step 07 compares losses on the shared signed Δ model.** The published
    alpha predecessor retains the
    Step 06.4 `XΔ-XΔ` backbone, Denoise-DEG 5k, frozen KPGT features and
@@ -112,9 +113,11 @@ frozen phenotype benchmark remain pending.
 The current verifier checks the render receipts and independently redraws all
 21 published PNGs twice from their plot data. The inventory includes five
 comparison sets, five Step 02 figures and the palette preview. Each comparison
-publishes learning curves, held-out metrics and same-fold, same-seed
-differences from its reference. The metric panels show defined replicates,
-means, sample SD when at least two values are defined, and zero.
+publishes learning curves, held-out metrics and differences from its reference.
+In Steps 04 and 05, each displayed score is centered on the reference mean for
+that metric. The Steps 08–10 figure sets retain their saved same-fold, same-seed
+differences. The metric panels show defined replicates, means, sample SD when
+at least two values are defined, and zero.
 [Current figure verification guide](AGENTS.md#verify-the-current-figures) ·
 [Shared figure verifier](util/figure/script/verify_report_figures.py) ·
 [Figure standard](../docs/adr/0109-cpst-seven-metric-comparison-figures.md)
