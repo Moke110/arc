@@ -9,7 +9,7 @@ import sys
 import time
 
 from axis_protocol import AXES, REFERENCE_AXIS, STEP, coordinates
-from axis_runs import ORIGINAL_CODE, PHASES, add_inputs, arguments, axis_run, bind, read_run, step08_config
+from axis_runs import ORIGINAL_CODE, PHASES, add_inputs, arguments, axis_run, bind, historical_code_paths, read_run, step08_config
 from util.training.provenance import historical_gate_configuration, legacy_configuration
 from chem_runs import open_inputs
 from matrix import SAMPLE_SECONDS, ResourceMonitor, digest_values, enforce_record, register_coordinate
@@ -100,8 +100,10 @@ def preflight(step03, representations, source, bounded):
                 enrolled[key] = bind(key, data, vectors, source, False, reference_configs[fold, seed, False])
                 if bounded and key in bounded_keys:
                     registered[key] = bind(key, data, vectors, source, True, reference_configs[fold, seed, True])
+    paths = historical_code_paths()
     historical = (
-        historical_gate_configuration(legacy_configuration(config, axis_run.REPO, ORIGINAL_CODE))
+        historical_gate_configuration(legacy_configuration(
+            config, axis_run.REPO, ORIGINAL_CODE, historical_paths=paths))
         for config in enrolled.values()
     )
     configs = registered if bounded else enrolled

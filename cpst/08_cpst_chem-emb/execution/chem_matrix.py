@@ -8,7 +8,7 @@ import subprocess
 import sys
 import time
 
-from chem_runs import ORIGINAL_CODE, PHASES, add_inputs, arguments, axis_run, bind, coordinates, open_inputs, read_run
+from chem_runs import ORIGINAL_CODE, PHASES, add_inputs, arguments, axis_run, bind, coordinates, historical_code_paths, open_inputs, read_run
 from matrix import SAMPLE_SECONDS, ResourceMonitor, digest_values, enforce_record, register_coordinate
 from legacy_matrix_resources import MEMORY_CAP, SWAP_CAP, scope_directory
 from matrix_sweep import signal_process_group
@@ -59,7 +59,8 @@ def preflight(training, representations, source, smoke, *, legacy=False):
     with open_inputs(training, representations) as (data, vectors):
         expected = {key: bind(key, data, vectors, source, smoke) for key in roster}
         if legacy:
-            expected = {key: legacy_configuration(config, axis_run.REPO, ORIGINAL_CODE)
+            paths = historical_code_paths()
+            expected = {key: legacy_configuration(config, axis_run.REPO, ORIGINAL_CODE, historical_paths=paths)
                         for key, config in expected.items()}
         identities = list(expected.values())
         if legacy:

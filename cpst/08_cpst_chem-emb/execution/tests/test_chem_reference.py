@@ -9,7 +9,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from chem_reference import verify_reference_scores
-from chem_runs import ORIGINAL_CODE, axis_run
+from chem_runs import ORIGINAL_CODE, axis_run, historical_code_paths, verify_configuration
 from util.training.provenance import git_code_hashes, verify_replay_configuration
 from chem_report import METRICS
 
@@ -27,6 +27,21 @@ class ReferenceTest(unittest.TestCase):
                                 ({**sealed, "code_sha256": {path: "wrong-code"}}, True)):
             with self.assertRaisesRegex(ValueError, "registered study"):
                 verify_replay_configuration(invalid, current, replay=replay, **options)
+
+    def test_historical_replay_resolves_retired_dependencies(self):
+        paths = historical_code_paths()
+        self.assertEqual(len(paths), 25)
+        pins = git_code_hashes(axis_run.REPO, ORIGINAL_CODE, paths)
+        current_path = "cpst/08_cpst_chem-emb/execution/chem_runs.py"
+        current = {"code_sha256": {current_path: "new-code"}, "experiment": {"fold": 0},
+                   "partitions": {"test": [8]}}
+        sealed = {"code_sha256": pins, "partitions": current["partitions"]}
+        verify_configuration(sealed, current, replay=True)
+        with self.assertRaisesRegex(ValueError, "registered study"):
+            verify_configuration({**sealed, "code_sha256": {current_path: pins[current_path]}},
+                                 current, replay=True)
+        with self.assertRaisesRegex(ValueError, "registered study"):
+            verify_configuration(sealed, current, replay=False)
 
     def test_changed_score_rejects_reuse(self):
         recorded = pd.DataFrame({
