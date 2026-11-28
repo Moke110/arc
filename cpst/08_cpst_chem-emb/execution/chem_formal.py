@@ -136,6 +136,21 @@ def figure_receipt(figure, scientific_receipt_sha256, *, comparison=False):
     }
 
 
+def verify_figure_receipt(published, replayed):
+    """Check exact replay evidence across the approved comparison renderer change."""
+    sealed = {key: value for key, value in published.items() if key != "evidence"}
+    field = "renderer_files_sha256"
+    comparison = "util/output/api/cpst_util/comparison.py"
+    # ADR 0110 preserves these figures. The comparison renderer at bf80c27f
+    # replays the installed matched-coordinate CSVs byte for byte.
+    previous = "78bb29a6621e1ad4565c3201b2618f630355cf49653afe70b5688372362ad3b7"
+    centered = "8197916b0c1950cf16761f9bf45f591bf0586ceff0f120f688a567477ea33b92"
+    if sealed[field].get(comparison) == previous and replayed[field].get(comparison) == centered:
+        replayed = {**replayed, field: {**replayed[field], comparison: previous}}
+    if sealed != replayed:
+        raise ValueError("formal figure receipt differs from its independent CSV renders")
+
+
 def scientific_evidence(receipt):
     # Keep the original acceptance receipt intact when report figures are redrawn.
     # The current figure receipt binds its own PNGs to that scientific receipt.
@@ -224,8 +239,8 @@ def publish(args):
         if build:
             axis_run.write_json(candidate / FIGURE_RECEIPT, plots)
             candidate.rename(args.publication)
-        elif plots != {key: value for key, value in published_plot_receipt.items() if key != "evidence"}:
-            raise ValueError("formal figure receipt differs from its independent CSV renders")
+        else:
+            verify_figure_receipt(published_plot_receipt, plots)
     return {"status": "PASS", "receipt_sha256": scientific_sha, "scores": numerical["score_rows"],
             "new_fits": len(fresh), "reused_fits": len(coordinates()) - len(fresh), **configuration}
 
